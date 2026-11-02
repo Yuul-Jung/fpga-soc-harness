@@ -11,15 +11,17 @@
   "focus": {
     "track": "A",
     "theme": "모터 제어: 엔코더, PID, 적응 제어, 균형 로봇, 균형 진자",
-    "ladder": ["입문", "중급", "고급", "전문", "최상"],
+    "ladder": [
+      "입문",
+      "중급",
+      "고급",
+      "전문",
+      "최상"
+    ],
     "module_scope": "아두이노·알리익스프레스·디바이스마트 모듈. 입력: 마이크, 카메라, 가속도·자이로 등 센서. 출력: 도트 매트릭스, 음성, 영상 등. 장 사이에 조합",
     "style": "상투적인 부품별 장이 아니라 재미있고 역동적이고 다양한 주제",
     "cost_is_constraint": false
   },
-  "on_hold": [
-    {"name": "PicoRV32 트랙", "keywords": ["PicoRV32"], "since": "2026-10-26", "reason": "사용자 결정: 보류"},
-    {"name": "자체 설계 CPU 트랙", "keywords": ["자체 CPU", "자체 설계 CPU", "own-CPU"], "since": "2026-10-26", "reason": "사용자 결정: 보류"}
-  ],
   "frozen": {
     "address_map": "config/soc_address_map.json",
     "ip_standard": "config/ip_standard.json",
@@ -38,5 +40,27 @@
   "output_conventions": {
     "language": "한국어, 영어 용어는 첫 등장 때 한글 뜻 병기",
     "unverified": "확인하지 못한 것은 추측하지 않고 '미검증'으로 표시"
+  },
+  "cpu_tracks": {
+    "status": "CPU 교체 트랙(PicoRV32, 자체 설계 CPU)의 *제작*은 보류. 그러나 그쪽 자료는 버리지 않는다.",
+    "decision": "2026-11-02 사용자 지시: CPU 트랙이 달라도 자료를 버리지 않고, 착안해서 개조한다",
+    "policy": "adapt",
+    "rule": "PicoRV32·VexRiscv·자체 CPU 등 다른 CPU의 자료도 계속 수집·카드화한다. 재사용 메모에 '개조:' 줄을 두어 MicroBlaze V 기준 SoC(AXI4-Lite, 동결 맵, IP 표준)로 무엇을 어떻게 옮길지 쓴다.",
+    "adaptable": [
+      "주변장치 RTL의 레지스터 배치와 FSM (IP 표준 래퍼로 감싸기)",
+      "인터럽트 설계(간이 IRQ → INTC 입력 In번호)",
+      "부트 흐름 아이디어(UART/SPI 부트 → 비트스트림 병합·QSPI)",
+      "메모리맵 구성 → 동결 맵 [XX] 슬롯 배정 제안",
+      "시험 환경(CI, 백프레셔·자체 점검 tb)",
+      "CPU 비종속 드라이버 구조(base 인자)"
+    ],
+    "not_adaptable": [
+      "CPU 코어 자체의 마이크로아키텍처 (MicroBlaze V는 AMD IP)",
+      "PicoRV32 전용 PCPI·간이 IRQ 레지스터 → cpu_irq_<cpu>.c 한 파일로만 격리"
+    ],
+    "future_tracks": [
+      "PicoRV32 교체: cpu_irq_picorv32.c 1개와 블록 디자인 CPU 블록만 교체 (프로젝트 §4 원칙)",
+      "자체 설계 CPU"
+    ]
   }
 }

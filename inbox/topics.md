@@ -9,7 +9,7 @@
 - [ ] Basys3 UART/SPI/I2C 센서 허브 (Arduino 모듈 우선)
 - [ ] Basys3 이더넷·Bluetooth·CAN 통신 (Pmod 기반)
 - [ ] MicroBlaze/MicroBlaze V Basys3 사용자 AXI 주변장치
-- [-] PicoRV32 Basys3 SoC (PicoSoC 포팅 사례) — 보류(사용자 결정 2026-10-26, config/project_profile.json)
+- [ ] PicoRV32 Basys3 SoC (PicoSoC 포팅 사례) — 제작은 보류, 자료는 수집하고 개조 메모로 MicroBlaze V 기준에 연결 (config/project_profile.json cpu_tracks)
 - [ ] Intel/Altera 캡스톤: DE10-Nano·DE1-SoC 주변장치 프로젝트
 - [ ] Lattice iCE40/ECP5 RISC-V SoC 주변장치
 - [ ] 한국어 FPGA 종합설계·캡스톤 보고서
@@ -25,3 +25,4 @@
 - [ ] 전문: 적응 제어·자동 튜닝 PID (릴레이 피드백, 모델 기준 적응) 하드웨어 구현
 - [ ] 최상: BLDC/PMSM 홀센서·FOC 입문 FPGA 구현 (3상 PWM, 전류 센싱, 데드타임)
 - [ ] 입출력 조합: 마이크·가속도·카메라 입력 + 도트 매트릭스(MAX7219)·음성(DFPlayer)·영상 출력 모듈 조합 사례
+- [ ] CPU 중립화 개조: PicoRV32·VexRiscv·NEORV32 SoC의 주변장치 레지스터·인터럽트·부트 흐름 중 AXI4-Lite IP 표준 래퍼로 옮길 수 있는 부분 (전략 S1)

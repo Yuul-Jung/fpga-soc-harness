@@ -3,7 +3,7 @@ description: 자동 수집 한 사이클 (창의 전략 사용, 1시간마다)
 argument-hint: "[주제]"
 ---
 
-HARNESS.md §12 자동 수집 모드를 한 사이클 실행한다. 주제: $ARGUMENTS (비어 있으면 `inbox/topics.md`의 첫 `[ ]` 항목(`[-]` 보류는 건너뜀, HARNESS §17), 그것도 비면 §12.2의 3번).
+HARNESS.md §12 자동 수집 모드를 한 사이클 실행한다. 주제: $ARGUMENTS (비어 있으면 `inbox/topics.md`의 첫 `[ ]` 항목(`[-]`는 건너뜀), 그것도 비면 §12.2의 3번).
 
 1. `git pull --rebase origin main` 후 `catalog/_index.md`, `inbox/queue.md`, `inbox/topics.md`, `inbox/ideas.md`, `inbox/log.md`를 읽는다.
 2. §12.8에서 주 전략 하나와 보조 전략 하나를 고른다. 최근 로그 5건에서 쓰지 않은 전략을 우선한다.

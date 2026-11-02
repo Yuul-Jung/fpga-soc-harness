@@ -73,11 +73,15 @@ def audit_config():
     prof = ROOT / "config" / "project_profile.json"
     if prof.exists():
         pr = json.loads(prof.read_text(encoding="utf-8"))
-        topics = (ROOT / "inbox" / "topics.md").read_text(encoding="utf-8")
-        for h in pr.get("on_hold", []):
-            for ln in topics.splitlines():
-                if ln.startswith("- [ ]") and any(k in ln for k in h["keywords"]):
-                    add("warn", "config:profile", f"보류({h['name']}) 주제가 아직 [ ]로 열려 있음: {ln[:60]}")
+        if pr.get("cpu_tracks", {}).get("policy") == "adapt":
+            # 다른 CPU 자료를 버리지 않고 개조한다: 해당 카드의 재사용 메모에 '개조:' 줄이 있어야 한다
+            for f in sorted((ROOT / "catalog").rglob("*.md")):
+                if f.name.startswith("_"):
+                    continue
+                t = f.read_text(encoding="utf-8")
+                m = re.search(r"^cpu:\s*(.+)$", t, re.M)
+                if m and re.search(r"PicoRV32|VexRiscv|NEORV32|FemtoRV|Ibex|Nios|ZipCPU|RISC-V|LiteX", m.group(1)) and "개조:" not in t:
+                    add("info", f"card:{f.stem}", "MicroBlaze V 외 CPU 자료인데 재사용 메모에 '개조:' 줄이 없음 (HARNESS §17.2)")
 
 
 def audit_cards(pol):
