@@ -9,7 +9,19 @@
 - [ ] Basys3 UART/SPI/I2C 센서 허브 (Arduino 모듈 우선)
 - [ ] Basys3 이더넷·Bluetooth·CAN 통신 (Pmod 기반)
 - [ ] MicroBlaze/MicroBlaze V Basys3 사용자 AXI 주변장치
-- [ ] PicoRV32 Basys3 SoC (PicoSoC 포팅 사례)
+- [-] PicoRV32 Basys3 SoC (PicoSoC 포팅 사례) — 보류(사용자 결정 2026-10-26, config/project_profile.json)
 - [ ] Intel/Altera 캡스톤: DE10-Nano·DE1-SoC 주변장치 프로젝트
 - [ ] Lattice iCE40/ECP5 RISC-V SoC 주변장치
 - [ ] 한국어 FPGA 종합설계·캡스톤 보고서
+
+## 모터 제어 사다리 (A 트랙, 2026-11-02 추가, 위에서부터 소비)
+- [ ] 입문: Basys3 서보·DC 모터 PWM 구동과 H-브리지 모듈(TB6612, L298N, DRV8833) 인터페이스, 모터 전원 분리·역기전력 보호
+- [ ] 입문: 직교 엔코더 디코더 RTL(4배 해독, 입력 거르기)과 속도·위치 측정 사례 (Verilog, FPGA)
+- [ ] 중급: FPGA 정수·고정소수점 PID 속도·위치 제어 (엔코더 + PWM), 계단 응답 측정과 이득 조정
+- [ ] 중급: 스텝모터 제어 FSM (28BYJ-48/ULN2003, A4988/DRV8825) 가속 곡선·원점 찾기
+- [ ] 고급: IMU(MPU-6050/6500) 자세 추정 상보·칼만 필터를 FPGA/소프트코어로 (I2C 읽기, 고정소수점)
+- [ ] 고급: 2륜 자가 균형 로봇 (IMU + 엔코더 + PID) FPGA 구현 사례
+- [ ] 전문: 도립진자(Inverted Pendulum) 제어 FPGA 구현 사례 (상태 되먹임, LQR)
+- [ ] 전문: 적응 제어·자동 튜닝 PID (릴레이 피드백, 모델 기준 적응) 하드웨어 구현
+- [ ] 최상: BLDC/PMSM 홀센서·FOC 입문 FPGA 구현 (3상 PWM, 전류 센싱, 데드타임)
+- [ ] 입출력 조합: 마이크·가속도·카메라 입력 + 도트 매트릭스(MAX7219)·음성(DFPlayer)·영상 출력 모듈 조합 사례

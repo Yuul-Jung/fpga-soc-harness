@@ -1,0 +1,42 @@
+{
+  "_comment": "사용자 프로젝트(FPGA_베이시스3_soc_구축)의 현재 방향. 수집·과제화가 주제와 우선순위를 고를 때 읽는다. 프로젝트 쪽 결정이 바뀌면 이 파일을 먼저 고친다(HARNESS §17). 출처: 프로젝트 메모리와 문서(2026-10-08~10-26 결정).",
+  "updated": "2026-11-02",
+  "primary_soc": "MicroBlaze V (RISC-V 기반 32비트), Basys3, Vivado/Vitis 2024.2, AXI4-Lite 주변장치",
+  "tracks": {
+    "L": "L00~L21 기반 실습. 완료, 보드 미검증",
+    "C": "C00~C10 아두이노 모듈 종합과제 (C05 모터 PID, C10 장애물 로봇 포함)",
+    "N": "N00~N12 노션 과제를 SoC에 맞게 변형. 같은 IP 표준",
+    "A": "A00~A12 SoC+RTL+NPU 캡스톤 기술 트리. 현재 범위는 모터를 쓰는 과제"
+  },
+  "focus": {
+    "track": "A",
+    "theme": "모터 제어: 엔코더, PID, 적응 제어, 균형 로봇, 균형 진자",
+    "ladder": ["입문", "중급", "고급", "전문", "최상"],
+    "module_scope": "아두이노·알리익스프레스·디바이스마트 모듈. 입력: 마이크, 카메라, 가속도·자이로 등 센서. 출력: 도트 매트릭스, 음성, 영상 등. 장 사이에 조합",
+    "style": "상투적인 부품별 장이 아니라 재미있고 역동적이고 다양한 주제",
+    "cost_is_constraint": false
+  },
+  "on_hold": [
+    {"name": "PicoRV32 트랙", "keywords": ["PicoRV32"], "since": "2026-10-26", "reason": "사용자 결정: 보류"},
+    {"name": "자체 설계 CPU 트랙", "keywords": ["자체 CPU", "자체 설계 CPU", "own-CPU"], "since": "2026-10-26", "reason": "사용자 결정: 보류"}
+  ],
+  "frozen": {
+    "address_map": "config/soc_address_map.json",
+    "ip_standard": "config/ip_standard.json",
+    "rule": "CPU가 바뀌어도 IP·주소·드라이버는 그대로. 사용자 IP는 한 번만 만들고 IP 표준·인덱스 표기를 따른다"
+  },
+  "electrical_rules": {
+    "io_voltage": 3.3,
+    "motor_power": "모터 전원은 보드와 분리한 외부 전원, GND는 한 점에서 공통. 보드 3.3V로 모터를 돌리지 않는다",
+    "level_shift": "5V 모듈(HC-SR04, WS2812B 등)은 레벨 변환 또는 분압"
+  },
+  "verification_environment": {
+    "user_sandbox": "Verilog 시뮬레이터 설치 불가. RTL은 Python 클록 모델로만 확인했고 합성·패키징·보드는 미검증",
+    "harness_ci": "GitHub Actions에서 iverilog·verilator·yosys를 쓸 수 있다 (하네스 CI)",
+    "board_verification": "사용자와 대화하며 직접 진행"
+  },
+  "output_conventions": {
+    "language": "한국어, 영어 용어는 첫 등장 때 한글 뜻 병기",
+    "unverified": "확인하지 못한 것은 추측하지 않고 '미검증'으로 표시"
+  }
+}
