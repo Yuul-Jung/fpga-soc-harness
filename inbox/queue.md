@@ -68,3 +68,9 @@
 - https://github.com/emard/ulx3s | ULX3S ECP5 보드 예제 모음 — 미열람(L1) | ULX3S LiteX peripherals
 - https://hackaday.io/project/159108-ulx3s-powerful-ecp5-board-for-open-source-fpga | ULX3S 프로젝트 — 미열람(L1) | ULX3S peripherals
 - https://www.mikrocontroller.net/topic/515741 | iCE40 PWM·SPI·타이머 포럼 글(독일어) — 미열람(L1) | iCE40 motor PWM encoder
+- https://instructables.com/PID-Controller-VHDL | PID 컨트롤러 VHDL 튜토리얼 — 미열람(L1) | FPGA 캡스톤디자인 Basys3 모터 제어 엔코더 PID 졸업작품
+- https://www.theseus.fi/handle/10024/751065 | PID Control of Motor Using FPGA(핀란드 학위논문) — 미열람(L1) | 같은 검색어
+- https://github.com/nvbinh15/FPGA-Project-EE2026 | Basys3 EE2026 프로젝트 — 미열람(L1) | github FPGA 종합설계 Basys3 README
+- https://github.com/Junherng99/FPGA_Projects | FPGA 프로젝트 모음 — 미열람(L1) | 같은 검색어
+- https://hepcat.ucsd.edu/fpga-lab/ | UCSD FPGA 실습(Basys3 추정) — 미열람(L1) | Basys3 캡스톤 후기
+- blocked: 국내 블로그(velog/tistory) 한국어 캡스톤 보고서는 검색 4회에서 직접 후보를 얻지 못함 — 질의 표현 변경 필요 | 한국어 FPGA 종합설계 질의군

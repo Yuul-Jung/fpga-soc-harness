@@ -32,3 +32,6 @@
 | [embeddedts-fpga-pwm-hbridge-quadrature](lattice/embeddedts-fpga-pwm-hbridge-quadrature.md) | L3 | T2 | TS-75xx XP2 (Basys3 needs-port) | 2026-11-02 |
 | [tinredmc-ultralitebldc](lattice/tinredmc-ultralitebldc.md) | L3 | T2 | iCE40UL1K (Basys3 needs-port) | 2026-11-02 |
 | [lange-fpga-foc-motor-control-hackaday](amd/lange-fpga-foc-motor-control-hackaday.md) | L3 | T4 | Arty A7 (Basys3 needs-port) | 2026-11-02 |
+| [ieek-2009-dc-servo-speed-control-fpga](papers/ieek-2009-dc-servo-speed-control-fpga.md) | L2 | T4 | 미명시 (Basys3 needs-port) | 2026-11-02 |
+| [iccas-2003-general-purpose-pid-motion-controller-fpga](papers/iccas-2003-general-purpose-pid-motion-controller-fpga.md) | L3 | T4 | Altera APEX II (Basys3 needs-port) | 2026-11-02 |
+| [deepc94-pid-fpga-vhdl](amd/deepc94-pid-fpga-vhdl.md) | L3 | T2 | Spartan-3 XC3S400 (Basys3 needs-port) | 2026-11-02 |
