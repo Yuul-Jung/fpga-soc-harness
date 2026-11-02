@@ -351,7 +351,7 @@ L3 = 본문 직접 열람, L2 = 검색 요약 기준. 아래 항목은 첫 세�
 - 라이선스가 불명확한데 코드를 가져와야만 진행되는 항목, 다운로드·로그인이 필요한 항목은 `blocked:`로 큐에 남기고 진행하지 않는다.
 
 ### 12.7 로그와 보고
-- `inbox/log.md`: `YYYY-MM-DD HH:MM | collect | <주제 · 전략> | 카드 +N | 아이디어 +I | 큐 잔여 K | blocked B` 한 줄. (시각은 KST)
+- `inbox/log.md`: `YYYY-MM-DD HH:MM | collect | <주제 · 전략> | 카드 +N | 아이디어 +I | 큐 잔여 K | blocked B` 한 줄. (시각은 KST. 추정하지 말고 `TZ=Asia/Seoul date '+%Y-%m-%d %H:%M'`으로 읽는다)
 - 최종 보고는 §8.3 형식을 따른다. 사람이 없어도 큐·로그·커밋 메시지만으로 무엇이 바뀌었는지 알 수 있어야 한다.
 
 ### 12.8 창의 수집
@@ -384,10 +384,15 @@ capstones/<slug>/
 ├─ capstone.json     단일 명세 (원본). 문서와 계통도는 여기서 생성된다
 ├─ rtl/  tb/  constr/  sw/(필요 시)   실행 소스. 명세의 sources에 파일명을 적는다
 └─ Makefile          lint, sim, synth 타깃
-docs/<slug>/index.html, diagram.svg    생성물 (git 추적 안 함)
+docs/index.html                         메인 허브 (캡스톤 목록, 기술 트리, 수집 현황, 아이디어, 최근 활동)
+docs/<slug>/index.html, diagram.svg, <slug>.zip   캡스톤별 문서, 계통도, 소스 묶음
+docs/{catalog,atlas,soc-map,inbox}/…html, harness.html   md 문서를 같은 경로로 옮긴 HTML
+(docs/ 전체는 생성물이며 git 추적 안 함)
 ```
 - 문서는 소스 파일을 읽어 그대로 넣는다. 문서에 코드를 손으로 옮겨 적지 않는다.
 - 계통도는 명세의 `architecture`(블록, 링크)에서 그린다. 그림 파일을 손으로 고치지 않는다.
+- 캡스톤마다 문서와 계통도가 따로 생기고, 메인 허브(`docs/index.html`)가 이를 모아 보여 준다. 허브의 기술 트리는 패키지의 `stage`와 `roadmap`, 카드의 `stage`에서 만든다.
+- md 문서(카탈로그, atlas, soc-map)에 나오는 카드 name은 자동으로 카드 페이지에 연결된다. 그러니 문서에서 카드는 정확한 `name`으로 적는다.
 - `python3 tools/build.py`는 명세가 없는 파일을 가리키거나, 주소 영역이 겹치거나, 링크가 없는 블록을 가리키면 오류를 낸다.
 
 ### 13.2 명세 필드 (`capstone.json`)
