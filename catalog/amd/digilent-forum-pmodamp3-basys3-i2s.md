@@ -15,6 +15,7 @@ license: unknown
 stats: {}
 doc_language: en
 verification: L3
+status: 2026-11-02 /verify 재열람 시도 실패(WebFetch 권한 요청 미응답 2회) — 이번 사이클 미대조, rechecked_at 미기록
 checked_at: 2026-11-02
 sources: [https://forum.digilent.com/topic/1390-pmodamp3-in-verilog-with-basys-3/]
 ---

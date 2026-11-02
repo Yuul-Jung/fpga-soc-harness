@@ -16,6 +16,7 @@ stats: {stars: 417, commits: 357}
 doc_language: en
 verification: L3
 checked_at: 2026-11-02
+rechecked_at: 2026-11-02
 sources: [https://github.com/ZipCPU/sdspi]
 ---
 
@@ -25,7 +26,7 @@ SD 카드용 Verilog 컨트롤러 모음. SPI 방식(`rtl/sdspi`), SDIO/eMMC 방
 ## 구조
 - 디렉터리: `rtl/`(컨트롤러 3종, 논리 사용량 기록 `usage.txt`), `sw/`(sdspidrv.c, sdiodrv.c, emmcdrvr.c 등), `bench/`(Verilog 모델, Verilator C++), `doc/`(SPI·SDIO 사용자 안내).
 - 버스: SPI 컨트롤러는 Wishbone 슬레이브만, AXI-Lite는 RTL을 조금 고치면 된다고 README가 적음. SDIO는 Wishbone·AXI와 선택적 DMA.
-- SPI 컨트롤러는 XuLA2 보드용으로 처음 작성됨(README 기준).
+- SPI 컨트롤러는 XuLA2 보드용으로 처음 작성됨(README 기준). README는 SPI 코어가 실리콘 검증을 거쳤고 더 이상 적극 개발되지 않는다고 적음(재열람).
 
 ## 검증·재현성
 - 많은 구성요소에 형식 검증, SDIO·eMMC용 Verilog 모델과 Verilator 모델(파일 기반 메모리) 제공. SDIO 프런트엔드는 형식 증명 없이 통합 시뮬레이션에 의존(README).

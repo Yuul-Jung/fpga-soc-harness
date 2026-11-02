@@ -16,6 +16,7 @@ stats: {}
 doc_language: en
 verification: L3
 checked_at: 2026-11-02
+rechecked_at: 2026-11-02
 sources: [https://github.com/WangXuan95/FPGA-SDcard-File]
 ---
 
@@ -24,7 +25,7 @@ SPI 모드로 SD 카드의 FAT16/FAT32 파일을 이름으로 읽어 바이트 �
 
 ## 구조
 - 지원 카드: SDv1.1, SDv2, SDHCv2, 파일 시스템 FAT16·FAT32(README 표). 비연속 블록에 저장된 파일도 읽는다고 명시.
-- 파일명은 대소문자 구분 없음. SPI 클럭은 `SPI_CLK_DIV`로 정하고 README는 일반적인 값으로 500 kHz를 언급.
+- 파일명은 대소문자 구분 없음. SPI 클럭은 `SPI_CLK_DIV`로 정하고 README는 일반적인 값으로 500 kHz를 언급(재열람: `SPI_CLK_DIV` 기본 50, `clk` 50 MHz 가정). 내 계산: Basys3 100 MHz 클럭에서 500 kHz는 분주값 100.
 - 같은 작성자의 SD 버스 방식 형제 프로젝트가 있다고 README가 적음(별도 카드 대기, 큐 참조).
 
 ## 검증·재현성

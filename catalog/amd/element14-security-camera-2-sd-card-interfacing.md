@@ -16,6 +16,7 @@ stats: {}
 doc_language: en
 verification: L3
 checked_at: 2026-11-02
+rechecked_at: 2026-11-02
 sources: [https://community.element14.com/challenges-projects/design-challenges/summer-of-fpga/b/blog/posts/security-camera-2-sd-card-interfacing-52194343, https://digilent.com/reference/_export/xhtml/pmod/pmodmicrosd/reference-manual]
 ---
 
@@ -24,7 +25,7 @@ element14 "Summer of FPGA" 챌린지 보안 카메라 프로젝트 2편. SPI 모
 
 ## 구조
 - 모듈 3개: 파라미터화된 SPI 마스터(모드 0 사용, 저속·고속 두 클럭), `sdcard_interface` 상태기계(초기화·쓰기, RGB LED 상태 표시), 디버그용 UART(9600 baud).
-- 초기화: 80클럭 이상 CS·MOSI 높음 → CMD0 → CMD8 → CMD59(CRC 끔) → CMD55+ACMD41 반복(1000회 실패 시 처음부터) → CMD58로 OCR 확인(SDHC/SDXC) → 고속 클럭 전환. 초기화 중 클럭은 약 400 kHz 이하라고 글이 설명.
+- 초기화: 80클럭 이상 CS·MOSI 높음 → CMD0 → CMD8 → CMD59(CRC 끔) → CMD55+ACMD41 반복(1000회 실패 시 처음부터) → CMD58로 OCR 확인(SDHC/SDXC) → 고속 클럭 전환. 초기화 중 클럭은 약 400 kHz 이하라고 글이 설명(코드는 100 MHz/250 = 400 kHz, 재열람). 코드에는 CMD16(블록 길이 512)도 있고 쓰기 상태 확인에 CMD13을 씀.
 - 쓰기: CMD24로 한 블록(512바이트, 예제 주소 2050), 시작 토큰 → 데이터 → 응답 → busy 해제 대기. 블록은 끊김 없이 한 번에 보내야 해서 FIFO에서 다음 바이트를 요청하는 구조.
 - SD 모드는 약 100 Mbit/s이나 NDA·로열티가 필요하고 SPI 모드는 약 25 Mbit/s라고 글이 설명(글의 서술이며 SD 협회 문서는 미열람).
 
@@ -33,6 +34,7 @@ element14 "Summer of FPGA" 챌린지 보안 카메라 프로젝트 2편. SPI 모
 - 자원 사용량: 글에 없음.
 
 ## 한계·위험
+- 글 내 불일치(재열람): 고속 분주 파라미터는 HI_FREQ_DIV=20(100 MHz 기준 5 MHz, 내 계산)인데 주석은 100MHz/6=16.7MHz로 적어 실제 속도가 불명확.
 - 라이선스 명시 없음 → unknown. 코드 복사 금지, 순서(시퀀스)만 참고.
 - 보드가 Basys3가 아니므로 핀 제약은 새로 써야 함. 글 속 시스템 클럭은 100 MHz로 주석에 나온다(Basys3와 같은 값).
 - 공식 Pmod MicroSD 매뉴얼(L3): 1번 ~CS, 2번 MOSI, 3번 MISO, 4번 SCK, 9번 카드 감지(CD), 전원 3.3 V(SD 규격 2.7–3.6 V). 최대 클럭은 매뉴얼에 없음.
