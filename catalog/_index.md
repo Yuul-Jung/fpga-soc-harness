@@ -59,3 +59,6 @@
 | [kmitl-iccas-2003-auto-tune-digital-pid-fpga](papers/kmitl-iccas-2003-auto-tune-digital-pid-fpga.md) | L3 | T4 | Spartan-2 XC2S50 (Basys3 needs-port) | 2026-11-03 |
 | [controleng-relay-method-automates-pid-loop-tuning](papers/controleng-relay-method-automates-pid-loop-tuning.md) | L3 | T4 | 해당 없음(알고리즘 기사) | 2026-11-03 |
 | [tees-isie-2017-compass-search-self-tuning-pid-dc-drive](papers/tees-isie-2017-compass-search-self-tuning-pid-dc-drive.md) | L2 | T4 | NI RIO (Basys3 needs-port) | 2026-11-03 |
+| [wangxuan95-fpga-foc](vendor-neutral/wangxuan95-fpga-foc.md) | L3 | T4 | DE10-Nano (Basys3 needs-port) | 2026-11-02 |
+| [arief-2026-ijecbe-artix7-36v-bldc-hall-sixstep](amd/arief-2026-ijecbe-artix7-36v-bldc-hall-sixstep.md) | L2 | T2 | Artix-7 (Basys3 needs-port) | 2026-11-02 |
+| [mari-upc-2022-fpga-foc-ipmsm-field-weakening](amd/mari-upc-2022-fpga-foc-ipmsm-field-weakening.md) | L3 | T4 | Zynq-7020 (Basys3 no) | 2026-11-02 |

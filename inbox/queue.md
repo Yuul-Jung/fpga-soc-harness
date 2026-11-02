@@ -115,3 +115,11 @@
 - https://air.uniud.it/handle/11390/691691 | 우디네대 자동 튜닝 PID 후보 — 미열람(L1) | relay FPGA 질의
 - https://kirim.kmutt.ac.th/converis/portal/detail/Publication/1448801164 | PSO 기반 PID 오토튜닝 하드웨어 구현 — 미열람(L1) | self-tuning 질의
 - 참고: 릴레이 오토튜닝을 직접 Verilog/Basys3로 구현한 공개 사례는 검색 5회 중 못 찾음(S3 빈틈 확인). 한국어 질의는 ICCAS 2003 한 건만 연결
+- https://github.com/WangXuan95/FpOC | FPGA-FOC(GPL-3.0, Verilog, AS5600+AD7928) — 카드화 완료(wangxuan95-fpga-foc, L3) | FPGA FOC PMSM Verilog 질의
+- https://ijecbe.ui.ac.id/go/article/view/244 | Artix-7 36V BLDC 홀센서 6스텝 2026 — 카드화 완료(L2, 초록만) | FPGA BLDC hall 6-step 질의
+- https://upcommons.upc.edu/bitstreams/3e26da9d-9dd9-44c4-b8a5-51eeb59dc867/download | UPC 2022 IPMSM FOC 약계자 졸업논문 — 카드화 완료(L3) | FPGA FOC PMSM 질의
+- https://dev.to/carolineee/fpga-based-brushless-dc-motor-control-system-4fef | FPGA BLDC 제어 개요 글 — 미열람(L1) | FPGA BLDC hall 질의
+- https://ijres.iaescore.com/index.php/IJRES/article/download/1185/pdf | IJRES 논문 후보 — 미열람(L1) | 같은 질의
+- https://nsl.cse.unt.edu/sites/default/files/people/documents/Efficient_FPGA_Implementation_of_Field_Oriented_Control_for_3-Phase_Machine_Drives.pdf | UNT 효율적 FOC FPGA 구현 — 미열람(L1) | FPGA FOC PMSM 질의
+- https://gitee.com/minglie/FPGA-FOC | FPGA-FOC 포크 추정 — 미열람(L1), 원본은 WangXuan95/FpOC | 같은 질의
+- 참고: Basys3 직접 BLDC/FOC 사례는 검색 2회에서 못 찾음. FpOC 커밋 SHA는 GitHub API 접근 불가로 unverified
