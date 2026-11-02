@@ -63,6 +63,7 @@ def main():
         for step, tool in STEPS:
             status[step] = run_step(cap, step, tool)
             print(f"{cap.name}: {step} -> {status[step]['result']} ({status[step]['detail']})")
+            print(f"::notice title={cap.name} {step}::{status[step]['result']} {status[step]['detail']}")
             if status[step]["result"] == "fail":
                 rc = 1
         (cap / "build" / "status.json").write_text(json.dumps(status, ensure_ascii=False, indent=2), encoding="utf-8")
