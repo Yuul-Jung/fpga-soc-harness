@@ -7,8 +7,8 @@
 - [x] Basys3 카메라 (OV7670, SCCB) 파이프라인
 - [x] Basys3 PS/2·USB HID 키보드/마우스 입력
 - [x] Basys3 UART/SPI/I2C 센서 허브 (Arduino 모듈 우선)
-- [ ] Basys3 이더넷·Bluetooth·CAN 통신 (Pmod 기반)
-- [ ] MicroBlaze/MicroBlaze V Basys3 사용자 AXI 주변장치
+- [x] Basys3 이더넷·Bluetooth·CAN 통신 (Pmod 기반) — 2026-11-02 16:16 사이클에서 CAN·무선 카드 작성, 이더넷은 자료 부족으로 미착수
+- [x] MicroBlaze/MicroBlaze V Basys3 사용자 AXI 주변장치
 - [ ] PicoRV32 Basys3 SoC (PicoSoC 포팅 사례) — 제작은 보류, 자료는 수집하고 개조 메모로 MicroBlaze V 기준에 연결 (config/project_profile.json cpu_tracks)
 - [ ] Intel/Altera 캡스톤: DE10-Nano·DE1-SoC 주변장치 프로젝트
 - [ ] Lattice iCE40/ECP5 RISC-V SoC 주변장치

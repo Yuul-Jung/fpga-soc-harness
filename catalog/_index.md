@@ -20,3 +20,6 @@
 | [wangxuan95-fpga-can](vendor-neutral/wangxuan95-fpga-can.md) | L3 | T1 | 미지정 (Basys3 needs-port) | 2026-11-02 |
 | [dpiegdon-verilog-can](vendor-neutral/dpiegdon-verilog-can.md) | L3 | T2 | 미지정 | 2026-11-02 |
 | [morsucci-wireless-fpga-debugger](amd/morsucci-wireless-fpga-debugger.md) | L3 | T3 | 미지정 (Basys3 needs-port) | 2026-11-02 |
+| [digilent-basys-3-getting-started-microblaze](amd/digilent-basys-3-getting-started-microblaze.md) | L3 | T3 | Basys3 | 2026-11-02 |
+| [element14-eoi-blog3-custom-ip-pwm](amd/element14-eoi-blog3-custom-ip-pwm.md) | L3 | T3 | Zynq-7000 (Basys3 needs-port) | 2026-11-02 |
+| [suoglu-axi-lite-slave](vendor-neutral/suoglu-axi-lite-slave.md) | L2 | T2 | Basys3 | 2026-11-02 |

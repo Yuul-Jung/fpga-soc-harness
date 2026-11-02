@@ -41,3 +41,10 @@
 - https://ee6115b.mit.edu/document/bluetooth_hc06_guide_2022.pdf | HC-06 + PSoC 무선 UART 가이드(5V 전원·3.3V 논리 불일치 미설명) — 열람 L3, 보드 다름이라 카드 보류 | Basys3 HC-05 Bluetooth UART
 - https://github.com/gmcastil/basys3 | Basys3 UART·GPIO IP 모음(MIT, 구체 목록은 README에 없음) — 루트만 열람 L2 | Basys3 HC-05 Bluetooth
 - blocked: api.github.com 커밋 SHA·raw LICENSE URL — 검색에서 나오지 않은 URL이라 열람 권한 미응답(CAN 두 카드의 source_rev 공란 사유)
+- https://github.com/aryan-programmer/axi_stream_array_sum_microblaze | Basys3 MicroBlaze + AXI-Lite/Stream 사용자 IP(모듈: 디바운서, 7세그 드라이버, 엣지 검출), README 본문 미노출, 라이선스 미확인 — 루트만 열람 L2 | Basys3 MicroBlaze custom AXI4-Lite
+- https://github.com/rooinasuit/AXI_to_SPI | AXI 뒤 SPI 마스터(Verilog) — blocked: 열람 권한 요청 미응답, 재시도 필요 | github topics axi-lite
+- https://forum.digilent.com/topic/23712-hw-platform-with-axi-ps2-ip-driver-not-compiling-on-vitis-2022/ | Basys3 MicroBlaze + AXI PS/2 IP 드라이버 Makefile 빌드 오류와 해결(IP 버전 혼동) — 열람 L3, 실패 교훈용 소규모 | Basys3 MicroBlaze custom AXI
+- https://indico.mpp.mpg.de/event/10447/contributions/37828/attachments/20625/26097/Lab23.pdf | Basys3 MicroBlaze + AXI GPIO 실습(커스텀 IP 없음, 32 kB 로컬 메모리) — 열람 L3, 카드 보류 | Basys3 MicroBlaze 사용자 정의 AXI IP
+- https://billauer.se/blog/2011/08/microblaze-custom-ip-peripheral-axi4-cip-ipwiz/ | MicroBlaze 사용자 IP 마법사 글(2011) — blocked: 리디렉션 URL이라 열람 권한 미응답 | Basys3 MicroBlaze custom AXI4-Lite
+- https://github.com/briansune/Xilinx-DNA-Verilog | Xilinx DNA Verilog AXI-Lite — 미열람(L1) | github topics axi-lite
+- https://cse.unl.edu/~jfalkinburg/cse_courses/2025/436/lecture/lecture18.html | MicroBlaze V 강의 추정 — blocked: robots 차단 | MicroBlaze V Basys3 Vivado 2024.2
