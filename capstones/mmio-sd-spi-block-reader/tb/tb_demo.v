@@ -48,7 +48,7 @@ module tb_demo;
 
     initial begin
         #100_000_000;
-        $display("FAIL watchdog (got %0d bytes)", got);
+        $display("FAIL watchdog (got %0d bytes) st=%0d sdst=%0d step=%0d r1=%h tcnt=%0d bcnt=%0d", got, u_master.st, dut.u_sd.st, dut.u_sd.step, dut.u_sd.r1, dut.u_sd.tcnt, dut.u_sd.bcnt);
         $finish;
     end
 

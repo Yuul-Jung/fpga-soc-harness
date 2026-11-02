@@ -14,6 +14,7 @@ module tb_sd;
     integer     errors = 0;
     reg  [31:0] rd;
     integer     k;
+    reg [31:0]  s1 = 0, s2 = 0, s3 = 0;
 
     always #5 clk = ~clk;
 
@@ -96,6 +97,7 @@ module tb_sd;
 
         bus_write(32'h1000_2000, 32'h1);                 // 초기화
         wait_idle;
+        s1 = rd;
         check32("status after init", rd, 32'hA);         // sdhc, init_done
         check32("no order error", {31'd0, card.order_err}, 32'h0);
         check32("slow clock respected", {31'd0, card.slow_viol}, 32'h0);
@@ -103,6 +105,7 @@ module tb_sd;
         bus_write(32'h1000_2008, 32'd5);                 // LBA 5 읽기
         bus_write(32'h1000_2000, 32'h2);
         wait_idle;
+        s2 = rd;
         check32("status after read", rd, 32'hA);
         check32("cmd17 arg", card.last17, 32'd5);
         check_buf(5, 0); check_buf(5, 1); check_buf(5, 2); check_buf(5, 255); check_buf(5, 256); check_buf(5, 511);
@@ -111,6 +114,7 @@ module tb_sd;
         bus_write(32'h1000_2008, 32'h1234);              // 다른 LBA
         bus_write(32'h1000_2000, 32'h2);
         wait_idle;
+        s3 = rd;
         check32("status after 2nd read", rd, 32'hA);
         check32("cmd17 arg 2", card.last17, 32'h1234);
         check32("cmd17 count", card.n17, 32'd2);
@@ -127,7 +131,10 @@ module tb_sd;
         check32("read after failed init", rd, 32'h4);
 
         if (errors == 0) $display("PASS tb_sd");
-        else             $display("FAIL: %0d errors", errors);
+        else begin
+            $display("FAIL diag: s1=%h s2=%h s3=%h st=%0d step=%0d r1=%h tcnt=%0d bcnt=%0d", s1, s2, s3, dut.u_sd.st, dut.u_sd.step, dut.u_sd.r1, dut.u_sd.tcnt, dut.u_sd.bcnt);
+            $display("FAIL: %0d errors", errors);
+        end
         $finish;
     end
 endmodule
