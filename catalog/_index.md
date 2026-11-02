@@ -53,3 +53,6 @@
 | [mit-6111-2018-team18-balancing-robot](amd/mit-6111-2018-team18-balancing-robot.md) | L3 | T4 | CMOD A7-35T (Basys3 needs-port) | 2026-11-02 |
 | [technion-diglab-balance-car-fpga](vendor-neutral/technion-diglab-balance-car-fpga.md) | L3 | T4 | 미명시 (Basys3 needs-port) | 2026-11-02 |
 | [urjc-tfg-2018-fpga-balancing-robot](papers/urjc-tfg-2018-fpga-balancing-robot.md) | L2 | T4 | iCE40HX1K (Basys3 needs-port) | 2026-11-02 |
+| [comillas-tfg-2026-lqr-cartpole-basys3](papers/comillas-tfg-2026-lqr-cartpole-basys3.md) | L2 | T4 | Basys3 | 2026-11-03 |
+| [polito-upm-2023-cartpole-fpga-lqr-pid-rl](papers/polito-upm-2023-cartpole-fpga-lqr-pid-rl.md) | L3 | T4 | PYNQ-Z1 (Basys3 needs-port) | 2026-11-03 |
+| [andreicito2-inverted-pendulum](vendor-neutral/andreicito2-inverted-pendulum.md) | L2 | T3 | Spartan-3 (Basys3 needs-port) | 2026-11-03 |

@@ -100,3 +100,9 @@
 - https://repository.its.ac.id/115252/ | ITS 인도네시아 FPGA 자가 균형 로봇 제어 시스템 — 미열람(L1) | self-balancing robot FPGA 질의
 - https://hackaday.io/project/162871 | 균형 로봇 프로젝트 — 미열람(L1) | 한국어 질의 결과
 - 참고: Basys3 직접 균형 로봇 사례는 검색에서 못 찾음
+- https://repositorio.comillas.edu/bitstreams/6547203a-c63e-4b03-a86e-c43da919ec05/download | Comillas TFG 2026 본문 PDF(Basys3 LQR 카트-폴) — blocked: robots 차단, 우회 안 함. 카드는 L2 | LQR FPGA Verilog 질의
+- https://journal.latakia-univ.edu.sy/index.php/engscnc/article/view/10922 | 단일 도립진자 PID·퍼지 VHDL(Cyclone II EP2C5), 2021 — 초록 페이지만(L2), 카드 대기 | inverted pendulum FPGA 질의
+- https://rda.sliit.lk/entities/publication/4b9aebbe-ebb8-48f0-b0d0-fa1dcb5ce55e | 다변수 모션 제어기 FPGA 이득 최적화 후보 — 미열람(L1) | rotary inverted pendulum FPGA 질의
+- https://rcl.ece.iastate.edu/sites/default/files/papers/ZhaMil17A.pdf | Iowa State 논문 후보 — 미열람(L1) | 같은 질의
+- https://github.com/andreicito2/Inverted-Pendulum | 카드화 완료(andreicito2-inverted-pendulum, L2) | cart pole FPGA 질의
+- 참고: 한국어 질의 "도립진자 FPGA"는 광학 실험용 FPGA 서보 논문만 나와 국내 사례 못 찾음. 검색 4회 사용
