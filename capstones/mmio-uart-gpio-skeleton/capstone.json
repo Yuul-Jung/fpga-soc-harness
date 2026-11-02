@@ -1,0 +1,321 @@
+{
+  "slug": "mmio-uart-gpio-skeleton",
+  "title": "MMIO 뼈대 SoC: GPIO + UART (Basys3)",
+  "summary": "CPU 슬롯이 비어 있는 최소 SoC. 단일 마스터 버스(mmio-lite)에 GPIO와 UART 송신기를 붙이고, 마스터 자리에는 데모 FSM을 둔다. 이후 이 슬롯을 PicoRV32 같은 코어로 교체하는 것이 목표다.",
+  "board": "Digilent Basys3 (XC7A35T)",
+  "stage": "T1",
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 원본이며 외부 코드를 포함하지 않는다. 시뮬레이션·합성 결과는 CI가 기록한다.",
+  "goals": [
+    "스위치 값을 버스로 읽어 LED에 쓴다.",
+    "버튼을 누르면 스위치 하위 8비트를 UART(115200 8N1)로 송신한다.",
+    "마스터 포트를 분리해 CPU로 교체할 수 있게 한다."
+  ],
+  "non_goals": [
+    "CPU 구현 (다음 단계)",
+    "UART 수신, 인터럽트, DMA",
+    "외부 메모리 (Basys3에는 DRAM이 없다)"
+  ],
+  "architecture": {
+    "clock": "100 MHz 단일 클럭 (clk, W5), 동기 리셋 (btnC, 2단 동기화)",
+    "blocks": [
+      {
+        "id": "clk",
+        "name": "clk 100MHz",
+        "kind": "clock",
+        "module": "-",
+        "desc": "보드 클럭 입력",
+        "short": "보드 클럭 입력"
+      },
+      {
+        "id": "x_btn",
+        "name": "btnU / btnC",
+        "kind": "external",
+        "module": "-",
+        "desc": "버튼 (송신 트리거, 리셋)",
+        "short": "송신 트리거, 리셋",
+        "side": "in"
+      },
+      {
+        "id": "master",
+        "name": "demo_master",
+        "kind": "cpu",
+        "module": "demo_master",
+        "file": "rtl/demo_master.v",
+        "desc": "CPU 슬롯. 지금은 5상태 FSM",
+        "short": "CPU 슬롯 (5상태 FSM)"
+      },
+      {
+        "id": "bus",
+        "name": "mmio_bus",
+        "kind": "bus",
+        "module": "mmio_bus",
+        "file": "rtl/mmio_bus.v",
+        "desc": "주소 [31:12] 디코드, 읽기 데이터 mux",
+        "short": "주소 디코드·읽기 mux"
+      },
+      {
+        "id": "gpio",
+        "name": "gpio",
+        "kind": "periph",
+        "module": "gpio",
+        "file": "rtl/gpio.v",
+        "desc": "LED 16, SW 16",
+        "short": "LED 16, SW 16"
+      },
+      {
+        "id": "uart",
+        "name": "uart_tx",
+        "kind": "periph",
+        "module": "uart_tx",
+        "file": "rtl/uart_tx.v",
+        "desc": "115200 8N1 송신",
+        "short": "115200 8N1 송신"
+      },
+      {
+        "id": "x_sw",
+        "name": "SW / LED",
+        "kind": "external",
+        "module": "-",
+        "desc": "슬라이드 스위치와 LED",
+        "short": "스위치와 LED"
+      },
+      {
+        "id": "x_uart",
+        "name": "RsTx (USB-UART)",
+        "kind": "external",
+        "module": "-",
+        "desc": "PC 터미널로 연결",
+        "short": "PC 터미널로 연결"
+      }
+    ],
+    "links": [
+      {
+        "from": "x_btn",
+        "to": "master",
+        "label": "btnU"
+      },
+      {
+        "from": "master",
+        "to": "bus",
+        "label": "mmio-lite"
+      },
+      {
+        "from": "bus",
+        "to": "gpio",
+        "label": "sel/rdata"
+      },
+      {
+        "from": "bus",
+        "to": "uart",
+        "label": "sel/rdata"
+      },
+      {
+        "from": "gpio",
+        "to": "x_sw",
+        "label": "sw, led"
+      },
+      {
+        "from": "uart",
+        "to": "x_uart",
+        "label": "txd"
+      }
+    ]
+  },
+  "bus_protocol": {
+    "name": "mmio-lite",
+    "signals": [
+      {
+        "name": "m_valid",
+        "dir": "master→slave",
+        "desc": "요청 유효"
+      },
+      {
+        "name": "m_we",
+        "dir": "master→slave",
+        "desc": "1이면 쓰기"
+      },
+      {
+        "name": "m_addr[31:0]",
+        "dir": "master→slave",
+        "desc": "바이트 주소, 4바이트 정렬"
+      },
+      {
+        "name": "m_wdata[31:0]",
+        "dir": "master→slave",
+        "desc": "쓰기 데이터"
+      },
+      {
+        "name": "m_rdata[31:0]",
+        "dir": "slave→master",
+        "desc": "읽기 데이터 (조합 경로)"
+      },
+      {
+        "name": "m_ready",
+        "dir": "slave→master",
+        "desc": "항상 1: 모든 접근은 1사이클"
+      }
+    ],
+    "note": "미매핑 주소 읽기는 0을 돌려주고 오류를 알리지 않는다. 대기 상태·오류 응답이 필요한 CPU로 바꿀 때 확장한다."
+  },
+  "hierarchy": {
+    "module": "basys3_top",
+    "file": "rtl/basys3_top.v",
+    "children": [
+      {
+        "module": "demo_master",
+        "file": "rtl/demo_master.v"
+      },
+      {
+        "module": "soc_top",
+        "file": "rtl/soc_top.v",
+        "children": [
+          {
+            "module": "mmio_bus",
+            "file": "rtl/mmio_bus.v"
+          },
+          {
+            "module": "gpio",
+            "file": "rtl/gpio.v"
+          },
+          {
+            "module": "uart_tx",
+            "file": "rtl/uart_tx.v"
+          }
+        ]
+      }
+    ]
+  },
+  "memory_map": [
+    {
+      "base": "0x1000_0000",
+      "size": "0x1000",
+      "block": "gpio",
+      "regs": [
+        {
+          "off": "0x00",
+          "name": "LED",
+          "access": "RW",
+          "desc": "하위 16비트가 LED 핀"
+        },
+        {
+          "off": "0x04",
+          "name": "SW",
+          "access": "RO",
+          "desc": "하위 16비트, 2단 동기화된 스위치"
+        }
+      ]
+    },
+    {
+      "base": "0x1000_1000",
+      "size": "0x1000",
+      "block": "uart",
+      "regs": [
+        {
+          "off": "0x00",
+          "name": "DATA",
+          "access": "WO",
+          "desc": "하위 8비트 송신 시작. busy 중 쓰기는 무시"
+        },
+        {
+          "off": "0x04",
+          "name": "STATUS",
+          "access": "RO",
+          "desc": "bit0 = busy"
+        }
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T1",
+      "state": "current",
+      "title": "MMIO 버스 + GPIO + UART, 마스터는 FSM",
+      "refs": []
+    },
+    {
+      "stage": "T2",
+      "state": "planned",
+      "title": "마스터를 PicoRV32로 교체, 부트 ROM(BRAM)과 SRAM 추가",
+      "refs": [
+        "fanguoc2len-risc-v-computer",
+        "tmahlburg-picosoc-basys3"
+      ]
+    },
+    {
+      "stage": "T2",
+      "state": "planned",
+      "title": "버스를 AXI4-Lite로 교체 (CPU 인터페이스 맞춤)",
+      "refs": [
+        "suoglu-axi-lite-slave",
+        "pkt-gif-custom-vending-machine"
+      ]
+    },
+    {
+      "stage": "T3",
+      "state": "planned",
+      "title": "VGA·PS/2 등 주변장치 추가, 펌웨어(C) 작성",
+      "refs": [
+        "fanguoc2len-risc-v-computer"
+      ]
+    }
+  ],
+  "references": [
+    {
+      "card": "fanguoc2len-risc-v-computer",
+      "why": "PicoRV32 + Basys3 구성의 비교 대상"
+    },
+    {
+      "card": "pkt-gif-custom-vending-machine",
+      "why": "CPU 없이 AXI4-Lite로 주변장치를 묶은 사례"
+    }
+  ],
+  "sources": {
+    "rtl": [
+      "rtl/mmio_bus.v",
+      "rtl/gpio.v",
+      "rtl/uart_tx.v",
+      "rtl/soc_top.v",
+      "rtl/demo_master.v",
+      "rtl/basys3_top.v"
+    ],
+    "tb": [
+      "tb/tb_soc.v"
+    ],
+    "constraints": [
+      "constr/basys3.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
+  },
+  "howto": [
+    {
+      "title": "시뮬레이션",
+      "steps": [
+        "iverilog, verilator, yosys 설치",
+        "make -C capstones/mmio-uart-gpio-skeleton lint sim synth"
+      ]
+    },
+    {
+      "title": "Vivado 빌드 (Basys3)",
+      "steps": [
+        "새 RTL 프로젝트, 파트 xc7a35tcpg236-1",
+        "rtl/*.v 추가 (tb 제외), constr/basys3.xdc 추가, 최상위 basys3_top",
+        "Generate Bitstream 후 Program Device",
+        "SW를 켜 LED 반응 확인, 터미널(115200 8N1)을 열고 btnU를 누르면 SW[7:0]이 바이트로 도착"
+      ]
+    }
+  ],
+  "verification": {
+    "lint": "not-run",
+    "sim": "not-run",
+    "synth": "not-run",
+    "board": "not-run",
+    "notes": "시뮬레이션·합성은 CI가 실행하면 자동으로 채워진다. 보드 동작은 수동 확인 후 이 파일의 board 값을 pass로 바꾸고 날짜를 notes에 적는다."
+  },
+  "risks": [
+    "xdc 핀 배치는 Digilent 마스터 XDC와 대조하지 않았다.",
+    "버튼 디바운스가 없어 한 번 눌러도 여러 번 송신될 수 있다.",
+    "미매핑 주소를 오류로 처리하지 않는다."
+  ]
+}
