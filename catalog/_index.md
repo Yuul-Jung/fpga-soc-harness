@@ -5,3 +5,6 @@
 | [digilent-forum-pmodamp3-basys3-i2s](amd/digilent-forum-pmodamp3-basys3-i2s.md) | L3 | T2 | Basys3 | 2026-11-02 |
 | [zipcpu-pmodamp2-project-ladder](vendor-neutral/zipcpu-pmodamp2-project-ladder.md) | L3 | T0-T2 | iCE40 (Basys3 needs-port) | 2026-11-02 |
 | [columbia-4840-audio-visualizer](intel/columbia-4840-audio-visualizer.md) | L3 | T4 | DE1-SoC | 2026-11-02 |
+| [zipcpu-sdspi](vendor-neutral/zipcpu-sdspi.md) | L3 | T2 | XuLA2 (Basys3 needs-port) | 2026-11-02 |
+| [wangxuan95-fpga-sdcard-file](amd/wangxuan95-fpga-sdcard-file.md) | L3 | T1 | Nexys4 (Basys3 needs-port) | 2026-11-02 |
+| [element14-security-camera-2-sd-card-interfacing](amd/element14-security-camera-2-sd-card-interfacing.md) | L3 | T1 | CMOD S7 (Basys3 needs-port) | 2026-11-02 |
