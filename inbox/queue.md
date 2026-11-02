@@ -38,3 +38,6 @@
 - https://github.com/kayas257/DHT11-zynq | DHT11 VHDL/Zynq — 미열람(L1) | FPGA DHT11 single-wire Verilog Basys3
 - https://fos.cmb.ac.lk/esl/?p=2369 | FPGA Multi I2C Controller 글 — 미열람(L1) | FPGA I2C master Verilog MPU-6050
 - blocked: lauriela8·Ammar 저장소의 src/tb 하위 경로와 README 전용 URL — 열람 권한 요청 미응답(2회), 다음 사이클에서 재시도
+- https://ee6115b.mit.edu/document/bluetooth_hc06_guide_2022.pdf | HC-06 + PSoC 무선 UART 가이드(5V 전원·3.3V 논리 불일치 미설명) — 열람 L3, 보드 다름이라 카드 보류 | Basys3 HC-05 Bluetooth UART
+- https://github.com/gmcastil/basys3 | Basys3 UART·GPIO IP 모음(MIT, 구체 목록은 README에 없음) — 루트만 열람 L2 | Basys3 HC-05 Bluetooth
+- blocked: api.github.com 커밋 SHA·raw LICENSE URL — 검색에서 나오지 않은 URL이라 열람 권한 미응답(CAN 두 카드의 source_rev 공란 사유)

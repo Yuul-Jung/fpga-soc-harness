@@ -17,3 +17,6 @@
 | [lauriela8-fpga-multi-module-system](amd/lauriela8-fpga-multi-module-system.md) | L3 | T2 | Basys3 | 2026-11-02 |
 | [ammar-bin-amir-arty-a7-i2c-mpu-6050](amd/ammar-bin-amir-arty-a7-i2c-mpu-6050.md) | L3 | T2 | Arty A7-100T (Basys3 needs-port) | 2026-11-02 |
 | [hackster-basys3-hcsr04-distance](amd/hackster-basys3-hcsr04-distance.md) | L3 | T1 | Basys3 | 2026-11-02 |
+| [wangxuan95-fpga-can](vendor-neutral/wangxuan95-fpga-can.md) | L3 | T1 | 미지정 (Basys3 needs-port) | 2026-11-02 |
+| [dpiegdon-verilog-can](vendor-neutral/dpiegdon-verilog-can.md) | L3 | T2 | 미지정 | 2026-11-02 |
+| [morsucci-wireless-fpga-debugger](amd/morsucci-wireless-fpga-debugger.md) | L3 | T3 | 미지정 (Basys3 needs-port) | 2026-11-02 |
