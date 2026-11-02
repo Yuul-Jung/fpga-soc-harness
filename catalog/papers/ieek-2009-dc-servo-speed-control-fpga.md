@@ -17,7 +17,6 @@ doc_language: ko
 verification: L2
 checked_at: 2026-11-02
 status: 초록 페이지만 열람(검색 요약 수준). 본문 PDF는 열람하지 못함
-source_rev: n/a
 sources: [https://koreascience.kr/article/CFKO200918133141392.pub]
 ---
 

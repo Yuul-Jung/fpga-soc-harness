@@ -17,7 +17,7 @@ doc_language: en
 verification: L3
 checked_at: 2026-11-02
 status: README만 열람. 작성자가 2015년 실습용이라 지원하지 않는다고 밝힘
-source_rev: unverified: 열람 경로에서 SHA를 얻지 못함
+unverified_source_rev: 열람 경로에서 SHA를 얻지 못함
 sources: [https://github.com/deepc94/pid-fpga-vhdl]
 ---
 

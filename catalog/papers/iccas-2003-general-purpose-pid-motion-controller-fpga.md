@@ -17,7 +17,6 @@ doc_language: en
 verification: L3
 checked_at: 2026-11-02
 status: 본문 PDF를 열람함. 그림 속 수치는 텍스트로 확인하지 못함
-source_rev: n/a
 sources: [https://koreascience.kr/article/CFKO200333239336497.pdf]
 ---
 
