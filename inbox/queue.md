@@ -25,3 +25,10 @@
 - https://www.cs.columbia.edu/~sedwards/classes/2023/4840-spring/reports/SecureCam-report.pdf | Columbia SecureCam — 미열람(L1) | OV7670 SCCB controller Verilog
 - https://www.cs.columbia.edu/~sedwards/classes/2024/4840-spring/reports/Web-Cam-report.pdf | Columbia Web Cam — 미열람(L1) | OV7670 SCCB controller Verilog
 - https://github.com/GeorgeDong32/FIADS | OV7670 FIFO 없는 검색에서 나온 저장소 — 미열람(L1) | OV7670 without FIFO Basys 3
+- https://www.physics.umd.edu/hep/drew/495/basys3_rm.pdf | Basys3 레퍼런스 매뉴얼 사본(대학 호스팅 미러) — 열람 L3(HID·Pmod·VGA 절), 공식 Digilent URL로 재확인 필요, devices 문서용 | Digilent Basys3 reference manual USB HID
+- https://reference.digilentinc.com/nexys4-ddr:vgamouse | Nexys4 DDR VGA 마우스 오버레이 데모 — 미열람(L1) | Basys3 PS/2 mouse VGA cursor
+- https://digilent.com/reference/learn/programmable-logic/tutorials/nexys-video-axi-ps2-keyboard/start | Nexys Video AXI PS/2 키보드(MicroBlaze) — 미열람(L1) | PS/2 키보드 서보 제어 Basys3
+- https://retroramblings.net/?p=1022 | 레트로 컴퓨터 FPGA 키보드 제어 글 — 미열람(L1) | PS/2 키보드 서보 제어 Basys3
+- https://opencores.org/project,ps2 | OpenCores PS/2 코어 — 미열람(L1), 라이선스 확인 필요 | Basys3 PS/2 mouse VGA cursor
+- https://hwlab.fit.cvut.cz/_export/xhtml/pripravky/fpga/basys3/start | CVUT Basys3 실습 안내 — 미열람(L1) | Basys3 PS/2 keyboard Verilog
+- https://cfallin.org/projects/pong/report.pdf | PS/2 입력 Pong 보고서로 추정 — 미열람(L1) | Basys3 PS/2 mouse VGA cursor
