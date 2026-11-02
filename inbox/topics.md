@@ -11,7 +11,7 @@
 - [x] MicroBlaze/MicroBlaze V Basys3 사용자 AXI 주변장치
 - [x] PicoRV32 Basys3 SoC (PicoSoC 포팅 사례) — 2026-11-02 18시대 사이클: 카드 3건(L2), raw 열람 권한 미응답으로 L3 승격은 /verify로 — 제작은 보류, 자료는 수집하고 개조 메모로 MicroBlaze V 기준에 연결 (config/project_profile.json cpu_tracks)
 - [x] Intel/Altera 캡스톤: DE10-Nano·DE1-SoC 주변장치 프로젝트 — 2026-11-02 19시대 사이클: 모터 제어 중심 카드 3건(L3), Cornell 페이지 열람은 권한 미응답
-- [ ] Lattice iCE40/ECP5 RISC-V SoC 주변장치
+- [x] Lattice iCE40/ECP5 RISC-V SoC 주변장치 — 2026-11-02 19시대 2차 사이클: RISC-V SoC 직접 자료는 열람 불가로 모터 주변장치 카드 3건 작성, SoC 자체는 큐에 남김
 - [ ] 한국어 FPGA 종합설계·캡스톤 보고서
 
 ## 모터 제어 사다리 (A 트랙, 2026-11-02 추가, 위에서부터 소비)

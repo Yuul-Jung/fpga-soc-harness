@@ -63,3 +63,8 @@
 - https://repositorio.ufc.br/bitstream/riufc/45201/3/2019_tcc_jtcoelhoneto.pdf | 브라질 UFC 2019 졸업논문(FPGA 모터 제어 추정) — 미열람(L1) | DE1-SoC encoder PWM motor control
 - https://www.cs.columbia.edu/~sedwards/classes/2022/4840-spring/reports/DC-Motor-Controller-presentation.pdf | 위 DC 모터 보고서의 발표 자료 — 미열람(L1), 보고서 카드로 갈음
 - https://forums.intel.com/s/question/0D50P00003yyTNX/pid-controller-implementation-help-needed? | Intel 포럼 PID 구현 질문 — 미열람(L1), 실패 사례 후보
+- https://www.digikey.com/es/maker/projects/introduction-to-fpga-part-12-risc-v-custom-peripheral/148dba8ecafe49a1ac7e13641088af4c | DigiKey FPGA 입문 12: iCE40 RISC-V 소프트코어 + PWM 사용자 주변장치 — 본문 미노출(메타만), L2 | iCE40 RISC-V peripherals
+- https://github.com/noscene/icicle | iCE40/ECP5 RISC-V SoC 후보 — 미열람(L1), 라이선스 확인 필요 | ECP5 iCE40 RISC-V SoC
+- https://github.com/emard/ulx3s | ULX3S ECP5 보드 예제 모음 — 미열람(L1) | ULX3S LiteX peripherals
+- https://hackaday.io/project/159108-ulx3s-powerful-ecp5-board-for-open-source-fpga | ULX3S 프로젝트 — 미열람(L1) | ULX3S peripherals
+- https://www.mikrocontroller.net/topic/515741 | iCE40 PWM·SPI·타이머 포럼 글(독일어) — 미열람(L1) | iCE40 motor PWM encoder
