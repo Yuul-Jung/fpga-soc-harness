@@ -81,3 +81,8 @@
 - https://koreascience.kr/article/CFKO200905364854795.pdf | 2009 대한전기학회 SoC 기반 DC모터 속도제어(Spartan-II, 4체배 HSC+PID, 한국어) — 요약 기준 L2 | FPGA 엔코더 4체배 디코더
 - https://www.hackster.io/fpga-for-robotics-education/lab-5-encoders-and-precision-movement-b87cd3 | WebFPGA 엔코더 각도·회전 계수 — 열람(L3), 소스 링크 없고 코드 품질 의문, 카드 보류 | Basys3 encoder
 - https://people.ece.ubc.ca/edc/2117.jan2021/lab6.pdf | UBC 같은 실습의 2021년판 — 미열람(L1), 동일 계열 | Basys3 rotary encoder
+- https://embdev.net/topic/561762 | FPGA PID 토론 — 미열람(L1) | fixed-point PID Verilog FPGA
+- https://researcher.manipal.edu/en/publications/design-and-implementation-of-a-verilog-based-pid-controller-for-d/ | Verilog PID DC 모터 논문 — 미열람(L1) | 같은 검색어
+- https://www.academia.edu/143250504/Hardware_Realization_of_Embedded_Control_Algorithm_on_FPGA | 임베디드 제어 알고리즘 FPGA — 미열람(L1) | FPGA PID 한국어 질의
+- blocked: instructables PID-Controller-VHDL — 페이지 본문 미수신(메타데이터만), Cork IT 학위 프로젝트, 재시도 필요 | Basys3 PID 질의
+- 참고: iaeng WCECS2010 pp989-995(Spartan-3 PID)는 기존 카드 deepc94-pid-fpga-vhdl과 동일 계열로 판단, 별도 카드 안 만듦

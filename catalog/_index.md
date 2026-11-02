@@ -41,3 +41,6 @@
 | [element14-arty-s7-artybot-axi-speed-sensing-ip](amd/element14-arty-s7-artybot-axi-speed-sensing-ip.md) | L3 | T3 | Arty S7-50 (Basys3 needs-port) | 2026-11-02 |
 | [wdevore-tinyfpga-quadrature-decoder-gist](vendor-neutral/wdevore-tinyfpga-quadrature-decoder-gist.md) | L3 | T0 | TinyFPGA-B2 (Basys3 needs-port) | 2026-11-02 |
 | [ubc-elex2117-lab6-quadrature-encoder](papers/ubc-elex2117-lab6-quadrature-encoder.md) | L3 | T0 | CPLD 보드 (Basys3 needs-port) | 2026-11-02 |
+| [hakan-demirli-pid-fpga](intel/hakan-demirli-pid-fpga.md) | L3 | T4 | DE2 (Basys3 needs-port) | 2026-11-02 |
+| [1runxu-520-pid-fpga](vendor-neutral/1runxu-520-pid-fpga.md) | L2 | T4 | 미명시 (Basys3 needs-port) | 2026-11-02 |
+| [microchip-an532-dc-servo-pid](papers/microchip-an532-dc-servo-pid.md) | L3 | T4 | PIC17C42 (Basys3 needs-port) | 2026-11-02 |
