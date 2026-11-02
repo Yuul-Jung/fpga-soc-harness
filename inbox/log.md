@@ -38,3 +38,4 @@
 2026-11-03 04:08 | collect | 적응·자동 튜닝 PID · S6 실패 사례(주: 릴레이 한계·가정 위반 조건)+S5 비정형 출처(보조: 기사·학회 논문) | 카드 +3 | 아이디어 +1 | 큐 잔여 102 | blocked 0
 2026-11-03 05:07 | collect | BLDC/PMSM FOC · S7 난이도 사다리(주: 6스텝 → FOC → 약계자)+S1 인접 도메인(보조: 짐벌·EV 모터 제어) | 카드 +3 | 아이디어 +1 | 큐 +7 | blocked 0
 2026-11-03 06:08 | collect | 입출력 조합(마이크·가속도 + MAX7219·DFPlayer) · S2 조합 탐색(주: 마이크+가속도→매트릭스)+S1 인접 도메인(보조: Arduino 기울기 표시 이식) | 카드 +3 | 아이디어 +1 | 큐 +8 | blocked 0
+2026-11-03 06:41 | verify | 재열람 0(WebFetch 권한 요청 무응답 재발, GitHub MCP는 범위 밖: 원문 대조 불가로 blocked, 우회 안 함) | 수정 1(wangxuan95-fpga-foc source_rev 형식 오류 해소: 값 없는 unverified 필드 제거, 본문에 unverified 사유 유지; 원문 대조 아님) | 불일치 0 | 승격 L2→L3 0 | ready +0 | 아이디어 심사 보류(근거 카드 rechecked_at 없음), check 통과

@@ -16,7 +16,6 @@ stats: {stars: 993, forks: 275, commits: 18}
 doc_language: en
 verification: L3
 checked_at: 2026-11-02
-source_rev: unverified
 sources: [https://github.com/WangXuan95/FpOC]
 ---
 
