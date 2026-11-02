@@ -106,6 +106,7 @@ module tb_soc;
             bus_write(32'h1000_1000, 32'h0000_00B2);
             uart_expect(8'hB2);
         join
+        repeat (20) @(posedge clk);                 // 정지 비트가 끝나 busy가 내려갈 때까지 대기
         bus_read(32'h1000_1004, rd);
         check32("uart idle after tx", rd, 32'h0000_0000);
 

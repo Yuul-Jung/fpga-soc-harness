@@ -47,6 +47,10 @@ def run_step(cap, step, tool):
         luts = sum(v for k, v in counts.items() if k.startswith("LUT"))
         ffs = sum(v for k, v in counts.items() if k.startswith("FD"))
         detail = f"LUT {luts}, FF {ffs} (yosys 추정)" if counts else "stat 파싱 실패"
+    if p.returncode != 0:
+        # GitHub Actions 주석으로 남겨 로그인 없이도 실패 원인을 볼 수 있게 한다
+        tail = "%0A".join(l.replace("%", "%25") for l in out.strip().splitlines()[-12:])
+        print(f"::error title={cap.name} {step} 실패::{tail}")
     return {"result": "pass" if p.returncode == 0 else "fail", "detail": detail}
 
 
