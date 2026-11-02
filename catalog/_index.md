@@ -47,3 +47,6 @@
 | [eeict-2011-xpisid00-stepper-linear-speed-controller](papers/eeict-2011-xpisid00-stepper-linear-speed-controller.md) | L3 | T4 | Spartan-3A XC3S400A (Basys3 needs-port) | 2026-11-02 |
 | [opencores-roboarm-stepper](vendor-neutral/opencores-roboarm-stepper.md) | L3 | T1 | 미명시 (Basys3 needs-port) | 2026-11-02 |
 | [stepmotion-vp-steps-per-time](vendor-neutral/stepmotion-vp-steps-per-time.md) | L3 | T2 | PIC18F (Basys3 needs-port) | 2026-11-02 |
+| [columbia-4840-spring-2026-ahrs](intel/columbia-4840-spring-2026-ahrs.md) | L3 | T4 | DE1-SoC (Basys3 needs-port) | 2026-11-02 |
+| [pmc4628004-microblaze-gps-ins-virtex6](papers/pmc4628004-microblaze-gps-ins-virtex6.md) | L3 | T3 | ML605 Virtex-6 (Basys3 needs-port) | 2026-11-02 |
+| [jie-2011-fpga-inverted-pendulum-robot](papers/jie-2011-fpga-inverted-pendulum-robot.md) | L2 | T4 | 미명시 (Basys3 needs-port) | 2026-11-02 |

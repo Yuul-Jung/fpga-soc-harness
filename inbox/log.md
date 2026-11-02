@@ -31,3 +31,4 @@
 2026-11-03 01:04 | collect | 스텝모터 가감속 FSM · S6 실패 사례(주: 스텝 손실 원인)+S1 인접 도메인(보조: MCU 프로파일 알고리즘) | 카드 +3 | 아이디어 +1 | 큐 잔여 83 | blocked 0
 2026-11-03 01:12 | capstone | skip: ready 아이디어 없음(raw/vetted만 존재, 게이트 3 미충족). 게이트 1(최신 CI 성공)·2(broken 없음)는 충족
 2026-11-03 01:30 | verify | 재열람 0(WebFetch 권한 요청 무응답: 1runxu·hakan-demirli·wdevore, 원문 대조 불가로 blocked, 우회 안 함) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +0 | 아이디어 심사 보류(신규 모터 카드 rechecked_at 없음), check 통과·audit 오류 0
+2026-11-03 02:09 | collect | IMU(MPU-6050) 자세 추정 · S5 비정형 출처(주: 강의 설계문서·학술지)+S3 빈틈 추적(보조: 고급 사다리) | 카드 +3 | 아이디어 +1 | 큐 잔여 87 | blocked 1

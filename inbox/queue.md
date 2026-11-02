@@ -91,3 +91,8 @@
 - https://www.logicbricks.com/Documentation/Datasheets/IP/logiSTEP_hds.pdf | Xylon logiSTEP 상용 IP 데이터시트(AXI4-Lite, S자 가감속, 마이크로스텝 BRAM 테이블) — 열람 L3, 상용·암호화라 코드 반입 불가, 카드 대기 | stepper motor controller Verilog FPGA acceleration ramp GitHub
 - https://www.embedded.com/motor-c | D. Austin 스텝모터 프로파일 글 후보 — 미열람(L1) | David Austin stepper speed profiles
 - 참고: 28BYJ-48/ULN2003 Basys3 직접 사례와 A4988 FPGA 호밍 사례는 검색에서 못 찾음(Arduino 튜토리얼만 나옴)
+- https://pmc.ncbi.nlm.nih.gov/articles/PMC9460884 | 개선 Mahony 상보 필터 쿼드콥터 자세 FPGA 구현(Sensors 2022) — 검색 결과 제목만(L1), WebFetch 권한 미응답으로 열람 못함, L3 승격 후보 | complementary filter MPU-6050 FPGA fixed-point
+- blocked: PMC9460884 열람 — WebFetch 권한 요청 미응답, 우회 안 함 | 같은 검색어
+- https://github.com/gmcastil/basys3 | Basys3 예제 모음 — 검색 결과 제목만(L1), MPU-6050 관련 여부 미확인 | MPU-6050 I2C Verilog FPGA github Basys3
+- https://research.buaa.edu.cn/en/publications/a-new-method-implementation-of-kalman-filter-based-on-fpga/ | 칼만 필터 FPGA 구현 논문 — 미열람(L1) | Kalman filter IMU FPGA
+- 참고: Basys3 + MPU-6050 직접 사례는 검색에서 못 찾음(Arty A7 사례만 기존 카드로 존재)
