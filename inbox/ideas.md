@@ -18,7 +18,7 @@
 
 
 ## I-001 PWM 오디오 난이도 사다리 + VGA 막대 표시
-- 상태: vetted
+- 상태: used (패키지: mmio-pwm-tune-vga-bars, 2026-11-02, 사용자 지시로 게이트 3 건너뜀)
 - 요약: 내 판단: Pmod AMP2 PWM 출력으로 사각파→사인표→음계→BRAM 곡 재생까지 FSM으로 만들고, 재생 중 음높이를 VGA 막대로 보여주는 T1~T2 패키지.
 - 조합: [audio-pwm, video-vga, BRAM]
 - 근거: [zipcpu-pmodamp2-project-ladder, columbia-4840-audio-visualizer]
