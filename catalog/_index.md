@@ -56,3 +56,6 @@
 | [comillas-tfg-2026-lqr-cartpole-basys3](papers/comillas-tfg-2026-lqr-cartpole-basys3.md) | L2 | T4 | Basys3 | 2026-11-03 |
 | [polito-upm-2023-cartpole-fpga-lqr-pid-rl](papers/polito-upm-2023-cartpole-fpga-lqr-pid-rl.md) | L3 | T4 | PYNQ-Z1 (Basys3 needs-port) | 2026-11-03 |
 | [andreicito2-inverted-pendulum](vendor-neutral/andreicito2-inverted-pendulum.md) | L2 | T3 | Spartan-3 (Basys3 needs-port) | 2026-11-03 |
+| [kmitl-iccas-2003-auto-tune-digital-pid-fpga](papers/kmitl-iccas-2003-auto-tune-digital-pid-fpga.md) | L3 | T4 | Spartan-2 XC2S50 (Basys3 needs-port) | 2026-11-03 |
+| [controleng-relay-method-automates-pid-loop-tuning](papers/controleng-relay-method-automates-pid-loop-tuning.md) | L3 | T4 | 해당 없음(알고리즘 기사) | 2026-11-03 |
+| [tees-isie-2017-compass-search-self-tuning-pid-dc-drive](papers/tees-isie-2017-compass-search-self-tuning-pid-dc-drive.md) | L2 | T4 | NI RIO (Basys3 needs-port) | 2026-11-03 |

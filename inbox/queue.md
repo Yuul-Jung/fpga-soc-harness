@@ -106,3 +106,12 @@
 - https://rcl.ece.iastate.edu/sites/default/files/papers/ZhaMil17A.pdf | Iowa State 논문 후보 — 미열람(L1) | 같은 질의
 - https://github.com/andreicito2/Inverted-Pendulum | 카드화 완료(andreicito2-inverted-pendulum, L2) | cart pole FPGA 질의
 - 참고: 한국어 질의 "도립진자 FPGA"는 광학 실험용 FPGA 서보 논문만 나와 국내 사례 못 찾음. 검색 4회 사용
+- https://github.com/br3ttb/Arduino-PID-AutoTune-Library | Arduino PID AutoTune(BSD 계열 표기, 483 stars는 사실로만), README 미열람 — 알고리즘 미확인(L2) | PID autotune relay 질의
+- https://github.com/Kronbii/easyPID/releases | easyPID 1.1.0: 릴레이 오토튜너+4개 규칙, 라이선스 미확인(L2) | 같은 질의
+- https://doaj.org/article/e0ad144734b6407dbb6b82b678d3e33b | Ain Shams 2014 적응 퍼지 DC 모터 FPGA(Spartan-3E), 초록만(L2), 카드 대기 | adaptive control FPGA 질의
+- https://atlantis-press.com/proceedings/eeic-13/10291 | EEIC 2013 퍼지 PID IP 코어(Verilog, SOPC), 적응 아님, CC BY-NC 4.0, 초록만(L2) | relay FPGA 질의
+- https://www.iaeng.org/publication/WCECS2010/WCECS2010_pp989-995.pdf | WCECS 2010 고정 이득 PID Spartan-3, 적응 아님(L3 열람했으나 카드 보류: 기존 PID 카드와 중복) | 자동 튜닝 질의
+- https://jurnal.umsu.ac.id/index.php/RELE/article/view/22279 | MRAC 기반 적응 PID DC 모터 속도(인도네시아어, 시뮬레이션 추정) — 미열람(L1) | MRAC 질의
+- https://air.uniud.it/handle/11390/691691 | 우디네대 자동 튜닝 PID 후보 — 미열람(L1) | relay FPGA 질의
+- https://kirim.kmutt.ac.th/converis/portal/detail/Publication/1448801164 | PSO 기반 PID 오토튜닝 하드웨어 구현 — 미열람(L1) | self-tuning 질의
+- 참고: 릴레이 오토튜닝을 직접 Verilog/Basys3로 구현한 공개 사례는 검색 5회 중 못 찾음(S3 빈틈 확인). 한국어 질의는 ICCAS 2003 한 건만 연결
