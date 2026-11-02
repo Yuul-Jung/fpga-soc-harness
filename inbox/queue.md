@@ -96,3 +96,7 @@
 - https://github.com/gmcastil/basys3 | Basys3 예제 모음 — 검색 결과 제목만(L1), MPU-6050 관련 여부 미확인 | MPU-6050 I2C Verilog FPGA github Basys3
 - https://research.buaa.edu.cn/en/publications/a-new-method-implementation-of-kalman-filter-based-on-fpga/ | 칼만 필터 FPGA 구현 논문 — 미열람(L1) | Kalman filter IMU FPGA
 - 참고: Basys3 + MPU-6050 직접 사례는 검색에서 못 찾음(Arty A7 사례만 기존 카드로 존재)
+- https://koreascience.kr/article/CFKO202015463051728.pdf | 국내 학회 자료(균형 로봇 FPGA 관련 추정) — 검색 결과 제목만(L1) | FPGA 자가 균형 로봇 질의
+- https://repository.its.ac.id/115252/ | ITS 인도네시아 FPGA 자가 균형 로봇 제어 시스템 — 미열람(L1) | self-balancing robot FPGA 질의
+- https://hackaday.io/project/162871 | 균형 로봇 프로젝트 — 미열람(L1) | 한국어 질의 결과
+- 참고: Basys3 직접 균형 로봇 사례는 검색에서 못 찾음

@@ -14,10 +14,10 @@ stage: T4
 license: unknown
 stats: {published: 2011}
 doc_language: en
-verification: L2
+verification: L3
 checked_at: 2026-11-02
-status: 검색 요약 기준(초록 페이지만 열람, 본문 PDF 미열람)
-sources: [https://www.nepjol.info/index.php/JIE/article/view/5111]
+변경: 2026-11-02 L2→L3. 본문 PDF(nepjol 5111/4247) 열람, 센서(MMA7260 가속도계·ENC-03R 자이로)와 구성 확인. 이전 값: L2(초록만)
+sources: [https://www.nepjol.info/index.php/JIE/article/view/5111, https://nepjol.info/index.php/JIE/article/view/5111/4247]
 unverified: 보드, IMU 부품명, 모터 드라이버, 고정소수점 여부, 자원 사용, 본문 열람
 ---
 
@@ -30,6 +30,10 @@ Journal of the Institute of Engineering(트리부반대 풀찬크 캠퍼스) Vol
 
 ## 검증·재현성
 - 로봇이 스스로 균형을 잡는다고 초록이 서술. 정량 결과·자원 수치는 unverified.
+
+## 본문 확인(2026-11-02)
+- 센서: MMA7260 가속도계 + ENC-03R 자이로를 확장 칼만 필터로 융합, 엔코더를 기준 각도로 사용. 제어: 위치용·기울기용 증분형 PID 두 개를 합산해 PWM. VHDL로 PWM·직교 디코딩, MicroBlaze가 필터·PID.
+- 결과: 평형 부근 약 ±0.05 rad 진동. 이득은 시행착오 조정. 고정소수점·자원 수치는 본문에 없음(unverified).
 
 ## 한계·위험
 - 초록만 읽었다. 저작권은 저널 소유. 코드 공개 여부 unverified.

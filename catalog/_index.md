@@ -49,4 +49,7 @@
 | [stepmotion-vp-steps-per-time](vendor-neutral/stepmotion-vp-steps-per-time.md) | L3 | T2 | PIC18F (Basys3 needs-port) | 2026-11-02 |
 | [columbia-4840-spring-2026-ahrs](intel/columbia-4840-spring-2026-ahrs.md) | L3 | T4 | DE1-SoC (Basys3 needs-port) | 2026-11-02 |
 | [pmc4628004-microblaze-gps-ins-virtex6](papers/pmc4628004-microblaze-gps-ins-virtex6.md) | L3 | T3 | ML605 Virtex-6 (Basys3 needs-port) | 2026-11-02 |
-| [jie-2011-fpga-inverted-pendulum-robot](papers/jie-2011-fpga-inverted-pendulum-robot.md) | L2 | T4 | 미명시 (Basys3 needs-port) | 2026-11-02 |
+| [jie-2011-fpga-inverted-pendulum-robot](papers/jie-2011-fpga-inverted-pendulum-robot.md) | L3 | T4 | 미명시 (Basys3 needs-port) | 2026-11-02 |
+| [mit-6111-2018-team18-balancing-robot](amd/mit-6111-2018-team18-balancing-robot.md) | L3 | T4 | CMOD A7-35T (Basys3 needs-port) | 2026-11-02 |
+| [technion-diglab-balance-car-fpga](vendor-neutral/technion-diglab-balance-car-fpga.md) | L3 | T4 | 미명시 (Basys3 needs-port) | 2026-11-02 |
+| [urjc-tfg-2018-fpga-balancing-robot](papers/urjc-tfg-2018-fpga-balancing-robot.md) | L2 | T4 | iCE40HX1K (Basys3 needs-port) | 2026-11-02 |

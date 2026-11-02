@@ -32,3 +32,4 @@
 2026-11-03 01:12 | capstone | skip: ready 아이디어 없음(raw/vetted만 존재, 게이트 3 미충족). 게이트 1(최신 CI 성공)·2(broken 없음)는 충족
 2026-11-03 01:30 | verify | 재열람 0(WebFetch 권한 요청 무응답: 1runxu·hakan-demirli·wdevore, 원문 대조 불가로 blocked, 우회 안 함) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +0 | 아이디어 심사 보류(신규 모터 카드 rechecked_at 없음), check 통과·audit 오류 0
 2026-11-03 02:09 | collect | IMU(MPU-6050) 자세 추정 · S5 비정형 출처(주: 강의 설계문서·학술지)+S3 빈틈 추적(보조: 고급 사다리) | 카드 +3 | 아이디어 +1 | 큐 잔여 87 | blocked 1
+2026-11-03 02:36 | collect | 2륜 균형 로봇 FPGA · S7 난이도 사다리(주: 쉬움 PD → PID → EKF)+S4 제약 역전(보조: 1K 메모리 최소 분업) | 카드 +3 | 아이디어 +1 | 큐 잔여 90 | blocked 0
