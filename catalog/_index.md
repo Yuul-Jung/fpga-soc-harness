@@ -65,3 +65,6 @@
 | [vhdplus-spectrum-analyzer-max7219](intel/vhdplus-spectrum-analyzer-max7219.md) | L3 | T4 | VHDPlus Core MAX10 (Basys3 needs-port) | 2026-11-03 |
 | [mit-6111-2017-team20-audio-spectrum-analyzer](amd/mit-6111-2017-team20-audio-spectrum-analyzer.md) | L3 | T4 | Nexys 4 (Basys3 needs-port) | 2026-11-03 |
 | [renesas-forgefpga-fg015-running-string](vendor-neutral/renesas-forgefpga-fg015-running-string.md) | L3 | T2 | ForgeFPGA SLG47910V (Basys3 needs-port) | 2026-11-03 |
+| [stnolting-neorv32](vendor-neutral/stnolting-neorv32.md) | L2 | T3 | 범용 (Basys3 needs-port) | 2026-11-03 |
+| [unipi-cds105-neorv32-basys3-lab](papers/unipi-cds105-neorv32-basys3-lab.md) | L3 | T1 | Basys3 | 2026-11-03 |
+| [yosyshq-picorv32](vendor-neutral/yosyshq-picorv32.md) | L2 | T2 | 범용 (Basys3 needs-port) | 2026-11-03 |

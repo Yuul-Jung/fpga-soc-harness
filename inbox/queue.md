@@ -132,3 +132,8 @@
 - https://digsys.upc.edu/csd/products/D2_20/D2_20.html | UPC EETAC 도트 매트릭스 드라이버 문제(VHDL, MAX7219 언급, 세부 없음) — L2 | 한국어/도트 매트릭스 질의
 - https://vegaprocessors.in/blog/?p=384 | 도트 매트릭스 MAX7219 블로그 후보 — 미열람(L1) | MAX7219 FPGA Verilog 질의
 - 참고: Verilog로 MAX7219를 구현한 GitHub 저장소는 검색 2회에서 못 찾음(Renesas 앱노트가 가장 가까움). DFPlayer FPGA 구동 직접 사례도 못 찾음(S3 빈틈)
+- https://github.com/stnolting/neorv32 | NEORV32 원본 저장소(README·LICENSE·최신 데이터시트로 주소·버전 확인 필요) — 원본 미열람, 카드는 미러 기준 L2 | NEORV32 Basys3 UART GPIO SPI TWI peripheral register map Wishbone
+- https://gitea.auro.re/higepi/Projet_SETI_RISC-V/src/branch/main/neorv32/docs/datasheet/soc.adoc | NEORV32 SoC 데이터시트 미러(구버전 추정) — 열람 L3, 카드 stnolting-neorv32에 반영 | NEORV32 Basys3 UART GPIO SPI TWI peripheral register map Wishbone
+- https://github.com/stnolting/wb_spi_bridge | NEORV32 작성자의 Wishbone-SPI 브리지 — 미열람(L1) | stnolting neorv32 license BSD-3-Clause external bus interface Wishbone AXI4-Lite bridge
+- https://heimdall.us.es/docs/docencia/SEPAGIERM/T12%20-%20Arquitectura%20de%20un%20soft%20processor.pdf | 소프트 프로세서 구조 강의(스페인어 추정) — 미열람(L1) | NEORV32 Basys3 UART GPIO SPI TWI peripheral register map Wishbone
+- https://github.com/stnolting/neorv32/discussions/573 | NEORV32 토론(AXI4-Lite/Wishbone 관련 추정) — 미열람(L1) | stnolting neorv32 license BSD-3-Clause external bus interface Wishbone AXI4-Lite bridge

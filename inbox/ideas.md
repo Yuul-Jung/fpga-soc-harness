@@ -257,3 +257,13 @@
 - 난이도: 3 / 단계: T2
 - 심사: (대기)
 
+
+## I-025 CTRL/DATA형 I2C 마스터 IP: NEORV32 TWI 레지스터 배치 착안 + MPU-6050 읽기 시험 모델 테스트벤치
+- 상태: raw
+- 요약: 내 판단: 분주·START·STOP·ACK·BUSY를 CTRL 하나, 송수신 바이트를 DATA 하나에 둔 AXI4-Lite I2C 마스터 IP를 자체 RTL로 새로 쓴다. 바이트 완료를 인터럽트 1비트로 내보내 INTC 빈 입력에 배정을 제안한다. 테스트벤치는 가짜 MPU-6050(주소 0x68) 슬레이브 모델로 레지스터 읽기 시퀀스를 점검한다.
+- 조합: [I2C 마스터, MPU-6050 IMU, AXI4-Lite 레지스터, INTC 입력]
+- 근거: [stnolting-neorv32, ammar-bin-amir-arty-a7-i2c-mpu-6050, yosyshq-picorv32]
+- 새로움의 근거: 카탈로그의 I2C 사례는 FSM 직결(Arty A7 MPU-6050)이거나 CPU별 레지스터 모델이고, CPU 중립 레지스터 규약으로 IMU 읽기를 시험하는 조합은 없다(내 판단).
+- Basys3 적합성의 근거: I2C는 Pmod 핀 2개(SDA 개방 드레인, 풀업 필요), 3.3V 모듈(MPU-6050 GY-521은 보드에 따라 레벨 확인 필요). 자원은 FSM과 분주기 수준으로 작을 것으로 추정(내 추정, 수치 없음).
+- 난이도: 3 / 단계: T2
+- 심사: (대기)
