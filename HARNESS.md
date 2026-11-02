@@ -1,8 +1,9 @@
 # FPGA SoC 캡스톤 자료 축적 하네스 지침
 
-버전: 0.3 (2026-11-02)
+버전: 0.4 (2026-11-02)
 적용 대상: 이 저장소(fpga-soc-harness)에서 자료를 수집·검증·기록하는 에이전트(Claude Code, 프로젝트 지침 등)
 실행 방식: 수동 세션(§4) 또는 자동 수집 모드(§12, `/harvest`). 자동 모드에서도 §2, §6, §7, §9는 그대로 적용된다.
+산출물: 수집 카드(§3)와, 이를 근거로 만드는 캡스톤 패키지(§13: 문서 HTML + 계통도 + 실행 소스).
 
 ## 0. 목적과 범위
 
@@ -24,7 +25,13 @@ fpga-soc-harness/
 ├─ HARNESS.md              이 지침 (루트에 둔다)
 ├─ CLAUDE.md               `@HARNESS.md` 한 줄 (에이전트 자동 로드)
 ├─ .claude/commands/harvest.md   `/harvest` 명령 (자동 수집 한 사이클)
+├─ .claude/commands/capstone.md  `/capstone` 명령 (캡스톤 패키지 한 건 작성)
+├─ capstones/<slug>/       캡스톤 패키지: capstone.json(단일 명세) + rtl/ tb/ constr/ Makefile
+├─ docs/                   생성물(HTML·SVG). git에 올리지 않고 CI가 만들어 게시한다
+├─ .github/workflows/verify.yml  CI: 린트·시뮬레이션·합성 → 문서 생성 → Pages 게시
 ├─ tools/check.py          카드·색인 자동 점검 스크립트 (표준 라이브러리만 사용)
+├─ tools/run_verify.py     캡스톤 린트·시뮬·합성 실행, build/status.json 기록
+├─ tools/build.py          명세 → 문서 HTML + 계통도 SVG 생성, 명세·소스 대조
 ├─ inbox/                  미검증 후보와 자동 수집 상태
 │   ├─ queue.md            후보 큐 (한 줄 단위)
 │   ├─ topics.md           다음 수집 주제 목록 (자동 모드가 위에서부터 소비)
@@ -341,3 +348,69 @@ L3 = 본문 직접 열람, L2 = 검색 요약 기준. 아래 항목은 첫 세�
 ### 12.7 로그와 보고
 - `inbox/log.md`: `YYYY-MM-DD | <주제> | 카드 +N | L2→L3 M | 큐 잔여 K | blocked B` 한 줄.
 - 최종 보고는 §8.3 형식을 따른다. 사람이 없어도 큐·로그·커밋 메시지만으로 무엇이 바뀌었는지 알 수 있어야 한다.
+
+## 13. 캡스톤 산출물 패키지
+
+수집한 자료를 근거로, SoC를 활용한 캡스톤을 "문서(HTML), 계통도, 실행 소스" 세 가지로 구조화해 만든다.
+세 가지를 따로 쓰지 않고 한 명세에서 만든다. 이렇게 하면 문서와 소스가 어긋나지 않는다.
+
+### 13.1 구조
+```
+capstones/<slug>/
+├─ capstone.json     단일 명세 (원본). 문서와 계통도는 여기서 생성된다
+├─ rtl/  tb/  constr/  sw/(필요 시)   실행 소스. 명세의 sources에 파일명을 적는다
+└─ Makefile          lint, sim, synth 타깃
+docs/<slug>/index.html, diagram.svg    생성물 (git 추적 안 함)
+```
+- 문서는 소스 파일을 읽어 그대로 넣는다. 문서에 코드를 손으로 옮겨 적지 않는다.
+- 계통도는 명세의 `architecture`(블록, 링크)에서 그린다. 그림 파일을 손으로 고치지 않는다.
+- `python3 tools/build.py`는 명세가 없는 파일을 가리키거나, 주소 영역이 겹치거나, 링크가 없는 블록을 가리키면 오류를 낸다.
+
+### 13.2 명세 필드 (`capstone.json`)
+| 필드 | 내용 |
+|---|---|
+| slug, title, summary, board, stage | 식별과 한 줄 설명. stage는 §5.1 |
+| goals, non_goals | 목표와 범위 밖 |
+| architecture | clock, blocks(id, name, kind, module, file, desc, short, side), links(from, to, label) |
+| bus_protocol | 신호 목록과 한계 |
+| hierarchy | 최상위부터 모듈 계층 (파일 포함) |
+| memory_map | 영역(base, size, block)과 레지스터(off, name, access, desc) |
+| roadmap | 다음 단계 (stage, state: current/planned/done, title, refs=카탈로그 카드 name) |
+| references | 근거 카드(name)와 이유 |
+| sources | rtl, tb, constraints, build 파일 목록 |
+| howto | 시뮬레이션·Vivado 절차 |
+| verification | 수동 항목(board)과 notes. lint/sim/synth는 CI 기록이 덮어쓴다 |
+| risks | 알려진 위험과 한계 |
+
+### 13.3 소스 규칙
+- 소스는 하네스가 직접 쓴 원본으로 한다. 카탈로그의 외부 코드를 복사하지 않는다(§6, §9).
+- 외부 코어(PicoRV32 등)가 필요하면 소스 트리에 넣지 않고, 근거 카드와 가져오는 절차를 `howto`에 적는다. 라이선스가 허용하고 사용자가 승인한 경우에만 복사하며, 그때는 LICENSE와 출처를 함께 둔다.
+- 순수 Verilog-2001 스타일로 쓴다(iverilog, verilator, yosys가 모두 읽을 수 있게). 최상위는 보드 래퍼(`<board>_top`)와 SoC 코어(`soc_top`)를 분리한다. 마스터 포트는 밖으로 노출해 CPU 교체 지점으로 둔다.
+- 테스트벤치는 자체 점검형이다. 통과하면 `PASS`, 실패하면 `FAIL`로 시작하는 줄을 출력한다.
+
+### 13.4 검증 등급과 표현
+| 등급 | 조건 | 쓸 수 있는 표현 |
+|---|---|---|
+| S0 | 작성만 함. 도구가 없어 실행하지 못함 | "작성됨, 미검증" |
+| S1 | 린트 오류 없음 + 시뮬레이션 PASS (CI 기록) | "시뮬레이션에서 통과" |
+| S2 | S1 + 합성 성공, 자원 추정 기록 | "합성 가능, 자원은 yosys 추정" |
+| S3 | 보드에서 사람이 동작 확인 (`verification.board: pass`와 날짜) | "Basys3에서 동작 확인" |
+
+- 도구가 없어서 건너뛴 단계는 `skipped`이며 통과로 세지 않는다.
+- 합성 자원은 yosys 추정이다. Vivado의 LUT/FF/타이밍(WNS)과 다를 수 있으므로 "Vivado 기준"이라고 쓰지 않는다.
+- S3는 사람만 올릴 수 있다. 에이전트가 `board: pass`를 쓰지 않는다.
+
+### 13.5 단계 체인
+- 한 패키지는 한 단계(stage)를 대표한다. 다음 단계로 넘어갈 때는 기존 패키지를 고치지 않고 새 slug로 복사해 확장한다. 예: `mmio-uart-gpio-skeleton`(T1) → `…-picorv32`(T2) → `…-vga-ps2`(T3).
+- 이전 패키지는 남겨 둔다. 그러면 기술 트리가 단계별로 실행되는 패키지의 연결로 남는다.
+- 새 패키지의 `roadmap`에서 이전 패키지의 `state`를 `done`으로 바꾸고, `references`에 그 근거 카드를 모두 넣는다.
+
+### 13.6 만드는 순서 (`/capstone <주제>`)
+1. `catalog/_index.md`에서 근거 카드를 고른다. 카드가 없는 주제는 먼저 `/harvest`로 카드를 만든다.
+2. `capstone.json`을 쓴다. 블록, 링크, 메모리맵을 먼저 정한다.
+3. 명세대로 `rtl/`, `tb/`, `constr/`, `Makefile`을 쓴다.
+4. `python3 tools/run_verify.py`로 점검한다. 도구가 없으면 `skipped`로 두고 S0이라고 보고한다.
+5. `python3 tools/build.py`로 문서와 계통도를 만들고 오류가 없는지 본다. `docs/`를 열어 눈으로 확인한다.
+6. 커밋하고 푸시한다. CI가 S1, S2를 기록하고 문서를 게시한다.
+
+자동 수집 모드(§12)는 카드를 모으는 데까지만 자동이다. 캡스톤 소스를 쓰는 일은 `/capstone`으로 명시해서 시작한다.

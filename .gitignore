@@ -1,0 +1,3 @@
+docs/
+capstones/*/build/
+__pycache__/

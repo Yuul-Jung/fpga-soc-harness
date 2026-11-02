@@ -1,0 +1,49 @@
+name: verify
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 도구 설치
+        run: sudo apt-get update && sudo apt-get install -y iverilog verilator yosys
+      - name: 카드 점검
+        run: python3 tools/check.py
+      - name: 캡스톤 린트·시뮬레이션·합성
+        run: python3 tools/run_verify.py
+      - name: 문서·계통도 생성
+        run: python3 tools/build.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: capstone-docs
+          path: |
+            docs
+            capstones/*/build
+      - uses: actions/upload-pages-artifact@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          path: docs
+
+  deploy:
+    needs: verify
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    continue-on-error: true   # Pages를 켜지 않았으면 이 단계만 실패한다
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
