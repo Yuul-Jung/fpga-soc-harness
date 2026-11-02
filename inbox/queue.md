@@ -74,3 +74,6 @@
 - https://github.com/Junherng99/FPGA_Projects | FPGA 프로젝트 모음 — 미열람(L1) | 같은 검색어
 - https://hepcat.ucsd.edu/fpga-lab/ | UCSD FPGA 실습(Basys3 추정) — 미열람(L1) | Basys3 캡스톤 후기
 - blocked: 국내 블로그(velog/tistory) 한국어 캡스톤 보고서는 검색 4회에서 직접 후보를 얻지 못함 — 질의 표현 변경 필요 | 한국어 FPGA 종합설계 질의군
+- https://www.allaboutcircuits.com/technical-articles/h-bridge-dc-motor-control-complementary-pulse-width-modulation-pwm-shoot-through-dead-time-pwm/ | 상보 PWM·데드타임 개념 글 — 열람했으나 수치·역기전력 서술 없음(L2), 카드 보류 | H-bridge dead time shoot-through
+- https://github.com/MarkDannemiller/TTU-Lab1-BC5 | TTU Basys3 + L298 프로젝트 본체 — 미열람, L3 승격 후보 | 같은 검색어
+- https://wiki.keyestudio.com/Ks0066_keyestudio_TB6612FNG_Motor_Driver | TB6612 아두이노 모듈 위키 — 미열람(L1) | TB6612FNG datasheet

@@ -35,3 +35,6 @@
 | [ieek-2009-dc-servo-speed-control-fpga](papers/ieek-2009-dc-servo-speed-control-fpga.md) | L2 | T4 | 미명시 (Basys3 needs-port) | 2026-11-02 |
 | [iccas-2003-general-purpose-pid-motion-controller-fpga](papers/iccas-2003-general-purpose-pid-motion-controller-fpga.md) | L3 | T4 | Altera APEX II (Basys3 needs-port) | 2026-11-02 |
 | [deepc94-pid-fpga-vhdl](amd/deepc94-pid-fpga-vhdl.md) | L3 | T2 | Spartan-3 XC3S400 (Basys3 needs-port) | 2026-11-02 |
+| [toshiba-tb6612fng-datasheet](vendor-neutral/toshiba-tb6612fng-datasheet.md) | L3 | T2 | 없음 (모듈 데이터시트) | 2026-11-02 |
+| [ti-drv8833-datasheet](vendor-neutral/ti-drv8833-datasheet.md) | L3 | T2 | 없음 (모듈 데이터시트) | 2026-11-02 |
+| [markdannemiller-ttu-lab1-bc5-hardware-guide](amd/markdannemiller-ttu-lab1-bc5-hardware-guide.md) | L2 | T2 | Basys3 | 2026-11-02 |

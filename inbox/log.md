@@ -24,3 +24,4 @@
 2026-11-02 20:06 | capstone | mmio-pwm-tune-vga-bars (I-001) · 사용자 지시('무조건 실행')로 게이트 3(ready·rechecked_at) 건너뜀 | 로컬 시뮬레이터 없음 S0, CI 대기 | check/audit 오류 0
 2026-11-02 20:07 | capstone | CI 감사 오류 수정: tinredmc-ultralitebldc source_rev 형식(unverified 사유를 unverified_source_rev로 이동). mmio-pwm-tune-vga-bars는 lint/sim(2 PASS)/synth 통과(LUT 325, FF 253 yosys 추정)
 2026-11-02 20:09 | collect | 한국어 FPGA 종합설계·캡스톤 보고서 · S5 비정형 출처(주)+S2 조합 탐색(보조): 한국어 직접 후보 부족으로 국내 학회 논문 2건+PID 저장소 | 카드 +3 | 아이디어 +1 | 큐 잔여 72 | blocked 1
+2026-11-02 21:10 | collect | H-브리지 모듈(TB6612·DRV8833·L298N) 인터페이스 · S3 빈틈 추적(주)+S5 비정형 출처(보조): devices/ 비어 있어 부품 데이터시트 2건+Basys3 L298 위키 | 카드 +3 | 아이디어 +0(I-014 근거 보강) | 큐 잔여 75 | blocked 0
