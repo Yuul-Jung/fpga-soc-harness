@@ -112,7 +112,9 @@ module sd_spi #(
                     iss <= 1'b0; r32 <= {r32[23:0], sp_rx};
                     if (ecnt == 3'd3) st <= ST_EVAL; else ecnt <= ecnt + 3'd1;
                 end
-                ST_EVAL: begin
+                ST_EVAL: if (step == S_RD && r1 == 8'h00) begin   // CS를 올렸다 내리는 글리치를 피해 분기로 나눈다
+                    tcnt <= 16'd0; st <= ST_TOKEN;
+                end else begin
                     st <= ST_GAP; sd_cs_n <= 1'b1;
                     case (step)
                         S_CMD0:   if (r1 == 8'h01) step <= S_CMD8; else err <= 1'b1;
@@ -123,8 +125,7 @@ module sd_spi #(
                                   else err <= 1'b1;
                         S_CMD58:  if (r1 == 8'h00) begin sdhc <= r32[30]; init_done <= 1'b1; fast <= 1'b1; fin <= 1'b1; end
                                   else err <= 1'b1;
-                        default:  if (r1 == 8'h00) begin tcnt <= 16'd0; sd_cs_n <= 1'b0; st <= ST_TOKEN; end
-                                  else err <= 1'b1;
+                        default:  err <= 1'b1;
                     endcase
                 end
                 ST_GAP: if (iss && sp_done) begin                 // CS=1에서 추가 8클럭
