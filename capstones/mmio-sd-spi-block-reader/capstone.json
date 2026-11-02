@@ -423,5 +423,63 @@
     "시작 토큰 대기는 최대 65536바이트 후 오류 처리한다. 버튼 디바운스는 없다.",
     "SPI 모드 카드는 초기화 전 MISO 풀업이 필요하다. xdc에 PULLUP을 걸었으나 Pmod 보드의 풀업과 함께 쓰는 값은 확인하지 않았다.",
     "RTL 합계가 약 490줄(gpio·uart_tx 97줄은 skeleton 재사용)로 HARNESS §13.7의 400줄 기준을 넘는다."
-  ]
+  ],
+  "integration": {
+    "bus": "mmio-lite",
+    "address_map": "custom",
+    "compat": "incompatible",
+    "target_map": "mbv-frozen-v1",
+    "plan": "이 패키지는 CPU 없이 시뮬레이션하려고 자체 버스 mmio-lite(0x1000_xxxx)를 썼다. MicroBlaze V 동결 맵으로 옮기려면 (1) mmio-lite→AXI4-Lite 마스터 다리나 library/rtl/axil_regs.v 기반 슬레이브로 레지스터 블록을 감싸고 (2) 기준 주소를 gpio→0x4000_0000(gpio_led_sw), uart→0x4002_0000(uart_lite)로, sd는 동결 맵에 없으므로 빈 슬롯 0x4007_0000부터 배정한다(제안, 아직 동결 아님). 레지스터 오프셋은 유지한다. 다리(마스터 쪽)는 아직 없다(gap)."
+  },
+  "external_parts": [
+    {
+      "id": "p_btn",
+      "name": "Basys3 푸시버튼 (btnU, btnC)",
+      "block": "x_btn",
+      "interface": "GPIO 입력",
+      "io_voltage": 3.3,
+      "qty": 2,
+      "board_resident": true,
+      "arduino_compatible": false,
+      "notes": "btnU=읽기 시작, btnC=리셋"
+    },
+    {
+      "id": "p_swled",
+      "name": "Basys3 슬라이드 스위치 16 / LED 16",
+      "block": "x_sw",
+      "interface": "GPIO 입출력",
+      "io_voltage": 3.3,
+      "qty": 32,
+      "board_resident": true,
+      "arduino_compatible": false,
+      "notes": "보드 내장"
+    },
+    {
+      "id": "p_uart",
+      "name": "Basys3 USB-UART (FTDI)",
+      "block": "x_uart",
+      "interface": "UART TX 115200 8N1",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": true,
+      "arduino_compatible": false,
+      "notes": "보드 내장, PC 터미널 연결"
+    },
+    {
+      "id": "p_sd",
+      "name": "Pmod MicroSD (Digilent) 또는 호환 SD 슬롯 모듈",
+      "block": "x_sd",
+      "interface": "SPI 모드 4신호 (CS, MOSI, MISO, SCK)",
+      "io_voltage": 3.3,
+      "supply_voltage": 3.3,
+      "qty": 1,
+      "board_resident": false,
+      "arduino_compatible": false,
+      "notes": "Arduino용 SD 모듈 중에는 5V 로직을 가정한 것이 많다. 3.3V 동작이 확인된 모듈만 쓴다. 이 패키지의 기본 부품은 Pmod이며 3.3V다"
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "외부 부품의 전기 회로도(커넥터 핀 배선, 풀업, 전원 분리)는 아직 작성하지 않았다. 이 패키지의 외부 부품은 Basys3 내장 장치와 Pmod 모듈이라 핀 배정은 constr/basys3.xdc를 따른다. 새 외부 모듈을 쓰는 캡스톤은 회로도를 별도 산출물로 둔다."
+  }
 }

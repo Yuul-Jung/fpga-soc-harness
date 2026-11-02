@@ -1,0 +1,27 @@
+{
+  "_comment": "MicroBlaze V 실습 시리즈(L00~L11)에서 동결된 주소·인터럽트 맵. CPU를 PicoRV32/자체 CPU로 바꿔도 유지한다. 출처: 프로젝트 지침 3절.",
+  "name": "mbv-frozen-v1",
+  "bus": "AXI4-Lite (주변장치), LMB (로컬 메모리)",
+  "clock_hz": 100000000,
+  "reset": "btnC, active high, 동기",
+  "slot_size": "0x10000",
+  "regions": [
+    {"name": "local_mem", "base": "0x0000_0000", "size": "0x10000", "kind": "memory"},
+    {"name": "gpio_led_sw", "base": "0x4000_0000", "size": "0x10000", "kind": "peripheral"},
+    {"name": "gpio_btn",    "base": "0x4001_0000", "size": "0x10000", "kind": "peripheral"},
+    {"name": "uart_lite",   "base": "0x4002_0000", "size": "0x10000", "kind": "peripheral"},
+    {"name": "timer",       "base": "0x4003_0000", "size": "0x10000", "kind": "peripheral"},
+    {"name": "intc",        "base": "0x4004_0000", "size": "0x10000", "kind": "peripheral"},
+    {"name": "iic",         "base": "0x4005_0000", "size": "0x10000", "kind": "peripheral"},
+    {"name": "seg7",        "base": "0x4006_0000", "size": "0x10000", "kind": "peripheral"}
+  ],
+  "free_slots": {"first": "0x4007_0000", "last": "0x400F_0000", "note": "새 주변장치는 여기서 64KB 단위로 순서대로 배정한다. 동결된 8개 영역은 바꾸지 않는다."},
+  "interrupts": [
+    {"input": 0, "source": "timer", "state": "used"},
+    {"input": 1, "source": "uart_lite", "state": "reserved"},
+    {"input": 2, "source": "iic", "state": "used"},
+    {"input": 3, "source": "gpio_btn", "state": "used"}
+  ],
+  "button_bits": "btn[3]=U, btn[2]=D, btn[1]=L, btn[0]=R (btnC는 리셋 전용)",
+  "uart": "115200 bps 8N1"
+}

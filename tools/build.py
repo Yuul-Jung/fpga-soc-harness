@@ -16,6 +16,9 @@ import zipfile
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import capcheck  # noqa: E402
+
 ROOT = Path(__file__).resolve().parent.parent
 CAPS = ROOT / "capstones"
 DOCS = ROOT / "docs"
@@ -63,6 +66,13 @@ def validate(spec, cap_dir):
     for ref in spec.get("references", []) + [r for step in spec.get("roadmap", []) for r in ({"card": c} for c in step["refs"])]:
         if ref["card"] not in known:
             warns.append(f"카드 미작성: {ref['card']}")
+    for fn in (capcheck.check_integration, capcheck.check_external_parts):
+        e, w = fn(spec)
+        errs += e
+        warns += w
+    e, w = capcheck.check_code_names(spec, cap_dir)
+    errs += e
+    warns += w
     return errs, sorted(set(warns))
 
 
@@ -190,6 +200,15 @@ def build_one(spec_path):
     ver = merged_verification(spec, cap_dir)
     badge = lambda label, k: f'<span class="badge b-{ver[k]["result"]}">{label}: {STATE_LABEL.get(ver[k]["result"], ver[k]["result"])}' + (f' ({esc(ver[k]["detail"])})' if ver[k]["detail"] else "") + "</span>"
     cards = {p.stem: p.relative_to(ROOT).as_posix() for p in (ROOT / "catalog").rglob("*.md") if p.name != "_index.md"}
+    (out_dir / "connections.json").write_text(json.dumps(capcheck.connections_json(spec), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    (out_dir / "bom.csv").write_text(capcheck.bom_csv(spec), encoding="utf-8")
+    (out_dir / "source_manifest.json").write_text(json.dumps(capcheck.source_manifest(spec, cap_dir), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    (out_dir / "verification.json").write_text(json.dumps({
+        "schema_version": 1, "slug": spec["slug"], "stage": spec["stage"],
+        "lint": ver["lint"], "sim": ver["sim"], "synth": ver["synth"],
+        "board": {"result": spec["verification"].get("board", "not-run"), "detail": "사람이 확인한 항목만 pass. 에이전트는 pass로 쓰지 않는다(HARNESS §13.4)"},
+        "synth_note": "yosys 추정이다. Vivado의 LUT/FF/WNS와 다를 수 있다.",
+        "recorded": ver.get("_date", "")}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     zip_path = out_dir / f'{spec["slug"]}.zip'
     with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as z:
         for f in sorted(cap_dir.rglob("*")):
@@ -205,6 +224,21 @@ def build_one(spec_path):
         mm += f'<h3>{esc(b["name"])} <code>{esc(m["base"])}</code> <span class="muted">크기 {esc(m["size"])}</span></h3><div class="panel"><table><tr><th>오프셋</th><th>이름</th><th>접근</th><th>설명</th></tr>'
         mm += "".join(f'<tr><td><code>{esc(r["off"])}</code></td><td>{esc(r["name"])}</td><td>{esc(r["access"])}</td><td>{esc(r["desc"])}</td></tr>' for r in m["regs"]) + "</table></div>"
 
+    integ = spec.get("integration", {})
+    amap = capcheck.address_map()
+    compat_label = {"compatible": "적합", "partial": "부분 적합", "incompatible": "적합하지 않음"}.get(integ.get("compat"), "미선언")
+    integ_html = (f'<div class="panel"><table><tr><th style="white-space:nowrap">버스</th><td><code>{esc(integ.get("bus", ""))}</code></td></tr>'
+                  f'<tr><th style="white-space:nowrap">주소맵</th><td><code>{esc(integ.get("address_map", ""))}</code> → 동결 맵 <code>{esc(amap["name"])}</code> 적합 여부: <b>{esc(compat_label)}</b></td></tr>'
+                  f'<tr><th style="white-space:nowrap">이식 계획</th><td>{esc(integ.get("plan", ""))}</td></tr></table></div>')
+    if integ.get("compat") != "compatible":
+        integ_html = '<p class="badge b-fail">이 패키지는 MicroBlaze V 동결 주소맵과 호환되지 않는다 (파일럿). 아래 이식 계획을 따라야 SoC에 합칠 수 있다.</p>' + integ_html
+    ext_rows = "".join(
+        f'<tr><td><code>{esc(p["id"])}</code></td><td>{esc(p["name"])}</td><td>{esc(p["interface"])}</td><td style="white-space:nowrap">{esc(str(p["io_voltage"]))} V</td>'
+        f'<td style="white-space:nowrap">{"보드 내장" if p["board_resident"] else "외부 모듈"}</td><td>{esc(p.get("level_shift", "") or "불필요 (3.3V)")}</td><td>{esc(p.get("notes", ""))}</td></tr>'
+        for p in spec.get("external_parts", []))
+    sch = spec.get("schematic", {"state": "not-written", "note": ""})
+    sch_html = (f'<p class="badge b-{"pass" if sch["state"] != "not-written" else "skipped"}">전기 회로도: {"미작성" if sch["state"] == "not-written" else esc(sch["state"])}</p>'
+                f'<p class="muted">{esc(sch.get("note", ""))}</p>')
     sig = "".join(f'<tr><td><code>{esc(s["name"])}</code></td><td>{esc(s["dir"])}</td><td>{esc(s["desc"])}</td></tr>' for s in spec["bus_protocol"]["signals"])
     road = "".join(
         f'<li class="step"><span class="tag s-{esc(r["state"])}">{esc(r["stage"])}</span><span>{esc(r["title"])}'
@@ -226,19 +260,21 @@ def build_one(spec_path):
 <h1>{esc(spec["title"])}</h1><p>{esc(spec["summary"])}</p>
 <div class="badges">{badge("린트", "lint")}{badge("시뮬레이션", "sim")}{badge("합성", "synth")}{badge("보드", "board")}</div>
 {'<p class="badge b-fail">이 패키지는 CI에서 실패한 상태(broken)다. 다음 사이클이 먼저 고친다.</p>' if spec.get("status") == "broken" else ""}<p class="muted">검증 상태는 실행 기록이 있을 때만 표시한다{ver_date}. 기록이 없으면 '미실행'이다.</p>
-<nav><a href="#goal">목표</a><a href="#arch">계통도</a><a href="#hier">모듈 계층</a><a href="#map">메모리맵</a><a href="#road">기술 트리</a><a href="#src">실행 소스</a><a href="#verify">검증</a><a href="#ref">참고·위험</a></nav>
+<nav><a href="#goal">목표</a><a href="#arch">계통도</a><a href="#hier">모듈 계층</a><a href="#map">메모리맵</a><a href="#ext">외부 부품·전기</a><a href="#road">기술 트리</a><a href="#src">실행 소스</a><a href="#verify">검증</a><a href="#ref">참고·위험</a></nav>
 <h2 id="goal">1. 목표와 범위</h2><h3>목표</h3>{ul(spec["goals"])}<h3>범위 밖</h3>{ul(spec["non_goals"])}<p class="muted">{esc(spec["author_note"])}</p>
 <h2 id="arch">2. 계통도</h2><p>클럭: {esc(spec["architecture"]["clock"])}</p><div class="panel">{svg}</div>
 <p class="muted"><a href="diagram.svg">diagram.svg</a>로 따로 받을 수 있다.</p>
 <h3>버스 규약: {esc(spec["bus_protocol"]["name"])}</h3><div class="panel"><table><tr><th>신호</th><th>방향</th><th>설명</th></tr>{sig}</table></div><p>{esc(spec["bus_protocol"]["note"])}</p>
+<h3>통합 선언 (SoC 적합성)</h3>{integ_html}
 <h2 id="hier">3. 모듈 계층</h2><div class="panel"><ul class="tree">{hier_html(spec["hierarchy"])}</ul></div>
 <h2 id="map">4. 메모리맵</h2>{mm}
-<h2 id="road">5. 기술 트리 (이 캡스톤의 확장 경로)</h2><div class="panel"><ul style="list-style:none;padding:0">{road}</ul></div>
-<h2 id="src">6. 실행 소스</h2><p>저장소의 <code>capstones/{esc(spec["slug"])}/</code>에 있는 파일 그대로다. 이 문서는 파일에서 읽어 넣은 것이므로 항상 일치한다. <a href="{esc(spec["slug"])}.zip">소스 전체 내려받기 (.zip)</a> · <a href="{REPO_URL}/tree/main/capstones/{esc(spec["slug"])}">GitHub에서 보기</a></p>{src_html}{howto}
-<h2 id="verify">7. 검증</h2><div class="panel"><table><tr><th>단계</th><th>결과</th><th>내용</th></tr>
+<h2 id="ext">5. 외부 부품과 전기 회로도</h2><p class="muted">2절의 계통도는 <b>디지털 모듈 연결도</b>다. 전압, 풀업, 커넥터 배선 같은 전기 사항은 이 절에서 따로 다룬다. 기계가 읽는 사본: <a href="bom.csv">bom.csv</a> · <a href="connections.json">connections.json</a></p>{sch_html}<div class="panel"><table><tr><th>id</th><th>부품</th><th>인터페이스</th><th>신호 전압</th><th>구분</th><th>레벨 변환</th><th>비고</th></tr>{ext_rows}</table></div><p class="muted">Basys3 FPGA 핀은 3.3V 신호만 직접 받는다. 5V·12V·모터·릴레이는 직결하지 않는다.</p>
+<h2 id="road">6. 기술 트리 (이 캡스톤의 확장 경로)</h2><div class="panel"><ul style="list-style:none;padding:0">{road}</ul></div>
+<h2 id="src">7. 실행 소스</h2><p>저장소의 <code>capstones/{esc(spec["slug"])}/</code>에 있는 파일 그대로다. 이 문서는 파일에서 읽어 넣은 것이므로 항상 일치한다. <a href="{esc(spec["slug"])}.zip">소스 전체 내려받기 (.zip)</a> · <a href="{REPO_URL}/tree/main/capstones/{esc(spec["slug"])}">GitHub에서 보기</a></p>{src_html}{howto}
+<h2 id="verify">8. 검증</h2><div class="panel"><table><tr><th>단계</th><th>결과</th><th>내용</th></tr>
 {"".join(f'<tr><td>{n}</td><td>{esc(STATE_LABEL.get(ver[k]["result"], ver[k]["result"]))}</td><td>{esc(ver[k]["detail"])}</td></tr>' for n, k in (("린트(verilator)", "lint"), ("시뮬레이션(iverilog)", "sim"), ("합성 추정(yosys)", "synth"), ("보드 동작", "board")))}
 </table></div><p>{esc(spec["verification"]["notes"])}</p>
-<h2 id="ref">8. 참고 카드와 위험</h2><h3>참고 카드</h3><ul>{"".join(ref_li(r["card"], r["why"]) for r in spec["references"])}</ul><h3>위험·한계</h3>{ul(spec["risks"])}
+<h2 id="ref">9. 참고 카드와 위험</h2><h3>참고 카드</h3><ul>{"".join(ref_li(r["card"], r["why"]) for r in spec["references"])}</ul><h3>위험·한계</h3>{ul(spec["risks"])}
 </main></body></html>"""
     (out_dir / "index.html").write_text(page, encoding="utf-8")
     return spec, errs, warns, ver
