@@ -2,7 +2,7 @@
 
 자동 수집 모드가 위에서부터 `[ ]` 항목을 하나씩 소비한다. 끝나면 `[x]`로 바꾼다.
 
-- [ ] Basys3 오디오·I2S 주변장치 (Pmod I2S2, PWM 오디오)
+- [x] Basys3 오디오·I2S 주변장치 (Pmod I2S2, PWM 오디오)
 - [ ] Basys3 SD 카드 (SPI 모드) 저장장치
 - [ ] Basys3 카메라 (OV7670, SCCB) 파이프라인
 - [ ] Basys3 PS/2·USB HID 키보드/마우스 입력

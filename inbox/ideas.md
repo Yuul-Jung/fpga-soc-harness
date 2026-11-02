@@ -16,3 +16,23 @@
 - 심사: (점수와 한 줄 근거, /verify가 기록)
 ```
 
+
+## I-001 PWM 오디오 난이도 사다리 + VGA 막대 표시
+- 상태: raw
+- 요약: 내 판단: Pmod AMP2 PWM 출력으로 사각파→사인표→음계→BRAM 곡 재생까지 FSM으로 만들고, 재생 중 음높이를 VGA 막대로 보여주는 T1~T2 패키지.
+- 조합: [audio-pwm, video-vga, BRAM]
+- 근거: [zipcpu-pmodamp2-project-ladder, columbia-4840-audio-visualizer]
+- 새로움의 근거: 카탈로그에 오디오+VGA 조합 패키지 없음(현재 카드 3건, 패키지는 mmio-uart-gpio-skeleton뿐). 
+- Basys3 적합성의 근거: PWM 1핀 + Pmod 헤더 + VGA는 Basys3 기본 자원. 곡 데이터는 BRAM 소량. 근거는 사다리 글(9단계 BRAM 곡)이며 Basys3 실측은 없음.
+- 난이도: 2 / 단계: T2
+- 심사: (/verify가 기록)
+
+## I-002 I2S 클럭 체크 하네스: MMCM→MCLK→I2S 송신기 자체 점검 테스트벤치
+- 상태: raw
+- 요약: 내 판단: 12.288 MHz MCLK에서 BCLK/LRCLK를 파생하고 I2S 프레임을 만드는 송신기를 작성하고, 테스트벤치가 비율과 프레임 정렬을 PASS/FAIL로 검사하는 T2 패키지. 실패 사례의 교훈을 검증 항목으로 바꾼다.
+- 조합: [audio-i2s, MMCM clocking]
+- 근거: [digilent-forum-pmodamp3-basys3-i2s, columbia-4840-audio-visualizer]
+- 새로움의 근거: 기존 카드·패키지에 I2S 없음. 포럼 스레드의 비트 카운터 비동기 문제를 테스트로 고정한다는 관점.
+- Basys3 적합성의 근거: Pmod 한 포트(JA)로 MCLK/LRCK/SCLK/SDIN 4신호 필요(Pmod I2S2 매뉴얼 L3, 큐 참조). MMCM 사용 가능은 포럼 스레드 사례.
+- 난이도: 3 / 단계: T2
+- 심사: (/verify가 기록)
