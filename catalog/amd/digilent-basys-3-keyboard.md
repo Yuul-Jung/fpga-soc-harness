@@ -16,7 +16,8 @@ stats: {stars: 19, commits: 13}
 doc_language: en
 verification: L3
 checked_at: 2026-11-02
-status: 2026-11-02 /verify 재열람 시도 실패(WebFetch 권한 요청 미응답) — 이번 사이클 미대조, rechecked_at 미기록
+rechecked_at: 2026-11-02
+status: 2026-11-02 /verify 재열람: 저장소 페이지만 성공(Vivado 2018.2, 별 19, 커밋 13, 9600 baud, F0 접두 일치). 데모 페이지·포럼·매뉴얼 출처는 미재열람
 sources: [https://github.com/Digilent/Basys-3-Keyboard, https://reference.digilentinc.com/programmable-logic/basys-3/demos/keyboard, https://forum.digilent.com/topic/24733-does-basys-3-usb-hid-supports-device-with-mousekeyboard/, https://www.physics.umd.edu/hep/drew/495/basys3_rm.pdf]
 unverified: 소스 모듈·포트·xdc 미열람(저장소 README와 데모 페이지만 읽음), source_rev 미확인(범위 밖 저장소의 커밋 SHA를 조회하지 못함)
 ---

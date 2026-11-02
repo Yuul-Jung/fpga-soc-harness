@@ -16,6 +16,7 @@ stats: {commits: 17, stars: 3}
 doc_language: en
 verification: L2
 checked_at: 2026-11-02
+rechecked_at: 2026-11-02
 sources: [https://GitHub.com/suoglu/AXI-lite-slave]
 unverified: 커밋 SHA(source_rev), 소스·테스트벤치 본문(디렉터리 목록과 README만 봄), Vivado 버전, 최신 갱신일, 레지스터별 접근 속성
 ---
@@ -30,6 +31,7 @@ AXI4-Lite 슬레이브용 Verilog 모음. Basys3·Arty A7·Nexys Video의 GPIO(�
 - 시험: README 표에 Vivado 시뮬레이션과 보드 시험 일자(2021-10)가 있으나 Custom IP는 보드 시험 항목이 없다. `Test` 폴더 내용은 미열람.
 
 ## 검증·재현성
+- 재열람(2026-11-02): 커밋 17, 별 3, 포크 2, 라이선스 CERN-OHL-W-2.0, Basys3 GPIO 레지스터 맵과 145 LUT/168 FF, Custom 49 LUT/83 FF가 카드와 일치. 소스·Test 폴더 본문은 열람하지 못해 L2 유지(사유: 소스 본문 미열람, 요약 도구 경유).
 - 위 수치와 일자는 README 서술이며 직접 재현하지 않았다.
 
 ## 한계·위험

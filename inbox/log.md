@@ -20,3 +20,4 @@
 2026-11-02 18:51 | capstone | skip: ready 아이디어 없음(raw 9·vetted 3·used 1), 근거 카드 rechecked_at 부재로 심사 보류 상태. CI는 success
 2026-11-02 19:13 | collect | Intel/Altera DE10-Nano·DE1-SoC 캡스톤 · S2 조합 탐색(주)+S7 난이도 사다리(보조) | 카드 +3 | 아이디어 +1 | 큐 잔여 59 | blocked 1
 2026-11-02 20:03 | collect | Lattice iCE40/ECP5 주변장치 · S1 인접 도메인(주)+S6 실패 사례(보조) | 카드 +3 | 아이디어 +1 | 큐 잔여 64 | blocked 0
+2026-11-02 20:03 | verify | 재열람 5 | 수정 2 | 불일치 2(wangxuan95-can 하드웨어 시험 서술 미확인, unipi PERIOD 추정→사실) | 승격 L2→L3 0(소스 본문 미열람) | ready +0 | 아이디어 심사 보류(근거 카드 rechecked_at 3건 미만)

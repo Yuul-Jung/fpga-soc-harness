@@ -16,6 +16,7 @@ stats: {}
 doc_language: en
 verification: L3
 checked_at: 2026-11-02
+rechecked_at: 2026-11-02
 sources: [https://docenti.ing.unipi.it/~a011468/didattica/SE/Ppt/10_Custom_Peripheral_Tutorial.pdf]
 ---
 
@@ -31,7 +32,7 @@ sources: [https://docenti.ing.unipi.it/~a011468/didattica/SE/Ppt/10_Custom_Perip
 - 테스트벤치, 자원 사용: unverified: 자료에 없음.
 
 ## 한계·위험
-- 내 판단: PERIOD를 쓰면 카운터가 초기화되어 주기 변경이 즉시 반영되지 않을 수 있다(자료에 한계 서술 없음, 추정이므로 확인 필요).
+- 변경: 이전 카드는 "PERIOD 쓰기 시 카운터 초기화"를 추정으로 적었으나 재열람(2026-11-02)에서 자료가 PERIOD 쓰기로 카운터가 초기화된다고 직접 서술함을 확인. 이제 사실이며, 한계 서술은 자료에 따로 없음.
 - 라이선스 표기 없음 → unknown, 코드 반입 금지.
 
 ## 재사용 메모

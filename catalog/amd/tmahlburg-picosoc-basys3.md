@@ -16,6 +16,7 @@ stats: {stars: 2, commits: 6}
 doc_language: en
 verification: L2
 checked_at: 2026-11-02
+rechecked_at: 2026-11-02
 sources: [https://github.com/tmahlburg/picosoc-basys3]
 unverified: 커밋 SHA(source_rev), 라이선스, 클럭·보레이트, 주변장치 구성, 빌드 흐름(Vivado/오픈소스), basys3.v 본문(raw 열람 권한 요청 미응답, blocked)
 ---
@@ -28,6 +29,7 @@ PicoSoC 저장소의 보드 래퍼 방식을 따라 Basys3용으로 만든 래�
 - 기본 브랜치 이름은 master, 커밋 6건. 래퍼 + 테스트벤치 + 링커 스크립트 구성이다.
 
 ## 검증·재현성
+- 재열람(2026-11-02): 저장소 페이지의 커밋 6, 별 2, 포크 0, Makefile, Vivado 토픽, Digilent 마스터 XDC 의존이 카드와 일치. README는 짧아 클럭·주변장치·라이선스 정보가 없음을 재확인. basys3.v 본문은 이번에도 열람하지 않아 L2 유지(사유: 소스 본문 미열람).
 - 테스트벤치 파일이 있으나 내용과 실행 결과는 열람하지 못했다. 빌드 방법·CI 없음(확인 못 함).
 
 ## 한계·위험

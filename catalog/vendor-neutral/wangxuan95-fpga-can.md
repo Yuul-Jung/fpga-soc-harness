@@ -16,6 +16,7 @@ stats: {stars: 360, forks: 98, commits: 10}
 doc_language: en
 verification: L3
 checked_at: 2026-11-02
+rechecked_at: 2026-11-02
 sources: [https://github.com/WangXuan95/FPGA-CAN]
 ---
 
@@ -30,6 +31,7 @@ CAN 컨트롤러를 순수 Verilog로 작게 구현한 저장소. 송신은 4바
 - 전기: PHY는 5 V 전원이 필요하고 FPGA 핀은 3.3 V, 그라운드는 공통(README). 
 
 ## 검증·재현성
+- 변경: 이전 카드는 "실제 보드 검증은 USB-CAN 디버거와의 시험만 서술"이라 썼으나 재열람(2026-11-02)에서는 README에 검증된 하드웨어 대상 서술을 확인하지 못함 → unverified: 하드웨어 시험 서술(원문 재확인 필요). 별 360, 포크 98, 커밋 10, GPL-3.0은 일치.
 - 시뮬레이션: iverilog 배치 스크립트, 테스트벤치는 노드 4개를 ±1% 클럭 차이로 모델링(README). 자원 사용·타이밍: unverified: README에 수치 없음.
 - 실제 보드 검증은 USB-CAN 디버거와의 시험만 서술. 보드 이름: unverified: 데모는 50 MHz 발진기만 요구한다고 적음.
 
