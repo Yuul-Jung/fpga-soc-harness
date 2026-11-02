@@ -15,3 +15,13 @@
 - https://forum.digilent.com/topic/3377-how-could-i-use-spi-in-basys3-board/ | Basys3 SPI ADC→저장 논의, SD vs UART 스트리밍 비교 — 열람 L3, 카드 대기(소규모) | Basys3 SD card SPI mode Verilog
 - https://github.com/emeb/up5k_riscv | iCE40 UP5K RISC-V SoC — 미열람(L1) | PicoRV32 SD card SPI boot FAT32
 - https://github.com/ZipCPU/sdspi/blob/eadca4b1a5034c7825cd4a6366b4da0e5ae369bc/sw/sdcard.c | sdspi 드라이버 — 미열람(L1) | ZipCPU sdspi
+- https://github.com/westonb/OV7670-Verilog | Nexys4-DDR용 OV7670 SCCB 설정·캡처 모듈(프레임 버퍼 없음, 라이선스 미표기) — 열람 L3(README), 카드 대기 | OV7670 SCCB controller Verilog Basys3
+- https://github.com/thomaswang525/OV7670-Verilog | OV7670 Verilog — 미열람(L1) | OV7670 SCCB controller Verilog Basys3
+- https://github.com/missdown/Xilinx_FPGA_OV7670 | XC7A35T 기반 OV7670→VGA(Vivado 2017.2, 라이선스 없음) — 열람 L3(README 얕음), 버퍼 구조 미확인 | OV7670 Basys3 Verilog VGA
+- https://github.com/AngeloJacobo/FPGA_OV7670_Camera_Interface | OV7670→SDRAM→VGA(MIT, Xilinx, 보드 미명시, SDRAM 필수라 Basys3 no) — 열람 L3, 카드 보류 | OV7670 Basys3 Verilog VGA
+- https://forum.digilent.com/topic/16957-ov-7670-camera-with-basys-3/ | Basys3+OV7670 포럼, 답변 본문 미노출 — 열람 L2 | OV7670 Basys3 Verilog VGA
+- https://github.com/Shubhayu-Das/VL504-project/blob/main/VL504_Project_Report.pdf | VL504 보고서 PDF — blocked: URL 열람 권한 요청 미응답, 재시도 필요 | VL504 project OV7670
+- https://github.com/blahlt/notes/wiki/OV7670-without-FIFO | OV7670 FIFO 없는 사용 노트 — 본문 미열람(이력 페이지만, L1) | OV7670 without FIFO Basys 3
+- https://www.cs.columbia.edu/~sedwards/classes/2023/4840-spring/reports/SecureCam-report.pdf | Columbia SecureCam — 미열람(L1) | OV7670 SCCB controller Verilog
+- https://www.cs.columbia.edu/~sedwards/classes/2024/4840-spring/reports/Web-Cam-report.pdf | Columbia Web Cam — 미열람(L1) | OV7670 SCCB controller Verilog
+- https://github.com/GeorgeDong32/FIADS | OV7670 FIFO 없는 검색에서 나온 저장소 — 미열람(L1) | OV7670 without FIFO Basys 3

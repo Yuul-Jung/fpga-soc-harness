@@ -8,3 +8,6 @@
 | [zipcpu-sdspi](vendor-neutral/zipcpu-sdspi.md) | L3 | T2 | XuLA2 (Basys3 needs-port) | 2026-11-02 |
 | [wangxuan95-fpga-sdcard-file](amd/wangxuan95-fpga-sdcard-file.md) | L3 | T1 | Nexys4 (Basys3 needs-port) | 2026-11-02 |
 | [element14-security-camera-2-sd-card-interfacing](amd/element14-security-camera-2-sd-card-interfacing.md) | L3 | T1 | CMOD S7 (Basys3 needs-port) | 2026-11-02 |
+| [shubhayu-das-vl504-project](amd/shubhayu-das-vl504-project.md) | L3 | T4 | Basys3 | 2026-11-02 |
+| [mit-6111-2021-team04-temple-run](amd/mit-6111-2021-team04-temple-run.md) | L3 | T4 | Nexys4 DDR (Basys3 needs-port) | 2026-11-02 |
+| [columbia-4840-cameracontrol](intel/columbia-4840-cameracontrol.md) | L3 | T4 | DE1-SoC (Basys3 needs-port) | 2026-11-02 |
