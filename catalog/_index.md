@@ -14,3 +14,6 @@
 | [digilent-basys-3-keyboard](amd/digilent-basys-3-keyboard.md) | L3 | T1 | Basys3 | 2026-11-02 |
 | [oakland-ece378-group4-keyboard2vga](amd/oakland-ece378-group4-keyboard2vga.md) | L3 | T2 | Artix-7 (보드 미명시, Basys3 needs-port) | 2026-11-02 |
 | [oakland-ece378-group7-paintervga](amd/oakland-ece378-group7-paintervga.md) | L3 | T2 | Nexys4 (Basys3 needs-port) | 2026-11-02 |
+| [lauriela8-fpga-multi-module-system](amd/lauriela8-fpga-multi-module-system.md) | L3 | T2 | Basys3 | 2026-11-02 |
+| [ammar-bin-amir-arty-a7-i2c-mpu-6050](amd/ammar-bin-amir-arty-a7-i2c-mpu-6050.md) | L3 | T2 | Arty A7-100T (Basys3 needs-port) | 2026-11-02 |
+| [hackster-basys3-hcsr04-distance](amd/hackster-basys3-hcsr04-distance.md) | L3 | T1 | Basys3 | 2026-11-02 |

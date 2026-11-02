@@ -32,3 +32,9 @@
 - https://opencores.org/project,ps2 | OpenCores PS/2 코어 — 미열람(L1), 라이선스 확인 필요 | Basys3 PS/2 mouse VGA cursor
 - https://hwlab.fit.cvut.cz/_export/xhtml/pripravky/fpga/basys3/start | CVUT Basys3 실습 안내 — 미열람(L1) | Basys3 PS/2 keyboard Verilog
 - https://cfallin.org/projects/pong/report.pdf | PS/2 입력 Pong 보고서로 추정 — 미열람(L1) | Basys3 PS/2 mouse VGA cursor
+- https://github.com/Dibya2006/DHT11_Sensor_Module_Implementation_on_FPGA_with_verilog | DHT11 Verilog 모듈(루트만 열람, code 폴더 하나, 라이선스·보드 미표기) — L2, 하위 경로 열람 불가로 카드 보류 | FPGA DHT11 single-wire Verilog Basys3
+- https://github.com/0xArt/Tiny_But_Mighty_I2C_Master_Verilog | 작은 I2C 마스터 Verilog — 미열람(L1), 라이선스 확인 필요 | Basys3 I2C master Verilog sensor GitHub
+- https://github.com/MarkDannemiller/TTU-Lab1-BC5/wiki/3-%E2%80%90-Code-Breakdown | TTU 랩 코드 해설 위키(Basys3 I2C 검색에서 나옴) — 미열람(L1) | Basys3 I2C master Verilog sensor GitHub
+- https://github.com/kayas257/DHT11-zynq | DHT11 VHDL/Zynq — 미열람(L1) | FPGA DHT11 single-wire Verilog Basys3
+- https://fos.cmb.ac.lk/esl/?p=2369 | FPGA Multi I2C Controller 글 — 미열람(L1) | FPGA I2C master Verilog MPU-6050
+- blocked: lauriela8·Ammar 저장소의 src/tb 하위 경로와 README 전용 URL — 열람 권한 요청 미응답(2회), 다음 사이클에서 재시도
