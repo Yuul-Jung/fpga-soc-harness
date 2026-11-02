@@ -44,6 +44,42 @@ class Links(HTMLParser):
             self.refs.append(a[key])
 
 
+def audit_config():
+    """config/ 의 주소맵이 스스로 일관적인지 본다 (정렬, 중복, 인터럽트 대응)."""
+    amap = capcheck.address_map()
+    seen, names = set(), set()
+    size = capcheck.hexint(amap["slot_size"])
+    for r in amap["regions"]:
+        base = capcheck.hexint(r["base"])
+        if base % size:
+            add("error", "config:address_map", f"{r['name']}: 기준 주소 {r['base']}가 {amap['slot_size']} 정렬이 아님")
+        if base in seen:
+            add("error", "config:address_map", f"기준 주소 중복 {r['base']}")
+        seen.add(base)
+        names.add(r["name"])
+        if r.get("index") and capcheck.hexint(r["index"].strip("[]")) != (base >> 16) & 0xFF and r["kind"] == "peripheral":
+            add("error", "config:address_map", f"{r['name']}: 인덱스 {r['index']}가 주소 {r['base']}와 맞지 않음")
+    free = capcheck.hexint(amap["free_slots"]["base"])
+    if any(capcheck.hexint(r["base"]) >= free and capcheck.hexint(r["base"]) < capcheck.hexint(amap["free_slots"]["last_base"]) + size for r in amap["regions"]):
+        add("error", "config:address_map", "free_slots가 이미 배정된 영역과 겹침")
+    irqs = [i["input"] for i in amap["interrupts"]]
+    if len(irqs) != len(set(irqs)):
+        add("error", "config:address_map", "인터럽트 입력 번호 중복")
+    for i in amap["interrupts"]:
+        if i["source"] not in names and i["source"] != "test_slot":
+            add("error", "config:address_map", f"인터럽트 {i['input']}의 신호원 {i['source']}이 영역 목록에 없음")
+        if i["input"] in amap["free_slots"]["intc_free"]:
+            add("error", "config:address_map", f"인터럽트 {i['input']}가 사용 중이면서 free로 적힘")
+    prof = ROOT / "config" / "project_profile.json"
+    if prof.exists():
+        pr = json.loads(prof.read_text(encoding="utf-8"))
+        topics = (ROOT / "inbox" / "topics.md").read_text(encoding="utf-8")
+        for h in pr.get("on_hold", []):
+            for ln in topics.splitlines():
+                if ln.startswith("- [ ]") and any(k in ln for k in h["keywords"]):
+                    add("warn", "config:profile", f"보류({h['name']}) 주제가 아직 [ ]로 열려 있음: {ln[:60]}")
+
+
 def audit_cards(pol):
     permissive = set(pol["license"]["permissive_spdx"])
     pat = re.compile(pol["cards"]["source_rev_pattern"])
@@ -168,6 +204,7 @@ def main():
     r = subprocess.run([sys.executable, str(ROOT / "tools" / "check.py")], capture_output=True, text=True)
     if r.returncode != 0:
         add("error", "cards", "tools/check.py 실패: " + (r.stdout + r.stderr).strip().splitlines()[-1][:200] if (r.stdout + r.stderr).strip() else "tools/check.py 실패")
+    audit_config()
     ncards = audit_cards(pol)
     slugs = audit_capstones()
     if "--no-build" not in sys.argv:

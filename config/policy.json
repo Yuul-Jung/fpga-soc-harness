@@ -21,6 +21,6 @@
   "capstone": {
     "require_integration": true,
     "max_rtl_lines": 400,
-    "default_address_map": "mbv-frozen-v1"
+    "default_address_map": "mbv-frozen-v2"
   }
 }

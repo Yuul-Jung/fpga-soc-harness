@@ -322,8 +322,8 @@
     "bus": "mmio-lite",
     "address_map": "custom",
     "compat": "incompatible",
-    "target_map": "mbv-frozen-v1",
-    "plan": "이 패키지는 CPU 없이 시뮬레이션하려고 자체 버스 mmio-lite(0x1000_xxxx)를 썼다. MicroBlaze V 동결 맵으로 옮기려면 (1) mmio-lite→AXI4-Lite 마스터 다리나 library/rtl/axil_regs.v 기반 슬레이브로 레지스터 블록을 감싸고 (2) 기준 주소를 gpio→0x4000_0000(gpio_led_sw), uart→0x4002_0000(uart_lite)로 재배정한다. 레지스터 오프셋은 유지한다. 다리(마스터 쪽)는 아직 없다(gap)."
+    "target_map": "mbv-frozen-v2",
+    "plan": "이 패키지는 CPU 없이 시뮬레이션하려고 자체 버스 mmio-lite(0x1000_xxxx)를 쓴 파일럿이다. 동결 맵(mbv-frozen-v2)으로 옮기는 것은 주소만 바꾸는 일이 아니다. (1) gpio·uart는 동결 맵에 이미 AMD IP가 있다([00] AXI GPIO, [02] UART Lite). 레지스터 배치가 달라(AXI GPIO는 DATA/TRI, UART Lite는 RX/TX FIFO·STAT·CTRL) 우리 모듈을 그대로 꽂을 수 없고, 이식 때는 AMD IP를 쓰고 드라이버를 맞춘다. (2) 자체 주변장치는 프로젝트의 IP 표준(64KB 창, 0xFFF0 ID·VER·IRQ_STATUS·IRQ_ENABLE)에 맞춰 새로 감싼다. (3) mmio-lite→AXI4-Lite 마스터 다리는 아직 없다(gap)."
   },
   "external_parts": [
     {

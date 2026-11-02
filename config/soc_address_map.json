@@ -1,27 +1,368 @@
 {
-  "_comment": "MicroBlaze V 실습 시리즈(L00~L11)에서 동결된 주소·인터럽트 맵. CPU를 PicoRV32/자체 CPU로 바꿔도 유지한다. 출처: 프로젝트 지침 3절.",
-  "name": "mbv-frozen-v1",
+  "_comment": "프로젝트 문서(claude/stage3/src/soc_map.h, claude/ntrack/std_section.py, claude/ntrack/n11/build_n11.py, claude/handoff-stage3.md)의 주소·인터럽트 맵을 옮긴 것. 보드 미검증. 프로젝트 쪽이 바뀌면 이 파일을 먼저 고친다(HARNESS §17).",
+  "name": "mbv-frozen-v2",
+  "supersedes": "mbv-frozen-v1 (L00~L11, 8개 영역만 담았던 v0.6 초판)",
+  "source_docs": [
+    "claude/stage3/src/soc_map.h",
+    "claude/ntrack/std_section.py",
+    "claude/handoff-stage3.md",
+    "claude/errata-ntrack.md",
+    "claude/ntrack/n11/build_n11.py"
+  ],
   "bus": "AXI4-Lite (주변장치), LMB (로컬 메모리)",
   "clock_hz": 100000000,
-  "reset": "btnC, active high, 동기",
+  "reset": "btnC, active high",
   "slot_size": "0x10000",
   "regions": [
-    {"name": "local_mem", "base": "0x0000_0000", "size": "0x10000", "kind": "memory"},
-    {"name": "gpio_led_sw", "base": "0x4000_0000", "size": "0x10000", "kind": "peripheral"},
-    {"name": "gpio_btn",    "base": "0x4001_0000", "size": "0x10000", "kind": "peripheral"},
-    {"name": "uart_lite",   "base": "0x4002_0000", "size": "0x10000", "kind": "peripheral"},
-    {"name": "timer",       "base": "0x4003_0000", "size": "0x10000", "kind": "peripheral"},
-    {"name": "intc",        "base": "0x4004_0000", "size": "0x10000", "kind": "peripheral"},
-    {"name": "iic",         "base": "0x4005_0000", "size": "0x10000", "kind": "peripheral"},
-    {"name": "seg7",        "base": "0x4006_0000", "size": "0x10000", "kind": "peripheral"}
+    {
+      "name": "local_mem",
+      "base": "0x0000_0000",
+      "size": "0x10000",
+      "kind": "memory",
+      "index": null,
+      "note": "64 KB 동결(L01~N 시리즈). 2026-10-15 통합 교재 결정은 128 KB: 어느 쪽이 현재 기준인지 사용자 확인 필요(미검증)"
+    },
+    {
+      "name": "gpio_led_sw",
+      "index": "[00]",
+      "base": "0x4000_0000",
+      "size": "0x10000",
+      "kind": "peripheral",
+      "desc": "GPIO LED/SW",
+      "owner": "amd",
+      "id": null,
+      "intc": null,
+      "used_by": "L01~"
+    },
+    {
+      "name": "gpio_btn",
+      "index": "[01]",
+      "base": "0x4001_0000",
+      "size": "0x10000",
+      "kind": "peripheral",
+      "desc": "GPIO BTN",
+      "owner": "amd",
+      "id": null,
+      "intc": 3,
+      "used_by": "L03~"
+    },
+    {
+      "name": "uart_lite",
+      "index": "[02]",
+      "base": "0x4002_0000",
+      "size": "0x10000",
+      "kind": "peripheral",
+      "desc": "UART Lite (콘솔)",
+      "owner": "amd",
+      "id": null,
+      "intc": 1,
+      "used_by": "L04~"
+    },
+    {
+      "name": "timer",
+      "index": "[03]",
+      "base": "0x4003_0000",
+      "size": "0x10000",
+      "kind": "peripheral",
+      "desc": "Timer",
+      "owner": "amd",
+      "id": null,
+      "intc": 0,
+      "used_by": "L05~"
+    },
+    {
+      "name": "intc",
+      "index": "[04]",
+      "base": "0x4004_0000",
+      "size": "0x10000",
+      "kind": "peripheral",
+      "desc": "INTC",
+      "owner": "amd",
+      "id": null,
+      "intc": null,
+      "used_by": "L06~"
+    },
+    {
+      "name": "iic",
+      "index": "[05]",
+      "base": "0x4005_0000",
+      "size": "0x10000",
+      "kind": "peripheral",
+      "desc": "IIC",
+      "owner": "amd",
+      "id": null,
+      "intc": 2,
+      "used_by": "L08~"
+    },
+    {
+      "name": "seg7",
+      "index": "[06]",
+      "base": "0x4006_0000",
+      "size": "0x10000",
+      "kind": "peripheral",
+      "desc": "SEG7",
+      "owner": "user-legacy→std(N01)",
+      "id": "SEG7",
+      "intc": null,
+      "used_by": "L07~"
+    },
+    {
+      "name": "pwm",
+      "index": "[07]",
+      "base": "0x4007_0000",
+      "size": "0x10000",
+      "kind": "peripheral",
+      "desc": "PWM 4채널",
+      "owner": "user-legacy",
+      "id": null,
+      "intc": null,
+      "used_by": "L14~"
+    },
+    {
+      "name": "debounce",
+      "index": "[08]",
+      "base": "0x4008_0000",
+      "size": "0x10000",
+      "kind": "peripheral",
+      "desc": "버튼 디바운스",
+      "owner": "user-legacy",
+      "id": "DBN1 (0x0C)",
+      "intc": null,
+      "used_by": "L15~"
+    },
+    {
+      "name": "xadc",
+      "index": "[09]",
+      "base": "0x4009_0000",
+      "size": "0x10000",
+      "kind": "peripheral",
+      "desc": "XADC Wizard",
+      "owner": "amd",
+      "id": null,
+      "intc": null,
+      "used_by": "L16~"
+    },
+    {
+      "name": "vga",
+      "index": "[0A]",
+      "base": "0x400A_0000",
+      "size": "0x10000",
+      "kind": "peripheral",
+      "desc": "VGA 160x120 16색",
+      "owner": "user-legacy",
+      "id": null,
+      "intc": null,
+      "used_by": "L17~"
+    },
+    {
+      "name": "kbd",
+      "index": "[0B]",
+      "base": "0x400B_0000",
+      "size": "0x10000",
+      "kind": "peripheral",
+      "desc": "USB 키보드(PS/2 수신)",
+      "owner": "user-legacy",
+      "id": "PS2K (0x0C)",
+      "intc": null,
+      "used_by": "L18~"
+    },
+    {
+      "name": "pulse",
+      "index": "[0C]",
+      "base": "0x400C_0000",
+      "size": "0x10000",
+      "kind": "peripheral",
+      "desc": "펄스 측정",
+      "owner": "user-std",
+      "id": "PULS",
+      "intc": 4,
+      "used_by": "C01,C06,C10,N01,N02,N05"
+    },
+    {
+      "name": "qspi",
+      "index": "[0D]",
+      "base": "0x400D_0000",
+      "size": "0x10000",
+      "kind": "peripheral",
+      "desc": "AXI Quad SPI (칩 선택 2)",
+      "owner": "amd",
+      "id": null,
+      "intc": 5,
+      "used_by": "C02,C03,N08,N12"
+    },
+    {
+      "name": "onewire",
+      "index": "[0E]",
+      "base": "0x400E_0000",
+      "size": "0x10000",
+      "kind": "peripheral",
+      "desc": "1-Wire",
+      "owner": "user-std",
+      "id": "OWIR",
+      "intc": 6,
+      "used_by": "C02"
+    },
+    {
+      "name": "qdec",
+      "index": "[0F]",
+      "base": "0x400F_0000",
+      "size": "0x10000",
+      "kind": "peripheral",
+      "desc": "직교 디코더 2채널",
+      "owner": "user-std",
+      "id": "QDEC",
+      "intc": 7,
+      "used_by": "C05,C06,C10"
+    },
+    {
+      "name": "aux_gpio",
+      "index": "[10]",
+      "base": "0x4010_0000",
+      "size": "0x10000",
+      "kind": "peripheral",
+      "desc": "보조 출력 GPIO 6비트",
+      "owner": "amd",
+      "id": null,
+      "intc": null,
+      "used_by": "C00~,N05"
+    },
+    {
+      "name": "ws2812",
+      "index": "[11]",
+      "base": "0x4011_0000",
+      "size": "0x10000",
+      "kind": "peripheral",
+      "desc": "WS2812 직렬화",
+      "owner": "user-std",
+      "id": "WS28",
+      "intc": 8,
+      "used_by": "C06"
+    },
+    {
+      "name": "uart_gps",
+      "index": "[12]",
+      "base": "0x4012_0000",
+      "size": "0x10000",
+      "kind": "peripheral",
+      "desc": "UART Lite (GPS)",
+      "owner": "amd",
+      "id": null,
+      "intc": 9,
+      "used_by": "C09"
+    },
+    {
+      "name": "uart_bt",
+      "index": "[13]",
+      "base": "0x4013_0000",
+      "size": "0x10000",
+      "kind": "peripheral",
+      "desc": "UART Lite (블루투스)",
+      "owner": "amd",
+      "id": null,
+      "intc": 10,
+      "used_by": "C09"
+    },
+    {
+      "name": "i2s_tx",
+      "index": "[14]",
+      "base": "0x4014_0000",
+      "size": "0x10000",
+      "kind": "peripheral",
+      "desc": "I2S 송신",
+      "owner": "user-std",
+      "id": "I2ST",
+      "intc": 11,
+      "used_by": "N09"
+    },
+    {
+      "name": "stepper",
+      "index": "[15]",
+      "base": "0x4015_0000",
+      "size": "0x10000",
+      "kind": "peripheral",
+      "desc": "스텝모터 (ip_stepper, 28BYJ-48+ULN2003)",
+      "owner": "user-std",
+      "id": "STEP",
+      "intc": 12,
+      "used_by": "N11"
+    }
   ],
-  "free_slots": {"first": "0x4007_0000", "last": "0x400F_0000", "note": "새 주변장치는 여기서 64KB 단위로 순서대로 배정한다. 동결된 8개 영역은 바꾸지 않는다."},
+  "test_slot": {
+    "index": "[3F]",
+    "base": "0x403F_0000",
+    "intc": 15,
+    "rule": "시험 프로젝트(std_test_hw)에만 두고 과제 설계에는 넣지 않는다"
+  },
+  "free_slots": {
+    "first": "[16]",
+    "base": "0x4016_0000",
+    "last": "[3E]",
+    "last_base": "0x403E_0000",
+    "intc_free": [
+      13,
+      14
+    ],
+    "note": "새 블록은 [16]부터 차례로 배정한다(규칙: 빈 번호부터 순서대로). 배정은 제안이며 프로젝트 인덱스 표가 동결한다."
+  },
   "interrupts": [
-    {"input": 0, "source": "timer", "state": "used"},
-    {"input": 1, "source": "uart_lite", "state": "reserved"},
-    {"input": 2, "source": "iic", "state": "used"},
-    {"input": 3, "source": "gpio_btn", "state": "used"}
+    {
+      "input": 0,
+      "source": "timer"
+    },
+    {
+      "input": 1,
+      "source": "uart_lite"
+    },
+    {
+      "input": 2,
+      "source": "iic"
+    },
+    {
+      "input": 3,
+      "source": "gpio_btn"
+    },
+    {
+      "input": 4,
+      "source": "pulse"
+    },
+    {
+      "input": 5,
+      "source": "qspi"
+    },
+    {
+      "input": 6,
+      "source": "onewire"
+    },
+    {
+      "input": 7,
+      "source": "qdec"
+    },
+    {
+      "input": 8,
+      "source": "ws2812"
+    },
+    {
+      "input": 9,
+      "source": "uart_gps"
+    },
+    {
+      "input": 10,
+      "source": "uart_bt"
+    },
+    {
+      "input": 11,
+      "source": "i2s_tx"
+    },
+    {
+      "input": 12,
+      "source": "stepper"
+    },
+    {
+      "input": 15,
+      "source": "test_slot"
+    }
   ],
+  "ip_standard": "config/ip_standard.json",
   "button_bits": "btn[3]=U, btn[2]=D, btn[1]=L, btn[0]=R (btnC는 리셋 전용)",
-  "uart": "115200 bps 8N1"
+  "uart": "115200 8N1"
 }
