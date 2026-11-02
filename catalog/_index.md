@@ -26,3 +26,6 @@
 | [yosyshq-picorv32-picosoc](vendor-neutral/yosyshq-picorv32-picosoc.md) | L2 | T2 | iCE40-HX8K (Basys3 needs-port) | 2026-11-02 |
 | [symbiflow-arch-defs-picosoc-basys3](amd/symbiflow-arch-defs-picosoc-basys3.md) | L2 | T2 | Basys3 | 2026-11-02 |
 | [tmahlburg-picosoc-basys3](amd/tmahlburg-picosoc-basys3.md) | L2 | T2 | Basys3 | 2026-11-02 |
+| [columbia-4840-dc-motor-controller](intel/columbia-4840-dc-motor-controller.md) | L3 | T4 | DE1-SoC (Basys3 needs-port) | 2026-11-02 |
+| [codeproject-de10-nano-self-balancing-robot](intel/codeproject-de10-nano-self-balancing-robot.md) | L3 | T4 | DE10-Nano (Basys3 needs-port) | 2026-11-02 |
+| [unipi-se-custom-peripheral-pwm](intel/unipi-se-custom-peripheral-pwm.md) | L3 | T3 | Cyclone II EP2C35 (Basys3 needs-port) | 2026-11-02 |

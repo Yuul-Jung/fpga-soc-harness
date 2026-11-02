@@ -55,3 +55,11 @@
 - https://github.com/ultraembedded/riscv_soc | RISC-V SoC(AXI 기반 추정) — 미열람(L1) | picorv32 AXI4-Lite wrapper custom peripheral Artix-7
 - https://docta.ucm.es/entities/publication/64cb7bbe-9575-401a-aeed-fa56979b3e40 | Alhambra-II 임베디드 시스템 논문(iCE40 계열 SoC, 스페인어 추정) — 미열람(L1) | PicoRV32 Basys3 SoC VGA OR PS/2 OR SPI
 - https://mee-labs-gitlab-pages-imt-atlantique-fr-614940.gitlab-pages.imt-atlantique.fr/seiml/seiml-hw3/ | IMT Atlantique SoC 실습(PicoRV32 가능성) — 미열람(L1) | picorv32 AXI4-Lite wrapper custom peripheral
+- https://people.ece.cornell.edu/land/courses/ece5760/FinalProjects/s2016/crl233_gp348_nds55/gp348_crl233_nds55/gp348_crl233_nds55/index.html | Cornell 2016 공 부양(Levitating a ball, Cyclone IV) — blocked: 열람 권한 요청 미응답, 재시도 필요 | Cornell ECE 5760 inverted pendulum
+- https://people.ece.cornell.edu/land/courses/ece5760/FinalProjects/f2010/ma638_ca325_as2454/ma638_ca325_as2454/index.html | Cornell 2010 PID 온도 제어기(Cyclone II) — 목록 제목만(L1) | ECE 5760 final projects list
+- https://people.ece.cornell.edu/land/courses/ece5760/FinalProjects/s2014/am2462_sv345_ts599/am2462_sv345_ts599/final_report_ece5760.html | Cornell 2014 색 추종 로봇 — 목록 제목만(L1) | ECE 5760 final projects list
+- https://people.ece.cornell.edu/land/courses/ece5760/FinalProjects/s2026/aj477_drh253_lag289/aj477_drh253_lag289/aj477_drh253_lag289/index.html | Cornell 2026 음향 부양(DE1-SoC) — 목록 제목만(L1) | ECE 5760 final projects list
+- https://people.ece.cornell.edu/land/courses/eceprojectsland/STUDENTPROJ/2004to2005/jss67/Final_Report.pdf | Cornell 도립진자 최종 보고서(2004~05, FPGA 여부 미확인) — 미열람(L1) | Cornell ECE 5760 inverted pendulum
+- https://repositorio.ufc.br/bitstream/riufc/45201/3/2019_tcc_jtcoelhoneto.pdf | 브라질 UFC 2019 졸업논문(FPGA 모터 제어 추정) — 미열람(L1) | DE1-SoC encoder PWM motor control
+- https://www.cs.columbia.edu/~sedwards/classes/2022/4840-spring/reports/DC-Motor-Controller-presentation.pdf | 위 DC 모터 보고서의 발표 자료 — 미열람(L1), 보고서 카드로 갈음
+- https://forums.intel.com/s/question/0D50P00003yyTNX/pid-controller-implementation-help-needed? | Intel 포럼 PID 구현 질문 — 미열람(L1), 실패 사례 후보
