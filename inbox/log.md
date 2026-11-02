@@ -41,3 +41,4 @@
 2026-11-03 06:41 | verify | 재열람 0(WebFetch 권한 요청 무응답 재발, GitHub MCP는 범위 밖: 원문 대조 불가로 blocked, 우회 안 함) | 수정 1(wangxuan95-fpga-foc source_rev 형식 오류 해소: 값 없는 unverified 필드 제거, 본문에 unverified 사유 유지; 원문 대조 아님) | 불일치 0 | 승격 L2→L3 0 | ready +0 | 아이디어 심사 보류(근거 카드 rechecked_at 없음), check 통과
 2026-11-03 06:50 | capstone | skip: ready 아이디어 없음(raw 21·vetted 2건뿐, 게이트 3 미충족). 게이트 1(최신 CI 성공 afb680c)·2(broken 없음)는 충족
 2026-11-03 07:10 | collect | CPU 중립화 개조(NEORV32·PicoRV32 → AXI4-Lite IP 표준) · S3 빈틈 추적(주: CPU 트랙 개조 gap)+S1 인접 도메인(보조: 소프트코어 주변장치 규약 이식) | 카드 +3 | 아이디어 +1 | 큐 +5 | blocked 0
+2026-11-03 08:07 | collect | 이더넷 W5500·Pmod NIC100 · S7 난이도 사다리(주: 핀 직결 → Pmod MAC/PHY → 칩 내장 스택)+S5 비정형 출처(보조: 포럼·WIZnet Makers 글) | 카드 +3 | 아이디어 +1 | 큐 잔여 128 | blocked 1

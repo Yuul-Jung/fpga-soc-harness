@@ -137,3 +137,10 @@
 - https://github.com/stnolting/wb_spi_bridge | NEORV32 작성자의 Wishbone-SPI 브리지 — 미열람(L1) | stnolting neorv32 license BSD-3-Clause external bus interface Wishbone AXI4-Lite bridge
 - https://heimdall.us.es/docs/docencia/SEPAGIERM/T12%20-%20Arquitectura%20de%20un%20soft%20processor.pdf | 소프트 프로세서 구조 강의(스페인어 추정) — 미열람(L1) | NEORV32 Basys3 UART GPIO SPI TWI peripheral register map Wishbone
 - https://github.com/stnolting/neorv32/discussions/573 | NEORV32 토론(AXI4-Lite/Wishbone 관련 추정) — 미열람(L1) | stnolting neorv32 license BSD-3-Clause external bus interface Wishbone AXI4-Lite bridge
+- https://github.com/carljohnsen/Pmod-NIC100 | VHDL Pmod NIC100 SPI 인터페이스, AXI 레지스터 4개, fmax 14 MHz, 라이선스·빌드 미기재 — README 열람 L3, 카드 보류(상한), 다음 사이클 후보 | W5500/ENC424J600 FPGA 질의
+- https://github.com/gregor-samsa/papilio-enc28j60 | Papilio One + Olimex ENC28J60, Arduino EtherCard 포크로 DHCP·ping·HTTP — FPGA RTL이 아닌 소프트코어 경로 추정(L2~L3 일부), 라이선스 미기재, 카드 보류 | ENC28J60 FPGA 질의
+- https://gitcode.com/Universal-Tool/59a13 | W5500 Verilog 드라이버(MIT 표기), HDL 열람 불가 — blocked: 본문 미열람(L1)
+- https://maker.wiznet.io/Arnold/projects/how-to-build-fpga-ethernet-with-wiznet-w5500-on-verilog/ | W5500 FPGA 구현 글, 계획 서술만 — 열람 L3, 카드 w5500-udp-loopback에 보조 출처로 반영
+- https://opencores.org/project,cheap_ethernet | 10BASE-T 직결 송신 코어 — 미열람(L1)
+- https://maker.wiznet.io/mason/projects/w5500-vs-enc28j60-which-spi-ethernet-controller-wins/ | W5500 vs ENC28J60 비교 — 미열람(L1)
+- 참고: ENC28J60을 Verilog로 구동한 FPGA 사례는 검색 2회에서 못 찾음(Arduino/MCU 드라이버 위주). Basys3에서 W5500·ENC28J60 직접 사례도 못 찾음

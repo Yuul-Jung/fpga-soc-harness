@@ -68,3 +68,6 @@
 | [stnolting-neorv32](vendor-neutral/stnolting-neorv32.md) | L2 | T3 | 범용 (Basys3 needs-port) | 2026-11-03 |
 | [unipi-cds105-neorv32-basys3-lab](papers/unipi-cds105-neorv32-basys3-lab.md) | L3 | T1 | Basys3 | 2026-11-03 |
 | [yosyshq-picorv32](vendor-neutral/yosyshq-picorv32.md) | L2 | T2 | 범용 (Basys3 needs-port) | 2026-11-03 |
+| [digilent-forum-basys3-ethernet-ipv4-udp](amd/digilent-forum-basys3-ethernet-ipv4-udp.md) | L3 | T1 | Basys3 (needs-port: 핀 직결 방식은 비권장) | 2026-11-03 |
+| [digilent-pmod-nic100-reference-manual](amd/digilent-pmod-nic100-reference-manual.md) | L3 | T2 | Basys3 (needs-port, 단종) | 2026-11-03 |
+| [wiznet-makers-gavinchang-w5500-udp-loopback](vendor-neutral/wiznet-makers-gavinchang-w5500-udp-loopback.md) | L3 | T2 | 미명시 (Basys3 needs-port) | 2026-11-03 |

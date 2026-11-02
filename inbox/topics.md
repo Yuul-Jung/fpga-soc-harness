@@ -26,3 +26,8 @@
 - [x] 최상: BLDC/PMSM 홀센서·FOC 입문 FPGA 구현 (3상 PWM, 전류 센싱, 데드타임) — 2026-11-03 사이클: 카드 3건(L3 2, L2 1), Basys3 직접 사례와 FpOC SHA는 못 찾음/unverified
 - [x] 입출력 조합: 마이크·가속도·카메라 입력 + 도트 매트릭스(MAX7219)·음성(DFPlayer)·영상 출력 모듈 조합 사례 — 2026-11-03 사이클: 카드 3건(L3), Verilog MAX7219·DFPlayer FPGA 직접 사례와 카메라 조합은 못 찾음, DFPlayer 프레임 명세는 데이터시트 열람 필요
 - [x] CPU 중립화 개조: PicoRV32·VexRiscv·NEORV32 SoC의 주변장치 레지스터·인터럽트·부트 흐름 중 AXI4-Lite IP 표준 래퍼로 옮길 수 있는 부분 (전략 S1) — 2026-11-03 07시대 사이클: 카드 3건(NEORV32 L2, Basys3 강의 L3, PicoRV32 L2), 원본 저장소·LICENSE 직접 열람 못 함, VexRiscv는 미착수
+
+## 빈 곳 보충 (2026-11-03 §12.2-3, 위에서부터 소비)
+- [x] 이더넷: Arduino 호환 SPI 이더넷 모듈(ENC28J60, W5500)과 Pmod NIC100을 Basys3에서 구동하는 UDP/ARP 사례 (comm-eth 카드 0건) — 2026-11-03 08시대 사이클: 카드 3건(L3), W5500·Pmod NIC100 중심, ENC28J60 Verilog 직접 사례와 Basys3 W5500 사례는 못 찾음, Pmod-NIC100 저장소 카드는 큐
+- [ ] 영상 제약 역전: 프레임 버퍼 없는 VGA 라인 버퍼 스트리밍·타일맵 (video-vga, S4, no-dram)
+- [ ] 서보 액추에이터 조합: 서보 PWM IP와 입력 장치(조이스틱·XADC·카메라) 연동 로봇팔 사례 (actuator-servo)
