@@ -44,3 +44,6 @@
 | [hakan-demirli-pid-fpga](intel/hakan-demirli-pid-fpga.md) | L3 | T4 | DE2 (Basys3 needs-port) | 2026-11-02 |
 | [1runxu-520-pid-fpga](vendor-neutral/1runxu-520-pid-fpga.md) | L2 | T4 | 미명시 (Basys3 needs-port) | 2026-11-02 |
 | [microchip-an532-dc-servo-pid](papers/microchip-an532-dc-servo-pid.md) | L3 | T4 | PIC17C42 (Basys3 needs-port) | 2026-11-02 |
+| [eeict-2011-xpisid00-stepper-linear-speed-controller](papers/eeict-2011-xpisid00-stepper-linear-speed-controller.md) | L3 | T4 | Spartan-3A XC3S400A (Basys3 needs-port) | 2026-11-02 |
+| [opencores-roboarm-stepper](vendor-neutral/opencores-roboarm-stepper.md) | L3 | T1 | 미명시 (Basys3 needs-port) | 2026-11-02 |
+| [stepmotion-vp-steps-per-time](vendor-neutral/stepmotion-vp-steps-per-time.md) | L3 | T2 | PIC18F (Basys3 needs-port) | 2026-11-02 |

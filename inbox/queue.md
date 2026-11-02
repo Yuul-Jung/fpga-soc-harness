@@ -86,3 +86,8 @@
 - https://www.academia.edu/143250504/Hardware_Realization_of_Embedded_Control_Algorithm_on_FPGA | 임베디드 제어 알고리즘 FPGA — 미열람(L1) | FPGA PID 한국어 질의
 - blocked: instructables PID-Controller-VHDL — 페이지 본문 미수신(메타데이터만), Cork IT 학위 프로젝트, 재시도 필요 | Basys3 PID 질의
 - 참고: iaeng WCECS2010 pp989-995(Spartan-3 PID)는 기존 카드 deepc94-pid-fpga-vhdl과 동일 계열로 판단, 별도 카드 안 만듦
+- https://www.machinedesign.com/archive/avoiding-step-loss | 스텝 손실 원인(공진, 시작 주파수, 역구동)과 가감속 대책, 2005 — 열람 L3, 카드 대기(S6 근거로 I-018에 인용) | stepper motor skipped steps acceleration FPGA
+- https://github.com/lalvesl/VHDLfyStepperMotorControl | VHDL 스테퍼 드라이버(MIT, Quartus 폴더) — 랜딩 페이지만 열람(L2), README·src 미열람 | stepper motor controller Verilog FPGA acceleration ramp GitHub
+- https://www.logicbricks.com/Documentation/Datasheets/IP/logiSTEP_hds.pdf | Xylon logiSTEP 상용 IP 데이터시트(AXI4-Lite, S자 가감속, 마이크로스텝 BRAM 테이블) — 열람 L3, 상용·암호화라 코드 반입 불가, 카드 대기 | stepper motor controller Verilog FPGA acceleration ramp GitHub
+- https://www.embedded.com/motor-c | D. Austin 스텝모터 프로파일 글 후보 — 미열람(L1) | David Austin stepper speed profiles
+- 참고: 28BYJ-48/ULN2003 Basys3 직접 사례와 A4988 FPGA 호밍 사례는 검색에서 못 찾음(Arduino 튜토리얼만 나옴)
