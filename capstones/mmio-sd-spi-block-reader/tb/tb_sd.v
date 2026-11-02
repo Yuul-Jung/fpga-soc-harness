@@ -133,6 +133,7 @@ module tb_sd;
         if (errors == 0) $display("PASS tb_sd");
         else begin
             $display("FAIL diag: s1=%h s2=%h s3=%h st=%0d step=%0d r1=%h tcnt=%0d bcnt=%0d", s1, s2, s3, dut.u_sd.st, dut.u_sd.step, dut.u_sd.r1, dut.u_sd.tcnt, dut.u_sd.bcnt);
+            $display("FAIL model: qlen=%0d qpos=%0d n17=%0d cmd=%0d col=%b bitc=%0d q0..6=%h %h %h %h %h %h %h", card.qlen, card.qpos, card.n17, card.cmd, card.col, card.bitc, card.q[0], card.q[1], card.q[2], card.q[3], card.q[4], card.q[5], card.q[6]);
             $display("FAIL: %0d errors", errors);
         end
         $finish;
