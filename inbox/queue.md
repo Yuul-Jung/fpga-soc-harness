@@ -48,3 +48,10 @@
 - https://billauer.se/blog/2011/08/microblaze-custom-ip-peripheral-axi4-cip-ipwiz/ | MicroBlaze 사용자 IP 마법사 글(2011) — blocked: 리디렉션 URL이라 열람 권한 미응답 | Basys3 MicroBlaze custom AXI4-Lite
 - https://github.com/briansune/Xilinx-DNA-Verilog | Xilinx DNA Verilog AXI-Lite — 미열람(L1) | github topics axi-lite
 - https://cse.unl.edu/~jfalkinburg/cse_courses/2025/436/lecture/lecture18.html | MicroBlaze V 강의 추정 — blocked: robots 차단 | MicroBlaze V Basys3 Vivado 2024.2
+- https://raw.githubusercontent.com/tmahlburg/picosoc-basys3/master/basys3.v | tmahlburg 래퍼 본문 — blocked: 열람 권한 요청 미응답 | picosoc Basys3 Artix-7 picorv32 GitHub
+- https://github.com/YosysHQ/picorv32/blob/main/picosoc/README.md | PicoSoC 원본 README(미러 대신 원본 확인용) — blocked: 열람 권한 요청 미응답 | PicoRV32 Basys3 UART memory-mapped peripheral
+- https://software.mcgoron.com/Hardware/f4pga-examples/src/commit/9b953d9f7537da090a93bbec8308c4d38f17c485/xc7/picosoc_demo | f4pga-examples picosoc_demo(Basys3·Arty, UART 460800, simpleuart/progmem) — 일부 열람(L2), 라이선스 미확인, 카드 대기 | picosoc Basys3 Artix-7 picorv32 GitHub
+- https://github.com/artalex97/Basys3 | Basys3 관련 저장소 — 미열람(L1) | picosoc Basys3 Artix-7 picorv32 GitHub
+- https://github.com/ultraembedded/riscv_soc | RISC-V SoC(AXI 기반 추정) — 미열람(L1) | picorv32 AXI4-Lite wrapper custom peripheral Artix-7
+- https://docta.ucm.es/entities/publication/64cb7bbe-9575-401a-aeed-fa56979b3e40 | Alhambra-II 임베디드 시스템 논문(iCE40 계열 SoC, 스페인어 추정) — 미열람(L1) | PicoRV32 Basys3 SoC VGA OR PS/2 OR SPI
+- https://mee-labs-gitlab-pages-imt-atlantique-fr-614940.gitlab-pages.imt-atlantique.fr/seiml/seiml-hw3/ | IMT Atlantique SoC 실습(PicoRV32 가능성) — 미열람(L1) | picorv32 AXI4-Lite wrapper custom peripheral

@@ -23,3 +23,6 @@
 | [digilent-basys-3-getting-started-microblaze](amd/digilent-basys-3-getting-started-microblaze.md) | L3 | T3 | Basys3 | 2026-11-02 |
 | [element14-eoi-blog3-custom-ip-pwm](amd/element14-eoi-blog3-custom-ip-pwm.md) | L3 | T3 | Zynq-7000 (Basys3 needs-port) | 2026-11-02 |
 | [suoglu-axi-lite-slave](vendor-neutral/suoglu-axi-lite-slave.md) | L2 | T2 | Basys3 | 2026-11-02 |
+| [yosyshq-picorv32-picosoc](vendor-neutral/yosyshq-picorv32-picosoc.md) | L2 | T2 | iCE40-HX8K (Basys3 needs-port) | 2026-11-02 |
+| [symbiflow-arch-defs-picosoc-basys3](amd/symbiflow-arch-defs-picosoc-basys3.md) | L2 | T2 | Basys3 | 2026-11-02 |
+| [tmahlburg-picosoc-basys3](amd/tmahlburg-picosoc-basys3.md) | L2 | T2 | Basys3 | 2026-11-02 |

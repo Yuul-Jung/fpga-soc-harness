@@ -9,7 +9,7 @@
 - [x] Basys3 UART/SPI/I2C 센서 허브 (Arduino 모듈 우선)
 - [x] Basys3 이더넷·Bluetooth·CAN 통신 (Pmod 기반) — 2026-11-02 16:16 사이클에서 CAN·무선 카드 작성, 이더넷은 자료 부족으로 미착수
 - [x] MicroBlaze/MicroBlaze V Basys3 사용자 AXI 주변장치
-- [ ] PicoRV32 Basys3 SoC (PicoSoC 포팅 사례) — 제작은 보류, 자료는 수집하고 개조 메모로 MicroBlaze V 기준에 연결 (config/project_profile.json cpu_tracks)
+- [x] PicoRV32 Basys3 SoC (PicoSoC 포팅 사례) — 2026-11-02 18시대 사이클: 카드 3건(L2), raw 열람 권한 미응답으로 L3 승격은 /verify로 — 제작은 보류, 자료는 수집하고 개조 메모로 MicroBlaze V 기준에 연결 (config/project_profile.json cpu_tracks)
 - [ ] Intel/Altera 캡스톤: DE10-Nano·DE1-SoC 주변장치 프로젝트
 - [ ] Lattice iCE40/ECP5 RISC-V SoC 주변장치
 - [ ] 한국어 FPGA 종합설계·캡스톤 보고서
