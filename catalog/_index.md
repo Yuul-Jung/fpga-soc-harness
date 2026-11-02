@@ -38,3 +38,6 @@
 | [toshiba-tb6612fng-datasheet](vendor-neutral/toshiba-tb6612fng-datasheet.md) | L3 | T2 | 없음 (모듈 데이터시트) | 2026-11-02 |
 | [ti-drv8833-datasheet](vendor-neutral/ti-drv8833-datasheet.md) | L3 | T2 | 없음 (모듈 데이터시트) | 2026-11-02 |
 | [markdannemiller-ttu-lab1-bc5-hardware-guide](amd/markdannemiller-ttu-lab1-bc5-hardware-guide.md) | L2 | T2 | Basys3 | 2026-11-02 |
+| [element14-arty-s7-artybot-axi-speed-sensing-ip](amd/element14-arty-s7-artybot-axi-speed-sensing-ip.md) | L3 | T3 | Arty S7-50 (Basys3 needs-port) | 2026-11-02 |
+| [wdevore-tinyfpga-quadrature-decoder-gist](vendor-neutral/wdevore-tinyfpga-quadrature-decoder-gist.md) | L3 | T0 | TinyFPGA-B2 (Basys3 needs-port) | 2026-11-02 |
+| [ubc-elex2117-lab6-quadrature-encoder](papers/ubc-elex2117-lab6-quadrature-encoder.md) | L3 | T0 | CPLD 보드 (Basys3 needs-port) | 2026-11-02 |

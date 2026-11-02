@@ -77,3 +77,7 @@
 - https://www.allaboutcircuits.com/technical-articles/h-bridge-dc-motor-control-complementary-pulse-width-modulation-pwm-shoot-through-dead-time-pwm/ | 상보 PWM·데드타임 개념 글 — 열람했으나 수치·역기전력 서술 없음(L2), 카드 보류 | H-bridge dead time shoot-through
 - https://github.com/MarkDannemiller/TTU-Lab1-BC5 | TTU Basys3 + L298 프로젝트 본체 — 미열람, L3 승격 후보 | 같은 검색어
 - https://wiki.keyestudio.com/Ks0066_keyestudio_TB6612FNG_Motor_Driver | TB6612 아두이노 모듈 위키 — 미열람(L1) | TB6612FNG datasheet
+- https://forum.digikey.com/t/quadrature-decoder-vhdl/12671 | DigiKey 직교 디코더 VHDL(디바운스·원점 설정 generic) — 일부 열람, 포트 표가 이미지라 L2, 라이선스 불명 | quadrature encoder decoder Verilog FPGA
+- https://koreascience.kr/article/CFKO200905364854795.pdf | 2009 대한전기학회 SoC 기반 DC모터 속도제어(Spartan-II, 4체배 HSC+PID, 한국어) — 요약 기준 L2 | FPGA 엔코더 4체배 디코더
+- https://www.hackster.io/fpga-for-robotics-education/lab-5-encoders-and-precision-movement-b87cd3 | WebFPGA 엔코더 각도·회전 계수 — 열람(L3), 소스 링크 없고 코드 품질 의문, 카드 보류 | Basys3 encoder
+- https://people.ece.ubc.ca/edc/2117.jan2021/lab6.pdf | UBC 같은 실습의 2021년판 — 미열람(L1), 동일 계열 | Basys3 rotary encoder
