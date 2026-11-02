@@ -62,3 +62,6 @@
 | [wangxuan95-fpga-foc](vendor-neutral/wangxuan95-fpga-foc.md) | L3 | T4 | DE10-Nano (Basys3 needs-port) | 2026-11-02 |
 | [arief-2026-ijecbe-artix7-36v-bldc-hall-sixstep](amd/arief-2026-ijecbe-artix7-36v-bldc-hall-sixstep.md) | L2 | T2 | Artix-7 (Basys3 needs-port) | 2026-11-02 |
 | [mari-upc-2022-fpga-foc-ipmsm-field-weakening](amd/mari-upc-2022-fpga-foc-ipmsm-field-weakening.md) | L3 | T4 | Zynq-7020 (Basys3 no) | 2026-11-02 |
+| [vhdplus-spectrum-analyzer-max7219](intel/vhdplus-spectrum-analyzer-max7219.md) | L3 | T4 | VHDPlus Core MAX10 (Basys3 needs-port) | 2026-11-03 |
+| [mit-6111-2017-team20-audio-spectrum-analyzer](amd/mit-6111-2017-team20-audio-spectrum-analyzer.md) | L3 | T4 | Nexys 4 (Basys3 needs-port) | 2026-11-03 |
+| [renesas-forgefpga-fg015-running-string](vendor-neutral/renesas-forgefpga-fg015-running-string.md) | L3 | T2 | ForgeFPGA SLG47910V (Basys3 needs-port) | 2026-11-03 |

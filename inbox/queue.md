@@ -123,3 +123,12 @@
 - https://nsl.cse.unt.edu/sites/default/files/people/documents/Efficient_FPGA_Implementation_of_Field_Oriented_Control_for_3-Phase_Machine_Drives.pdf | UNT 효율적 FOC FPGA 구현 — 미열람(L1) | FPGA FOC PMSM 질의
 - https://gitee.com/minglie/FPGA-FOC | FPGA-FOC 포크 추정 — 미열람(L1), 원본은 WangXuan95/FpOC | 같은 질의
 - 참고: Basys3 직접 BLDC/FOC 사례는 검색 2회에서 못 찾음. FpOC 커밋 SHA는 GitHub API 접근 불가로 unverified
+- https://vhdplus.com/docs/community/spectrum | VHDPlus 마이크 FFT + MAX7219 8x32 — 카드화 완료(vhdplus-spectrum-analyzer-max7219, L3) | FPGA microphone spectrum LED matrix 질의
+- https://fpga.mit.edu/videos/2017/team20/proposal.pdf | MIT 6.111 2017 스펙트럼 분석기 제안서 — 카드화 완료(L3, 제안서 기준) | 같은 질의
+- https://www.renesas.com/us/en/document/apn/fg-015-forgefpga-running-string-example | ForgeFPGA MAX7219 흐르는 문자열 — 카드화 완료(L3) | MAX7219 FPGA Verilog 질의
+- https://wiki.dfrobot.com/dfplayer_mini_sku_dfr0299 | DFPlayer Mini 공식 위키: 9600 baud, 3.2~5V, FAT16/32 32GB까지 확인(L3 일부). 10바이트 프레임·명령표는 그림이라 본문에서 못 읽음 → 데이터시트 PDF 별도 열람 필요 | FPGA DFPlayer 질의
+- https://github.com/mustaphacris/FPGA-Accelerometer-Interface | DE10-Lite Nios II + ADXL345 I2C(0x1D), 7세그 출력, 라이선스 미기재(L3 열람, 카드 보류: 도트 매트릭스 아님, 라이선스 unknown) | Basys3 accelerometer 질의
+- https://jpralves.net/post/2017/12/10/visual-accelerometer.html | Arduino Uno + ADXL345 + MAX7219 8x8 기울기 표시(S1 이식 후보, 글 CC BY-NC-ND, 코드 라이선스 미기재) — L3 열람, FPGA 아님 | Basys3 accelerometer 질의
+- https://digsys.upc.edu/csd/products/D2_20/D2_20.html | UPC EETAC 도트 매트릭스 드라이버 문제(VHDL, MAX7219 언급, 세부 없음) — L2 | 한국어/도트 매트릭스 질의
+- https://vegaprocessors.in/blog/?p=384 | 도트 매트릭스 MAX7219 블로그 후보 — 미열람(L1) | MAX7219 FPGA Verilog 질의
+- 참고: Verilog로 MAX7219를 구현한 GitHub 저장소는 검색 2회에서 못 찾음(Renesas 앱노트가 가장 가까움). DFPlayer FPGA 구동 직접 사례도 못 찾음(S3 빈틈)
