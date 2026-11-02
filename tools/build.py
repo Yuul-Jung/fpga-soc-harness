@@ -200,7 +200,7 @@ def build_one(spec_path):
 <p class="muted">캡스톤 패키지 · {esc(spec["board"])} · 단계 {esc(spec["stage"])}</p>
 <h1>{esc(spec["title"])}</h1><p>{esc(spec["summary"])}</p>
 <div class="badges">{badge("린트", "lint")}{badge("시뮬레이션", "sim")}{badge("합성", "synth")}{badge("보드", "board")}</div>
-<p class="muted">검증 상태는 실행 기록이 있을 때만 표시한다{ver_date}. 기록이 없으면 '미실행'이다.</p>
+{'<p class="badge b-fail">이 패키지는 CI에서 실패한 상태(broken)다. 다음 사이클이 먼저 고친다.</p>' if spec.get("status") == "broken" else ""}<p class="muted">검증 상태는 실행 기록이 있을 때만 표시한다{ver_date}. 기록이 없으면 '미실행'이다.</p>
 <nav><a href="#goal">목표</a><a href="#arch">계통도</a><a href="#hier">모듈 계층</a><a href="#map">메모리맵</a><a href="#road">기술 트리</a><a href="#src">실행 소스</a><a href="#verify">검증</a><a href="#ref">참고·위험</a></nav>
 <h2 id="goal">1. 목표와 범위</h2><h3>목표</h3>{ul(spec["goals"])}<h3>범위 밖</h3>{ul(spec["non_goals"])}<p class="muted">{esc(spec["author_note"])}</p>
 <h2 id="arch">2. 계통도</h2><p>클럭: {esc(spec["architecture"]["clock"])}</p><div class="panel">{svg}</div>

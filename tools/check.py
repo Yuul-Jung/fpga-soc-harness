@@ -57,6 +57,8 @@ def main():
             errors.append(f"{rel}: stage='{fm['stage']}' 형식 오류 (T0~T5)")
         if fm.get("checked_at") and not re.fullmatch(r"\d{4}-\d{2}-\d{2}", fm["checked_at"]):
             errors.append(f"{rel}: checked_at 날짜 형식 오류")
+        if fm.get("rechecked_at") and not re.fullmatch(r"\d{4}-\d{2}-\d{2}", fm["rechecked_at"]):
+            errors.append(f"{rel}: rechecked_at 날짜 형식 오류")
         if fm.get("verification") == "L3" and fm.get("sources") in (None, "", "[]"):
             errors.append(f"{rel}: L3인데 sources 비어 있음")
         if fm.get("name") and fm["name"] != p.stem:
