@@ -16,6 +16,7 @@ stats: {}
 doc_language: en
 verification: L3
 checked_at: 2026-11-02
+status: 2026-11-02 /verify 재열람 시도 실패(WebFetch 권한 요청 미응답) — 이번 사이클 미대조, rechecked_at 미기록
 sources: [https://www.secs.oakland.edu/~llamocca/Courses/ECE378/FinalProject/Group7_PainterVGA.pdf]
 unverified: Vivado 버전, 자원 사용량 수치, 소스 공개 여부와 라이선스
 ---

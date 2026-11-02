@@ -16,6 +16,7 @@ stats: {stars: 2, commits: 9}
 doc_language: en
 verification: L3
 checked_at: 2026-11-02
+status: 2026-11-02 /verify 재열람 시도 실패(WebFetch 권한 요청 미응답) — 이번 사이클 미대조, rechecked_at 미기록
 sources: [https://github.com/Ammar-Bin-Amir/ARTY_A7_I2C_MPU-6050]
 unverified: HDL 언어, I2C 클럭, 읽는 레지스터, 출력 방식, 테스트벤치 내용, Makefile 타깃, 라이선스, 최신 커밋 SHA (src/tb 하위 경로 열람 불가)
 ---

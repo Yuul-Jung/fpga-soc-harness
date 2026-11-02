@@ -16,6 +16,7 @@ stats: {}
 doc_language: en
 verification: L3
 checked_at: 2026-11-02
+status: 2026-11-02 /verify 재열람 시도 실패(WebFetch 권한 요청 미응답) — 이번 사이클 미대조, rechecked_at 미기록
 sources: [https://www.secs.oakland.edu/~llamocca/Courses/ECE378/FinalProject/Group4_Keyboard2VGA.pdf]
 unverified: 정확한 보드 모델과 Vivado 버전, 자원 사용량(보고서에 없음)
 ---
@@ -42,3 +43,4 @@ Oakland University ECE 378 기말 프로젝트 보고서. PS/2 키보드로 VGA 
 ## 재사용 메모
 - 내 판단: 수집 주제상 가치는 교훈에 있다. PS/2 수신 테스트벤치는 뗌(F0)과 확장(E0) 시퀀스를 반드시 넣어야 한다는 검증 항목의 근거.
 - 내 판단: 키→VGA 텍스트 경로는 우리 SoC에서 VGA 텍스트 MMIO와 키보드 MMIO를 잇는 T3 단계 구성의 구조 참고가 된다. VHDL이고 보드가 달라 Verilog로 새로 쓰고 xdc 포팅이 필요.
+- 라이선스 unknown(소스 링크 미확인): 코드 반입 금지, 사양만 참고. 라이선스 확인 필요.

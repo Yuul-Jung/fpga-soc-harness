@@ -16,6 +16,7 @@ stats: {}
 doc_language: en
 verification: L3
 checked_at: 2026-11-02
+status: 2026-11-02 /verify 재열람 시도 실패(WebFetch 권한 요청 미응답) — 이번 사이클 미대조, rechecked_at 미기록
 sources: [https://www.hackster.io/biswabhusan2190/distance-measurement-using-basys3-39a6c2, https://forum.digilent.com/topic/5279-ultrasonic-module-hc-sr04-with-basys3/]
 unverified: 소스 코드 링크 없음, Pmod 핀 배정, 레벨 변환 여부, HDL 언어(Verilog/VHDL 병기), 게시일
 ---

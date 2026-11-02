@@ -16,6 +16,7 @@ stats: {stars: 0, commits: 14}
 doc_language: en
 verification: L3
 checked_at: 2026-11-02
+status: 2026-11-02 /verify 재열람 시도 실패(WebFetch 권한 요청 미응답) — 이번 사이클 미대조, rechecked_at 미기록
 sources: [https://github.com/lauriela8/FPGA_Multi_Module_System]
 unverified: xdc 제공 여부(src 폴더 내용 미열람, 하위 경로 열람 불가), 클럭·보율·타이밍 수치, 자원 사용량, 테스트벤치 존재, 라이선스, README 원문 언어, 최신 커밋 SHA
 ---
