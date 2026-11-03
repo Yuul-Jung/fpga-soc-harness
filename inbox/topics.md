@@ -53,7 +53,7 @@
 ## STM32 도메인 (2026-11-03 추가, 위에서부터 소비)
 - [x] STM32 HAL 기초: GPIO/UART/SPI/I2C HAL 드라이버 구조와 큐브MX 코드 생성 — 2026-11-04 01시대 사이클: 카드 3건(L3: CubeMX 생성 코드 구조, HAL vs LL 2건), SPI/I2C HAL 개별 드라이버 자료와 ST 공식 UM1725는 못 찾음/미열람
 - [x] STM32 FreeRTOS: 태스크·큐·세마포어·타이머, CMSIS-RTOS v2 래퍼 사례 — 2026-11-04 사이클: 카드 3건(L3: 스택 오버플로 폴트, HAL 타임아웃·SysTick, UART 설계 스레드), ST FAQ는 CMSIS-RTOS v2 내용 없음, 래퍼 공식 문서·타이머 자료는 못 찾음
-- [ ] STM32 모터 제어: TIM PWM + 엔코더 모드 + FOC 기초 (G0/G4/F4 계열)
+- [x] STM32 모터 제어: TIM PWM + 엔코더 모드 + FOC 기초 (G0/G4/F4 계열) — 2026-11-04 03시대 사이클: 상보 PWM·데드타임·FOC 카드 3건(L3 2, L2 1), G0/G4 CORDIC·FMAC 자료와 FOC 저장소 SHA는 미착수
 - [ ] STM32 통신: CAN FD, USB CDC, Ethernet LwIP, BLE(WB55) 통합 사례
 - [ ] STM32 캡스톤급: 드론 FC, 산업용 PLC 대체, 로봇 조인트 제어 완성 프로젝트
 

@@ -125,3 +125,6 @@
 | [st-community-freertos-stack-overflow-hardfault](stm32/st-community-freertos-stack-overflow-hardfault.md) | L3 | T1 | STM32F407 Discovery (Basys3 needs-port) | 2026-11-04 |
 | [st-community-freertos-hal-timeout-systick](stm32/st-community-freertos-hal-timeout-systick.md) | L3 | T2 | STM32F4 (Basys3 needs-port) | 2026-11-04 |
 | [freertos-forum-stm32-cubemx-uart-example](stm32/freertos-forum-stm32-cubemx-uart-example.md) | L3 | T2 | STM32 (Basys3 needs-port) | 2026-11-04 |
+| [deepbluembedded-stm32-complementary-pwm-dead-time](stm32/deepbluembedded-stm32-complementary-pwm-dead-time.md) | L3 | T2 | STM32F103 (Basys3 needs-port) | 2026-11-04 |
+| [st-community-tim1-complementary-no-deadtime](stm32/st-community-tim1-complementary-no-deadtime.md) | L3 | T2 | STM32 (Basys3 needs-port) | 2026-11-04 |
+| [makiuto-stm32-foc-from-scratch](stm32/makiuto-stm32-foc-from-scratch.md) | L2 | T4 | STM32F407 (Basys3 needs-port) | 2026-11-04 |

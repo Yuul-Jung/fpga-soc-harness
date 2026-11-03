@@ -276,3 +276,10 @@
 - https://controllerstech.com/stm32-freertos-mutex/ | STM32 FreeRTOS 뮤텍스 튜토리얼 — 검색 결과만(L1) | STM32 FreeRTOS priority inversion mutex
 - https://compile-n-run.pages.dev/docs/iot/stm32/stm32-rtos-integration/stm32-task-priorities | STM32 태스크 우선순위 — 검색 결과만(L1) | STM32 FreeRTOS priority inversion mutex
 - https://dev.st.com/stm32cube-docs/mw-freertos/2.0.0/en/docs/markup/freertos_faq.html | ST FreeRTOS FAQ — 열람했으나 CMSIS-RTOS v2 내용 없음, 힙·스택·틱 수치는 L3 참고용 | STM32 FreeRTOS priority inversion mutex
+- https://deepbluembedded.com/stm32-complementary-pwm-dead-time-code-examples/ | TIM1 상보 PWM·데드타임 HAL 예제 — 열람(L3), 카드 작성 | STM32 TIM1 complementary PWM dead time
+- https://community.st.com/t5/stm32-mcus-motor-control/i-am-able-to-generate-a-complementary-pwm-signal-however-due-to/td-p/194047 | 데드타임 미출력 질문, 미해결 — 열람(L3), 카드 작성 | 같은 질의
+- https://makiuto.github.io/p/field-oriented-control-foc-on-stm32-from-scratch-practical-bldc-motor-contr.html | STM32F407 FOC 처음부터(챕터 목록 수준) — 열람(L2), 카드 작성 | STM32G4 FOC Clarke Park
+- https://community.simplefoc.com/t/b-g431b-esc1-simplefoc-driver/3066 | B-G431B-ESC1 SimpleFOC 빌드 문제(lib_archive, OPAMP 플래그) — 열람(L3), 카드 미작성(상한) | SimpleFOC STM32 질의
+- https://github.com/sirojudinMunir/stm32-FOC | makiuto 글이 연결한 FOC 저장소 — 열람 안 함(L1), 후속 /verify 대상
+- https://github.com/hcd-bdltd/simple-foc-example | SimpleFOC 자동 튜닝 예제 — 검색 결과만(L1)
+- https://www.mathworks.com/help/stm32b/ug/stm32-hall-foc-example.html | MathWorks STM32 홀센서 FOC 예제 — 검색 결과만(L1)
