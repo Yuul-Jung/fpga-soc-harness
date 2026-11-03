@@ -43,7 +43,7 @@
 - [x] IR 리모컨(NEC 프로토콜) 수신 디코더 FSM과 로봇 조종 조합 (HID 계열, S2) — 2026-11-03 16시대 사이클: 카드 3건(L3), Basys3 직접 사례와 반복 코드 구현·로봇 조종 조합 자료는 못 찾음, OpenCores 코어는 코드 미열람
 
 ## Arduino 도메인 (2026-11-03 추가, 위에서부터 소비)
-- [ ] Arduino 모터 제어: TB6612FNG/L298N H-브리지 + 엔코더 PID 속도 제어 (아두이노 생태계 우선)
+- [x] Arduino 모터 제어: TB6612FNG/L298N H-브리지 + 엔코더 PID 속도 제어 (아두이노 생태계 우선) — 2026-11-03 17시대 사이클: 카드 3건(L3, catalog/arduino/ 신설), L298N 엔코더 PID 자료는 열람 못 함(큐), 정수·고정소수점 PID AVR 사례는 못 찾음
 - [ ] Arduino 통신 모듈: HC-05 BT 앱 제어, NRF24L01 무선, LoRa SX1278 기초
 - [ ] Arduino 센서 허브: MPU-6050 IMU + BMP280 기압 + GPS NEO-6M 조합 사례
 - [ ] Arduino 디스플레이: SSD1306 OLED + ST7789 SPI LCD + MAX7219 매트릭스 구동

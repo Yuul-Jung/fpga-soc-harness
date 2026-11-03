@@ -212,3 +212,11 @@
 - https://koreascience.kr/article/CFKO201028542324787.pdf | 국내 학회 논문(IR 관련 추정) — 검색 결과만(L1) | FPGA 적외선 리모컨 NEC 디코더 Verilog 모터 제어
 - https://hackaday.io/project/160641/log/151466 | NEC 프로토콜 관련 Hackaday 로그 — 검색 결과만(L1) | NEC infrared protocol timing
 - https://github.com/Elias224/fpga-rf-packet-decoder | FPGA RF 패킷 디코더 — 검색 결과만(L1), IR 아님 가능 | NEC IR remote decoder Verilog FPGA
+- https://waveshare.com/wiki/Tutorial_III:_Motor_With_Encoder_Control_Demo_3 | ESP32+TB6612 엔코더 속도 PID — 열람(L3), 카드 작성 | Arduino TB6612FNG encoder PID
+- https://github.com/1988kramer/motor_control | TB6612FNG+엔코더 PID Arduino 라이브러리 — 열람(L3), 카드 작성 | Arduino TB6612FNG encoder PID
+- https://community.element14.com/products/arduino/b/blog/posts/simple-arduino-dc-motor-control-with-encoder-part-1 | TB6612FNG 개방 루프 점검 1부 — 열람(L3), 카드 작성 | Arduino TB6612FNG encoder PID
+- https://lastminuteengineers.com/tb6612fng-dc-motor-control-arduino-tutorial/ | TB6612FNG 핀·정격·진리표 튜토리얼 — 열람(L3), 카드 불필요(데이터시트 카드 있음), 전압 범위 서술 불일치 근거 | Arduino TB6612FNG encoder PID
+- https://forum.arduino.cc/t/pid-position-control-problem/516865 | Arduino 포럼 PID 위치 제어 문제(S5, 실패 사례) — 검색 결과만(L1) | Arduino L298N encoder PID
+- https://gist.github.com/PierreAuge/79c03b8b5e85f0df4993ff28212f97fb | L298N 엔코더 PID gist — 검색 결과만(L1) | Arduino L298N encoder PID
+- https://github.com/ArsenioDev/DC-motor-positional-control | DC 모터 위치 제어 — 검색 결과만(L1), 라이선스 확인 필요 | 아두이노 TB6612FNG 엔코더 PID
+- https://github.com/VGavara/arduino-TB6612FNG | TB6612FNG Arduino 라이브러리 — 검색 결과만(L1) | 아두이노 TB6612FNG 엔코더 PID

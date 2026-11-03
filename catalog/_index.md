@@ -95,3 +95,6 @@
 | [marph91-icestick-remote](lattice/marph91-icestick-remote.md) | L3 | T2 | iCEstick (Basys3 needs-port) | 2026-11-03 |
 | [opencores-nec-ir-decoder](vendor-neutral/opencores-nec-ir-decoder.md) | L3 | T1 | DE0-Nano (Basys3 needs-port) | 2026-11-03 |
 | [bcit-elex7660-infrared-communication](papers/bcit-elex7660-infrared-communication.md) | L3 | T2 | Cyclone IV E (Basys3 needs-port) | 2026-11-03 |
+| [waveshare-esp32-tb6612-encoder-speed-pid](arduino/waveshare-esp32-tb6612-encoder-speed-pid.md) | L3 | T2 | ESP32 (Basys3 needs-port) | 2026-11-03 |
+| [1988kramer-motor-control](arduino/1988kramer-motor-control.md) | L3 | T2 | Arduino (Basys3 needs-port) | 2026-11-03 |
+| [element14-fmilburn-arduino-dc-motor-encoder-part1](arduino/element14-fmilburn-arduino-dc-motor-encoder-part1.md) | L3 | T1 | Adafruit M4 Feather (Basys3 needs-port) | 2026-11-03 |
