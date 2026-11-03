@@ -187,3 +187,8 @@
 - https://github.com/CopterFail/BtSPortOsd | 검색 결과에만 등장 — 미열람(L1)
 - https://ee6115b.mit.edu/document/bluetooth_hc06_guide_2022.pdf | MIT HC-06 가이드 — 미열람(L1)
 - https://boletin.upiita.ipn.mx/Archivos/Articulos/2026/05/fe69641993a8485f9c478b900cd0440f.pdf | 멕시코 학회 글(FPGA 블루투스 추정) — 미열람(L1)
+- https://hepcat.ucsd.edu/fpga-lab/ | UCSD FPGA 실습(Basys3 XADC 언급 추정) — 검색 요약만(L1), 열람 필요 | Basys3 XADC 가변저항 조도 센서
+- https://academic.csuohio.edu/chu-pong/wp-content/uploads/sites/64/2023/02/readme_basys3_vhdl_adoption.pdf | Chu 교재 Basys3 VHDL 이식 노트(XADC 장 포함 추정) — 미열람(L1) | Basys3 XADC 가변저항 조도 센서
+- https://forum.digilent.com/topic/19393-cant-figure-out-physical-connections-for-basys3-xadc-demo | Basys3 XADC 데모 물리 연결 질문(실패 사례) — 미열람(L1), S6 후보 | Basys3 XADC joystick potentiometer
+- https://docs.amd.com/r/en-US/ug480_7Series_XADC/Instantiating-the-XADC | UG480 XADC 인스턴스화 — 검색 결과만(L1), devices/xadc 보강용(입력 한도 원문 확인) | UG480 DRP
+- https://docs.amd.com/r/en-US/ug480_7Series_XADC/Sequencer-Modes | UG480 시퀀서 모드 — 미열람(L1) | UG480 DRP

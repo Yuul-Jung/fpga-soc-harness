@@ -86,3 +86,6 @@
 | [ndroid-hc06-at-commandcenter](vendor-neutral/ndroid-hc06-at-commandcenter.md) | L3 | T2 | 없음 (Arduino, Basys3 needs-port) | 2026-11-03 |
 | [hackster-ee2259-lab8-bluetooth-uart](vendor-neutral/hackster-ee2259-lab8-bluetooth-uart.md) | L3 | T1 | 미명시 (Basys3 needs-port) | 2026-11-03 |
 | [epfl-prsoc-bluetooth-hc05](vendor-neutral/epfl-prsoc-bluetooth-hc05.md) | L3 | T2 | PrSoc (Basys3 needs-port) | 2026-11-03 |
+| [digilent-basys-3-xadc-demo](amd/digilent-basys-3-xadc-demo.md) | L3 | T1 | Basys3 | 2026-11-03 |
+| [umd-phys495-basys3-xadc-voltmeter](amd/umd-phys495-basys3-xadc-voltmeter.md) | L3 | T1 | Basys3 | 2026-11-03 |
+| [unilim-vahid-xadc-basys3-vhdl](amd/unilim-vahid-xadc-basys3-vhdl.md) | L3 | T1 | Basys3 | 2026-11-03 |
