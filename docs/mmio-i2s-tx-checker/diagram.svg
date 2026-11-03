@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 974 372" role="img" aria-label="블록 다이어그램">
+<style>:root{--muted:#6a6a64;--line:#8a8a82;--text:#1d1d1b;--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b}@media (prefers-color-scheme: dark){:root{--muted:#a3a29b;--line:#8d8c85;--text:#ecebe6;--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6}}
+.colhead{font:600 11px sans-serif;fill:var(--muted)}
+.link{fill:none;stroke:var(--line);stroke-width:1.5}.arrow{fill:var(--line)}
+.lbl{font:11px sans-serif;fill:var(--muted)}
+.bname{font:600 13px sans-serif;fill:var(--text)}.bdesc{font:11px sans-serif;fill:var(--muted)}
+.k-cpu rect{fill:var(--c-cpu);stroke:var(--c-cpu-s)}.k-bus rect{fill:var(--c-bus);stroke:var(--c-bus-s)}
+.k-periph rect,.k-memory rect{fill:var(--c-per);stroke:var(--c-per-s)}
+.k-external rect{fill:var(--c-ext);stroke:var(--c-ext-s);stroke-dasharray:4 3}
+.k-clock rect{fill:var(--c-clk);stroke:var(--c-clk-s)}
+</style><defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arrow"/></marker></defs>
+<text x="24" y="16" class="colhead">클럭·입력·마스터</text>
+<text x="274" y="16" class="colhead">버스</text>
+<text x="524" y="16" class="colhead">주변장치</text>
+<text x="774" y="16" class="colhead">외부</text>
+<path d="M200,63.0 C362.0,63.0 362.0,63.0 524,63.0" class="link" marker-end="url(#ar)"/>
+<text x="362.0" y="56.0" class="lbl" text-anchor="middle">100 MHz</text>
+<path d="M612.0,92 L612.0,280" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="186.0" class="lbl" text-anchor="middle">MCLK/BCLK/LRCLK</text>
+<path d="M200,227.0 C237.0,227.0 237.0,63.0 274,63.0" class="link" marker-end="url(#ar)"/>
+<text x="237.0" y="138.0" class="lbl" text-anchor="middle">mmio-lite</text>
+<path d="M450,63.0 C487.0,63.0 487.0,145.0 524,145.0" class="link" marker-end="url(#ar)"/>
+<text x="487.0" y="97.0" class="lbl" text-anchor="middle">sel/rdata</text>
+<path d="M450,63.0 C487.0,63.0 487.0,227.0 524,227.0" class="link" marker-end="url(#ar)"/>
+<text x="487.0" y="138.0" class="lbl" text-anchor="middle">sel/rdata</text>
+<path d="M450,63.0 C487.0,63.0 487.0,309.0 524,309.0" class="link" marker-end="url(#ar)"/>
+<text x="487.0" y="179.0" class="lbl" text-anchor="middle">sel/rdata</text>
+<path d="M700,145.0 C737.0,145.0 737.0,63.0 774,63.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="97.0" class="lbl" text-anchor="middle">sw, led</text>
+<path d="M700,227.0 C737.0,227.0 737.0,145.0 774,145.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="179.0" class="lbl" text-anchor="middle">txd</text>
+<path d="M700,309.0 C737.0,309.0 737.0,227.0 774,227.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="261.0" class="lbl" text-anchor="middle">MCLK/BCLK/LRCLK/SDIN</text>
+<path d="M524,309.0 C464,172 260,172 200,227.0" class="link" marker-end="url(#ar)"/>
+<text x="362.0" y="180" class="lbl" text-anchor="middle">irq</text>
+<g class="k-clock"><rect x="24" y="34" width="176" height="58" rx="8"/><text x="112.0" y="58" text-anchor="middle" class="bname">clk 100 MHz</text><text x="112.0" y="76" text-anchor="middle" class="bdesc">보드 클럭 입력</text></g>
+<g class="k-external"><rect x="24" y="116" width="176" height="58" rx="8"/><text x="112.0" y="140" text-anchor="middle" class="bname">btnC</text><text x="112.0" y="158" text-anchor="middle" class="bdesc">리셋</text></g>
+<g class="k-periph"><rect x="524" y="34" width="176" height="58" rx="8"/><text x="612.0" y="58" text-anchor="middle" class="bname">i2s_clk_gen</text><text x="612.0" y="76" text-anchor="middle" class="bdesc">I2S 클럭 분주기</text></g>
+<g class="k-cpu"><rect x="24" y="198" width="176" height="58" rx="8"/><text x="112.0" y="222" text-anchor="middle" class="bname">demo_master</text><text x="112.0" y="240" text-anchor="middle" class="bdesc">CPU 슬롯 (초기화 FSM)</text></g>
+<g class="k-bus"><rect x="274" y="34" width="176" height="58" rx="8"/><text x="362.0" y="58" text-anchor="middle" class="bname">mmio_bus</text><text x="362.0" y="76" text-anchor="middle" class="bdesc">주소 디코드·읽기 mux</text></g>
+<g class="k-periph"><rect x="524" y="116" width="176" height="58" rx="8"/><text x="612.0" y="140" text-anchor="middle" class="bname">gpio</text><text x="612.0" y="158" text-anchor="middle" class="bdesc">LED 16, SW 16</text></g>
+<g class="k-periph"><rect x="524" y="198" width="176" height="58" rx="8"/><text x="612.0" y="222" text-anchor="middle" class="bname">uart_tx</text><text x="612.0" y="240" text-anchor="middle" class="bdesc">115200 8N1 송신</text></g>
+<g class="k-periph"><rect x="524" y="280" width="176" height="58" rx="8"/><text x="612.0" y="304" text-anchor="middle" class="bname">i2s_tx</text><text x="612.0" y="322" text-anchor="middle" class="bdesc">I2S TX + MMIO</text></g>
+<g class="k-external"><rect x="774" y="34" width="176" height="58" rx="8"/><text x="862.0" y="58" text-anchor="middle" class="bname">SW / LED</text><text x="862.0" y="76" text-anchor="middle" class="bdesc">스위치와 LED</text></g>
+<g class="k-external"><rect x="774" y="116" width="176" height="58" rx="8"/><text x="862.0" y="140" text-anchor="middle" class="bname">RsTx (USB-UART)</text><text x="862.0" y="158" text-anchor="middle" class="bdesc">PC 터미널</text></g>
+<g class="k-external"><rect x="774" y="198" width="176" height="58" rx="8"/><text x="862.0" y="222" text-anchor="middle" class="bname">Pmod I2S2 (JA)</text><text x="862.0" y="240" text-anchor="middle" class="bdesc">Pmod I2S2</text></g>
+</svg>

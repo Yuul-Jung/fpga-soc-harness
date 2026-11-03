@@ -45,7 +45,7 @@ header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
 .k-periph rect,.k-memory rect{fill:var(--c-per);stroke:var(--c-per-s)}
 .k-external rect{fill:var(--c-ext);stroke:var(--c-ext-s);stroke-dasharray:4 3}
 .k-clock rect{fill:var(--c-clk);stroke:var(--c-clk-s)}
-</style></head><body><header class="top"><a class="brand" href="../index.html">FPGA SoC 하네스</a><a href="../index.html">메인</a><a href="../index.html#capstones">캡스톤</a><a href="../soc-map/tech-tree.html">기술 트리</a><a href="../catalog/index.html">카탈로그</a><a href="../inbox/ideas.html">아이디어</a><a href="../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main>
+</style></head><body><header class="top"><a class="brand" href="../hub.html">FPGA SoC 하네스</a><a href="../hub.html">메인</a><a href="../hub.html#capstones">캡스톤</a><a href="../soc-map/tech-tree.html">기술 트리</a><a href="../catalog/index.html">카탈로그</a><a href="../inbox/ideas.html">아이디어</a><a href="../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main>
 <p class="muted">캡스톤 패키지 · Digilent Basys3 (XC7A35T) · 단계 T2</p>
 <h1>SD SPI 블록 리더 SoC: 초기화·CMD17 읽기 + 카드 모델 자체 점검 (Basys3)</h1><p>skeleton(T1)의 MMIO 버스에 SD 카드 SPI 컨트롤러를 더한 T2 패키지. 초기화(CMD0/8/55+41/58)와 512바이트 단일 블록 읽기를 직접 쓴 FSM으로 만들고, 테스트벤치의 간이 SD 카드 모델이 명령 순서·클럭 속도·주소를 PASS/FAIL로 검사한다. 데모 마스터는 블록 0의 첫 16바이트를 UART로 내보낸다.</p>
 <div class="badges"><span class="badge b-not-run">린트: 미실행</span><span class="badge b-not-run">시뮬레이션: 미실행</span><span class="badge b-not-run">합성: 미실행</span><span class="badge b-not-run">보드: 미실행</span></div>

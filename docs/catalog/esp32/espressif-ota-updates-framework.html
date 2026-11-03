@@ -1,0 +1,47 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>espressif-ota-updates-framework</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../../hub.html">FPGA SoC 하네스</a><a href="../../hub.html">메인</a><a href="../../hub.html#capstones">캡스톤</a><a href="../../soc-map/tech-tree.html">기술 트리</a><a href="../../catalog/index.html">카탈로그</a><a href="../../inbox/ideas.html">아이디어</a><a href="../../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/catalog/esp32/espressif-ota-updates-framework.md">GitHub 원본: catalog/esp32/espressif-ota-updates-framework.md</a></p><h1>espressif-ota-updates-framework</h1><div class="panel fm"><table><tr><td>name</td><td><a href="espressif-ota-updates-framework.html">espressif-ota-updates-framework</a></td></tr><tr><td>url</td><td>https://developer.espressif.com/blog/ota-updates-framework/</td></tr><tr><td>source_type</td><td>article</td></tr><tr><td>vendor</td><td>neutral</td></tr><tr><td>board</td><td>[ESP32 계열 (예시는 4 MiB 플래시)]</td></tr><tr><td>fit_basys3</td><td>needs-port</td></tr><tr><td>cpu</td><td>none(MCU 펌웨어, ESP32 Xtensa/RISC-V 계열 일반)</td></tr><tr><td>language</td><td>C (ESP-IDF)</td></tr><tr><td>tools</td><td>[ESP-IDF app_update, esp_https_ota]</td></tr><tr><td>bus</td><td>none</td></tr><tr><td>peripherals</td><td>[debug]</td></tr><tr><td>stage</td><td>T3</td></tr><tr><td>license</td><td>unknown (글에 라이선스 표기 없음, 코드 반입 대상 아님)</td></tr><tr><td>stats</td><td>{last_update: unverified}</td></tr><tr><td>doc_language</td><td>en</td></tr><tr><td>verification</td><td>L3</td></tr><tr><td>checked_at</td><td>2026-11-03</td></tr><tr><td>sources</td><td>[https://developer.espressif.com/blog/ota-updates-framework/]</td></tr></table></div><p>unverified: source_rev — 공식 블로그 글이라 해당 없음. unverified: 게시일·ESP-IDF 버전(글에서 확인 못 함)</p>
+<h2>요약</h2>
+<p>ESP-IDF의 OTA 구조를 설명한 Espressif 개발자 글이다. 앱 슬롯 두 개(ota_0, ota_1)와 상태 저장 영역(otadata)으로 &quot;새 펌웨어를 쓰고, 확인되기 전까지는 되돌릴 수 있게&quot; 만드는 것이 핵심이다. 롤백·보안 부팅·플래시 암호화·안티 롤백 옵션도 함께 다룬다.</p>
+<h2>구조</h2>
+<ul><li style="margin-left:0.0em">예시 파티션(4 MiB 플래시): nvs 0x4000, otadata 0x2000, phy_init 0x1000, ota_0 1M, ota_1 1M. 파티션 테이블은 기본 오프셋 0x9000에서 4 KiB를 차지하고, 앞 32 KiB는 부트로더용이다.</li><li style="margin-left:0.0em">ota_0/ota_1은 플래시 캐시 매핑 단위인 64 KiB로 정렬된다. otadata는 8 KiB(섹터 2개)로, 부팅할 이미지를 고르는 순번을 저장하며 섹터 두 개로 정전에도 안전하게 갱신된다.</li><li style="margin-left:0.0em">롤백 상태: OTA 기록 직후 <code>ESP_OTA_IMG_NEW</code> → 다음 리셋에서 부트로더가 <code>ESP_IMAGE_PENDING_VERIFY</code>로 바꿈 → 앱이 유효 표시를 하지 않으면 이후 리셋에서 <code>ESP_OTA_IMG_ABORTED</code> 처리 후 이전 펌웨어로 복귀.</li><li style="margin-left:0.0em">확인 시점 제안: 초기화 성공, Wi-Fi 연결, OTA 서버 연결 중 OTA 서버 연결이 가장 좋다고 글이 평가. API: <code>esp_ota_mark_app_valid_cancel_rollback()</code>, <code>esp_ota_mark_app_invalid_rollback_and_reboot()</code>.</li><li style="margin-left:0.0em"><code>esp_https_ota()</code>: 필수 인자는 HTTPS URL과 서버 인증서. 성공(<code>ESP_OK</code>) 시 앱이 <code>esp_restart()</code>. <code>esp_https_ota_get_img_desc()</code>로 내려받기 전에 버전을 비교해 불필요한 쓰기를 피한다.</li><li style="margin-left:0.0em">보안: 보안 부팅 v1은 ECDSA NIST256p, v2는 RSA-3072(이미지 SHA256에 서명). 플래시 암호화는 하드웨어 AES와 eFuse 키. 안티 롤백은 이미지의 <code>secure_version</code>을 eFuse 값과 비교하며 최대 32비트까지 할당 가능, 새 펌웨어가 확인된 뒤에만 eFuse 갱신.</li><li style="margin-left:0.0em">설정 키: <code>CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE</code>, <code>CONFIG_BOOTLOADER_APP_ANTI_ROLLBACK</code>, <code>CONFIG_BOOTLOADER_APP_SECURE_VERSION</code>, <code>CONFIG_BOOTLOADER_APP_SEC_VER_SIZE_EFUSE_FIELD</code>, <code>CONFIG_BOOTLOADER_EFUSE_SECURE_VERSION_EMULATE</code>(시험용만).</li></ul>
+<h2>검증·재현성</h2>
+<ul><li style="margin-left:0.0em">이 글만으로는 빌드·시험 결과를 확인할 수 없다(unverified: 실제 기기 시험). 글이 말하는 롤백이 완전 복구를 보장하지는 않는다고 스스로 밝힌다.</li></ul>
+<h2>한계·위험</h2>
+<ul><li style="margin-left:0.0em">롤백·안티 롤백은 출하 전에 켜야 한다(부트로더 경로는 현장에서 못 바꿈). factory 파티션은 안티 롤백과 함께 지원되지 않는다.</li><li style="margin-left:0.0em">안티 롤백 비교가 &quot;초과&quot;인지 &quot;이상&quot;인지 글 안에서 표현이 엇갈린다 → 정확한 조건은 unverified.</li><li style="margin-left:0.0em">OTA 중 Wi-Fi 절전을 끄는 것이 처리량에 좋고, 플래시 쓰기·삭제 중에는 캐시가 꺼져 IRAM 안전 인터럽트 핸들러가 필요하다고 서술.</li><li style="margin-left:0.0em">라이선스 확인 필요: 글에 라이선스 미표기 → 코드 반입 없음.</li></ul>
+<h2>재사용 메모</h2>
+<ul><li style="margin-left:0.0em">내 판단: &quot;슬롯 2개 + 상태 저장소 + 확인 전까지 되돌리기&quot; 계약은 FPGA 비트스트림 이중 슬롯(황금 이미지 + 갱신 이미지) 설계의 소프트웨어 쪽 모델로 쓸 만하다. 단 Artix-7의 실제 멀티부트 절차는 이 글에 없으므로 별도 자료가 필요(unverified).</li><li style="margin-left:0.0em">개조: 옮길 부분은 상태기계(<code>NEW → PENDING_VERIFY → VALID | ABORTED</code>)와 순번 두 섹터 갱신 규칙을 AXI4-Lite 레지스터(<code>SLOT_SEL</code>, <code>IMG_STATE</code>, <code>CONFIRM</code>)와 테스트벤치 시나리오(확인 없이 리셋 2회 → 이전 슬롯 복귀)로 만드는 것이다. 못 옮길 부분은 ESP-IDF API, eFuse, 보안 부팅 하드웨어. 이 카드는 아직 어떤 아이디어의 근거가 아님.</li><li style="margin-left:0.0em">관련: [[<a href="espressif-faq-mqtt.html">espressif-faq-mqtt</a>]].</li></ul></main></body></html>
