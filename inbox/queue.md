@@ -305,3 +305,12 @@
 - https://developer.espressif.com/workshops/esp-idf-with-esp32-c5/lecture-3/ | Espressif OTA 워크숍 강의, L1 | ESP32 OTA partition 질의
 - https://esphome.io/components/deep_sleep.html | ESPHome deep_sleep 컴포넌트 문서, L1 | ESP32 MQTT deep sleep 질의
 - https://answeroverflow.com/m/1296842045717090347 | MQTT keep-alive 튜닝·재연결 전략 스레드, L1 | ESP32 MQTT QoS keepalive 질의
+- https://www.luisllamas.es/en/freertos-multicore-esp32-dual-core/ | ESP32 FreeRTOS 멀티코어 튜토리얼: 큐 기반 코어 간 통신, MathTask/UITask 예시, 스핀락 주의사항, 직접 열람(L3 가능) | ESP32 FreeRTOS xTaskCreatePinnedToCore 멀티코어 질의
+- https://randomnerdtutorials.com/esp32-freertos-arduino-tasks/ | ESP32 FreeRTOS 태스크 기초: xTaskCreatePinnedToCore 파라미터, 스택 측정, 코어 확인 직접 열람(L3 가능) | ESP32 FreeRTOS 멀티코어 질의
+- https://techtutorialsx.com/2017/05/09/esp32-running-code-on-a-specific-core/ | ESP32 특정 코어에서 코드 실행 기초 튜토리얼, L1(제목만) | ESP32 FreeRTOS 멀티코어 질의
+- https://shillehtek.com/blogs/news/esp32-freertos-tasks-dual-core-multitasking | ESP32 FreeRTOS 듀얼코어 멀티태스킹 블로그, L1(제목만) | ESP32 FreeRTOS 멀티코어 질의
+- https://simplyexplained.com/blog/multitasking-esp32-arduino-freertos/ | ESP32 Arduino FreeRTOS 멀티태스킹 개요, L1(제목만) | ESP32 FreeRTOS 멀티코어 질의
+- https://docs.espressif.com/projects/esp-idf/en/release-v5.4/api-reference/system/wdts.html | ESP-IDF v5.4 Watchdog Timers 최신판, L1(URL만) | ESP32 TWDT IWDT API 최신 버전 열람 대상
+- https://esp32.com/viewtopic.php?p=31268 | ESP32 Task Watchdog Wi-Fi+BT 충돌 포럼 스레드, 봇 차단으로 L2 열람 불가 | ESP32 Task Watchdog WiFi BT 질의
+- https://microcontrollerslab.com/?p=25360 | ESP32 FreeRTOS 멀티코어 튜토리얼 (microcontrollerslab), L1(제목만) | ESP32 FreeRTOS 멀티코어 질의
+- https://www.teachmemicro.com/?p=7322 | ESP32 FreeRTOS 태스크 고급 활용, L1(제목만) | ESP32 FreeRTOS 멀티코어 질의

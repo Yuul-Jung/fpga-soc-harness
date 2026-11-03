@@ -423,3 +423,17 @@
 - Basys3 적합성의 근거: UART 수신 FSM은 기존 카탈로그 사례 다수. 고정소수점 덧셈·나눗셈은 Basys3 LUT으로 충분(내 추정, 실측 없음). ESP32-Basys3 UART 연결은 3.3V 직결 가능(레벨 변환 불필요). 삼변측량 반복법(Newton-Raphson)은 클럭 수 많아 파이프라인 없이는 느릴 수 있음.
 - 난이도: 3 / 단계: T3
 - 심사: (대기)
+
+## I-041 ESP32 멀티코어 텔레메트리 허브: Core1→SPI 슬레이브로 FPGA 센서 수집, Core0→Wi-Fi MQTT 전송
+
+내 판단: ESP32 듀얼코어 역할 분리(Core0=Wi-Fi, Core1=FPGA SPI)를 활용하면 Wi-Fi 지연 없이 FPGA 센서 IP를 실시간 폴링할 수 있다. Ring Buffer로 코어 간 가변 길이 프레임 교환.
+
+- id: I-041
+- 조합: ESP32 xTaskCreatePinnedToCore(Core1=SPI 슬레이브), Ring Buffer(코어 간), MQTT 전송(Core0), Basys3 SPI 슬레이브 IP([[hideakitai-esp32spislave]])
+- 근거 카드: [[espressif-idf-freertos-smp-multicore]], [[espressif-idf-ringbuf-ipc]], [[hideakitai-esp32spislave]]
+- 근거 URL: https://docs.espressif.com/projects/esp-idf/en/release-v5.4/api-reference/system/freertos_idf.html, https://docs.espressif.com/projects/esp-idf/en/v4.4/esp32/api-reference/system/freertos_additions.html
+- 새로움 근거: 기존 카드들(controllerstech-esp32-freertos-multitasking, hideakitai-esp32spislave)은 각각 멀티태스킹 또는 SPI만 다루며, 듀얼코어 역할 분리 + Ring Buffer + FPGA SPI 슬레이브를 조합한 것은 카탈로그에 없음.
+- Basys3 적합성 근거: Basys3 Pmod SPI 슬레이브 IP([[hideakitai-esp32spislave]], needs-port)가 이미 카탈로그에 있고, AXI4-Lite SPI 슬레이브는 free_slot에 배정 가능.
+- 난이도: 3
+- 단계: T2
+- 상태: raw

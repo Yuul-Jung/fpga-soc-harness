@@ -140,3 +140,6 @@
 | [espressif-idf-gatt-server-walkthrough](esp32/espressif-idf-gatt-server-walkthrough.md) | L3 | T2 | ESP32-DevKitC (Basys3 needs-port) | 2026-11-04 |
 | [rcaelers-esp32-beacon-scanner](esp32/rcaelers-esp32-beacon-scanner.md) | L3 | T2 | ESP32 (Basys3 needs-port) | 2026-11-04 |
 | [espressif-esp-ble-mesh](esp32/espressif-esp-ble-mesh.md) | L3 | T3 | ESP32-DevKitC (Basys3 needs-port) | 2026-11-04 |
+| [espressif-idf-freertos-smp-multicore](esp32/espressif-idf-freertos-smp-multicore.md) | L3 | T2 | ESP32 듀얼코어 (Basys3 needs-port) | 2026-11-04 |
+| [espressif-idf-ringbuf-ipc](esp32/espressif-idf-ringbuf-ipc.md) | L3 | T2 | ESP32 듀얼코어 (Basys3 needs-port) | 2026-11-04 |
+| [espressif-idf-watchdog-timers](esp32/espressif-idf-watchdog-timers.md) | L3 | T1 | ESP32 전 계열 (Basys3 needs-port) | 2026-11-04 |
