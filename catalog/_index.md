@@ -137,3 +137,6 @@
 | [modestos-esp32-dht-mqtt-deepsleep](esp32/modestos-esp32-dht-mqtt-deepsleep.md) | L3 | T1 | Lolin32 ESP32 (Basys3 needs-port) | 2026-11-03 |
 | [espressif-ota-updates-framework](esp32/espressif-ota-updates-framework.md) | L3 | T3 | ESP32 (Basys3 needs-port) | 2026-11-03 |
 | [espressif-faq-mqtt](esp32/espressif-faq-mqtt.md) | L3 | T2 | ESP32 (Basys3 needs-port) | 2026-11-03 |
+| [espressif-idf-gatt-server-walkthrough](esp32/espressif-idf-gatt-server-walkthrough.md) | L3 | T2 | ESP32-DevKitC (Basys3 needs-port) | 2026-11-04 |
+| [rcaelers-esp32-beacon-scanner](esp32/rcaelers-esp32-beacon-scanner.md) | L3 | T2 | ESP32 (Basys3 needs-port) | 2026-11-04 |
+| [espressif-esp-ble-mesh](esp32/espressif-esp-ble-mesh.md) | L3 | T3 | ESP32-DevKitC (Basys3 needs-port) | 2026-11-04 |

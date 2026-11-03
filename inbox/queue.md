@@ -2,6 +2,12 @@
 
 형식: `- <URL> | <한 줄 설명> | <출처 검색어>`
 
+- https://github.com/espressif/esp-idf/tree/v5.1.1/examples/bluetooth/bluedroid/ble/gatt_client | Espressif ESP-IDF v5.1.1 BLE GATT 클라이언트 예제(Apache-2.0) — 미열람(L1), GATT 서버 워크스루 보완용 | ESP-IDF GATT client example BLE
+- https://github.com/dollop80/ESP32-BLE-Scanner | ESP32 BLE 스캐너(라이선스 미표기) — 미열람(L1), 비콘 스캐너 보완 | ESP32 BLE beacon scanner iBeacon RSSI GitHub
+- https://www.beaconzone.co.uk/blog/indoor-positioning-trilateration/ | iBeacon 삼변측량 실내 측위 원리 블로그(비정형 출처) — 미열람(L1), 비콘→FPGA 삼변측량 아이디어 근거용 | ESP32 iBeacon indoor positioning trilateration
+- https://github.com/espressif/esp-idf/tree/v5.1.1/examples/bluetooth/esp_ble_mesh/ble_mesh_fast_prov | BLE Mesh Fast Provisioning 예제(Apache-2.0, ESP-IDF v5.x) — 미열람(L1), BLE Mesh 카드 보완 | ESP32 BLE Mesh fast provisioning example
+- https://github.com/micropython/micropython/tree/master/examples/bluetooth | MicroPython BLE GATT 예제(MIT) — 미열람(L1), Python 관점의 BLE 추가 출처 | MicroPython BLE GATT UART Python ESP32
+
 - https://github.com/Digilent/Pmod-I2S2/wiki | Digilent Pmod I2S2 라인 입출력 패스스루 데모(MIT, Basys3 미지원 표기) — 열람 L3, 카드 대기 | Basys3 Pmod I2S2 Verilog audio GitHub
 - https://github.com/aidinattar/PMOD-FIR-filter-VHDL | Pmod I2S2 FIR 필터 + UART 전송(VHDL, Apache-2.0, 보드 미명시) — 열람 L3, 카드 대기 | Basys3 Pmod I2S2 Verilog audio GitHub
 - https://reference.digilentinc.com/pmod/pmodi2s2/reference-manual | Pmod I2S2 공식 레퍼런스(CS4344/CS5343, 클럭 비율) — 열람 L3, devices/i2s 문서용 | Digilent Pmod I2S2 reference manual

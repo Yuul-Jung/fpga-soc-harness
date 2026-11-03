@@ -411,3 +411,13 @@
 - Basys3 적합성의 근거: 32비트 카운터 몇 개와 비교기뿐이라 LUT 소량, BRAM·핀 불필요(내부 신호). 1 kHz 틱은 100 MHz에서 100,000 클럭(내 계산).
 - 난이도: 2 / 단계: T2
 - 심사: (대기)
+
+## I-040 BLE 비콘→UART→FPGA 삼변측량 IP: ESP32 비콘 RSSI 수신 + AXI4-Lite 고정소수점 삼변측량 가속기
+- 상태: raw
+- 요약: 내 판단: ESP32가 BLE 비콘(iBeacon) RSSI 값을 수동 스캔해 UART로 Basys3에 전달하고, Basys3의 고정소수점 DSP IP가 삼변측량(적어도 3개 앵커 기준 거리 역산)을 수행하는 T3 패키지. ESP32는 기존 `rcaelers-esp32-beacon-scanner` 구조를 참고 설계로 삼고, AXI4-Lite 슬레이브 IP는 거리 레지스터 3~4개와 계산 트리거 비트·결과 레지스터로 구성한다.
+- 조합: [BLE-scanner(ESP32), comm-uart, sensor, accelerator(FPGA 고정소수점)]
+- 근거: [rcaelers-esp32-beacon-scanner, espressif-idf-gatt-server-walkthrough]
+- 새로움의 근거: 카탈로그에 BLE 비콘→FPGA 연산 가속 조합 카드·패키지 없음. RSSI→거리 변환(경로 손실 모델, 고정소수점)과 삼변측량 연산 IP는 기존 PID·IMU IP와 다른 계산 패턴이다(내 판단).
+- Basys3 적합성의 근거: UART 수신 FSM은 기존 카탈로그 사례 다수. 고정소수점 덧셈·나눗셈은 Basys3 LUT으로 충분(내 추정, 실측 없음). ESP32-Basys3 UART 연결은 3.3V 직결 가능(레벨 변환 불필요). 삼변측량 반복법(Newton-Raphson)은 클럭 수 많아 파이프라인 없이는 느릴 수 있음.
+- 난이도: 3 / 단계: T3
+- 심사: (대기)
