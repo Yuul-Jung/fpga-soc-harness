@@ -16,7 +16,6 @@ stats: {stars: 3, commits: 47, last_update: "unverified: 날짜 미확인(개정
 doc_language: en
 verification: L3
 checked_at: 2026-11-03
-source_rev: "unverified: 열람 화면에 커밋 SHA가 보이지 않음"
 sources: [https://github.com/ndroid/HC06_AT_CommandCenter]
 ---
 
@@ -39,3 +38,5 @@ HC-05/HC-06을 UART로 연결해 AT 명령으로 설정하는 Arduino 라이브�
 ## 재사용 메모
 - 내 판단: 우리 SoC에서는 설정(AT)을 FPGA가 하지 않고 PC/Arduino로 1회 설정한 뒤 데이터 모드만 UART IP(동결 맵 uart 영역)로 쓰는 편이 단순하다.
 - 개조: CPU 비종속 자료. AT 설정은 소프트웨어(UART 레지스터 폴링) 절차로 옮길 수 있고, 보드는 3.3V 기준이라 분압 부분은 필요 없다. MCU 전용 Serial1 호출은 옮길 수 없다.
+
+변경: 2026-11-03 verify — frontmatter `source_rev`를 제거(형식 오류). 이전 값: "unverified: 열람 화면에 커밋 SHA가 보이지 않음". 커밋 SHA 미확인 상태는 그대로이며 원문 재열람은 하지 못했다.
