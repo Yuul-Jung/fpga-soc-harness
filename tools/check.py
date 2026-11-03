@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """catalog/ 카드와 _index.md를 HARNESS.md 규칙에 맞게 점검한다. 표준 라이브러리만 사용."""
+import json
 import re
 import sys
 from pathlib import Path
@@ -16,6 +17,8 @@ ENUMS = {
     "doc_language": {"ko", "en"},
     "verification": {"L2", "L3"},  # L1/L0는 카드 금지
 }
+_POL = json.loads((ROOT / "config" / "policy.json").read_text(encoding="utf-8"))
+SOURCE_REV = re.compile(_POL["cards"]["source_rev_pattern"])
 EMAIL = re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+")
 QUOTE = re.compile(r'"([^"\n]+)"|“([^”\n]+)”')
 
@@ -57,6 +60,8 @@ def main():
             errors.append(f"{rel}: stage='{fm['stage']}' 형식 오류 (T0~T5)")
         if fm.get("checked_at") and not re.fullmatch(r"\d{4}-\d{2}-\d{2}", fm["checked_at"]):
             errors.append(f"{rel}: checked_at 날짜 형식 오류")
+        if fm.get("source_rev") and not SOURCE_REV.fullmatch(fm["source_rev"].strip('"\'')):
+            errors.append(f"{rel}: source_rev 형식 오류 '{fm['source_rev']}' (커밋 SHA 7~40자리 16진수. 모르면 필드를 비우고 본문에 unverified)")
         if fm.get("rechecked_at") and not re.fullmatch(r"\d{4}-\d{2}-\d{2}", fm["rechecked_at"]):
             errors.append(f"{rel}: rechecked_at 날짜 형식 오류")
         if fm.get("verification") == "L3" and fm.get("sources") in (None, "", "[]"):
