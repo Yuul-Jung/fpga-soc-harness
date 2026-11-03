@@ -289,3 +289,8 @@
 - https://controllerstech.com/udp-server-using-netconn-with-rtos-in-stm32 | STM32 netconn UDP 서버 RTOS — 검색 결과만(L1) | STM32 LwIP FreeRTOS netconn UDP
 - https://wiki.st.com/stm32mcu/wiki/Connectivity:STM32WB_BLE_STM32CubeMX | STM32WB BLE CubeMX 애플리케이션 위키 — 검색 결과만(L1), BLE 카드 후보 | STM32WB55 BLE GATT
 - https://community.st.com/t5/stm32-mcus-wireless/issues-with-custom-ble-service-generation-in-stm32cubeide/m-p/241225 | WB 커스텀 BLE 서비스 생성 문제 — 검색 결과만(L1) | 같은 질의
+- https://github.com/Visaging/Pulse-Flight-Controller | STM32F405 FC(MIT, ICM-42688-P+BMP280, 1 kHz 루프, UART 인터럽트 수신) — 열람(L2, 커밋일·SHA 미확인), 카드 미작성(상한) | STM32 drone flight controller lessons learned
+- https://discuss.ardupilot.org/t/fast-loop-timing-jitter/54486 | Pixracer fast_loop 지터: 로깅 제거·IMU 1개 비활성으로 루프 10.85→10.01 ms — 열람(L3), 카드 미작성(상한) | 같은 질의
+- https://github.com/PinkFluffyUnic0rn/stm32flight | 카드화 완료(L2), 위키 열람 필요(루프 주기) | STM32 quadcopter flight controller 질의
+- https://github.com/moogchi/phantom_autopilot/blob/main/DEVLOG.md | 자작 오토파일럿 개발 일지 — blocked: WebFetch 권한 미응답(1회)
+- 참고: STM32 로봇 관절 폐루프 PID 완성 프로젝트(엔코더 관절)는 검색 2회에서 못 찾음; 카드의 팔은 개루프 서보.

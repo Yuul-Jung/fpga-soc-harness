@@ -55,7 +55,7 @@
 - [x] STM32 FreeRTOS: 태스크·큐·세마포어·타이머, CMSIS-RTOS v2 래퍼 사례 — 2026-11-04 사이클: 카드 3건(L3: 스택 오버플로 폴트, HAL 타임아웃·SysTick, UART 설계 스레드), ST FAQ는 CMSIS-RTOS v2 내용 없음, 래퍼 공식 문서·타이머 자료는 못 찾음
 - [x] STM32 모터 제어: TIM PWM + 엔코더 모드 + FOC 기초 (G0/G4/F4 계열) — 2026-11-04 03시대 사이클: 상보 PWM·데드타임·FOC 카드 3건(L3 2, L2 1), G0/G4 CORDIC·FMAC 자료와 FOC 저장소 SHA는 미착수
 - [x] STM32 통신: CAN FD, USB CDC, Ethernet LwIP, BLE(WB55) 통합 사례 — 2026-11-04 04시대 사이클: 카드 3건(L3: FDCAN 8 Mb/s, USB CDC 송신 정지, LwIP UDP 에코), BLE WB55는 큐(L1), ST 공식 매뉴얼·CAN FD 파형 자료는 못 찾음/미열람
-- [ ] STM32 캡스톤급: 드론 FC, 산업용 PLC 대체, 로봇 조인트 제어 완성 프로젝트
+- [x] STM32 캡스톤급: 드론 FC, 산업용 PLC 대체, 로봇 조인트 제어 완성 프로젝트 — 2026-11-04 05시대 사이클: 카드 3건(L3 2, L2 1: stm32flight, FeroFlyF405, 서보 6축 팔), PLC 대체·엔코더 관절 폐루프 사례는 못 찾음, Pulse FC·ArduPilot 지터 스레드는 큐
 
 ## ESP32 도메인 (2026-11-03 추가, 위에서부터 소비)
 - [ ] ESP32 Wi-Fi + MQTT: MQTT 브로커 연결, OTA 업데이트, 전력 절약 딥슬립

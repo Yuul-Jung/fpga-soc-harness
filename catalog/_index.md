@@ -131,3 +131,6 @@
 | [st-community-fdcan-8mbps-nucleo](stm32/st-community-fdcan-8mbps-nucleo.md) | L3 | T2 | NUCLEO-G0B1RE 외 5종 (Basys3 needs-port) | 2026-11-04 |
 | [st-community-usb-cdc-transmit-stuck-l452](stm32/st-community-usb-cdc-transmit-stuck-l452.md) | L3 | T1 | STM32L452RE (Basys3 needs-port) | 2026-11-04 |
 | [st-community-lwip-freertos-udp-echo-f767](stm32/st-community-lwip-freertos-udp-echo-f767.md) | L3 | T3 | NUCLEO-F767ZI (Basys3 needs-port) | 2026-11-04 |
+| [pinkfluffyunic0rn-stm32flight](stm32/pinkfluffyunic0rn-stm32flight.md) | L2 | T4 | 자작 FC STM32F405/H723 (Basys3 needs-port) | 2026-11-04 |
+| [circuitdigest-feroflyf405-open-source-fc](stm32/circuitdigest-feroflyf405-open-source-fc.md) | L3 | T4 | FeroFlyF405 (Basys3 needs-port) | 2026-11-04 |
+| [kevinzhang109-stm32-compact-robotic-arm](stm32/kevinzhang109-stm32-compact-robotic-arm.md) | L3 | T3 | STM32F407ZET6 (Basys3 needs-port) | 2026-11-04 |

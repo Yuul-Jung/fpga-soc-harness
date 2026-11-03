@@ -400,3 +400,13 @@
 - Basys3 적합성의 근거: Pmod 한 개(SS, MOSI, MISO, SCK 4핀, Digilent 순서)로 가능, BRAM 불필요. SPI 클럭은 100 MHz 시스템 클럭에 동기화하는 방식을 택하면 소량 LUT로 가능(내 추정, 수치 없음).
 - 난이도: 3 / 단계: T2
 - 심사: (대기)
+
+## I-039 제어 루프 지터 측정 IP: 주기 타임스탬프 min/max/평균과 오버런 카운터를 AXI4-Lite로 노출
+- 상태: raw
+- 요약: 내 판단: 제어 루프 시작 펄스(예: 1 kHz 틱)마다 자유 실행 카운터로 주기를 재서 최소·최대·직전 주기와 기준 초과(오버런) 횟수를 레지스터로 보여 주는 소형 IP. 인터럽트는 오버런 시 발생. 테스트벤치는 일부러 주기를 늘린 틱 열로 min/max/오버런 값을 PASS/FAIL 점검.
+- 조합: [틱 입력, 주기 카운터, min/max 레지스터, 오버런 임계 비교기, AXI4-Lite 레지스터·인터럽트]
+- 근거: [circuitdigest-feroflyf405-open-source-fc, pinkfluffyunic0rn-stm32flight, https://discuss.ardupilot.org/t/fast-loop-timing-jitter/54486, https://github.com/Visaging/Pulse-Flight-Controller]
+- 새로움의 근거: 근거 자료의 지터 진단은 소프트웨어 스케줄러 로그(SCHED_DEBUG가 어느 작업이 넘쳤는지만 보이고 빈도는 못 본다는 스레드 서술)에 의존한다. 하드웨어 카운터로 빈도·분포를 보는 IP는 카탈로그에 없다(내 판단).
+- Basys3 적합성의 근거: 32비트 카운터 몇 개와 비교기뿐이라 LUT 소량, BRAM·핀 불필요(내부 신호). 1 kHz 틱은 100 MHz에서 100,000 클럭(내 계산).
+- 난이도: 2 / 단계: T2
+- 심사: (대기)
