@@ -24,8 +24,19 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: MkDocs 설치
-        run: pip install --break-system-packages mkdocs-material
+      - name: 도구 설치 (시뮬레이터·합성기, MkDocs)
+        run: |
+          pip install --break-system-packages mkdocs-material
+          sudo apt-get update && sudo apt-get install -y iverilog verilator yosys
+
+      # 생성 HTML(캡스톤 허브·문서·계통도)은 커밋된 원본에서 매번 새로 만든다.
+      # 추적 중인 오래된 생성물은 여기서 덮어쓴다. 검증 단계가 실패해도 사이트는 게시하고 상태 배지에 그대로 표시한다.
+      - name: 캡스톤 린트·시뮬레이션·합성 (CI 기록)
+        continue-on-error: true
+        run: python3 tools/run_verify.py
+
+      - name: 문서·계통도 생성
+        run: python3 tools/build.py
 
       - name: 사이트 빌드
         run: mkdocs build --strict
