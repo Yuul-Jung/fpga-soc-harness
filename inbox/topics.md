@@ -30,4 +30,4 @@
 ## 빈 곳 보충 (2026-11-03 §12.2-3, 위에서부터 소비)
 - [x] 이더넷: Arduino 호환 SPI 이더넷 모듈(ENC28J60, W5500)과 Pmod NIC100을 Basys3에서 구동하는 UDP/ARP 사례 (comm-eth 카드 0건) — 2026-11-03 08시대 사이클: 카드 3건(L3), W5500·Pmod NIC100 중심, ENC28J60 Verilog 직접 사례와 Basys3 W5500 사례는 못 찾음, Pmod-NIC100 저장소 카드는 큐
 - [x] 영상 제약 역전: 프레임 버퍼 없는 VGA 라인 버퍼 스트리밍·타일맵 (video-vga, S4, no-dram) — 2026-11-03 09시대 사이클: 카드 3건(L3), Basys3 직접 타일/라인 버퍼 사례와 raybox SHA·라이선스는 못 찾음/unverified
-- [ ] 서보 액추에이터 조합: 서보 PWM IP와 입력 장치(조이스틱·XADC·카메라) 연동 로봇팔 사례 (actuator-servo)
+- [x] 서보 액추에이터 조합: 서보 PWM IP와 입력 장치(조이스틱·XADC·카메라) 연동 로봇팔 사례 (actuator-servo) — 2026-11-03 사이클: 카드 3건(L3), Basys3 조이스틱 서보 직접 사례와 서보 PWM RTL 저장소는 못 찾음, 카메라 연동은 UAlberta 사례를 큐에

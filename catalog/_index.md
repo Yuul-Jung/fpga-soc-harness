@@ -74,3 +74,6 @@
 | [zipcpu-llvga-video-timing](vendor-neutral/zipcpu-llvga-video-timing.md) | L3 | T1 | Basys3 | 2026-11-03 |
 | [columbia-4840-tiles-tutorial](intel/columbia-4840-tiles-tutorial.md) | L3 | T3 | DE1-SoC (Basys3 needs-port) | 2026-11-03 |
 | [algofoogle-raybox-zero](vendor-neutral/algofoogle-raybox-zero.md) | L3 | T4 | DE0-Nano·Tiny Tapeout (Basys3 needs-port) | 2026-11-03 |
+| [shashankr-basys3-fpga-robotic-arm](amd/shashankr-basys3-fpga-robotic-arm.md) | L3 | T2 | Basys3 | 2026-11-03 |
+| [vhdlwhiz-rc-servo-controller](vendor-neutral/vhdlwhiz-rc-servo-controller.md) | L3 | T1 | iCEstick (Basys3 needs-port) | 2026-11-03 |
+| [digikey-forum-jstk2-pmod-controller-vhdl](vendor-neutral/digikey-forum-jstk2-pmod-controller-vhdl.md) | L3 | T2 | 미명시 (Basys3 needs-port) | 2026-11-03 |

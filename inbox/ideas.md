@@ -287,3 +287,13 @@
 - Basys3 적합성의 근거: VGA 포트는 보드 내장이라 Pmod가 필요 없고 12비트 색은 4비트 팔레트 색인으로 충분. 타일 메모리 약 16 KB는 Columbia 자료의 131,456비트 수치 기준이며 Basys3 BRAM 대비 여유는 공식 매뉴얼로 확인 필요(내 추정).
 - 난이도: 3 / 단계: T3
 - 심사: (대기)
+
+## I-028 조이스틱 서보 로봇팔 IP: PmodJSTK2 SPI 판독 → 2축 서보 PWM, 범위·모의 시험 모델 테스트벤치
+- 상태: raw
+- 요약: 내 판단: JSTK2 SPI 판독 IP(X/Y/버튼 레지스터)와 서보 PWM IP(채널별 최소·최대 펄스 폭, 위치 레지스터)를 AXI4-Lite로 나누고, 소프트웨어 루프가 조이스틱 값을 서보 위치로 매핑하며 기울기 제한으로 급가속을 막는다. 테스트벤치는 JSTK2 응답 모델이 7바이트 패킷을 돌려주고 서보 펄스 폭을 `!==`로 검사한다.
+- 조합: [Pmod JSTK2(SPI), 서보 PWM 2채널, AXI4-Lite 레지스터, 타이머 인터럽트]
+- 근거: [digikey-forum-jstk2-pmod-controller-vhdl, vhdlwhiz-rc-servo-controller, shashankr-basys3-fpga-robotic-arm]
+- 새로움의 근거: 카탈로그에 서보 PWM 단독 카드는 없고, SPI 조이스틱 입력과 서보 출력을 IP 표준 슬롯 둘로 잇는 조합은 없다(내 판단).
+- Basys3 적합성의 근거: Pmod 2개(JSTK2 SPI 4핀, 서보 신호 2핀)로 가능. 서보 전원은 외부 5 V 분리, 신호 3.3 V 직결 가능 여부는 서보별로 확인 필요(vhdlwhiz는 레벨 변환 권장).
+- 난이도: 2 / 단계: T2
+- 심사: (대기)

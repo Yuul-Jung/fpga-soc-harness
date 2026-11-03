@@ -153,3 +153,12 @@
 - https://github.com/IObundle/iob-vga | VGA 코어 — 미열람(L1)
 - https://github.com/algofoogle/raybox | raybox 원형 저장소 — 미열람(L1)
 - 참고: 프레임 버퍼 없는 VGA 사례 중 Basys3에서 직접 구현한 것은 검색 6회에서 못 찾음(ZipCPU 글이 Basys3 프로젝트를 언급할 뿐)
+- https://www.luisllamas.es/en/fpga-pwm-control-intensity-servo/ | Verilog PWM·서보 드라이버(240,000 주기 카운트, 8비트 위치) — 열람했으나 보드 미명시·날짜 없음, 카드는 상한으로 미작성(L2 상당)
+- https://digilent.com/blog/using-the-pmodjstk-to-control-a-stepper-motor-with-the-basys-3/ | Basys3 PmodJSTK→스텝모터, Instructables 링크 — 본문 일부 열람(L2), 코드는 Instructable에 있음
+- https://www.ece.ualberta.ca/~elliott/ee552/projects/2002_w/automated_camera_controller | 카메라 추적 팬 스테퍼(UP1, VHDL), 역기전력 보드 손상·진동 교훈(S6) — 열람(L2~L3), 카드 후보
+- https://ijece.iaescore.com/index.php/IJECE/article/view/21524 | FPGA 다채널 동기 PWM(휴머노이드) — 미열람(L1)
+- https://lab.e-yantra.org/lab-in-a-box/docs/FPGA_DEO/motors/servo.html | e-Yantra DE0 서보 문서 — 미열람(L1)
+- https://koreascience.kr/article/CFKO201133254116483.pdf | 국내 학회 FPGA 서보/로봇 관련 추정 — 미열람(L1)
+- https://koreascience.kr/article/CFKO200333239336497.pdf | 국내 학회 자료 — 미열람(L1)
+- https://forum.digikey.com/t/jstk2-pmod-vhdl/33495 | JSTK2 컨트롤러 일본어판 — 미열람(L1)
+- 참고: Basys3에서 조이스틱·XADC·카메라로 서보 로봇팔을 구동한 사례 중 소스·보고서가 열람 가능한 것은 이번 검색 6회에서 shashankr 소개 페이지 외에 못 찾음. Digilent 포럼 1259번 글은 답변 본문이 열람되지 않음(질문만 확인).
