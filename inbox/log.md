@@ -59,3 +59,4 @@
 2026-11-03 18:41 | verify | 재열람 0(WebFetch PROVENANCE_REQUIRED 재발; 우회 안 함) | 수정 4(source_rev 형식 오류 → audit 오류 0) | 불일치 0 | 승격 L2→L3 0 | ready +0 | 아이디어 심사 보류 | 미재열람 누적 약 50건 | 부수: add_repo 도구 없음, 기존 clone 사용
 2026-11-03 18:51 | capstone | skip: ready 아이디어 없음(vetted 2건, raw 33건; 게이트 3 미충족, rechecked_at 근거 카드 부족으로 심사 보류 중). 게이트 1·2는 미확인 갱신 없음 | 부수: add_repo/register_repo_root 도구 없음, 기존 clone 사용
 2026-11-03 19:08 | collect | Arduino 센서 허브(MPU-6050·BMP280·NEO-6M) · S3 빈틈 추적(주: 센서 허브·I2C/UART 혼합 빈 곳)+S1 인접 도메인 이식(보조: Arduino 로거·HUD → 허브 IP·7세그) | 카드 +3 | 아이디어 +1 | 큐 잔여 212 | blocked 0 | 부수: add_repo/register_repo_root 도구 없음, 기존 clone 사용
+2026-11-03 20:08 | collect | Arduino 디스플레이(SSD1306·MAX7219) · S6 실패 사례(주: OLED 멈춤·쓰레기 픽셀 포럼 글)+S5 비정형 출처(보조: 튜토리얼 블로그) | 카드 +3 | 아이디어 +0(I-024·I-0xx 기존과 겹쳐 신규 없음) | 큐 잔여 216 | blocked 0 | 부수: add_repo/register_repo_root 도구 없음, 기존 clone 사용

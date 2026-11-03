@@ -232,3 +232,8 @@
 - https://forum.arduino.cc/t/multiple-sensors-in-one-board-s/1097942 | 여러 센서 한 보드 토론 — 검색 결과만(L1) | 아두이노 MPU6050 BMP280 GPS NEO-6M 센서 허브
 - https://docs.sunfounder.com/projects/umsk/en/latest/02_arduino/uno_lesson05_mpu6050.html | SunFounder MPU6050 Arduino 레슨 — 검색 결과만(L1) | Arduino MPU-6050 BMP280 NEO-6M GPS sensor hub project tutorial
 - 참고: BMP280/NEO-6M의 Basys3·FPGA 직접 Verilog 구현 사례는 검색에서 못 찾음
+- https://github.com/tardate/LittleArduinoProjects/blob/master/playground/LED8x8/MaxRawDemo | MAX7219 16비트 프레임(주소 8+데이터 8, CS 상승 래치) 확인, 스케치 코드·레지스터 값 미게재(페이지만 L3), 라이선스 미기재 — howtomechatronics 카드 보조 출처 | MAX7219 Arduino 질의
+- https://shillehtek.com/blogs/news/arduino-uno-st7789-display-240x240-graphics-demo | Arduino Uno ST7789 240x240 그래픽 데모 — 미열람(L1) | ST7789 Arduino 질의
+- https://teratail.com/questions/5iz4axeucyabgo | ST7789 Arduino UNO SPI 질문(일본어) — 미열람(L1) | ST7789 Arduino 질의
+- https://forum.arduino.cc/t/really-struggling-with-oled-sd1306/1374240 | SSD1306 OLED 실패 사례 — 미열람(L1), S6 후보 | SSD1306 pitfalls 질의
+- blocked: MAX7219 데이터시트(레지스터 맵) 직접 열람 미시도 — 다음 사이클 후보

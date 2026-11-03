@@ -104,3 +104,6 @@
 | [shillehtek-nano-mpu6050-neo6m-vehicle-logger](arduino/shillehtek-nano-mpu6050-neo6m-vehicle-logger.md) | L3 | T2 | Arduino Nano (Basys3 needs-port) | 2026-11-03 |
 | [jpralves-car-hud-speed-compass](arduino/jpralves-car-hud-speed-compass.md) | L3 | T1 | Arduino Nano (Basys3 needs-port) | 2026-11-03 |
 | [arduino-forum-nano-crash-3-i2c-gps](arduino/arduino-forum-nano-crash-3-i2c-gps.md) | L3 | T2 | Arduino Nano/Mega (Basys3 needs-port) | 2026-11-03 |
+| [arduino-forum-oled-freezes-nano-display-call](arduino/arduino-forum-oled-freezes-nano-display-call.md) | L3 | T1 | Arduino Nano (Basys3 needs-port) | 2026-11-03 |
+| [arduino-forum-ssd1306-trash-pixels](arduino/arduino-forum-ssd1306-trash-pixels.md) | L3 | T1 | AVR Arduino (Basys3 needs-port) | 2026-11-03 |
+| [howtomechatronics-max7219-matrix-tutorial](arduino/howtomechatronics-max7219-matrix-tutorial.md) | L3 | T1 | Arduino Uno/Nano (Basys3 needs-port) | 2026-11-03 |
