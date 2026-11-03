@@ -3,31 +3,71 @@ name: verify
 on:
   push:
   pull_request:
+  schedule:
+    - cron: '35 0,3,6,9,12,15,18,21 * * *'   # 3시간마다 :35 (KST)
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write    # 카드 수정 커밋 (스케줄 실행 시)
+  pages: write
+  id-token: write
 
 jobs:
   verify:
     runs-on: ubuntu-latest
+    timeout-minutes: 85
     steps:
       - uses: actions/checkout@v4
-      - name: 도구 설치
-        run: sudo apt-get update && sudo apt-get install -y iverilog verilator yosys
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 의존성 설치
+        run: |
+          pip install --break-system-packages requests pyyaml mkdocs-material
+          sudo apt-get update && sudo apt-get install -y iverilog verilator yosys
+
+      - name: Git pull rebase (스케줄 실행 시)
+        if: github.event_name == 'schedule'
+        run: git pull --rebase
+
       - name: 카드 점검
         run: python3 tools/check.py
+
       - name: 캡스톤 린트·시뮬레이션·합성
         run: python3 tools/run_verify.py
+
       - name: 문서·계통도 생성
         run: python3 tools/build.py
+
       - name: 전수 감사 (카드·명세·소스·문서 대조)
         run: python3 tools/audit.py --no-build
+
       - name: 라이브러리 린트·시뮬레이션 (library/)
         run: |
           set -o pipefail
           make -C library lint sim 2>&1 | tee library-check.log
           echo "::notice::library: $(grep -E '^(PASS|FAIL)' library-check.log | tail -1)"
+
+      # 검증·개선 커밋 (스케줄 실행 시)
+      - name: Verify commit & push
+        if: github.event_name == 'schedule'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add catalog/ atlas/ soc-map/ inbox/
+          git diff --staged --quiet || \
+            git commit -m "verify: $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M')"
+          git push
+
+      # MkDocs 사이트 빌드
+      - name: MkDocs 빌드
+        if: github.ref == 'refs/heads/main'
+        run: mkdocs build --strict
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -37,10 +77,11 @@ jobs:
             build
             library/build
             capstones/*/build
+
       - uses: actions/upload-pages-artifact@v3
         if: github.ref == 'refs/heads/main'
         with:
-          path: docs
+          path: site
 
   deploy:
     needs: verify

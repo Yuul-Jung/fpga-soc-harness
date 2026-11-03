@@ -1,4 +1,5 @@
-docs/
+site/
 capstones/*/build/
 __pycache__/
 build/
+

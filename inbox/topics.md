@@ -41,3 +41,46 @@
 - [x] Basys3 XADC 아날로그 센서 입력(가변저항·조이스틱·조도, 0~1 V 앞단) — 2026-11-03 14시대 사이클: 카드 3건(L3), 센서 모듈(LM35·조도)과 Basys3 직접 응용 사례는 못 찾음, UG480 원문은 일부만 열람
 - [x] I2C 시계·메모리(DS3231 RTC, 24LC EEPROM) 마스터 FSM과 Basys3 사례 (devices/i2c 비어 있음, S3) — 2026-11-03 15시대 사이클: 카드 3건(L3)+devices/i2c/ds3231.md, Basys3 직접 사례와 DS3231 Verilog 직접 사례는 못 찾음, I2C 마스터 저장소 3건은 큐(L1)
 - [x] IR 리모컨(NEC 프로토콜) 수신 디코더 FSM과 로봇 조종 조합 (HID 계열, S2) — 2026-11-03 16시대 사이클: 카드 3건(L3), Basys3 직접 사례와 반복 코드 구현·로봇 조종 조합 자료는 못 찾음, OpenCores 코어는 코드 미열람
+
+## Arduino 도메인 (2026-11-03 추가, 위에서부터 소비)
+- [ ] Arduino 모터 제어: TB6612FNG/L298N H-브리지 + 엔코더 PID 속도 제어 (아두이노 생태계 우선)
+- [ ] Arduino 통신 모듈: HC-05 BT 앱 제어, NRF24L01 무선, LoRa SX1278 기초
+- [ ] Arduino 센서 허브: MPU-6050 IMU + BMP280 기압 + GPS NEO-6M 조합 사례
+- [ ] Arduino 디스플레이: SSD1306 OLED + ST7789 SPI LCD + MAX7219 매트릭스 구동
+- [ ] Arduino 캡스톤급: 자율주행 RC카·로봇 팔·스마트 홈 제어 시스템 완성 프로젝트
+- [ ] Arduino FPGA 연동: 아두이노 모듈을 Basys3 Pmod와 연결하는 인터페이스 변환 사례
+
+## STM32 도메인 (2026-11-03 추가, 위에서부터 소비)
+- [ ] STM32 HAL 기초: GPIO/UART/SPI/I2C HAL 드라이버 구조와 큐브MX 코드 생성
+- [ ] STM32 FreeRTOS: 태스크·큐·세마포어·타이머, CMSIS-RTOS v2 래퍼 사례
+- [ ] STM32 모터 제어: TIM PWM + 엔코더 모드 + FOC 기초 (G0/G4/F4 계열)
+- [ ] STM32 통신: CAN FD, USB CDC, Ethernet LwIP, BLE(WB55) 통합 사례
+- [ ] STM32 캡스톤급: 드론 FC, 산업용 PLC 대체, 로봇 조인트 제어 완성 프로젝트
+
+## ESP32 도메인 (2026-11-03 추가, 위에서부터 소비)
+- [ ] ESP32 Wi-Fi + MQTT: MQTT 브로커 연결, OTA 업데이트, 전력 절약 딥슬립
+- [ ] ESP32 BLE: GATT 서버·클라이언트, BLE Mesh, 비콘 스캐너
+- [ ] ESP32 FreeRTOS + 멀티코어: Core0/1 핀닝, Task Watchdog, Inter-Core 통신
+- [ ] ESP32 카메라·오디오: ESP32-CAM OV2640 스트리밍, I2S 마이크·스피커 (MAX98357)
+- [ ] ESP32 엣지 AI: TFLite Micro 제스처·키워드 인식, ESP-IDF AI 예제 캡스톤
+
+## Raspberry Pi 도메인 (2026-11-03 추가, 위에서부터 소비)
+- [ ] RPi GPIO: pigpio/gpiozero 기초, SPI/I2C 커널 드라이버와 Python 바인딩
+- [ ] RPi 카메라 파이프라인: Picamera2 + libcamera, OpenCV 실시간 영상 처리
+- [ ] RPi 실시간성: PREEMPT_RT 패치, isolcpus, 사이클릭 테스트 (모터 제어 목표)
+- [ ] RPi FPGA 연동: RPi SPI/I2C로 FPGA 제어, AXI 스트림 데이터 전송 사례
+- [ ] RPi OS 프로젝트: Buildroot 최소 이미지, 부트 시간 최적화, 임베디드 배포
+
+## 임베디드 공통 도메인 (2026-11-03 추가, 위에서부터 소비)
+- [ ] RTOS 비교: FreeRTOS vs Zephyr vs ThreadX — 태스크 모델·메모리·포팅 난이도
+- [ ] 프로토콜 심화: CAN FD 프레임 구조, MODBUS RTU/TCP, EtherCAT 기초
+- [ ] 디버그 기법: JTAG/SWD 트레이스, OpenOCD, Segger RTT, 논리 분석기 활용
+- [ ] 펌웨어 OTA: MCUboot 부트로더, 이중 파티션 업데이트, 서명 검증
+- [ ] 안전 기능: MISRA C, 워치독, 스택 카나리, CRC 검사, FMEA 예시
+
+## 전자기술 도메인 (2026-11-03 추가, 위에서부터 소비)
+- [ ] 모터 드라이버 회로: H-브리지 MOSFET 선택·게이트 드라이버·데드타임·역기전력 보호
+- [ ] 전력 공급: DC-DC 벅/부스트 컨버터 설계, LDO vs 스위칭 레귤레이터 선택 기준
+- [ ] 인버터 기초: 단상 풀브리지 SPWM, 게이트 격리(포토커플러/게이트 드라이버 IC)
+- [ ] 센서 신호 처리: ADC 입력 필터링, 차동 증폭, 홀 전류 센서 보정
+- [ ] PCB 설계 체크리스트: 전류 경로, GND 플레인 분리, EMC 디커플링, 레이아웃 규칙
