@@ -261,3 +261,12 @@
 - https://os.mbed.com/users/gereina/code/HAL_QEI_PWM_MBED_PID/ | NUCLEO-F446RE 엔코더 2개 + PWM PID 도립진자 — 검색 결과만(L1) | STM32 DC motor encoder PID github
 - https://community.st.com/s/question/0D50X00009XkaPq/stm32-encoder-interface | ST 커뮤니티 엔코더 인터페이스 질문 — 검색 결과만(L1) | STM32 HAL timer encoder
 - blocked: https://os.mbed.com/users/kkoichy/code/Encoder_Nucleo_32_bits — 16비트 타이머+32비트 소프트 카운터, github.com/ArmMbed로 리다이렉트되어 열람 못 함(1회)
+- https://tinytapeout.com/runs/ttihp25a/322 | Basys 3 Over UART Link: 스위치16·LED16·7세그·버튼을 UART(115200)로 호스트에 노출, LD/SW/7S/BT 메시지 — 열람(L3), 라이선스는 저장소(devinatkin/tt09-basys3-uart-link) 확인 필요, 카드 후보 | ESP32 FPGA UART bridge Wi-Fi telemetry
+- https://github.com/devinatkin/tt09-basys3-uart-link | 위 프로젝트 저장소 — 검색 결과에서 링크만 확인(L1) | 같은 질의
+- https://www.digikey.com/en/product-highlight/d/digilent/pmod-esp32-wireless-communication-module | Digilent Pmod ESP32 — 검색 결과만(L1) | 같은 질의
+- https://github.com/zvldz/ESP32-UART-Bridge/wiki | ESP32 UART 브리지 위키 — 검색 결과만(L1) | 같은 질의
+- https://uvadoc.uva.es/bitstream/handle/10324/69080/TFG-I-3031.pdf?sequence=4 | ESP32·FPGA 관련 학위 논문(내용 미확인) — 검색 결과만(L1) | ESP32 FPGA SPI 질의
+- https://github.com/Xayiide/CDIoT | ESP32 IoT 프로젝트 — 검색 결과만(L1) | ESP32 FPGA 한국어 질의
+- https://portaldeinformacao.utfpr.edu.br/Record/riut-1-24379/Description | ESP32+FPGA Wi-Fi 홈 자동화 학위 논문 기록 — 검색 결과만(L1) | 같은 질의
+- https://shillehtek.com/blogs/news/esp32-freertos-tasks-dual-core-multitasking | ESP32 FreeRTOS 듀얼 코어 — 검색 결과만(L1) | ESP32 FreeRTOS sensor hub 질의
+- blocked: GitHub 커밋 페이지(ICE-V-Wireless, ESP32SPISlave) — WebFetch 권한 응답 없음(1회), source_rev unverified

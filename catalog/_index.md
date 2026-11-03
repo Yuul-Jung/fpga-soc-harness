@@ -116,3 +116,6 @@
 | [deepbluembedded-stm32-timer-encoder-mode](stm32/deepbluembedded-stm32-timer-encoder-mode.md) | L3 | T1 | STM32 (Basys3 needs-port) | 2026-11-03 |
 | [kael2209-stm32-speed-position-control-pid](stm32/kael2209-stm32-speed-position-control-pid.md) | L3 | T2 | STM32F103C8T6 Blue Pill (Basys3 needs-port) | 2026-11-03 |
 | [stm32-community-encoder-rollover-management](stm32/stm32-community-encoder-rollover-management.md) | L3 | T1 | STM32F407 (Basys3 needs-port) | 2026-11-03 |
+| [controllerstech-esp32-freertos-multitasking](esp32/controllerstech-esp32-freertos-multitasking.md) | L3 | T1 | ESP32 (Basys3 needs-port) | 2026-11-03 |
+| [hideakitai-esp32spislave](esp32/hideakitai-esp32spislave.md) | L3 | T2 | ESP32 (Basys3 needs-port) | 2026-11-03 |
+| [ice-v-wireless-ice-v-wireless](lattice/ice-v-wireless-ice-v-wireless.md) | L3 | T3 | ICE-V Wireless iCE40UP5k (Basys3 needs-port) | 2026-11-03 |
