@@ -1,8 +1,10 @@
 name: Harvest (수집)
 
 on:
-  schedule:
-    - cron: '5 * * * *'    # 매시 :05
+  # 비활성: harness/ 모듈(harvest, capstone)과 capcheck --gate-only가 이 저장소에 없어 실행하면 실패한다.
+  # 같은 일을 Claude 예약 작업이 하고 있다(HARNESS §15). 모듈이 생기면 아래 주석을 풀어 다시 켠다.
+  # schedule:
+  #   - cron: '5 * * * *'    # 매시 :05
   workflow_dispatch:
     inputs:
       topic:
