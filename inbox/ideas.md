@@ -141,7 +141,7 @@
 - 심사: 2026-11-04 /verify, 근거 2(symbiflow-arch-defs-picosoc-basys3·yosyshq-picorv32-picosoc rechecked_at 추정, morsucci 미확인) + 새로움 2(카탈로그에 UART→AXI-Lite 브리지 패키지 없음) + 적합성 1(USB-UART 115200 baud 가능, AXI-Lite 마스터 FSM 복잡도 미검증) + 완결성 1(에러 처리와 프레이밍 범위 미정) = 6점. 보강: AXI-Lite 마스터 FSM 범위 명시, 추가 근거 카드.
 
 ## I-013 속도 PI 폐루프 IP: 엔코더 창 계수 + 에지 간격 측정 + PI 하드웨어 FSM + PWM, 모델 모터 자체 점검
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: 엔코더 속도를 10 ms 창 카운트와 에지 간격(주기) 두 방식으로 읽고, 고정소수점 PI를 하드웨어 FSM으로 돌려 PWM 듀티를 갱신하는 IP. 테스트벤치는 1차 지연 모델 모터가 엔코더 펄스를 만들게 하고 계단 지령에 대한 속도가 목표 오차 내로 수렴하는지 PASS/FAIL로 검사하는 T3
 - 조합: [직교 엔코더(sensor), PWM(actuator), PI 제어 FSM]
 - 근거: [columbia-4840-dc-motor-controller, unipi-se-custom-peripheral-pwm, codeproject-de10-nano-self-balancing-robot, waveshare-esp32-tb6612-encoder-speed-pid, 1988kramer-motor-control]
@@ -150,6 +150,8 @@
 - Basys3 적합성의 근거: 곱셈 몇 개와 카운터뿐이라 DSP·LUT 부담이 작을 것(내 추정, 자원 수치는 카드에 없음). 100 MHz에서 25 kHz PWM은 4000 카운트(내 계산). 모터 전원 분리, 엔코더 5V면 레벨 변환.
 - 난이도: 3 / 단계: T3
 - 심사: 2026-11-04 /verify, 근거 3(모터 제어 카드 5건 중 rechecked_at 3건 이상 추정: columbia-4840-dc-motor-controller·waveshare-esp32-tb6612-encoder-speed-pid·1988kramer-motor-control) + 새로움 2(카탈로그에 하드웨어 PI + 이중 속도 측정 조합 없음) + 적합성 1(DSP·LUT 추정치만, 에지 간격 오버플로 처리 미정) + 완결성 1(고정소수점 비트폭·타임아웃 범위 미정) = 7점. 보강: 고정소수점 비트폭·타임아웃 범위 명시.
+- 차단조건재심사: 2026-11-03, 점수 7 (§14.2 차단조건 적용: WebFetch PROVENANCE_REQUIRED 전면 차단)
+- 패키지: mmio-speed-pi-checker
 
 ## I-014 모터 안전 래퍼 IP: 과전류 입력·데드타임·활성화 게이트를 PWM 출력 앞에 두는 보호 블록 자체 점검
 - 상태: raw
