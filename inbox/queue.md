@@ -162,3 +162,13 @@
 - https://koreascience.kr/article/CFKO200333239336497.pdf | 국내 학회 자료 — 미열람(L1)
 - https://forum.digikey.com/t/jstk2-pmod-vhdl/33495 | JSTK2 컨트롤러 일본어판 — 미열람(L1)
 - 참고: Basys3에서 조이스틱·XADC·카메라로 서보 로봇팔을 구동한 사례 중 소스·보고서가 열람 가능한 것은 이번 검색 6회에서 shashankr 소개 페이지 외에 못 찾음. Digilent 포럼 1259번 글은 답변 본문이 열람되지 않음(질문만 확인).
+- https://www.allaboutcircuits.com/technical-articles/how-to-interface-mojo-v3-fpga-board-16x2-lcd-module-FPGA-tutorial/ | Mojo V3 HD44780 16x2 LCD 8비트 구동(ROM+3상태 FSM, 지연 71 ms) — 본문 열람(L3), 카드 후보, 상한으로 미작성
+- https://www.eevblog.com/forum/microcontrollers/verilog-lcd-implementation/ | HD44780 초기화 지연을 스트로브+긴 카운터로 푸는 조언(2018) — 열람(L3), 카드 후보(실패 사례 S6)
+- https://www.eetree.cn/wiki/ssd1306_verilog?do=edit | SSD1306 SPI Verilog: 48비트 단계 ROM 시퀀서 + spi_master — 열람(L3), 라이선스 미기재, 카드 후보
+- https://velog.io/@physical-100/SSD1306-OLED-제어 | 한국어, Raspberry Pi 리눅스 I2C로 SSD1306 128x32 초기화·페이지 주소 지정(0x3C) — 열람(L3), FPGA 아님, 명령 순서 참고(S1)
+- https://vhdlwhiz.com/product/course-pmod-oled-controller-display-text-and-graphics-with-an-fpga/ | Pmod OLED VHDL 강의(유료 멤버십, Arty S7-50) — 소개 페이지만 열람(L2), 본문 유료로 blocked
+- https://gist.github.com/yunfan/2d3ee14697f3ebd3cb43ae411216d9aa | SSD1306 I2C 0x3C Forth 드라이버(ESP8266 추정), 그리기 함수 구성 — 열람(L3), FPGA 아님, 라이선스 미기재
+- https://digilent.com/reference/_export/xhtml/pmod/pmodclp/start | Pmod CLP(HD44780 16x2, 8비트 병렬, 단종) — 요약 페이지만 열람(L2), 핀·타이밍은 매뉴얼 필요
+- https://www.webpages.uidaho.edu/~jfrenzel/340/Handouts/lcd_module/PmodCLP_rm_RevA.pdf | PmodCLP 매뉴얼 Rev A 사본 — 미열람(L1)
+- https://github.com/hepingood/st7789 | ST7789 드라이버 — 미열람(L1), MCU용 추정
+- 참고: Basys3에서 I2C SSD1306/LCD1602 백팩(PCF8574)을 구동한 FPGA 소스는 이번 검색 8회에서 못 찾음. FPGA 사례는 SPI OLED(Pmod OLED, Tang Nano)와 HD44780 병렬이 대부분.

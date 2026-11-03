@@ -77,3 +77,6 @@
 | [shashankr-basys3-fpga-robotic-arm](amd/shashankr-basys3-fpga-robotic-arm.md) | L3 | T2 | Basys3 | 2026-11-03 |
 | [vhdlwhiz-rc-servo-controller](vendor-neutral/vhdlwhiz-rc-servo-controller.md) | L3 | T1 | iCEstick (Basys3 needs-port) | 2026-11-03 |
 | [digikey-forum-jstk2-pmod-controller-vhdl](vendor-neutral/digikey-forum-jstk2-pmod-controller-vhdl.md) | L3 | T2 | 미명시 (Basys3 needs-port) | 2026-11-03 |
+| [digilent-pmod-oled-reference-manual](amd/digilent-pmod-oled-reference-manual.md) | L3 | T2 | Basys3 (needs-port: 예제 없음) | 2026-11-03 |
+| [lushaylabs-tang-nano-9k-ssd1306-oled](vendor-neutral/lushaylabs-tang-nano-9k-ssd1306-oled.md) | L3 | T1 | Tang Nano 9K (Basys3 needs-port) | 2026-11-03 |
+| [masterplayer-lcd-st7789-sv](vendor-neutral/masterplayer-lcd-st7789-sv.md) | L3 | T2 | 미명시 (Basys3 needs-port) | 2026-11-03 |
