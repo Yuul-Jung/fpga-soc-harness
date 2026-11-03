@@ -1,0 +1,47 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>stm32-community-encoder-rollover-management</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../../index.html">FPGA SoC 하네스</a><a href="../../index.html">메인</a><a href="../../index.html#capstones">캡스톤</a><a href="../../soc-map/tech-tree.html">기술 트리</a><a href="../../catalog/index.html">카탈로그</a><a href="../../inbox/ideas.html">아이디어</a><a href="../../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/catalog/stm32/stm32-community-encoder-rollover-management.md">GitHub 원본: catalog/stm32/stm32-community-encoder-rollover-management.md</a></p><h1>stm32-community-encoder-rollover-management</h1><div class="panel fm"><table><tr><td>name</td><td><a href="stm32-community-encoder-rollover-management.html">stm32-community-encoder-rollover-management</a></td></tr><tr><td>url</td><td>https://community.st.com/stm32-mcus-products-25/quadrature-encoders-roll-over-management-109514</td></tr><tr><td>source_type</td><td>article</td></tr><tr><td>vendor</td><td>neutral</td></tr><tr><td>board</td><td>[STM32F407 (글 서술)]</td></tr><tr><td>fit_basys3</td><td>needs-port</td></tr><tr><td>cpu</td><td>none(MCU 펌웨어, ARM Cortex-M4)</td></tr><tr><td>language</td><td>C</td></tr><tr><td>tools</td><td>[unverified: 툴체인 미기재]</td></tr><tr><td>bus</td><td>none</td></tr><tr><td>peripherals</td><td>[sensor]</td></tr><tr><td>stage</td><td>T1</td></tr><tr><td>license</td><td>unknown (포럼 글)</td></tr><tr><td>stats</td><td>{last_update: &quot;unverified: 날짜 확인 못 함&quot;}</td></tr><tr><td>doc_language</td><td>en</td></tr><tr><td>verification</td><td>L3</td></tr><tr><td>checked_at</td><td>2026-11-03</td></tr><tr><td>sources</td><td>[https://community.st.com/stm32-mcus-products-25/quadrature-encoders-roll-over-management-109514]</td></tr></table></div><p>unverified: source_rev — 포럼 글이라 해당 없음</p>
+<h2>요약</h2>
+<p>STM32F407에서 5축 모터의 16비트 엔코더 타이머를 32비트 위치로 확장할 때 롤오버를 어떻게 다루느냐는 질문과 답변이다. 한 바퀴가 160,000 펄스인 고해상도 엔코더가 예다(글 서술). 확정된 해결은 없이 닫혔다.</p>
+<h2>구조</h2>
+<ul><li style="margin-left:0.0em">질문: TIMx_CR1의 읽기 전용 DIR 비트로 롤오버 방향을 알 수 있느냐. 이 질문에 대한 확정 답은 글에 없다.</li><li style="margin-left:0.0em">답변 1: 오버플로 인터럽트에서 상위 워드를 증감하는 방식은 고해상도에서 불안정하다(위치가 0 근처일 때 인터럽트 순간 부호가 뒤집혀 방향이 틀릴 수 있음, 답변자 서술).</li><li style="margin-left:0.0em">답변 2: 1 ms 간격(오버플로 주기당 10~20회) 또는 약 10 kHz 인터럽트로 읽고, 현재·이전 값의 상위 2비트(사분면)를 비교한다. 0→3이면 상위 워드 감소, 3→0이면 증가(답변자 서술).</li><li style="margin-left:0.0em">부가: 32비트 타이머로 옮기는 방안 언급. 용어 논쟁(encoder vs decoder)은 본질과 무관.</li><li style="margin-left:0.0em">링크된 선행 글은 죽은 링크로 열람 불가(글 서술).</li></ul>
+<h2>검증·재현성</h2>
+<ul><li style="margin-left:0.0em">검증 코드·수치 없음. 사분면 방식의 정확도는 답변자 주장일 뿐 시험 결과는 글에 없다.</li></ul>
+<h2>한계·위험</h2>
+<ul><li style="margin-left:0.0em">포럼 글이라 사실 수준은 &quot;작성자·답변자 서술&quot;. 신뢰성 판정은 하지 않는다.</li></ul>
+<h2>재사용 메모</h2>
+<ul><li style="margin-left:0.0em">내 판단: FPGA에서는 카운터를 처음부터 32비트로 만들면 이 문제가 사라진다. 대신 같은 원리가 고속 이벤트를 느리게 읽을 때 읽기 사이 변화량이 반 범위를 넘으면 안 된다는 샘플링 규칙으로 남는다. 이는 속도 측정용 창 계수에 그대로 적용된다.</li><li style="margin-left:0.0em">개조: 옮길 부분은 사분면(상위 2비트) 비교로 부호 있는 델타를 만드는 아이디어와 &quot;읽기 주기 ≤ 오버플로 주기/10&quot; 제약을 IP 표준 문서 주의사항으로 쓰는 것. 못 옮길 부분은 STM32 타이머 오버플로 인터럽트 구조. 시험 환경은 롤오버 경계(0xFFFF→0, 0→0xFFFF) 주입 테스트벤치로 자체 작성.</li><li style="margin-left:0.0em">관련: [[<a href="deepbluembedded-stm32-timer-encoder-mode.html">deepbluembedded-stm32-timer-encoder-mode</a>]].</li></ul></main></body></html>

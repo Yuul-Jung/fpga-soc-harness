@@ -41,4 +41,5 @@ ESP32에서 FreeRTOS 태스크 3개(ADC 읽기, 통신 출력, LED 펄스)를 �
 ## 재사용 메모
 - 내 판단: "타이머 주기 → 표본 → FIFO → 소비자" 구조는 센서 허브 IP(I-036)의 표본 FIFO·타임스탬프 구조와 같은 모양이라 시험 시나리오(큐 가득 참, 표본 손실 카운트)를 테스트벤치 항목으로 가져올 수 있다.
 - 개조: 옮길 부분은 "표본 주기 레지스터 + 깊이 10 FIFO + 오버런 카운터"를 AXI4-Lite 레지스터(`PERIOD`, `FIFO_DATA`, `STATUS.overrun`)로 노출하는 설계다. 못 옮길 부분은 FreeRTOS 태스크·알림 API 자체와 ESP32 ADC. ESP32 쪽은 Basys3와 UART로 잇는 호스트(`devices/` 허브 후보)로만 쓴다.
+- 라이선스 확인 필요: 글에 라이선스 표기가 없으므로(license: unknown) 코드는 가져오지 않고 구조 사양만 참고한다.
 - 같은 사이클 ESP32 카드: [[hideakitai-esp32spislave]].
