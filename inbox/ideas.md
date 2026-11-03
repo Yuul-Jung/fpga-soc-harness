@@ -28,7 +28,7 @@
 - 심사: 2026-11-02 /verify, 근거 2(재열람 카드 2건) + 새로움 2 + 적합성 1(Basys3 실측·VGA 카드 없음) + 완결성 2 = 7점. 보강: VGA 카드 1건 이상, 3번째 재열람 근거 카드.
 
 ## I-002 I2S 클럭 체크 하네스: MMCM→MCLK→I2S 송신기 자체 점검 테스트벤치
-- 상태: ready
+- 상태: used (패키지: mmio-i2s-tx-checker, 2026-11-03)
 - 요약: 내 판단: 12.288 MHz MCLK에서 BCLK/LRCLK를 파생하고 I2S 프레임을 만드는 송신기를 작성하고, 테스트벤치가 비율과 프레임 정렬을 PASS/FAIL로 검사하는 T2 패키지. 실패 사례의 교훈을 검증 항목으로 바꾼다.
 - 조합: [audio-i2s, MMCM clocking]
 - 근거: [digilent-forum-pmodamp3-basys3-i2s, columbia-4840-audio-visualizer]

@@ -75,3 +75,4 @@
 2026-11-04 05:13 | collect | STM32 캡스톤급(드론 FC·서보 6축 팔) · S2 조합 탐색(주: FC 센서·모터 출력 구성을 FPGA IP로)+S6 실패 사례(보조: FeroFly 문제 목록·ArduPilot 지터) | 카드 +3 | 아이디어 +1 | 큐 잔여 295 | blocked 1 | 부수: add_repo/register_repo_root 도구 없음, 기존 clone 사용; 검색 3회 열람 6건 중 1건 권한 미응답
 2026-11-04 06:09 | collect | ESP32 Wi-Fi+MQTT(딥슬립·OTA 롤백·keepalive) · S4 제약 역전(주: 딥슬립/연결 시간·슬롯 제약을 IP 계약으로)+S1 인접 도메인 이식(보조: MCU OTA·하트비트 → 레지스터 설계) | 카드 +3 | 아이디어 +0 | 큐 잔여 301 | blocked 0 | 부수: add_repo/register_repo_root 도구 없음, 기존 clone 사용; 검색 3회 열람 5건
 2026-11-04 07:15 | collect | ESP32 BLE(GATT 서버·BLE Mesh·비콘 스캐너) · S7 난이도 사다리(주: GATT T2→BLE Mesh T3 단계 연결)+S5 비정형 출처(보조: ESP-IDF 공식 문서, 아카이브 저장소) | 카드 +3 | 아이디어 +1 | 큐 잔여 306 | blocked 0 | 부수: add_repo/register_repo_root 도구 없음, 기존 clone 사용; 검색 미실행(문맥 복구 사이클), 열람 3건 L3
+2026-11-04 07:27 | capstone | mmio-i2s-tx-checker (I-002, 차단조건재심사 경로) | 등급 S0→CI 대기 | check 통과·audit 오류 0 | 선택 경로: §14.2 차단조건재심사(PROVENANCE_REQUIRED), 점수 9점(근거3+새로움2+적합성2+완결성2), 무조건 최대한 생성 원칙 적용
