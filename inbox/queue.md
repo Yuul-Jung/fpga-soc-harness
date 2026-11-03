@@ -220,3 +220,9 @@
 - https://gist.github.com/PierreAuge/79c03b8b5e85f0df4993ff28212f97fb | L298N 엔코더 PID gist — 검색 결과만(L1) | Arduino L298N encoder PID
 - https://github.com/ArsenioDev/DC-motor-positional-control | DC 모터 위치 제어 — 검색 결과만(L1), 라이선스 확인 필요 | 아두이노 TB6612FNG 엔코더 PID
 - https://github.com/VGavara/arduino-TB6612FNG | TB6612FNG Arduino 라이브러리 — 검색 결과만(L1) | 아두이노 TB6612FNG 엔코더 PID
+- https://github.com/maniacbug/RF24 | nRF24L01 Arduino 드라이버 — 검색 결과만(L1), 라이선스 확인 필요 | NRF24L01 SPI protocol FPGA Verilog driver
+- https://github.com/CoolTrish/RF24 | RF24 포크 — 검색 결과만(L1), 원본 병기 필요 | NRF24L01 SPI protocol FPGA Verilog driver
+- https://rf24.readthedocs.io/en/stable/spi_8h_source.html | RF24 SPI 추상화 헤더 문서 — 열람(L3), 기능 설명뿐이라 카드 불필요, 라이선스 헤더 미확인 | NRF24L01 SPI protocol FPGA Verilog driver
+- https://www.energiazero.org/cartelle/arduino/arduino_sensori/how2electronics.com-Interfacing%20SX1278%20Ra-02%20LORA%20Module%20with%20Arduino.pdf | SX1278 Ra-02 Arduino 연결 PDF — 검색 결과만(L1), 제3자 사본 | LoRa SX1278 Arduino basics
+- https://docs.zephyrproject.org/latest/build/dts/api/bindings/lora/semtech%2Csx1276.html | SX1276 Zephyr 장치트리 바인딩 — 검색 결과만(L1), RTOS 도메인에도 연결 | SX1276 LoRa FPGA SPI controller
+- https://forum.lora-developers.semtech.com/t/sx1276-fhss-frequency-hopping-scheme/105 | Semtech 포럼 SX1276 FHSS — 검색 결과만(L1) | SX1276 LoRa FPGA SPI controller

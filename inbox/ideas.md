@@ -359,3 +359,13 @@
 - Basys3 적합성의 근거: Pmod 1핀(수신 모듈 출력)이면 충분, 3.3 V형 모듈 선택 시 변환 불필요, BRAM 불필요. 100 MHz에서 562.5 µs = 56,250 클럭(내 계산).
 - 난이도: 2 / 단계: T2
 - 심사: (대기)
+
+## I-035 SPI 무선 모듈 IP: nRF24L01형 명령/상태 프레임 엔진 + CE 펄스·IRQ 3종 인터럽트, 레지스터 모델 테스트벤치
+- 상태: raw
+- 요약: 내 판단: SPI 바이트 엔진(명령 바이트 → STATUS 응답), CE 10 µs 펄스 생성, IRQ 액티브 로우 입력을 AXI4-Lite 레지스터와 인터럽트로 노출하고, 초기화 순서와 재시도는 펌웨어에 둔다. nRF24L01 레지스터 모델을 테스트벤치에 넣어 TX/RX 순서를 시험한다. LoRa SX1278은 같은 SPI 슬롯에 RESET/DIO0 핀만 바꿔 쓰는 확장 단계로 둔다(난이도 사다리).
+- 조합: [SPI(nRF24L01 → SX1278), GPIO(CE/RESET), 인터럽트(IRQ/DIO0), AXI4-Lite 레지스터]
+- 근거: [mikrocontroller-net-nrf24l01-tutorial, electroniclinic-arduino-sx1278-lora-two-way, microcontrollerslab-sx1278-lora-module]
+- 새로움의 근거: 카탈로그의 무선 자료는 UART 기반 블루투스(HC-05)와 CAN이고, SPI 명령/상태 방식의 소출력 무선 모듈을 IP 표준 레지스터로 묶고 모델로 시험하는 조합은 없다(내 판단).
+- Basys3 적합성의 근거: Pmod 1~2개(SCK, MOSI, MISO, CSN, CE, IRQ 6핀)와 3.3 V 로직으로 충분하고 BRAM 불필요. 모듈 전원 순간 전류용 커패시터 필요(글 서술). SPI 분주는 설계 시 정함(내 판단).
+- 난이도: 3 / 단계: T2
+- 심사: (대기)

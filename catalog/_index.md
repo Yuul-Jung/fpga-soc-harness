@@ -98,3 +98,6 @@
 | [waveshare-esp32-tb6612-encoder-speed-pid](arduino/waveshare-esp32-tb6612-encoder-speed-pid.md) | L3 | T2 | ESP32 (Basys3 needs-port) | 2026-11-03 |
 | [1988kramer-motor-control](arduino/1988kramer-motor-control.md) | L3 | T2 | Arduino (Basys3 needs-port) | 2026-11-03 |
 | [element14-fmilburn-arduino-dc-motor-encoder-part1](arduino/element14-fmilburn-arduino-dc-motor-encoder-part1.md) | L3 | T1 | Adafruit M4 Feather (Basys3 needs-port) | 2026-11-03 |
+| [electroniclinic-arduino-sx1278-lora-two-way](arduino/electroniclinic-arduino-sx1278-lora-two-way.md) | L3 | T2 | Arduino (Basys3 needs-port) | 2026-11-03 |
+| [microcontrollerslab-sx1278-lora-module](arduino/microcontrollerslab-sx1278-lora-module.md) | L3 | T1 | Arduino (Basys3 needs-port) | 2026-11-03 |
+| [mikrocontroller-net-nrf24l01-tutorial](arduino/mikrocontroller-net-nrf24l01-tutorial.md) | L3 | T2 | ATmega8 (Basys3 needs-port) | 2026-11-03 |
