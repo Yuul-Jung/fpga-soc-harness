@@ -161,7 +161,7 @@ module i2s_clk_gen (
     assign lrclk = lrclk_r;
 
 endmodule
-</pre></details><details><summary><code>rtl/i2s_tx.v</code> <span class="muted">161줄</span></summary><pre>// i2s_tx.v — I2S 송신기 + MMIO 레지스터 (ip_standard rev 1 준수)
+</pre></details><details><summary><code>rtl/i2s_tx.v</code> <span class="muted">162줄</span></summary><pre>// i2s_tx.v — I2S 송신기 + MMIO 레지스터 (ip_standard rev 1 준수)
 // Left-Justified 포맷: LRCLK 변환 직후 첫 번째 BCLK 하강 에지에서 MSB 출력
 // MMIO 오프셋 맵 (64KB 창, 0x1002_0000 기준):
 //   0x0000 CTRL      RW  bit[0]=TX_EN
@@ -284,15 +284,16 @@ module i2s_tx (
             frame_done_r &lt;= 1&#x27;b0; // 1사이클 펄스
 
             if (lrclk_fall) begin
-                // L 채널 시작: l_reg 래치, 카운터 초기화
-                l_shift &lt;= l_reg;
-                bit_cnt &lt;= 5&#x27;d0;
-                sdin_r  &lt;= 1&#x27;b0;
+                // L 채널 시작: l_reg 래치, MSB 즉시 출력 (LJ: lrclk 하강과 동시에 bit15 세팅)
+                // lrclk_fall 과 bclk_fall 이 같은 사이클에 겹치므로 여기서 미리 출력한다.
+                l_shift &lt;= {l_reg[14:0], 1&#x27;b0};          // bit15 소비, 나머지 준비
+                bit_cnt &lt;= 5&#x27;d1;                          // bit15 이미 출력 처리
+                sdin_r  &lt;= tx_en ? l_reg[15] : 1&#x27;b0;
             end else if (lrclk_rise) begin
-                // R 채널 시작: r_reg 래치, 카운터 초기화, frame_done 펄스
-                r_shift      &lt;= r_reg;
-                bit_cnt      &lt;= 5&#x27;d0;
-                sdin_r       &lt;= 1&#x27;b0;
+                // R 채널 시작: r_reg 래치, MSB 즉시 출력, frame_done 펄스
+                r_shift      &lt;= {r_reg[14:0], 1&#x27;b0};
+                bit_cnt      &lt;= 5&#x27;d1;
+                sdin_r       &lt;= tx_en ? r_reg[15] : 1&#x27;b0;
                 frame_done_r &lt;= 1&#x27;b1; // 한 프레임 완료 (L+R 한 쌍)
             end else if (bclk_fall &amp;&amp; tx_en) begin
                 if (bit_cnt &lt;= 5&#x27;d15) begin

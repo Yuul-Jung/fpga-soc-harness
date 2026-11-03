@@ -12,8 +12,8 @@
     {
       "group": "rtl",
       "path": "rtl/i2s_tx.v",
-      "sha256": "2f72c5c5ebed0dd718995b7971ed3c89710c0cdc06e18e59155cd8f6ba3e6670",
-      "lines": 161,
+      "sha256": "6cfbbd5f7248c158b334ec72aa23688f925e0576ffdef3fc6ba14d8b372356f6",
+      "lines": 162,
       "origin": "first_party"
     },
     {

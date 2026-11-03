@@ -11,6 +11,7 @@
     "시뮬레이션 마스터 FSM으로 PASS/FAIL 자체 점검 테스트벤치 작성",
     "yosys 합성 성공, iverilog 시뮬레이션 PASS 확인(S2)"
   ],
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 Verilog-2001 원본이며 외부 코드를 포함하지 않는다. 시뮬레이션·합성 결과는 CI가 기록한다. 아이디어 I-011 무조건 최대한 생성 원칙 적용으로 생성됨 (2026-11-04).",
   "non_goals": [
     "실제 보드에서 모터 연결 또는 엔코더 하드웨어 연결(S3는 사람이 한다)",
     "AXI4-Lite 완전 핸드셰이크(이 패키지는 mmio-lite 사용)",
@@ -144,15 +145,16 @@
     "module": "basys3_top",
     "file": "rtl/basys3_top.v",
     "children": [
+      {"module": "demo_master", "file": "rtl/demo_master.v"},
       {
         "module": "soc_top",
         "file": "rtl/soc_top.v",
         "children": [
-          {"module": "mmio_bus",  "file": "rtl/mmio_bus.v"},
-          {"module": "gpio",      "file": "rtl/gpio.v"},
-          {"module": "uart_tx",   "file": "rtl/uart_tx.v"},
-          {"module": "pwm_ip",    "file": "rtl/pwm_ip.v"},
-          {"module": "qenc_ip",   "file": "rtl/qenc_ip.v"}
+          {"module": "mmio_bus", "file": "rtl/mmio_bus.v"},
+          {"module": "gpio",     "file": "rtl/gpio.v"},
+          {"module": "uart_tx",  "file": "rtl/uart_tx.v"},
+          {"module": "pwm_ip",   "file": "rtl/pwm_ip.v"},
+          {"module": "qenc_ip",  "file": "rtl/qenc_ip.v"}
         ]
       }
     ]
