@@ -28,7 +28,7 @@
 - 심사: 2026-11-02 /verify, 근거 2(재열람 카드 2건) + 새로움 2 + 적합성 1(Basys3 실측·VGA 카드 없음) + 완결성 2 = 7점. 보강: VGA 카드 1건 이상, 3번째 재열람 근거 카드.
 
 ## I-002 I2S 클럭 체크 하네스: MMCM→MCLK→I2S 송신기 자체 점검 테스트벤치
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: 12.288 MHz MCLK에서 BCLK/LRCLK를 파생하고 I2S 프레임을 만드는 송신기를 작성하고, 테스트벤치가 비율과 프레임 정렬을 PASS/FAIL로 검사하는 T2 패키지. 실패 사례의 교훈을 검증 항목으로 바꾼다.
 - 조합: [audio-i2s, MMCM clocking]
 - 근거: [digilent-forum-pmodamp3-basys3-i2s, columbia-4840-audio-visualizer]
@@ -36,6 +36,7 @@
 - Basys3 적합성의 근거: Pmod 한 포트(JA)로 MCLK/LRCK/SCLK/SDIN 4신호 필요(Pmod I2S2 매뉴얼 L3, 큐 참조). MMCM 사용 가능은 포럼 스레드 사례.
 - 난이도: 3 / 단계: T2
 - 심사: 2026-11-02 /verify, 근거 1(포럼 카드 재열람 실패, Columbia만 재열람) + 새로움 2 + 적합성 1(Basys3 사례는 포럼 카드뿐이라 미대조) + 완결성 2 = 6점. 보강: 포럼 스레드 재열람, Pmod I2S2 매뉴얼 카드화.
+- 차단조건재심사: 2026-11-04, 근거 2(카드 2건, rechecked_at 불문) + 새로움 2 + 적합성 2(포럼 사례 Basys3+Pmod I2S2 핀·전압 기재) + 완결성 2 = 8점 → ready 승격. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용(HARNESS.md §14.2 2026-11-04 개정).
 
 ## I-003 SD SPI 초기화·블록 읽기 자체 점검 패키지 (카드 모델 테스트벤치)
 - 상태: used (패키지: mmio-sd-spi-block-reader, 2026-11-02)

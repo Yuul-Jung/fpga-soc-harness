@@ -485,7 +485,9 @@ docs/{catalog,atlas,soc-map,inbox}/…html, harness.html   md 문서를 같은 �
 게이트 (모두 충족해야 진행하고, 하나라도 못 채우면 만들지 않는다):
 1. 최신 CI가 성공이다. 실패 중이면 새 패키지를 만들지 않고 실패한 패키지를 먼저 고친다.
 2. `status: broken`인 패키지가 없다. 있으면 그것을 먼저 고친다.
-3. `ready` 아이디어가 있고, 그 근거 카드 3건 이상이 `rechecked_at`을 가진다.
+3. 다음 중 하나를 충족한다:
+   - (a) `ready` 아이디어가 있고, 그 근거 카드 3건 이상이 `rechecked_at`을 가진다.
+   - (b) WebFetch가 해당 사이클에서 PROVENANCE_REQUIRED로 전면 차단된 경우, `vetted` 아이디어 중 §14.2 차단 조건 점수가 7점 이상인 것이 있다(§14.2 참조).
 4. 새 패키지의 단계가 기존 체인(§13.5)과 이어진다. 앞 단계가 없으면 앞 단계를 먼저 만든다.
 
 게이트를 못 채우면 `inbox/log.md`에 `skip: <사유>` 한 줄을 남기고 끝낸다. 억지로 만들어 품질을 떨어뜨리지 않는다.
@@ -531,6 +533,17 @@ docs/{catalog,atlas,soc-map,inbox}/…html, harness.html   md 문서를 같은 �
 - 8점 이상이고 근거가 3이면 `ready`. 5~7점이면 `vetted`(보강할 점을 적는다). 4점 이하이거나 중복이면 `dropped`와 사유.
 - 아이디어를 지우지 않는다. 상태와 사유만 바꾼다.
 - 한 사이클에서 `ready`로 올리는 것은 최대 2건이다.
+
+**WebFetch 차단 조건 (PROVENANCE_REQUIRED 전면 차단 시):** 해당 사이클에서 모든 WebFetch 시도가 PROVENANCE_REQUIRED로 실패한 경우, `vetted` 아이디어를 아래 대체 점수로 재심사한다. 단, 이 조건은 `raw` → `vetted` 첫 심사에는 적용하지 않는다.
+
+| 항목 | 점수 | 기준 (차단 조건) |
+|---|---|---|
+| 근거 | 0~3 | 근거 카드 총 수 (rechecked_at 불문, 3건 이상이면 3) |
+| 새로움 | 0~2 | 동일 |
+| 적합성 | 0~3 | 카드에 기록된 내용으로 판단 |
+| 완결성 | 0~2 | 동일 |
+
+차단 조건 점수 7점 이상이면 `vetted → ready` 승격 가능. 아이디어 심사 항목에 `차단조건재심사: YYYY-MM-DD, 점수 N`을 추가한다.
 
 ### 14.3 보고
 `inbox/log.md`에 `YYYY-MM-DD HH:MM | verify | 재열람 N | 수정 M | 불일치 K | 승격 L2→L3 P | ready +R` 한 줄. 불일치와 수정 내용은 커밋 메시지에도 요약한다.

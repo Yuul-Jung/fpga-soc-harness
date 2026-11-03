@@ -10,6 +10,7 @@ HARNESS.md §14를 한 사이클 실행한다. 수집 세션의 결론을 믿지
 4. 중복은 `duplicate_of`로 표시하고, `_index.md`를 카드와 일치시킨다.
 5. 카드가 3건 이상 늘거나 바뀌었으면 `atlas/`, `soc-map/`를 다시 쓴다(§12.5).
 6. `inbox/ideas.md`의 `raw` 아이디어를 §14.2로 심사한다. 한 사이클에 `ready`는 최대 2건.
+   **WebFetch 차단 감지:** 이번 사이클에서 모든 WebFetch 시도가 PROVENANCE_REQUIRED로 실패했으면, §14.2 차단 조건 점수로 `vetted` 아이디어를 추가 재심사한다. 7점 이상이면 `ready`로 올린다(최대 2건 제한 동일). 아이디어에 `차단조건재심사:` 항목을 추가한다.
 7. `python3 tools/check.py` 통과 후 로그 한 줄(시각은 `TZ=Asia/Seoul date '+%Y-%m-%d %H:%M'`으로 읽는다), 커밋(`verify: ...`), `git pull --rebase origin main`, 푸시. force push 금지.
 8. §8.3 형식으로 보고한다. 불일치와 수정한 항목을 먼저 쓴다.
 
