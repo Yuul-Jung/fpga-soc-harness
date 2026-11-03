@@ -1,0 +1,1059 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MMIO 속도 PI 폐루프 자체 점검</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+
+.colhead{font:600 11px sans-serif;fill:var(--muted)}
+.link{fill:none;stroke:var(--line);stroke-width:1.5}.arrow{fill:var(--line)}
+.lbl{font:11px sans-serif;fill:var(--muted)}
+.bname{font:600 13px sans-serif;fill:var(--text)}.bdesc{font:11px sans-serif;fill:var(--muted)}
+.k-cpu rect{fill:var(--c-cpu);stroke:var(--c-cpu-s)}.k-bus rect{fill:var(--c-bus);stroke:var(--c-bus-s)}
+.k-periph rect,.k-memory rect{fill:var(--c-per);stroke:var(--c-per-s)}
+.k-external rect{fill:var(--c-ext);stroke:var(--c-ext-s);stroke-dasharray:4 3}
+.k-clock rect{fill:var(--c-clk);stroke:var(--c-clk-s)}
+</style></head><body><header class="top"><a class="brand" href="../hub.html">FPGA SoC 하네스</a><a href="../hub.html">메인</a><a href="../hub.html#capstones">캡스톤</a><a href="../soc-map/tech-tree.html">기술 트리</a><a href="../catalog/index.html">카탈로그</a><a href="../inbox/ideas.html">아이디어</a><a href="../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main>
+<p class="muted">캡스톤 패키지 · Basys3 · 단계 T3</p>
+<h1>MMIO 속도 PI 폐루프 자체 점검</h1><p>MMIO-lite 버스에 엔코더 창 계수·에지 간격·PI 제어 FSM·PWM을 단일 IP(speed_pi_ip)로 묶고, 1차 지연 모델 모터 테스트벤치로 계단 지령 추종 및 PASS/FAIL 자체 점검한다. IP 표준 Rev.1 관리 레지스터 포함.</p>
+<div class="badges"><span class="badge b-not-run">린트: 미실행</span><span class="badge b-not-run">시뮬레이션: 미실행</span><span class="badge b-not-run">합성: 미실행</span><span class="badge b-not-tested">보드: not-tested</span></div>
+<p class="muted">검증 상태는 실행 기록이 있을 때만 표시한다. 기록이 없으면 '미실행'이다.</p>
+<nav><a href="#goal">목표</a><a href="#arch">계통도</a><a href="#hier">모듈 계층</a><a href="#map">메모리맵</a><a href="#ext">외부 부품·전기</a><a href="#road">기술 트리</a><a href="#src">실행 소스</a><a href="#verify">검증</a><a href="#ref">참고·위험</a></nav>
+<h2 id="goal">1. 목표와 범위</h2><h3>목표</h3><ul><li>IP 표준 Rev.1(관리 레지스터 0xFFF0~FFFC)을 따르는 speed_pi_ip 단일 IP 설계: 4× 직교 엔코더 동기화, 창 계수 속도 측정, 고정소수점(8.8) PI FSM, PWM 출력</li><li>MMIO-lite 버스 주소 디코더로 GPIO/UART/SPEED_PI 3개 슬레이브 연결</li><li>1차 지연 모델 모터 테스트벤치로 계단 지령 ±2 오차 이내 수렴을 PASS/FAIL 자체 점검</li><li>yosys 합성 성공, iverilog 시뮬레이션 PASS 확인(S2)</li></ul><h3>범위 밖</h3><ul><li>실제 모터·엔코더 하드웨어 연결(S3는 사람이 한다)</li><li>에지 간격(주기) 속도 측정 경로 — 창 계수만 구현(에지 간격은 I-015에서 확장)</li><li>다채널 PID 또는 공통 트리거(I-015로 확장)</li><li>AXI4-Lite 완전 핸드셰이크(이 패키지는 mmio-lite 사용)</li><li>PID D항(이 패키지는 PI만 구현)</li></ul><p class="muted">이 패키지의 소스는 하네스가 직접 작성한 Verilog-2001 원본이며 외부 코드를 포함하지 않는다. 시뮬레이션·합성 결과는 CI가 기록한다. 아이디어 I-013 차단조건재심사 7점(§14.2)으로 생성됨 (2026-11-03).</p>
+<h2 id="arch">2. 계통도</h2><p>클럭: 100 MHz (시뮬레이션에서는 10 ns 클럭)</p><div class="panel"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 974 618" role="img" aria-label="블록 다이어그램">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arrow"/></marker></defs>
+<text x="24" y="16" class="colhead">클럭·입력·마스터</text>
+<text x="274" y="16" class="colhead">버스</text>
+<text x="524" y="16" class="colhead">주변장치</text>
+<text x="774" y="16" class="colhead">외부</text>
+<path d="M612.0,92 L612.0,116" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="104.0" class="lbl" text-anchor="middle">clk/rst/io</text>
+<path d="M612.0,174 L612.0,198" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="186.0" class="lbl" text-anchor="middle">mmio-lite</text>
+<path d="M612.0,256 L612.0,280" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="268.0" class="lbl" text-anchor="middle">sel_gpio</text>
+<path d="M612.0,256 L612.0,362" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="309.0" class="lbl" text-anchor="middle">sel_uart</text>
+<path d="M612.0,256 L612.0,444" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="350.0" class="lbl" text-anchor="middle">sel_speed_pi</text>
+<path d="M612.0,584 L612.0,198" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="391.0" class="lbl" text-anchor="middle">sim drive (tb only)</text>
+<g class="k-board-wrapper"><rect x="524" y="34" width="176" height="58" rx="8"/><text x="612.0" y="58" text-anchor="middle" class="bname">basys3_top</text><text x="612.0" y="76" text-anchor="middle" class="bdesc">Board wrapper</text></g>
+<g class="k-soc-core"><rect x="524" y="116" width="176" height="58" rx="8"/><text x="612.0" y="140" text-anchor="middle" class="bname">soc_top</text><text x="612.0" y="158" text-anchor="middle" class="bdesc">SoC core</text></g>
+<g class="k-bus-decoder"><rect x="524" y="198" width="176" height="58" rx="8"/><text x="612.0" y="222" text-anchor="middle" class="bname">mmio_bus</text><text x="612.0" y="240" text-anchor="middle" class="bdesc">MMIO decoder</text></g>
+<g class="k-peripheral"><rect x="524" y="280" width="176" height="58" rx="8"/><text x="612.0" y="304" text-anchor="middle" class="bname">gpio</text><text x="612.0" y="322" text-anchor="middle" class="bdesc">GPIO LED/SW</text></g>
+<g class="k-peripheral"><rect x="524" y="362" width="176" height="58" rx="8"/><text x="612.0" y="386" text-anchor="middle" class="bname">uart_tx</text><text x="612.0" y="404" text-anchor="middle" class="bdesc">UART TX</text></g>
+<g class="k-peripheral"><rect x="524" y="444" width="176" height="58" rx="8"/><text x="612.0" y="468" text-anchor="middle" class="bname">speed_pi_ip</text><text x="612.0" y="486" text-anchor="middle" class="bdesc">Speed PI</text></g>
+<g class="k-sim-master"><rect x="524" y="526" width="176" height="58" rx="8"/><text x="612.0" y="550" text-anchor="middle" class="bname">demo_master</text><text x="612.0" y="568" text-anchor="middle" class="bdesc">Demo master</text></g>
+</svg></div>
+<p class="muted"><a href="diagram.svg">diagram.svg</a>로 따로 받을 수 있다.</p>
+<h3>버스 규약: mmio-lite</h3><div class="panel"><table><tr><th>신호</th><th>방향</th><th>설명</th></tr><tr><td><code>valid</code></td><td>M→S</td><td>트랜잭션 유효</td></tr><tr><td><code>we</code></td><td>M→S</td><td>쓰기=1, 읽기=0</td></tr><tr><td><code>addr</code></td><td>M→S</td><td>바이트 주소</td></tr><tr><td><code>wdata</code></td><td>M→S</td><td>쓰기 데이터</td></tr><tr><td><code>rdata</code></td><td>S→M</td><td>읽기 데이터 (버스 MUX 출력)</td></tr><tr><td><code>ready</code></td><td>S→M</td><td>항상 1 (1사이클 응답)</td></tr></table></div><p>back-pressure 없음. valid 사이클에 always 응답. AXI4-Lite 비호환</p>
+<h3>통합 선언 (SoC 적합성)</h3><p class="badge b-fail">이 패키지는 MicroBlaze V 동결 주소맵과 호환되지 않는다 (파일럿). 아래 이식 계획을 따라야 SoC에 합칠 수 있다.</p><div class="panel"><table><tr><th style="white-space:nowrap">버스</th><td><code>mmio-lite</code></td></tr><tr><th style="white-space:nowrap">주소맵</th><td><code>custom</code> → 동결 맵 <code>mbv-frozen-v2</code> 적합 여부: <b>적합하지 않음</b></td></tr><tr><th style="white-space:nowrap">이식 계획</th><td>mbv-frozen-v2 맵으로 이전 시 speed_pi=[08]=0x4008_0000 슬롯 사용(free_slots 제안). 이 패키지는 시뮬레이션 전용 주소(0x1000~0x1002 세그먼트)를 사용하므로 compat=incompatible.</td></tr></table></div>
+<h2 id="hier">3. 모듈 계층</h2><div class="panel"><ul class="tree"><li><code>basys3_top</code> <span class="muted">(rtl/basys3_top.v)</span><ul><li><code>demo_master</code> <span class="muted">(rtl/demo_master.v)</span></li><li><code>soc_top</code> <span class="muted">(rtl/soc_top.v)</span><ul><li><code>mmio_bus</code> <span class="muted">(rtl/mmio_bus.v)</span></li><li><code>gpio</code> <span class="muted">(rtl/gpio.v)</span></li><li><code>uart_tx</code> <span class="muted">(rtl/uart_tx.v)</span></li><li><code>speed_pi_ip</code> <span class="muted">(rtl/speed_pi_ip.v)</span></li></ul></li></ul></li></ul></div>
+<h2 id="map">4. 메모리맵</h2><h3>gpio <code>0x1000_0000</code> <span class="muted">크기 0x10000</span></h3><div class="panel"><table><tr><th>오프셋</th><th>이름</th><th>접근</th><th>설명</th></tr><tr><td><code>0x00</code></td><td>LED</td><td>RW</td><td>LED[15:0]</td></tr><tr><td><code>0x04</code></td><td>SW</td><td>RO</td><td>SW[15:0] (2단 동기화)</td></tr></table></div><h3>uart_tx <code>0x1001_0000</code> <span class="muted">크기 0x10000</span></h3><div class="panel"><table><tr><th>오프셋</th><th>이름</th><th>접근</th><th>설명</th></tr><tr><td><code>0x00</code></td><td>DATA</td><td>WO</td><td>송신 바이트 [7:0]</td></tr><tr><td><code>0x04</code></td><td>STATUS</td><td>RO</td><td>bit0=busy</td></tr></table></div><h3>speed_pi_ip <code>0x1002_0000</code> <span class="muted">크기 0x10000</span></h3><div class="panel"><table><tr><th>오프셋</th><th>이름</th><th>접근</th><th>설명</th></tr><tr><td><code>0x00</code></td><td>CTRL</td><td>RW</td><td>bit0=enable, bit1=clear_pos</td></tr><tr><td><code>0x04</code></td><td>TARGET</td><td>RW</td><td>[15:0] 목표 속도 (카운트/창)</td></tr><tr><td><code>0x08</code></td><td>KP</td><td>RW</td><td>[15:0] 비례 이득 8.8 고정소수점</td></tr><tr><td><code>0x0C</code></td><td>KI</td><td>RW</td><td>[15:0] 적분 이득 8.8 고정소수점</td></tr><tr><td><code>0x10</code></td><td>SPEED</td><td>RO</td><td>[15:0] 현재 속도 (카운트/창)</td></tr><tr><td><code>0x14</code></td><td>PERIOD</td><td>RW</td><td>[15:0] PWM 주기 (클럭 사이클)</td></tr><tr><td><code>0x18</code></td><td>DUTY</td><td>RO</td><td>[15:0] 현재 PWM 듀티 출력</td></tr><tr><td><code>0x1C</code></td><td>MIN_DUTY</td><td>RW</td><td>[15:0] 최소 PWM 듀티 (스톨 방지)</td></tr><tr><td><code>0xFFF0</code></td><td>ID</td><td>RO</td><td>0x53504931 (SPI1)</td></tr><tr><td><code>0xFFF4</code></td><td>VER</td><td>RO</td><td>0x01000001</td></tr><tr><td><code>0xFFF8</code></td><td>IRQ_STATUS</td><td>RW1C</td><td>bit0=speed_ready (창 완료)</td></tr><tr><td><code>0xFFFC</code></td><td>IRQ_ENABLE</td><td>RW</td><td>bit0=speed_ready IRQ 허용</td></tr></table></div>
+<h2 id="ext">5. 외부 부품과 전기 회로도</h2><p class="muted">2절의 계통도는 <b>디지털 모듈 연결도</b>다. 전압, 풀업, 커넥터 배선 같은 전기 사항은 이 절에서 따로 다룬다. 기계가 읽는 사본: <a href="bom.csv">bom.csv</a> · <a href="connections.json">connections.json</a></p><p class="badge b-skipped">전기 회로도: 미작성</p><p class="muted">이 패키지는 시뮬레이션 전용이며 외부 부품이 없어 회로도 미작성</p><div class="panel"><table><tr><th>id</th><th>부품</th><th>인터페이스</th><th>신호 전압</th><th>구분</th><th>레벨 변환</th><th>비고</th></tr></table></div><p class="muted">Basys3 FPGA 핀은 3.3V 신호만 직접 받는다. 5V·12V·모터·릴레이는 직결하지 않는다.</p>
+<h2 id="road">6. 기술 트리 (이 캡스톤의 확장 경로)</h2><div class="panel"><ul style="list-style:none;padding:0"><li class="step"><span class="tag s-done">T1</span><span>mmio-uart-gpio-skeleton <span class='muted'>참고: <a href="../catalog/amd/digilent-basys-3-getting-started-microblaze.html"><code>digilent-basys-3-getting-started-microblaze</code></a></span></span></li><li class="step"><span class="tag s-done">T2</span><span>mmio-pwm-qenc-checker <span class='muted'>참고: <a href="../catalog/amd/element14-eoi-blog3-custom-ip-pwm.html"><code>element14-eoi-blog3-custom-ip-pwm</code></a>, <a href="../catalog/vendor-neutral/suoglu-axi-lite-slave.html"><code>suoglu-axi-lite-slave</code></a></span></span></li><li class="step"><span class="tag s-current">T3</span><span>mmio-speed-pi-checker (이 패키지) <span class='muted'>참고: <a href="../catalog/intel/columbia-4840-dc-motor-controller.html"><code>columbia-4840-dc-motor-controller</code></a>, <a href="../catalog/arduino/waveshare-esp32-tb6612-encoder-speed-pid.html"><code>waveshare-esp32-tb6612-encoder-speed-pid</code></a>, <a href="../catalog/arduino/1988kramer-motor-control.html"><code>1988kramer-motor-control</code></a></span></span></li><li class="step"><span class="tag s-planned">T3</span><span>mmio-multiaxis-pid-checker (다음 단계, I-015)</span></li></ul></div>
+<h2 id="src">7. 실행 소스</h2><p>저장소의 <code>capstones/mmio-speed-pi-checker/</code>에 있는 파일 그대로다. 이 문서는 파일에서 읽어 넣은 것이므로 항상 일치한다. <a href="mmio-speed-pi-checker.zip">소스 전체 내려받기 (.zip)</a> · <a href="https://github.com/Yuul-Jung/fpga-soc-harness/tree/main/capstones/mmio-speed-pi-checker">GitHub에서 보기</a></p><details><summary><code>rtl/basys3_top.v</code> <span class="muted">54줄</span></summary><pre>// basys3_top.v — Basys3 보드 최상위 래퍼
+// clk 100 MHz, rst = btnC(active high), demo_master + soc_top
+`timescale 1ns/1ps
+module basys3_top (
+    input  wire        clk,
+    input  wire        btnC,     // 리셋 버튼
+    // GPIO
+    output wire [15:0] led,
+    input  wire [15:0] sw,
+    // UART
+    output wire        uart_tx_pin,
+    // 엔코더 (Pmod JA 핀)
+    input  wire        enc_a,
+    input  wire        enc_b,
+    // PWM 출력 (Pmod JB 핀)
+    output wire        pwm_out
+);
+    wire rst = btnC;
+
+    // 마스터 포트 (demo_master → soc_top)
+    wire        m_valid, m_we;
+    wire [31:0] m_addr, m_wdata, m_rdata;
+    wire        m_ready;
+
+    demo_master master_inst (
+        .clk   (clk),
+        .rst   (rst),
+        .valid (m_valid),
+        .we    (m_we),
+        .addr  (m_addr),
+        .wdata (m_wdata),
+        .rdata (m_rdata),
+        .ready (m_ready)
+    );
+
+    soc_top #(
+        .WINDOW_CYCLES (1_000_000)   // 10 ms @ 100 MHz (합성용)
+    ) soc_inst (
+        .clk         (clk),
+        .rst         (rst),
+        .m_valid     (m_valid),
+        .m_we        (m_we),
+        .m_addr      (m_addr),
+        .m_wdata     (m_wdata),
+        .m_rdata     (m_rdata),
+        .m_ready     (m_ready),
+        .led         (led),
+        .sw          (sw),
+        .uart_tx_pin (uart_tx_pin),
+        .enc_a       (enc_a),
+        .enc_b       (enc_b),
+        .pwm_out     (pwm_out)
+    );
+endmodule
+</pre></details><details><summary><code>rtl/soc_top.v</code> <span class="muted">88줄</span></summary><pre>// soc_top.v — SoC 코어. MMIO 버스와 슬레이브 3개를 연결
+// 마스터 포트를 밖으로 노출(CPU 교체 지점)
+`timescale 1ns/1ps
+module soc_top #(
+    parameter WINDOW_CYCLES = 1_000_000
+) (
+    input  wire        clk,
+    input  wire        rst,
+    // 마스터 포트 (CPU 또는 테스트벤치가 연결)
+    input  wire        m_valid,
+    input  wire        m_we,
+    input  wire [31:0] m_addr,
+    input  wire [31:0] m_wdata,
+    output wire [31:0] m_rdata,
+    output wire        m_ready,
+    // 보드 I/O — GPIO
+    output wire [15:0] led,
+    input  wire [15:0] sw,
+    // 보드 I/O — UART
+    output wire        uart_tx_pin,
+    // 보드 I/O — 엔코더 / PWM
+    input  wire        enc_a,
+    input  wire        enc_b,
+    output wire        pwm_out
+);
+    // --- 버스 슬레이브 신호 ---
+    wire        sel_gpio, sel_uart, sel_speed_pi;
+    wire [15:0] gpio_off, uart_off, speed_pi_off;
+    wire [31:0] gpio_rdata, uart_rdata, speed_pi_rdata;
+
+    mmio_bus bus_inst (
+        .clk            (clk),
+        .rst            (rst),
+        .m_valid        (m_valid),
+        .m_we           (m_we),
+        .m_addr         (m_addr),
+        .m_wdata        (m_wdata),
+        .m_rdata        (m_rdata),
+        .m_ready        (m_ready),
+        .sel_gpio       (sel_gpio),
+        .gpio_off       (gpio_off),
+        .gpio_rdata     (gpio_rdata),
+        .sel_uart       (sel_uart),
+        .uart_off       (uart_off),
+        .uart_rdata     (uart_rdata),
+        .sel_speed_pi   (sel_speed_pi),
+        .speed_pi_off   (speed_pi_off),
+        .speed_pi_rdata (speed_pi_rdata)
+    );
+
+    gpio gpio_inst (
+        .clk   (clk),
+        .rst   (rst),
+        .valid (sel_gpio),
+        .we    (m_we),
+        .off   (gpio_off),
+        .wdata (m_wdata),
+        .rdata (gpio_rdata),
+        .led   (led),
+        .sw    (sw)
+    );
+
+    uart_tx uart_inst (
+        .clk   (clk),
+        .rst   (rst),
+        .valid (sel_uart),
+        .we    (m_we),
+        .off   (uart_off),
+        .wdata (m_wdata),
+        .rdata (uart_rdata),
+        .tx    (uart_tx_pin)
+    );
+
+    speed_pi_ip #(
+        .WINDOW_CYCLES (WINDOW_CYCLES)
+    ) speed_pi_inst (
+        .clk     (clk),
+        .rst     (rst),
+        .valid   (sel_speed_pi),
+        .we      (m_we),
+        .off     (speed_pi_off),
+        .wdata   (m_wdata),
+        .rdata   (speed_pi_rdata),
+        .enc_a   (enc_a),
+        .enc_b   (enc_b),
+        .pwm_out (pwm_out)
+    );
+endmodule
+</pre></details><details><summary><code>rtl/mmio_bus.v</code> <span class="muted">47줄</span></summary><pre>// mmio_bus.v — MMIO-lite 주소 디코더 (3 슬레이브)
+// GPIO=0x1000_xxxx, UART=0x1001_xxxx, SPEED_PI=0x1002_xxxx
+`timescale 1ns/1ps
+module mmio_bus (
+    input  wire        clk,
+    input  wire        rst,
+    // 마스터 포트
+    input  wire        m_valid,
+    input  wire        m_we,
+    input  wire [31:0] m_addr,
+    input  wire [31:0] m_wdata,
+    output reg  [31:0] m_rdata,
+    output wire        m_ready,
+    // GPIO 슬레이브
+    output wire        sel_gpio,
+    output wire [15:0] gpio_off,
+    input  wire [31:0] gpio_rdata,
+    // UART 슬레이브
+    output wire        sel_uart,
+    output wire [15:0] uart_off,
+    input  wire [31:0] uart_rdata,
+    // SPEED_PI 슬레이브
+    output wire        sel_speed_pi,
+    output wire [15:0] speed_pi_off,
+    input  wire [31:0] speed_pi_rdata
+);
+    assign sel_gpio     = m_valid &amp;&amp; (m_addr[31:16] == 16&#x27;h1000);
+    assign sel_uart     = m_valid &amp;&amp; (m_addr[31:16] == 16&#x27;h1001);
+    assign sel_speed_pi = m_valid &amp;&amp; (m_addr[31:16] == 16&#x27;h1002);
+
+    assign gpio_off     = m_addr[15:0];
+    assign uart_off     = m_addr[15:0];
+    assign speed_pi_off = m_addr[15:0];
+
+    assign m_ready = 1&#x27;b1;
+
+    always @(*) begin
+        if (sel_gpio)
+            m_rdata = gpio_rdata;
+        else if (sel_uart)
+            m_rdata = uart_rdata;
+        else if (sel_speed_pi)
+            m_rdata = speed_pi_rdata;
+        else
+            m_rdata = 32&#x27;d0;
+    end
+endmodule
+</pre></details><details><summary><code>rtl/gpio.v</code> <span class="muted">40줄</span></summary><pre>// gpio.v — 16-bit LED(RW) + 16-bit SW(RO, 2단 동기화)
+// 원본: capstones/mmio-pwm-qenc-checker/rtl/gpio.v
+`timescale 1ns/1ps
+module gpio (
+    input  wire        clk,
+    input  wire        rst,
+    // MMIO 슬레이브 포트
+    input  wire        valid,
+    input  wire        we,
+    input  wire [15:0] off,
+    input  wire [31:0] wdata,
+    output reg  [31:0] rdata,
+    // 보드 I/O
+    output reg  [15:0] led,
+    input  wire [15:0] sw
+);
+    reg [15:0] sw_s1, sw_s2;
+
+    always @(posedge clk) begin
+        if (rst) begin
+            led  &lt;= 16&#x27;d0;
+            sw_s1 &lt;= 16&#x27;d0;
+            sw_s2 &lt;= 16&#x27;d0;
+            rdata &lt;= 32&#x27;d0;
+        end else begin
+            sw_s1 &lt;= sw;
+            sw_s2 &lt;= sw_s1;
+            if (valid) begin
+                case (off)
+                    16&#x27;h0000: begin
+                        rdata &lt;= {16&#x27;d0, led};
+                        if (we) led &lt;= wdata[15:0];
+                    end
+                    16&#x27;h0004: rdata &lt;= {16&#x27;d0, sw_s2};
+                    default:  rdata &lt;= 32&#x27;d0;
+                endcase
+            end
+        end
+    end
+endmodule
+</pre></details><details><summary><code>rtl/uart_tx.v</code> <span class="muted">63줄</span></summary><pre>// uart_tx.v — UART 8N1 송신 전용
+// 원본: capstones/mmio-pwm-qenc-checker/rtl/uart_tx.v
+// 115200 baud @ 100 MHz → 분주비 868
+`timescale 1ns/1ps
+module uart_tx (
+    input  wire        clk,
+    input  wire        rst,
+    // MMIO 슬레이브 포트
+    input  wire        valid,
+    input  wire        we,
+    input  wire [15:0] off,
+    input  wire [31:0] wdata,
+    output reg  [31:0] rdata,
+    // 보드 I/O
+    output reg         tx
+);
+    localparam BAUD_DIV = 868;
+
+    reg [9:0]  shift;
+    reg [3:0]  bit_cnt;
+    reg [9:0]  baud_cnt;
+    reg        busy;
+
+    always @(posedge clk) begin
+        if (rst) begin
+            tx       &lt;= 1&#x27;b1;
+            busy     &lt;= 1&#x27;b0;
+            bit_cnt  &lt;= 4&#x27;d0;
+            baud_cnt &lt;= 10&#x27;d0;
+            shift    &lt;= 10&#x27;h3FF;
+            rdata    &lt;= 32&#x27;d0;
+        end else begin
+            // MMIO 읽기
+            if (valid &amp;&amp; !we) begin
+                case (off)
+                    16&#x27;h0004: rdata &lt;= {31&#x27;d0, busy};
+                    default:  rdata &lt;= 32&#x27;d0;
+                endcase
+            end
+            // MMIO 쓰기 (DATA)
+            if (valid &amp;&amp; we &amp;&amp; off == 16&#x27;h0000 &amp;&amp; !busy) begin
+                shift   &lt;= {1&#x27;b1, wdata[7:0], 1&#x27;b0}; // stop, data[7:0], start
+                bit_cnt &lt;= 4&#x27;d10;
+                busy    &lt;= 1&#x27;b1;
+                baud_cnt &lt;= 10&#x27;d0;
+            end
+            // 보내기
+            if (busy) begin
+                if (baud_cnt == BAUD_DIV - 1) begin
+                    baud_cnt &lt;= 10&#x27;d0;
+                    tx       &lt;= shift[0];
+                    shift    &lt;= {1&#x27;b1, shift[9:1]};
+                    bit_cnt  &lt;= bit_cnt - 4&#x27;d1;
+                    if (bit_cnt == 4&#x27;d1) busy &lt;= 1&#x27;b0;
+                end else begin
+                    baud_cnt &lt;= baud_cnt + 10&#x27;d1;
+                end
+            end else begin
+                tx &lt;= 1&#x27;b1;
+            end
+        end
+    end
+endmodule
+</pre></details><details><summary><code>rtl/speed_pi_ip.v</code> <span class="muted">222줄</span></summary><pre>// speed_pi_ip.v — 속도 PI 제어 IP
+// 기능: 4× 직교 엔코더 동기화, 창 계수 속도 측정, 8.8 고정소수점 PI FSM, PWM 출력
+// IP 표준 Rev.1 관리 레지스터(0xFFF0~FFFC) 포함
+// 파라미터: WINDOW_CYCLES=1_000_000(합성, 10ms@100MHz) / 1000(시뮬레이션)
+`timescale 1ns/1ps
+module speed_pi_ip #(
+    parameter WINDOW_CYCLES = 1_000_000  // 10 ms 창 @ 100 MHz; 시뮬레이션에서는 1000으로 오버라이드
+) (
+    input  wire        clk,
+    input  wire        rst,
+    // MMIO 슬레이브 포트
+    input  wire        valid,
+    input  wire        we,
+    input  wire [15:0] off,
+    input  wire [31:0] wdata,
+    output reg  [31:0] rdata,
+    // 엔코더 입력
+    input  wire        enc_a,
+    input  wire        enc_b,
+    // PWM 출력
+    output reg         pwm_out
+);
+    // ----- 관리 레지스터 상수 -----
+    localparam IP_ID  = 32&#x27;h53504931; // &quot;SPI1&quot;
+    localparam IP_VER = 32&#x27;h01000001;
+
+    // ----- 레지스터 -----
+    reg         ctrl_en;
+    reg         ctrl_clr;
+    reg  [15:0] target;
+    reg  [15:0] kp;
+    reg  [15:0] ki;
+    reg  [15:0] period;
+    reg  [15:0] min_duty;
+    reg         irq_en;
+    reg         irq_status;
+
+    // ----- 엔코더 동기화 (2단) -----
+    reg a1, a2, b1, b2;
+    wire a_s = a2;
+    wire b_s = b2;
+
+    // ----- 4× 에지 검출 -----
+    reg a_prev, b_prev;
+    wire a_rise =  a_s &amp;&amp; !a_prev;
+    wire a_fall = !a_s &amp;&amp;  a_prev;
+    wire b_rise =  b_s &amp;&amp; !b_prev;
+    wire b_fall = !b_s &amp;&amp;  b_prev;
+    // 방향: A 상승 시 B=0이면 CW(+), B=1이면 CCW(-)
+    wire cw  = (a_rise &amp;&amp; !b_s) || (a_fall &amp;&amp;  b_s) ||
+               (b_rise &amp;&amp;  a_s) || (b_fall &amp;&amp; !a_s);
+    wire ccw = (a_rise &amp;&amp;  b_s) || (a_fall &amp;&amp; !b_s) ||
+               (b_rise &amp;&amp; !a_s) || (b_fall &amp;&amp;  a_s);
+    wire edge_pulse = cw || ccw;
+
+    // ----- 창 계수 -----
+    reg [31:0] win_cnt;       // 창 타이머
+    reg [15:0] edge_acc;      // 에지 누산기
+    reg [15:0] speed_reg;     // 완성된 속도 (카운트/창)
+    reg        win_done;      // 창 완료 플래그 (1사이클)
+
+    // ----- PWM -----
+    reg  [15:0] duty_reg;     // PI가 계산한 듀티
+    reg  [15:0] pwm_cnt;
+
+    // ----- PI 적분기 (32-bit signed, 8.8 스케일) -----
+    reg signed [31:0] integrator;
+
+    // =================== 동기 로직 ===================
+    always @(posedge clk) begin
+        if (rst) begin
+            // 동기화 FF 초기화
+            a1 &lt;= 1&#x27;b0; a2 &lt;= 1&#x27;b0;
+            b1 &lt;= 1&#x27;b0; b2 &lt;= 1&#x27;b0;
+            a_prev &lt;= 1&#x27;b0; b_prev &lt;= 1&#x27;b0;
+            // 창 계수 초기화
+            win_cnt  &lt;= 32&#x27;d0;
+            edge_acc &lt;= 16&#x27;d0;
+            speed_reg &lt;= 16&#x27;d0;
+            win_done &lt;= 1&#x27;b0;
+            // PI 초기화
+            integrator &lt;= 32&#x27;sd0;
+            duty_reg   &lt;= 16&#x27;d0;
+            // PWM 초기화
+            pwm_cnt  &lt;= 16&#x27;d0;
+            pwm_out  &lt;= 1&#x27;b0;
+            // 관리 레지스터 초기화
+            ctrl_en  &lt;= 1&#x27;b0;
+            ctrl_clr &lt;= 1&#x27;b0;
+            target   &lt;= 16&#x27;d0;
+            kp       &lt;= 16&#x27;h0080; // 0.5 (8.8 고정소수점)
+            ki       &lt;= 16&#x27;h0010; // 0.0625
+            period   &lt;= 16&#x27;d4000; // 25 kHz @ 100 MHz
+            min_duty &lt;= 16&#x27;d0;
+            irq_en   &lt;= 1&#x27;b0;
+            irq_status &lt;= 1&#x27;b0;
+            rdata    &lt;= 32&#x27;d0;
+        end else begin
+            // --- 2단 동기화 ---
+            a1 &lt;= enc_a; a2 &lt;= a1;
+            b1 &lt;= enc_b; b2 &lt;= b1;
+            a_prev &lt;= a_s;
+            b_prev &lt;= b_s;
+
+            // --- win_done 1사이클 펄스 초기화 ---
+            win_done &lt;= 1&#x27;b0;
+
+            // --- MMIO R/W ---
+            if (valid) begin
+                rdata &lt;= 32&#x27;d0;
+                if (!we) begin
+                    case (off)
+                        16&#x27;h0000: rdata &lt;= {30&#x27;d0, ctrl_clr, ctrl_en};
+                        16&#x27;h0004: rdata &lt;= {16&#x27;d0, target};
+                        16&#x27;h0008: rdata &lt;= {16&#x27;d0, kp};
+                        16&#x27;h000C: rdata &lt;= {16&#x27;d0, ki};
+                        16&#x27;h0010: rdata &lt;= {16&#x27;d0, speed_reg};
+                        16&#x27;h0014: rdata &lt;= {16&#x27;d0, period};
+                        16&#x27;h0018: rdata &lt;= {16&#x27;d0, duty_reg};
+                        16&#x27;h001C: rdata &lt;= {16&#x27;d0, min_duty};
+                        16&#x27;hFFF0: rdata &lt;= IP_ID;
+                        16&#x27;hFFF4: rdata &lt;= IP_VER;
+                        16&#x27;hFFF8: rdata &lt;= {31&#x27;d0, irq_status};
+                        16&#x27;hFFFC: rdata &lt;= {31&#x27;d0, irq_en};
+                        default:  rdata &lt;= 32&#x27;d0;
+                    endcase
+                end else begin
+                    case (off)
+                        16&#x27;h0000: begin
+                            ctrl_en  &lt;= wdata[0];
+                            ctrl_clr &lt;= wdata[1];
+                        end
+                        16&#x27;h0004: target   &lt;= wdata[15:0];
+                        16&#x27;h0008: kp       &lt;= wdata[15:0];
+                        16&#x27;h000C: ki       &lt;= wdata[15:0];
+                        16&#x27;h0014: period   &lt;= wdata[15:0];
+                        16&#x27;h001C: min_duty &lt;= wdata[15:0];
+                        16&#x27;hFFF8: irq_status &lt;= irq_status &amp; ~wdata[0]; // RW1C
+                        16&#x27;hFFFC: irq_en   &lt;= wdata[0];
+                        default: ;
+                    endcase
+                end
+            end
+
+            // --- ctrl_clr 자동 해제 ---
+            if (ctrl_clr) begin
+                integrator &lt;= 32&#x27;sd0;
+                duty_reg   &lt;= 16&#x27;d0;
+                edge_acc   &lt;= 16&#x27;d0;
+                win_cnt    &lt;= 32&#x27;d0;
+                ctrl_clr   &lt;= 1&#x27;b0;
+            end
+
+            // --- 창 계수 및 PI 갱신 ---
+            if (ctrl_en &amp;&amp; !ctrl_clr) begin
+                if (edge_pulse) begin
+                    if (cw)
+                        edge_acc &lt;= edge_acc + 16&#x27;d1;
+                    else if (edge_acc &gt; 16&#x27;d0)
+                        edge_acc &lt;= edge_acc - 16&#x27;d1;
+                end
+
+                if (win_cnt &gt;= WINDOW_CYCLES - 1) begin
+                    win_cnt   &lt;= 32&#x27;d0;
+                    speed_reg &lt;= edge_acc;
+                    edge_acc  &lt;= 16&#x27;d0;
+                    win_done  &lt;= 1&#x27;b1;
+                    irq_status &lt;= 1&#x27;b1;
+
+                    // ----- PI 계산 (8.8 고정소수점) -----
+                    // error = target - speed (정수 부분, 하위 8비트는 소수 → 0으로 패딩)
+                    begin
+                        reg signed [31:0] error_fp;
+                        reg signed [31:0] p_term;
+                        reg signed [31:0] i_term;
+                        reg signed [31:0] output_fp;
+                        reg signed [31:0] new_integ;
+                        reg        [15:0] duty_new;
+                        reg        [15:0] period_cap;
+
+                        error_fp  = $signed({1&#x27;b0, target}) - $signed({1&#x27;b0, speed_reg});
+                        error_fp  = error_fp &lt;&lt;&lt; 8; // 8.8 스케일
+                        p_term    = ($signed({1&#x27;b0, kp}) * error_fp) &gt;&gt;&gt; 8;
+                        new_integ = integrator + (($signed({1&#x27;b0, ki}) * error_fp) &gt;&gt;&gt; 8);
+                        // 적분기 클램프 (-32768 ~ 32767 in 8.8 → shift 8)
+                        if (new_integ &gt; $signed(32&#x27;sd8388607))       new_integ = 32&#x27;sd8388607;
+                        else if (new_integ &lt; -$signed(32&#x27;sd8388608)) new_integ = -$signed(32&#x27;sd8388608);
+                        integrator = new_integ;
+                        i_term     = integrator;
+                        output_fp  = p_term + i_term;
+                        // 출력 클램프 [0, period]
+                        period_cap = period;
+                        if (output_fp &lt; $signed(32&#x27;sd0))
+                            duty_new = min_duty;
+                        else begin
+                            // output_fp 는 8.8 스케일 → 정수 부분만 취함
+                            if ((output_fp &gt;&gt;&gt; 8) &gt; $signed({1&#x27;b0, period_cap}))
+                                duty_new = period_cap;
+                            else
+                                duty_new = output_fp[23:8];
+                            if (duty_new &lt; min_duty) duty_new = min_duty;
+                        end
+                        duty_reg = duty_new;
+                    end
+                end else begin
+                    win_cnt &lt;= win_cnt + 32&#x27;d1;
+                end
+            end
+
+            // --- PWM 생성 ---
+            if (period &gt; 16&#x27;d0) begin
+                if (pwm_cnt &gt;= period - 16&#x27;d1)
+                    pwm_cnt &lt;= 16&#x27;d0;
+                else
+                    pwm_cnt &lt;= pwm_cnt + 16&#x27;d1;
+                pwm_out &lt;= (ctrl_en &amp;&amp; (pwm_cnt &lt; duty_reg)) ? 1&#x27;b1 : 1&#x27;b0;
+            end else begin
+                pwm_out &lt;= 1&#x27;b0;
+            end
+        end
+    end
+endmodule
+</pre></details><details><summary><code>rtl/demo_master.v</code> <span class="muted">76줄</span></summary><pre>// demo_master.v — 합성용 데모 마스터 FSM
+// 보드 초기화 시퀀스:
+//   1. SPEED_PI: PERIOD=4000, KP=0x0080, KI=0x0010, TARGET=10, MIN_DUTY=100, CTRL=enable
+// 테스트벤치는 이 모듈 없이 soc_top 마스터 포트를 직접 구동한다.
+`timescale 1ns/1ps
+module demo_master (
+    input  wire        clk,
+    input  wire        rst,
+    // MMIO 마스터 포트
+    output reg         valid,
+    output reg         we,
+    output reg  [31:0] addr,
+    output reg  [31:0] wdata,
+    input  wire [31:0] rdata,
+    input  wire        ready
+);
+    localparam S_IDLE  = 2&#x27;d0;
+    localparam S_WRITE = 2&#x27;d1;
+    localparam S_DONE  = 2&#x27;d2;
+
+    localparam STEP_PERIOD   = 4&#x27;d0;
+    localparam STEP_KP       = 4&#x27;d1;
+    localparam STEP_KI       = 4&#x27;d2;
+    localparam STEP_TARGET   = 4&#x27;d3;
+    localparam STEP_MIN_DUTY = 4&#x27;d4;
+    localparam STEP_ENABLE   = 4&#x27;d5;
+    localparam STEP_FINISH   = 4&#x27;d6;
+
+    reg [1:0] state;
+    reg [3:0] step;
+
+    always @(posedge clk) begin
+        if (rst) begin
+            valid &lt;= 1&#x27;b0;
+            we    &lt;= 1&#x27;b0;
+            addr  &lt;= 32&#x27;d0;
+            wdata &lt;= 32&#x27;d0;
+            state &lt;= S_IDLE;
+            step  &lt;= STEP_PERIOD;
+        end else begin
+            case (state)
+                S_IDLE: begin
+                    if (step == STEP_FINISH) begin
+                        state &lt;= S_DONE;
+                    end else begin
+                        we    &lt;= 1&#x27;b1;
+                        valid &lt;= 1&#x27;b1;
+                        case (step)
+                            STEP_PERIOD:   begin addr &lt;= 32&#x27;h1002_0014; wdata &lt;= 32&#x27;d4000;  end
+                            STEP_KP:       begin addr &lt;= 32&#x27;h1002_0008; wdata &lt;= 32&#x27;h0080;  end
+                            STEP_KI:       begin addr &lt;= 32&#x27;h1002_000C; wdata &lt;= 32&#x27;h0010;  end
+                            STEP_TARGET:   begin addr &lt;= 32&#x27;h1002_0004; wdata &lt;= 32&#x27;d10;    end
+                            STEP_MIN_DUTY: begin addr &lt;= 32&#x27;h1002_001C; wdata &lt;= 32&#x27;d100;   end
+                            STEP_ENABLE:   begin addr &lt;= 32&#x27;h1002_0000; wdata &lt;= 32&#x27;d1;     end
+                            default: ;
+                        endcase
+                        state &lt;= S_WRITE;
+                    end
+                end
+                S_WRITE: begin
+                    if (ready) begin
+                        valid &lt;= 1&#x27;b0;
+                        we    &lt;= 1&#x27;b0;
+                        step  &lt;= step + 4&#x27;d1;
+                        state &lt;= S_IDLE;
+                    end
+                end
+                S_DONE: begin
+                    valid &lt;= 1&#x27;b0;
+                    we    &lt;= 1&#x27;b0;
+                end
+                default: state &lt;= S_IDLE;
+            endcase
+        end
+    end
+endmodule
+</pre></details><details><summary><code>tb/tb_speed_pi.v</code> <span class="muted">264줄</span></summary><pre>// tb_speed_pi.v — 속도 PI 폐루프 자체 점검 테스트벤치
+// 1차 지연 모델 모터: speed[k] = 0.8*speed[k-1] + 0.2*(duty/PERIOD)*MAX_SPEED
+// WINDOW_CYCLES=1000 (시뮬레이션 단축)
+// 검사 항목:
+//   CHECK1: IP_ID 레지스터 (0x53504931)
+//   CHECK2: IP_VER 레지스터 (0x01000001)
+//   CHECK3: 계단 지령 10 카운트/창 — 40창 후 |speed - target| &lt;= 2
+//   CHECK4: CTRL.clear 후 speed==0, duty==0
+`timescale 1ns/1ps
+`define SPEED_PI_BASE 32&#x27;h1002_0000
+
+module tb_speed_pi;
+    // ----- 클럭/리셋 -----
+    reg clk, rst;
+    initial clk = 0;
+    always #5 clk = ~clk; // 100 MHz
+
+    // ----- soc_top 포트 -----
+    reg         m_valid;
+    reg         m_we;
+    reg  [31:0] m_addr;
+    reg  [31:0] m_wdata;
+    wire [31:0] m_rdata;
+    wire        m_ready;
+    wire [15:0] led;
+    wire        uart_tx_pin;
+    wire        pwm_out;
+
+    // 엔코더 모델이 구동하는 신호
+    reg enc_a, enc_b;
+
+    // ----- soc_top 인스턴스 (WINDOW_CYCLES=1000으로 단축) -----
+    soc_top #(
+        .WINDOW_CYCLES (1000)
+    ) dut (
+        .clk         (clk),
+        .rst         (rst),
+        .m_valid     (m_valid),
+        .m_we        (m_we),
+        .m_addr      (m_addr),
+        .m_wdata     (m_wdata),
+        .m_rdata     (m_rdata),
+        .m_ready     (m_ready),
+        .led         (led),
+        .sw          (16&#x27;h0000),
+        .uart_tx_pin (uart_tx_pin),
+        .enc_a       (enc_a),
+        .enc_b       (enc_b),
+        .pwm_out     (pwm_out)
+    );
+
+    // ----- 모터 모델 파라미터 -----
+    localparam MAX_SPEED   = 20;   // 최대 카운트/창
+    localparam PERIOD_VAL  = 4000;
+    localparam TARGET_VAL  = 10;
+    localparam KP_VAL      = 16&#x27;h0080; // 0.5
+    localparam KI_VAL      = 16&#x27;h0010; // 0.0625
+    localparam MIN_DUTY_VAL = 100;
+
+    // ----- 모터 상태 (실수 모델, 정수 근사) -----
+    // speed_fp = 10-bit 고정소수점 (상위 10비트 = 정수 부분, 최대 1023)
+    // speed_fp 단위: 1/1024 카운트
+    integer speed_fp;    // 1024 단위 (speed_int = speed_fp / 1024)
+    integer duty_int;    // 현재 duty (0~PERIOD_VAL)
+    integer enc_period;  // 엔코더 펄스 하나의 클럭 수 (클럭/pulse)
+    integer enc_timer;   // 엔코더 타이머 카운터
+    integer enc_phase;   // 엔코더 위상 카운터 (0~3)
+
+    // ----- MMIO 태스크 -----
+    task mmio_write;
+        input [31:0] a;
+        input [31:0] d;
+        begin
+            @(posedge clk); #1;
+            m_valid &lt;= 1&#x27;b1;
+            m_we    &lt;= 1&#x27;b1;
+            m_addr  &lt;= a;
+            m_wdata &lt;= d;
+            @(posedge clk); #1;
+            m_valid &lt;= 1&#x27;b0;
+            m_we    &lt;= 1&#x27;b0;
+        end
+    endtask
+
+    task mmio_read;
+        input  [31:0] a;
+        output [31:0] d;
+        begin
+            @(posedge clk); #1;
+            m_valid &lt;= 1&#x27;b1;
+            m_we    &lt;= 1&#x27;b0;
+            m_addr  &lt;= a;
+            m_wdata &lt;= 32&#x27;d0;
+            @(posedge clk); #1;
+            d       = m_rdata;
+            m_valid &lt;= 1&#x27;b0;
+        end
+    endtask
+
+    // ----- 모터 모델 태스크: 창 완료 후 duty 업데이트, speed 갱신 -----
+    // 1창 = 1000 클럭. 모터 모델은 창마다 갱신
+    task run_window;
+        integer i;
+        integer pulse_clks;
+        integer speed_int_new;
+        begin
+            // duty 읽기 (PI IP가 창 완료 후 업데이트)
+            mmio_read(`SPEED_PI_BASE + 32&#x27;h18, duty_int);
+            // speed 갱신: speed[k] = 0.8*speed[k-1] + 0.2*(duty/PERIOD)*MAX_SPEED
+            // 정수 근사 (1024 스케일)
+            speed_int_new = (speed_fp * 819 + (duty_int * MAX_SPEED * 1024 / PERIOD_VAL) * 205) / 1024;
+            speed_fp = speed_int_new;
+            // 엔코더 펄스 발생: 1창(1000 클럭) 동안 speed_int 개의 4× 에지를 만든다
+            // 4체배 → 각 에지 사이 간격 = 1000 / (speed_int * 4) 클럭
+            // speed_int = speed_fp / 1024
+        end
+    endtask
+
+    // ----- 엔코더 펄스 생성: N개의 CW 4× 에지를 만든다 -----
+    task gen_enc_pulses;
+        input integer n_edges;
+        integer i, gap_clk;
+        begin
+            gap_clk = (n_edges &gt; 0) ? 1 : 0; // 최소 1클럭 간격
+            for (i = 0; i &lt; n_edges; i = i + 1) begin
+                // 4× CW 위상: (a=1,b=0) → (a=1,b=1) → (a=0,b=1) → (a=0,b=0) 순
+                case (enc_phase % 4)
+                    0: begin enc_a &lt;= 1; enc_b &lt;= 0; end
+                    1: begin enc_a &lt;= 1; enc_b &lt;= 1; end
+                    2: begin enc_a &lt;= 0; enc_b &lt;= 1; end
+                    3: begin enc_a &lt;= 0; enc_b &lt;= 0; end
+                endcase
+                enc_phase = enc_phase + 1;
+                repeat (gap_clk) @(posedge clk);
+            end
+        end
+    endtask
+
+    // ----- 1창 시뮬레이션: 엔코더 펄스 + 나머지 클럭 -----
+    task sim_one_window;
+        integer speed_int;
+        integer n_edges;
+        integer used_clks;
+        integer i;
+        begin
+            speed_int = speed_fp / 1024;
+            n_edges   = speed_int * 4; // 4체배
+            if (n_edges &gt; 1000) n_edges = 1000;
+            used_clks = n_edges;      // 각 에지에 1클럭 소비
+            // 에지 발생
+            gen_enc_pulses(n_edges);
+            // 나머지 클럭 — 창 완료까지 대기
+            if (1000 - used_clks &gt; 0)
+                repeat (1000 - used_clks) @(posedge clk);
+            // 창 완료 후 duty 읽기 및 motor speed 갱신
+            run_window;
+        end
+    endtask
+
+    // ----- 패스/페일 카운터 -----
+    integer pass_cnt, fail_cnt;
+
+    // ----- 메인 테스트 -----
+    integer window_i;
+    reg [31:0] rd_data;
+    integer    final_speed;
+
+    initial begin
+        // 초기화
+        rst     = 1;
+        m_valid = 0;
+        m_we    = 0;
+        m_addr  = 0;
+        m_wdata = 0;
+        enc_a   = 0;
+        enc_b   = 0;
+        speed_fp  = 0;
+        duty_int  = 0;
+        enc_phase = 0;
+        pass_cnt  = 0;
+        fail_cnt  = 0;
+
+        repeat (5) @(posedge clk);
+        rst = 0;
+        repeat (3) @(posedge clk);
+
+        // ----- CHECK1: IP_ID -----
+        mmio_read(`SPEED_PI_BASE + 32&#x27;hFFF0, rd_data);
+        if (rd_data !== 32&#x27;h53504931) begin
+            $display(&quot;FAIL CHECK1: IP_ID expected 0x53504931, got 0x%08X&quot;, rd_data);
+            fail_cnt = fail_cnt + 1;
+        end else begin
+            $display(&quot;PASS CHECK1: IP_ID = 0x%08X&quot;, rd_data);
+            pass_cnt = pass_cnt + 1;
+        end
+
+        // ----- CHECK2: IP_VER -----
+        mmio_read(`SPEED_PI_BASE + 32&#x27;hFFF4, rd_data);
+        if (rd_data !== 32&#x27;h01000001) begin
+            $display(&quot;FAIL CHECK2: IP_VER expected 0x01000001, got 0x%08X&quot;, rd_data);
+            fail_cnt = fail_cnt + 1;
+        end else begin
+            $display(&quot;PASS CHECK2: IP_VER = 0x%08X&quot;, rd_data);
+            pass_cnt = pass_cnt + 1;
+        end
+
+        // ----- PI 초기화 -----
+        mmio_write(`SPEED_PI_BASE + 32&#x27;h0014, PERIOD_VAL);
+        mmio_write(`SPEED_PI_BASE + 32&#x27;h0008, KP_VAL);
+        mmio_write(`SPEED_PI_BASE + 32&#x27;h000C, KI_VAL);
+        mmio_write(`SPEED_PI_BASE + 32&#x27;h001C, MIN_DUTY_VAL);
+        mmio_write(`SPEED_PI_BASE + 32&#x27;h0004, TARGET_VAL);
+        mmio_write(`SPEED_PI_BASE + 32&#x27;h0000, 32&#x27;h1); // enable
+
+        // ----- CHECK3: 40창 후 속도 수렴 -----
+        for (window_i = 0; window_i &lt; 40; window_i = window_i + 1) begin
+            sim_one_window;
+        end
+        mmio_read(`SPEED_PI_BASE + 32&#x27;h0010, rd_data);
+        final_speed = rd_data[15:0];
+        if (final_speed &lt; (TARGET_VAL - 2) || final_speed &gt; (TARGET_VAL + 2)) begin
+            $display(&quot;FAIL CHECK3: speed %0d not within [%0d, %0d] after 40 windows&quot;,
+                     final_speed, TARGET_VAL - 2, TARGET_VAL + 2);
+            fail_cnt = fail_cnt + 1;
+        end else begin
+            $display(&quot;PASS CHECK3: speed=%0d target=%0d (40 windows)&quot;, final_speed, TARGET_VAL);
+            pass_cnt = pass_cnt + 1;
+        end
+
+        // ----- CHECK4: CTRL.clear 후 speed=0, duty=0 -----
+        mmio_write(`SPEED_PI_BASE + 32&#x27;h0000, 32&#x27;h3); // enable + clear
+        repeat (5) @(posedge clk);
+        mmio_read(`SPEED_PI_BASE + 32&#x27;h0010, rd_data);
+        if (rd_data[15:0] !== 16&#x27;d0) begin
+            $display(&quot;FAIL CHECK4a: speed after clear = %0d (expected 0)&quot;, rd_data[15:0]);
+            fail_cnt = fail_cnt + 1;
+        end else begin
+            mmio_read(`SPEED_PI_BASE + 32&#x27;h0018, rd_data);
+            if (rd_data[15:0] !== 16&#x27;d0) begin
+                $display(&quot;FAIL CHECK4b: duty after clear = %0d (expected 0)&quot;, rd_data[15:0]);
+                fail_cnt = fail_cnt + 1;
+            end else begin
+                $display(&quot;PASS CHECK4: speed=0 duty=0 after clear&quot;);
+                pass_cnt = pass_cnt + 1;
+            end
+        end
+
+        // ----- 최종 결과 -----
+        $display(&quot;--- RESULT: PASS %0d / FAIL %0d ---&quot;, pass_cnt, fail_cnt);
+        if (fail_cnt !== 0)
+            $display(&quot;FAIL: %0d check(s) failed&quot;, fail_cnt);
+        else
+            $display(&quot;PASS: all checks passed&quot;);
+
+        $finish;
+    end
+
+    // 타임아웃
+    initial begin
+        #10_000_000; // 10 ms 시뮬레이션 타임아웃
+        $display(&quot;FAIL: simulation timeout&quot;);
+        $finish;
+    end
+endmodule
+</pre></details><details><summary><code>constr/basys3.xdc</code> <span class="muted">61줄</span></summary><pre>## Basys3 XDC — mmio-speed-pi-checker
+## 클럭
+set_property PACKAGE_PIN W5   [get_ports clk]
+set_property IOSTANDARD LVCMOS33 [get_ports clk]
+create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports clk]
+
+## 리셋 버튼 (btnC)
+set_property PACKAGE_PIN U18  [get_ports btnC]
+set_property IOSTANDARD LVCMOS33 [get_ports btnC]
+
+## LED [15:0]
+set_property PACKAGE_PIN U16  [get_ports {led[0]}]
+set_property PACKAGE_PIN E19  [get_ports {led[1]}]
+set_property PACKAGE_PIN U19  [get_ports {led[2]}]
+set_property PACKAGE_PIN V19  [get_ports {led[3]}]
+set_property PACKAGE_PIN W18  [get_ports {led[4]}]
+set_property PACKAGE_PIN U15  [get_ports {led[5]}]
+set_property PACKAGE_PIN U14  [get_ports {led[6]}]
+set_property PACKAGE_PIN V14  [get_ports {led[7]}]
+set_property PACKAGE_PIN V13  [get_ports {led[8]}]
+set_property PACKAGE_PIN V3   [get_ports {led[9]}]
+set_property PACKAGE_PIN W3   [get_ports {led[10]}]
+set_property PACKAGE_PIN U3   [get_ports {led[11]}]
+set_property PACKAGE_PIN P3   [get_ports {led[12]}]
+set_property PACKAGE_PIN N3   [get_ports {led[13]}]
+set_property PACKAGE_PIN P1   [get_ports {led[14]}]
+set_property PACKAGE_PIN L1   [get_ports {led[15]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {led[*]}]
+
+## SW [15:0]
+set_property PACKAGE_PIN V17  [get_ports {sw[0]}]
+set_property PACKAGE_PIN V16  [get_ports {sw[1]}]
+set_property PACKAGE_PIN W16  [get_ports {sw[2]}]
+set_property PACKAGE_PIN W17  [get_ports {sw[3]}]
+set_property PACKAGE_PIN W15  [get_ports {sw[4]}]
+set_property PACKAGE_PIN V15  [get_ports {sw[5]}]
+set_property PACKAGE_PIN W14  [get_ports {sw[6]}]
+set_property PACKAGE_PIN W13  [get_ports {sw[7]}]
+set_property PACKAGE_PIN V2   [get_ports {sw[8]}]
+set_property PACKAGE_PIN T3   [get_ports {sw[9]}]
+set_property PACKAGE_PIN T2   [get_ports {sw[10]}]
+set_property PACKAGE_PIN R3   [get_ports {sw[11]}]
+set_property PACKAGE_PIN W2   [get_ports {sw[12]}]
+set_property PACKAGE_PIN U1   [get_ports {sw[13]}]
+set_property PACKAGE_PIN T1   [get_ports {sw[14]}]
+set_property PACKAGE_PIN R2   [get_ports {sw[15]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {sw[*]}]
+
+## UART TX (USB-UART)
+set_property PACKAGE_PIN A18  [get_ports uart_tx_pin]
+set_property IOSTANDARD LVCMOS33 [get_ports uart_tx_pin]
+
+## 엔코더 입력 (Pmod JA: JA1=enc_a, JA2=enc_b)
+set_property PACKAGE_PIN J1   [get_ports enc_a]
+set_property PACKAGE_PIN L2   [get_ports enc_b]
+set_property IOSTANDARD LVCMOS33 [get_ports enc_a]
+set_property IOSTANDARD LVCMOS33 [get_ports enc_b]
+
+## PWM 출력 (Pmod JB: JB1=pwm_out)
+set_property PACKAGE_PIN A14  [get_ports pwm_out]
+set_property IOSTANDARD LVCMOS33 [get_ports pwm_out]
+</pre></details><details><summary><code>Makefile</code> <span class="muted">51줄</span></summary><pre>## Makefile — mmio-speed-pi-checker
+## 타깃: lint, sim, synth
+## 도구: iverilog, verilator, yosys
+
+SLUG   := mmio-speed-pi-checker
+CAP    := capstones/$(SLUG)
+BUILD  := $(CAP)/build
+
+RTL    := $(CAP)/rtl/basys3_top.v \
+          $(CAP)/rtl/soc_top.v \
+          $(CAP)/rtl/mmio_bus.v \
+          $(CAP)/rtl/gpio.v \
+          $(CAP)/rtl/uart_tx.v \
+          $(CAP)/rtl/speed_pi_ip.v \
+          $(CAP)/rtl/demo_master.v
+
+TB     := $(CAP)/tb/tb_speed_pi.v
+TOP_TB := tb_speed_pi
+TOP_SYN := basys3_top
+
+.PHONY: all lint sim synth clean
+
+all: lint sim synth
+
+$(BUILD):
+	mkdir -p $(BUILD)
+
+# --- 린트 (verilator) ---
+lint: $(BUILD)
+	verilator --lint-only --Wall -Wno-UNUSED -Wno-DECLFILENAME \
+	    --top-module $(TOP_SYN) $(RTL) 2&gt;&amp;1 | tee $(BUILD)/lint.log
+	@echo &quot;lint done&quot;
+
+# --- 시뮬레이션 (iverilog) ---
+sim: $(BUILD)
+	iverilog -g2001 -Wall -Wno-timescale \
+	    -o $(BUILD)/sim_$(SLUG) \
+	    $(RTL) $(TB) 2&gt;&amp;1 | tee $(BUILD)/iverilog.log
+	$(BUILD)/sim_$(SLUG) 2&gt;&amp;1 | tee $(BUILD)/sim.log
+	@grep -q &quot;^PASS&quot; $(BUILD)/sim.log &amp;&amp; echo &quot;sim: PASS&quot; || (echo &quot;sim: FAIL&quot; &amp;&amp; exit 1)
+
+# --- 합성 (yosys) ---
+synth: $(BUILD)
+	yosys -p &quot;read_verilog $(RTL); \
+	    synth_xilinx -top $(TOP_SYN) -flatten; \
+	    stat; write_json $(BUILD)/synth_$(SLUG).json&quot; \
+	    2&gt;&amp;1 | tee $(BUILD)/synth.log
+	@echo &quot;synth done&quot;
+
+clean:
+	rm -rf $(BUILD)
+</pre></details><h3>시뮬레이션</h3><ol><li>iverilog, verilator, yosys 설치</li><li>make -C capstones/mmio-speed-pi-checker lint sim synth</li><li>build/sim.log에서 PASS 확인</li></ol><h3>Vivado 빌드 (Basys3)</h3><ol><li>새 RTL 프로젝트, 파트 xc7a35tcpg236-1</li><li>rtl/*.v 추가 (tb/, demo_master.v 제외), constr/basys3.xdc 추가, 최상위 basys3_top</li><li>Generate Bitstream 후 Program Device</li><li>UART 터미널(115200 8N1) 열어 속도 PI 동작 확인</li></ol>
+<h2 id="verify">8. 검증</h2><div class="panel"><table><tr><th>단계</th><th>결과</th><th>내용</th></tr>
+<tr><td>린트(verilator)</td><td>미실행</td><td></td></tr><tr><td>시뮬레이션(iverilog)</td><td>미실행</td><td></td></tr><tr><td>합성 추정(yosys)</td><td>미실행</td><td></td></tr><tr><td>보드 동작</td><td>not-tested</td><td></td></tr>
+</table></div><p>S3는 사람이 Basys3에서 직접 확인해야 한다. CI가 S1(린트+시뮬)과 S2(합성)를 기록한다.</p>
+<h2 id="ref">9. 참고 카드와 위험</h2><h3>참고 카드</h3><ul><li><a href="../catalog/intel/columbia-4840-dc-motor-controller.html"><code>columbia-4840-dc-motor-controller</code></a> — PI 소프트웨어 구현과 창 계수 한계 → 하드웨어 PI 동기 처리 근거</li><li><a href="../catalog/arduino/waveshare-esp32-tb6612-encoder-speed-pid.html"><code>waveshare-esp32-tb6612-encoder-speed-pid</code></a> — 1체배 카운트·100 ms 창 한계 → 4체배·창 클램프·최소 PWM 시험 근거</li><li><a href="../catalog/arduino/1988kramer-motor-control.html"><code>1988kramer-motor-control</code></a> — PID 이산화(오일러)와 적분 와인드업 클램프 설계 패턴 참고</li><li><a href="../catalog/intel/unipi-se-custom-peripheral-pwm.html"><code>unipi-se-custom-peripheral-pwm</code></a> — AXI-Lite PWM 레지스터 설계 패턴 참고</li><li><a href="../catalog/intel/codeproject-de10-nano-self-balancing-robot.html"><code>codeproject-de10-nano-self-balancing-robot</code></a> — FPGA 폐루프 FSM + 모델 모터 테스트벤치 접근 참고</li></ul><h3>위험·한계</h3><ul><li>WINDOW_CYCLES=1000(시뮬) vs 1_000_000(합성) — 합성 빌드 시 speed_pi_ip.v 파라미터 확인 필수</li><li>적분기 클램프(-32768~32767)로 와인드업 방지하나, KI가 너무 크면 오버슈트 발생 가능</li><li>최소 PWM(MIN_DUTY)이 0이면 저속 구간에서 모터 스톨 가능 — 반드시 0이 아닌 값으로 설정</li><li>4× 엔코더 2단 동기화 지연으로 2사이클 미만 펄스 누락 가능</li><li>yosys 자원 추정은 Vivado와 다를 수 있음 (Vivado 미검증)</li></ul>
+</main></body></html>

@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-speed-pi-checker",
+  "files": [
+    {
+      "group": "rtl",
+      "path": "rtl/basys3_top.v",
+      "sha256": "98b253da0a8e6b5fb5902de101cb6ef45f7bceb61dccd19f9636a260de83789f",
+      "lines": 54,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/soc_top.v",
+      "sha256": "da161b141a06d22be0ca3e4210e48a9bf66e849ec0ca52536871d0bc391abe6a",
+      "lines": 88,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/mmio_bus.v",
+      "sha256": "2a8a6ce6e55037e0fb93f63352236414f6d64242b86d3a03a36f5cf0e844943e",
+      "lines": 47,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/gpio.v",
+      "sha256": "2ee27218a19a7750e30079ef92622a31d49a5aa2542d2522a3ab56acaf065e21",
+      "lines": 40,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/uart_tx.v",
+      "sha256": "5970e162095f8601ee681d15beadaaf86cbfd3d1b7c489f3f18a6f352080ee5c",
+      "lines": 63,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/speed_pi_ip.v",
+      "sha256": "93d04afbb4ac5591995bed7cddd196e2ab2fcd2f0d3b9a3c8f47726674dfd971",
+      "lines": 222,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/demo_master.v",
+      "sha256": "0ed2b94418abf08c32507639098d45ec3b2c3fcc81e28589adc32c366f666b14",
+      "lines": 76,
+      "origin": "first_party"
+    },
+    {
+      "group": "tb",
+      "path": "tb/tb_speed_pi.v",
+      "sha256": "edc581865ca3a8a2155eb2176bb40e51941508b8207c53b33b0ea231d6d894a8",
+      "lines": 264,
+      "origin": "first_party"
+    },
+    {
+      "group": "constraints",
+      "path": "constr/basys3.xdc",
+      "sha256": "48f015774185c8a2d401425bf312f073314e00b29876e78521419ebc03ad741b",
+      "lines": 61,
+      "origin": "first_party"
+    },
+    {
+      "group": "build",
+      "path": "Makefile",
+      "sha256": "e206f19fe4feb5462a81846f77b2b15935ed071dea77a61b00e37f4e502a1309",
+      "lines": 51,
+      "origin": "first_party"
+    }
+  ],
+  "note": "소스는 하네스가 직접 쓴 원본이다. 외부 저장소 코드는 포함하지 않는다(HARNESS §13.3)."
+}
