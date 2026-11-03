@@ -110,3 +110,6 @@
 | [adafruit-trainable-robotic-arm](arduino/adafruit-trainable-robotic-arm.md) | L3 | T2 | Arduino Uno (Basys3 needs-port) | 2026-11-03 |
 | [circuitdigest-arduino-obstacle-avoiding-car](arduino/circuitdigest-arduino-obstacle-avoiding-car.md) | L3 | T2 | Arduino Uno (Basys3 needs-port) | 2026-11-03 |
 | [masher1-gogo-car](arduino/masher1-gogo-car.md) | L3 | T2 | Arduino (Basys3 needs-port) | 2026-11-03 |
+| [cvonk-fpga-spi](arduino/cvonk-fpga-spi.md) | L3 | T2 | Altera (Basys3 needs-port) | 2026-11-03 |
+| [digilent-pmod-shield-refmanual](arduino/digilent-pmod-shield-refmanual.md) | L3 | T2 | Arduino Uno R3형 + Pmod Shield (Basys3 needs-port) | 2026-11-03 |
+| [arduino-forum-spi-interface-with-fpga-3-3voltage-issue](arduino/arduino-forum-spi-interface-with-fpga-3-3voltage-issue.md) | L3 | T2 | Arduino Uno + Spartan 3AN (Basys3 needs-port) | 2026-11-03 |

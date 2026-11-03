@@ -389,3 +389,13 @@
 - Basys3 적합성의 근거: Pmod 2~3개(IR 1핀, TRIG/ECHO 2핀, 서보 1핀, 모터 PWM/DIR 4핀 내외)면 충분, BRAM 불필요. HC-SR04 5 V 에코는 레벨 변환 필요, 모터 전원 분리. 100 MHz에서 58 µs/cm 환산은 설계 시 정함(내 판단).
 - 난이도: 3 / 단계: T2
 - 심사: (대기)
+
+## I-038 Arduino 마스터 SPI 브리지 IP: Basys3 SPI 슬레이브 → AXI4-Lite 레지스터, 방향별 레벨 변환 점검표 포함
+- 상태: raw
+- 요약: 내 판단: Arduino(5V)가 SPI 마스터로 주소·데이터를 보내면 FPGA가 SPI 슬레이브로 받아 AXI4-Lite 마스터 트랜잭션으로 바꿔 주변장치 레지스터를 읽고 쓰는 IP. I-012(UART 브리지)의 SPI판이다. 문서에는 Arduino 출력 3신호의 레벨 변환 필요 여부와 MISO 직결 가정의 확인 절차를 외부 부품 절로 둔다. 테스트벤치는 SPI 마스터 모델이 쓰기 후 읽기 왕복과 잘못된 주소 응답을 PASS/FAIL로 점검.
+- 조합: [SPI 슬레이브 프런트엔드, 바이트/메시지 2단 FSM, AXI4-Lite 마스터, 레지스터 슬레이브 모델, 레벨 변환 외부 부품]
+- 근거: [cvonk-fpga-spi, arduino-forum-spi-interface-with-fpga-3-3voltage-issue, digilent-pmod-shield-refmanual]
+- 새로움의 근거: I-012는 UART 경로다. 카탈로그에는 SPI 슬레이브로 버스 마스터를 구동하는 패키지가 없고, 레벨 변환을 명세의 외부 부품 검사와 연결해 다룬 사례도 없다(내 판단).
+- Basys3 적합성의 근거: Pmod 한 개(SS, MOSI, MISO, SCK 4핀, Digilent 순서)로 가능, BRAM 불필요. SPI 클럭은 100 MHz 시스템 클럭에 동기화하는 방식을 택하면 소량 LUT로 가능(내 추정, 수치 없음).
+- 난이도: 3 / 단계: T2
+- 심사: (대기)

@@ -244,3 +244,14 @@
 - https://github.com/vectrasoft/TrainableRoboticArm | Adafruit 글이 링크한 코드 저장소 — 미열람(L1), 라이선스 확인 필요 | Adafruit 카드 출처
 - https://app.mypolycc.edu.my/journal/index.php/PMJET/article/view/351 | Arduino 스마트 카 장애물 회피 논문 — 미열람(L1) | 한국어 RC카 질의 부수 결과
 - 한국어 Arduino 캡스톤 RC카 보고서: 검색에서 국내 보고서 직접 결과 없음(blocked: 후속 질의 필요)
+- https://forum.digilent.com/topic/4223-level-shifter-not-working-cant-tell/ | Basys3 JC에 TXB0104 레벨 시프터 시험, 모든 A-B 조합에서 LED 점멸(답변 본문 미표시) — 열람(L3, 질문만), S6 후보 | Arduino shield Basys3 Pmod level shifter
+- https://forum.digilent.com/topic/4447-basys3-pmod-voltage-output/ | Pmod 신호핀으로 Arduino VIN 전원 제어 시도, LED 약하게 점등 — 질문만 열람(L3), 답변 미표시 | 같은 질의
+- https://hackaday.io/project/38-arduino-compatible-fpga-shield/log/10202-level-translation-mods | Arduino 호환 Spartan 6 쉴드의 SN74CBTD3384 레벨 변환 개정 — 열람(L3), 카드 후보(앞 글 보조 출처로만 사용) | BSS138 SPI slave Verilog 질의
+- https://shillehtek.com/blogs/news/arduino-txs0108e-3-3v-5v-level-shift | TXS0108E 5V↔3.3V 배선(OE, I2C 부적합) — 열람(L3), 보조 출처로 사용 | 같은 질의
+- https://github.com/mjlyons/vSPI | Verilog SPI 슬레이브 + 4KB 버퍼 2개 + 16 레지스터, Atlys 보드(27.9Mbps 주장) — 열람(L3), 라이선스 비표준(소유권 유지·통보 요청) → 코드 반입 금지, 카드 후보 | cvonk Math Talk 질의
+- https://www.luisllamas.es/en/fpga-i2c-protocol-master-slave/ | 쓰기 전용 I2C 마스터 7상태 FSM(클럭 스트레칭·다중 마스터 없음) — 열람(L3), 라이선스 미기재, 카드 후보 | FPGA Verilog I2C Arduino Wire
+- https://github.com/hdl-util/i2c | I2C 컨트롤러 — 검색 결과만(L1) | 같은 질의
+- https://github.com/cp024s/I2C | I2C — 검색 결과만(L1) | 같은 질의
+- https://opencores.org/uploads/1424635395_Implementation%20of%20the%20communication%20protocols%20SPI%20and%20I2C%20using%20a%20FPGA.pdf | SPI·I2C FPGA 구현 논문 — 검색 결과만(L1) | 같은 질의
+- https://physics.umd.edu/hep/drew/495/basys3io.html | Basys3 I/O 강의 노트(LVCMOS33, Pmod 6번 3.3V, XADC 0~1V) — 열람(L3), 5V 허용치 언급 없음 | Arduino shield Basys3 Pmod
+- 참고: 한국어 질의(아두이노 FPGA Basys3 레벨 시프터)는 국내 자료 직접 결과 없음. Basys3 Pmod 5V 허용치 공식 수치 미확인(blocked: Basys3 Reference Manual PDF 열람 필요)

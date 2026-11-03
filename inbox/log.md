@@ -62,3 +62,4 @@
 2026-11-03 20:08 | collect | Arduino 디스플레이(SSD1306·MAX7219) · S6 실패 사례(주: OLED 멈춤·쓰레기 픽셀 포럼 글)+S5 비정형 출처(보조: 튜토리얼 블로그) | 카드 +3 | 아이디어 +0(I-024·I-0xx 기존과 겹쳐 신규 없음) | 큐 잔여 216 | blocked 0 | 부수: add_repo/register_repo_root 도구 없음, 기존 clone 사용
 2026-11-03 21:20 | collect | Arduino 캡스톤급(RC카·로봇 팔) · S2 조합 탐색(주: IR 명령+초음파 회피+서보 스캔)+S7 난이도 사다리(보조: 반응형 차 → 가르치기 팔) | 카드 +3 | 아이디어 +1 | 큐 잔여 242 | blocked 1 | 부수: add_repo/register_repo_root 도구 없음, 기존 clone 사용; WebFetch는 이번엔 동작
 2026-11-03 21:42 | verify | 재열람 0(WebFetch PROVENANCE_REQUIRED 9/9 실패; 우회 안 함) | 수정 1(masher1-gogo-car source_rev 형식 오류 → audit 오류 0) | 불일치 0 | 승격 L2→L3 0 | ready +0 | 아이디어 심사 보류 | 미재열람 누적 약 59건 | 부수: add_repo 도구 없음, 기존 clone 사용
+2026-11-03 22:11 | collect | Arduino↔Basys3 인터페이스 변환(SPI 마스터·레벨 변환) · S1 인접 도메인 이식(주: Arduino 마스터 → FPGA SPI 슬레이브)+S4 제약 역전(보조: pmod-only 3.3V 제약 → 방향별 레벨 변환) | 카드 +3 | 아이디어 +1 | 큐 잔여 252 | blocked 1 | 부수: add_repo/register_repo_root 도구 없음, 기존 clone 사용; 열람 13건 검색 7회
