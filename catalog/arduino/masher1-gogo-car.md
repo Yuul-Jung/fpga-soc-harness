@@ -12,7 +12,6 @@ bus: none
 peripherals: [hid-ir-remote, sensor, actuator-dc-motor, buzzer]
 stage: T2
 license: GPL-3.0 추정 (저장소에 gpl-3.0.md 파일이 있음, 정확한 선언은 미확인) → 코드 반입 금지
-source_rev: unverified: 열람한 페이지에서 커밋 SHA가 보이지 않음
 stats: {last_update: unverified}
 doc_language: en
 verification: L3
