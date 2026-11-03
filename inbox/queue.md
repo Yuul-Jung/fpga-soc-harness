@@ -273,3 +273,6 @@
 - https://cloud.wikis.utexas.edu/wiki/x/BJevAQ | CubeMX 코드 자동 생성 대학 위키 — 검색 결과만(L1) | STM32 HAL tutorial GPIO UART SPI I2C CubeMX
 - https://www.st.com/content/dam/kms/Contents/Reflibrary/STM32CubeMX_Quick_Guide.pdf | ST CubeMX 퀵 가이드 PDF — 검색 결과만(L1) | STM32CubeMX 코드 생성 HAL 튜토리얼
 - https://github.com/dohack/STM32-HAL-Code-Generator | STM32 HAL 코드 생성기 — 검색 결과만(L1) | STM32 HAL tutorial 질의
+- https://controllerstech.com/stm32-freertos-mutex/ | STM32 FreeRTOS 뮤텍스 튜토리얼 — 검색 결과만(L1) | STM32 FreeRTOS priority inversion mutex
+- https://compile-n-run.pages.dev/docs/iot/stm32/stm32-rtos-integration/stm32-task-priorities | STM32 태스크 우선순위 — 검색 결과만(L1) | STM32 FreeRTOS priority inversion mutex
+- https://dev.st.com/stm32cube-docs/mw-freertos/2.0.0/en/docs/markup/freertos_faq.html | ST FreeRTOS FAQ — 열람했으나 CMSIS-RTOS v2 내용 없음, 힙·스택·틱 수치는 L3 참고용 | STM32 FreeRTOS priority inversion mutex

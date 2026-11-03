@@ -122,3 +122,6 @@
 | [predictabledesigns-stm32cubemx-generated-code](stm32/predictabledesigns-stm32cubemx-generated-code.md) | L3 | T1 | STM32F103C8 (Basys3 needs-port) | 2026-11-04 |
 | [gdbplus-understanding-stm32-hal-ll-systick](stm32/gdbplus-understanding-stm32-hal-ll-systick.md) | L3 | T0 | STM32 (Basys3 needs-port) | 2026-11-04 |
 | [stm32-community-hal-vs-ll](stm32/stm32-community-hal-vs-ll.md) | L3 | T1 | STM32 (Basys3 needs-port) | 2026-11-04 |
+| [st-community-freertos-stack-overflow-hardfault](stm32/st-community-freertos-stack-overflow-hardfault.md) | L3 | T1 | STM32F407 Discovery (Basys3 needs-port) | 2026-11-04 |
+| [st-community-freertos-hal-timeout-systick](stm32/st-community-freertos-hal-timeout-systick.md) | L3 | T2 | STM32F4 (Basys3 needs-port) | 2026-11-04 |
+| [freertos-forum-stm32-cubemx-uart-example](stm32/freertos-forum-stm32-cubemx-uart-example.md) | L3 | T2 | STM32 (Basys3 needs-port) | 2026-11-04 |
