@@ -172,7 +172,8 @@
 - 상태: raw
 - 요약: 내 판단: 하나의 4체배 디코더 RTL에 방향·위치·고정 창 속도·불가능 전이 오류 카운터를 담고, 슬라이드 스위치 모사 테스트벤치로 정/역방향과 글리치 주입을 자체 점검하는 IP를 만든다.
 - 조합: [직교 엔코더(sensor), 7세그 표시, AXI4-Lite 카운터 레지스터]
-- 근거: [element14-arty-s7-artybot-axi-speed-sensing-ip, wdevore-tinyfpga-quadrature-decoder-gist, ubc-elex2117-lab6-quadrature-encoder]
+- 근거: [element14-arty-s7-artybot-axi-speed-sensing-ip, wdevore-tinyfpga-quadrature-decoder-gist, ubc-elex2117-lab6-quadrature-encoder, deepbluembedded-stm32-timer-encoder-mode, stm32-community-encoder-rollover-management]
+- 보강(2026-11-03): STM32 타이머 엔코더 모드의 x2/x4·필터·DIR 비트 모델과 롤오버 사분면 델타 규칙을 레지스터·시험 항목(경계 주입)으로 추가 가능(내 판단)
 - 새로움의 근거: 기존 카드는 홀 1상 계수, 4체배 표시, 전이표 실습으로 갈라져 있고 오류 전이 진단을 레지스터로 노출한 것은 없다(내 판단).
 - Basys3 적합성의 근거: 카운터 몇 개 수준(내 추정, 자원 수치 없음). 엔코더 2핀은 Pmod JA에서 3.3V로 가능, 5V 엔코더는 레벨 변환 필요.
 - 난이도: 2 / 단계: T2

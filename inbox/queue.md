@@ -255,3 +255,9 @@
 - https://opencores.org/uploads/1424635395_Implementation%20of%20the%20communication%20protocols%20SPI%20and%20I2C%20using%20a%20FPGA.pdf | SPI·I2C FPGA 구현 논문 — 검색 결과만(L1) | 같은 질의
 - https://physics.umd.edu/hep/drew/495/basys3io.html | Basys3 I/O 강의 노트(LVCMOS33, Pmod 6번 3.3V, XADC 0~1V) — 열람(L3), 5V 허용치 언급 없음 | Arduino shield Basys3 Pmod
 - 참고: 한국어 질의(아두이노 FPGA Basys3 레벨 시프터)는 국내 자료 직접 결과 없음. Basys3 Pmod 5V 허용치 공식 수치 미확인(blocked: Basys3 Reference Manual PDF 열람 필요)
+- https://github.com/Shreeshinator/RoboticsLib | STM32 HAL 로봇 라이브러리(엔코더·PID 추정) — 검색 결과만(L1) | STM32 DC motor encoder PID github HAL TIM_ENCODER
+- https://wiki.robolabo.etsit.upm.es/index.php/Nucleo_Boards_for_Control_Systems | Nucleo 제어 시스템 교육 위키 — 검색 결과만(L1) | STM32 HAL timer encoder PWM PID tutorial
+- https://controllerstech.com/stm32-hal/timer-tutorials/ | STM32 HAL 타이머 튜토리얼 모음 — 검색 결과만(L1) | 같은 질의
+- https://os.mbed.com/users/gereina/code/HAL_QEI_PWM_MBED_PID/ | NUCLEO-F446RE 엔코더 2개 + PWM PID 도립진자 — 검색 결과만(L1) | STM32 DC motor encoder PID github
+- https://community.st.com/s/question/0D50X00009XkaPq/stm32-encoder-interface | ST 커뮤니티 엔코더 인터페이스 질문 — 검색 결과만(L1) | STM32 HAL timer encoder
+- blocked: https://os.mbed.com/users/kkoichy/code/Encoder_Nucleo_32_bits — 16비트 타이머+32비트 소프트 카운터, github.com/ArmMbed로 리다이렉트되어 열람 못 함(1회)

@@ -113,3 +113,6 @@
 | [cvonk-fpga-spi](arduino/cvonk-fpga-spi.md) | L3 | T2 | Altera (Basys3 needs-port) | 2026-11-03 |
 | [digilent-pmod-shield-refmanual](arduino/digilent-pmod-shield-refmanual.md) | L3 | T2 | Arduino Uno R3형 + Pmod Shield (Basys3 needs-port) | 2026-11-03 |
 | [arduino-forum-spi-interface-with-fpga-3-3voltage-issue](arduino/arduino-forum-spi-interface-with-fpga-3-3voltage-issue.md) | L3 | T2 | Arduino Uno + Spartan 3AN (Basys3 needs-port) | 2026-11-03 |
+| [deepbluembedded-stm32-timer-encoder-mode](stm32/deepbluembedded-stm32-timer-encoder-mode.md) | L3 | T1 | STM32 (Basys3 needs-port) | 2026-11-03 |
+| [kael2209-stm32-speed-position-control-pid](stm32/kael2209-stm32-speed-position-control-pid.md) | L3 | T2 | STM32F103C8T6 Blue Pill (Basys3 needs-port) | 2026-11-03 |
+| [stm32-community-encoder-rollover-management](stm32/stm32-community-encoder-rollover-management.md) | L3 | T1 | STM32F407 (Basys3 needs-port) | 2026-11-03 |
