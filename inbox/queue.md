@@ -226,3 +226,9 @@
 - https://www.energiazero.org/cartelle/arduino/arduino_sensori/how2electronics.com-Interfacing%20SX1278%20Ra-02%20LORA%20Module%20with%20Arduino.pdf | SX1278 Ra-02 Arduino 연결 PDF — 검색 결과만(L1), 제3자 사본 | LoRa SX1278 Arduino basics
 - https://docs.zephyrproject.org/latest/build/dts/api/bindings/lora/semtech%2Csx1276.html | SX1276 Zephyr 장치트리 바인딩 — 검색 결과만(L1), RTOS 도메인에도 연결 | SX1276 LoRa FPGA SPI controller
 - https://forum.lora-developers.semtech.com/t/sx1276-fhss-frequency-hopping-scheme/105 | Semtech 포럼 SX1276 FHSS — 검색 결과만(L1) | SX1276 LoRa FPGA SPI controller
+- https://github.com/tor1kk/neo-6m | NEO-6M NMEA 파서 C 라이브러리(GPL-3.0, STM32 HAL 추정) — 열람(L3), GGA 수신 버그 서술, GPL이라 사실만 추출 가능, 다음 STM32 주제에 활용 | NEO-6M GPS NMEA parsing UART FPGA Verilog
+- https://forum.digilent.com/topic/21093-gps-design/ | FPGA NMEA 파싱 UART 프레임 오류 100회 이상($GNTXT) 토론 — 열람(L3), 해결 답 없음, S6 실패 사례로 카드 후보 | NEO-6M GPS NMEA parsing UART FPGA Verilog
+- https://learn.adafruit.com/adafruit-bmp280-barometric-pressure-plus-temperature-sensor-breakout.md?view=all | Adafruit BMP280 가이드 — 열람(L3), devices/i2c/bmp280.md 출처로 사용 | BMP280 I2C register map compensation formula Verilog FPGA
+- https://forum.arduino.cc/t/multiple-sensors-in-one-board-s/1097942 | 여러 센서 한 보드 토론 — 검색 결과만(L1) | 아두이노 MPU6050 BMP280 GPS NEO-6M 센서 허브
+- https://docs.sunfounder.com/projects/umsk/en/latest/02_arduino/uno_lesson05_mpu6050.html | SunFounder MPU6050 Arduino 레슨 — 검색 결과만(L1) | Arduino MPU-6050 BMP280 NEO-6M GPS sensor hub project tutorial
+- 참고: BMP280/NEO-6M의 Basys3·FPGA 직접 Verilog 구현 사례는 검색에서 못 찾음

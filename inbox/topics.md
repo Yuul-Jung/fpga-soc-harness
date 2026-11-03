@@ -45,7 +45,7 @@
 ## Arduino 도메인 (2026-11-03 추가, 위에서부터 소비)
 - [x] Arduino 모터 제어: TB6612FNG/L298N H-브리지 + 엔코더 PID 속도 제어 (아두이노 생태계 우선) — 2026-11-03 17시대 사이클: 카드 3건(L3, catalog/arduino/ 신설), L298N 엔코더 PID 자료는 열람 못 함(큐), 정수·고정소수점 PID AVR 사례는 못 찾음
 - [x] Arduino 통신 모듈: HC-05 BT 앱 제어, NRF24L01 무선, LoRa SX1278 기초 — 2026-11-03 사이클: 카드 3건(L3: nRF24 튜토리얼, SX1278 2건), HC-05는 기존 카드 활용, nRF24·LoRa FPGA 직접 구현과 SX1278 데이터시트·레지스터 자료는 못 찾음/미열람
-- [ ] Arduino 센서 허브: MPU-6050 IMU + BMP280 기압 + GPS NEO-6M 조합 사례
+- [x] Arduino 센서 허브: MPU-6050 IMU + BMP280 기압 + GPS NEO-6M 조합 사례 — 2026-11-03 사이클: 카드 3건(L3), devices/i2c/bmp280.md, Basys3·FPGA BMP280/NEO-6M 직접 Verilog 사례는 못 찾음, Digilent GPS 토론·tor1kk/neo-6m은 큐
 - [ ] Arduino 디스플레이: SSD1306 OLED + ST7789 SPI LCD + MAX7219 매트릭스 구동
 - [ ] Arduino 캡스톤급: 자율주행 RC카·로봇 팔·스마트 홈 제어 시스템 완성 프로젝트
 - [ ] Arduino FPGA 연동: 아두이노 모듈을 Basys3 Pmod와 연결하는 인터페이스 변환 사례

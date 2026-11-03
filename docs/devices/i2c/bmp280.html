@@ -1,0 +1,49 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BMP280 I2C/SPI 기압·온도 센서</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../../index.html">FPGA SoC 하네스</a><a href="../../index.html">메인</a><a href="../../index.html#capstones">캡스톤</a><a href="../../soc-map/tech-tree.html">기술 트리</a><a href="../../catalog/index.html">카탈로그</a><a href="../../inbox/ideas.html">아이디어</a><a href="../../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/devices/i2c/bmp280.md">GitHub 원본: devices/i2c/bmp280.md</a></p><h1>BMP280 I2C/SPI 기압·온도 센서</h1>
+<p>갱신: 2026-11-03 · 등급: L3(데이터시트 1건 + 제조사 가이드 1건 열람) · 출처: Bosch BST-BMP280-DS001-26 rev.1.26 (제3자 사본 https://forums.parallax.com/uploads/editor/gm/8y6uzm9khhil.pdf — 공식 Bosch 사이트 원문은 열람하지 못함), Adafruit 가이드 (https://learn.adafruit.com/adafruit-bmp280-barometric-pressure-plus-temperature-sensor-breakout.md?view=all)</p>
+<h2>인터페이스 (데이터시트)</h2>
+<ul><li style="margin-left:0.0em">I2C 7비트 주소: SDO=GND이면 0x76, SDO=VDDIO이면 0x77. SDO를 띄우면 안 된다. I2C 최대 3.4 MHz, SPI 3선·4선 최대 10 MHz.</li><li style="margin-left:0.0em">전원: VDD 1.71–3.6 V, VDDIO 1.2–3.6 V (최대 3.6 V이므로 5 V 직결 불가). 모듈은 별도 레귤레이터·레벨 변환 회로가 있을 수 있다(Adafruit 보드는 3–5 V 입력과 신호 레벨 변환 서술). 보드 I/O 3.3 V에는 직접 연결 가능, 모듈 풀업이 3.3 V인지 확인한다(내 판단).</li><li style="margin-left:0.0em">Adafruit 보드의 기본 I2C 주소는 0x77로 서술됨.</li></ul>
+<h2>레지스터 (데이터시트)</h2>
+<div class="panel"><table><tr><th>주소</th><th>이름</th><th>내용</th></tr><tr><td>0xD0</td><td>id</td><td>0x58</td></tr><tr><td>0xE0</td><td>reset</td><td>0xB6 쓰면 리셋</td></tr><tr><td>0xF3</td><td>status</td><td>bit3 측정 중, bit0 NVM 복사 중</td></tr><tr><td>0xF4</td><td>ctrl_meas</td><td>osrs_t[7:5], osrs_p[4:2], mode[1:0] (00 sleep, 01/10 forced, 11 normal)</td></tr><tr><td>0xF5</td><td>config</td><td>t_sb[7:5], filter[4:2], spi3w_en[0]</td></tr><tr><td>0xF7–0xF9</td><td>press</td><td>20비트</td></tr><tr><td>0xFA–0xFC</td><td>temp</td><td>20비트</td></tr><tr><td>0x88–0xA1</td><td>calib</td><td>공장 보정 계수 (dig_T1–T3, dig_P1–P9)</td></tr></table></div>
+<ul><li style="margin-left:0.0em">데이터 6바이트는 0xF7부터 한 번의 연속 읽기로 가져와 일관성을 유지한다.</li><li style="margin-left:0.0em">압력 측정 시간(전형/최대): ×1 5.5/6.4 ms, ×2 7.5/8.7 ms, ×4 11.5/13.3 ms, ×8 19.5/22.5 ms, ×16 37.5/43.2 ms.</li></ul>
+<h2>보정 계산</h2>
+<ul><li style="margin-left:0.0em">온도를 먼저 계산해 t_fine을 얻고 압력 계산에 쓴다. 64비트 정수 방식이 가장 정확하고, 32비트 정수 방식은 전형 정확도 1 Pa(1σ)로 64비트 지원이 없을 때의 대안이다. Cortex-M3 기준 압력 약 112 사이클(32비트) 대 약 1400 사이클(64비트)(데이터시트 서술).</li><li style="margin-left:0.0em">내 판단: 보정은 곱셈이 많아 RTL에 넣기보다 MicroBlaze V 펌웨어에서 32비트 방식으로 하고, IP는 원시 20비트 값과 상태만 레지스터로 노출하는 편이 IP 표준 분리에 맞다.</li></ul>
+<h2>기타 (Adafruit 가이드)</h2>
+<ul><li style="margin-left:0.0em">정확도: 압력 ±1 hPa, 온도 ±1.0 °C. 마지막 측정값이 저장되므로 새 값을 원하면 두 번 읽고 첫 값을 버리라는 서술이 있다(데이터시트의 forced 모드와 별도 확인 필요, unverified).</li><li style="margin-left:0.0em">고도는 해면 기압을 모르면 약 10 m까지 틀어질 수 있다.</li></ul>
+<h2>unverified</h2>
+<ul><li style="margin-left:0.0em">필터 계수별 응답 시간, 대기 시간(t_sb) 표, SPI 타이밍 표, Bosch 공식 최신판과의 차이.</li></ul></main></body></html>

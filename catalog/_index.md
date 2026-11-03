@@ -101,3 +101,6 @@
 | [electroniclinic-arduino-sx1278-lora-two-way](arduino/electroniclinic-arduino-sx1278-lora-two-way.md) | L3 | T2 | Arduino (Basys3 needs-port) | 2026-11-03 |
 | [microcontrollerslab-sx1278-lora-module](arduino/microcontrollerslab-sx1278-lora-module.md) | L3 | T1 | Arduino (Basys3 needs-port) | 2026-11-03 |
 | [mikrocontroller-net-nrf24l01-tutorial](arduino/mikrocontroller-net-nrf24l01-tutorial.md) | L3 | T2 | ATmega8 (Basys3 needs-port) | 2026-11-03 |
+| [shillehtek-nano-mpu6050-neo6m-vehicle-logger](arduino/shillehtek-nano-mpu6050-neo6m-vehicle-logger.md) | L3 | T2 | Arduino Nano (Basys3 needs-port) | 2026-11-03 |
+| [jpralves-car-hud-speed-compass](arduino/jpralves-car-hud-speed-compass.md) | L3 | T1 | Arduino Nano (Basys3 needs-port) | 2026-11-03 |
+| [arduino-forum-nano-crash-3-i2c-gps](arduino/arduino-forum-nano-crash-3-i2c-gps.md) | L3 | T2 | Arduino Nano/Mega (Basys3 needs-port) | 2026-11-03 |

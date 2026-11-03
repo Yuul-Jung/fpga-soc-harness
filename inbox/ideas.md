@@ -369,3 +369,13 @@
 - Basys3 적합성의 근거: Pmod 1~2개(SCK, MOSI, MISO, CSN, CE, IRQ 6핀)와 3.3 V 로직으로 충분하고 BRAM 불필요. 모듈 전원 순간 전류용 커패시터 필요(글 서술). SPI 분주는 설계 시 정함(내 판단).
 - 난이도: 3 / 단계: T2
 - 심사: (대기)
+
+## I-036 센서 허브 IP: I2C 3장치(MPU-6050·BMP280·HMC5883L) 순회 + NMEA UART 수신, 공통 타임스탬프 표본 FIFO
+- 상태: raw
+- 요약: 내 판단: I2C 마스터가 주소 표(0x68, 0x76/0x77, 0x1E)를 순회해 센서별 원시값을 읽고, UART 수신기가 NMEA 문장 한 줄을 완료 인터럽트로 알리며, 모든 표본에 자유 실행 카운터 타임스탬프를 붙여 FIFO에 쌓는 AXI4-Lite 허브 IP. 보정 계산과 NMEA 필드 추출은 펌웨어. 테스트벤치에 I2C 슬레이브 모델 3개와 NMEA 문장 발생기를 넣는다.
+- 조합: [I2C 순회 마스터, UART NMEA 수신, 타임스탬프 FIFO, AXI4-Lite 레지스터·인터럽트]
+- 근거: [shillehtek-nano-mpu6050-neo6m-vehicle-logger, arduino-forum-nano-crash-3-i2c-gps, jpralves-car-hud-speed-compass, ammar-bin-amir-arty-a7-i2c-mpu-6050]
+- 새로움의 근거: 기존 카드는 I2C 센서 단일 구동이나 모터 제어 중심이고, 독립 주기 센서 여러 개와 GPS 문장을 공통 타임스탬프로 묶는 허브는 없다. 대상 자료가 GPS 주기에 IMU를 묶은 약점을 직접 보완한다(내 판단).
+- Basys3 적합성의 근거: Pmod 2개(I2C 1세트 SCL/SDA, UART RX 1핀)와 3.3 V 로직으로 충분, FIFO는 BRAM 소량. 센서 3.3 V 모듈 선택 필요(데이터시트 VDD 최대 3.6 V, devices/i2c/bmp280.md). 9600 baud 비트 시간은 100 MHz에서 10,417 클럭(내 계산).
+- 난이도: 3 / 단계: T2
+- 심사: (대기)
