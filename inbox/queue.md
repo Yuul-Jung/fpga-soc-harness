@@ -270,3 +270,6 @@
 - https://portaldeinformacao.utfpr.edu.br/Record/riut-1-24379/Description | ESP32+FPGA Wi-Fi 홈 자동화 학위 논문 기록 — 검색 결과만(L1) | 같은 질의
 - https://shillehtek.com/blogs/news/esp32-freertos-tasks-dual-core-multitasking | ESP32 FreeRTOS 듀얼 코어 — 검색 결과만(L1) | ESP32 FreeRTOS sensor hub 질의
 - blocked: GitHub 커밋 페이지(ICE-V-Wireless, ESP32SPISlave) — WebFetch 권한 응답 없음(1회), source_rev unverified
+- https://cloud.wikis.utexas.edu/wiki/x/BJevAQ | CubeMX 코드 자동 생성 대학 위키 — 검색 결과만(L1) | STM32 HAL tutorial GPIO UART SPI I2C CubeMX
+- https://www.st.com/content/dam/kms/Contents/Reflibrary/STM32CubeMX_Quick_Guide.pdf | ST CubeMX 퀵 가이드 PDF — 검색 결과만(L1) | STM32CubeMX 코드 생성 HAL 튜토리얼
+- https://github.com/dohack/STM32-HAL-Code-Generator | STM32 HAL 코드 생성기 — 검색 결과만(L1) | STM32 HAL tutorial 질의

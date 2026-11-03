@@ -119,3 +119,6 @@
 | [controllerstech-esp32-freertos-multitasking](esp32/controllerstech-esp32-freertos-multitasking.md) | L3 | T1 | ESP32 (Basys3 needs-port) | 2026-11-03 |
 | [hideakitai-esp32spislave](esp32/hideakitai-esp32spislave.md) | L3 | T2 | ESP32 (Basys3 needs-port) | 2026-11-03 |
 | [ice-v-wireless-ice-v-wireless](lattice/ice-v-wireless-ice-v-wireless.md) | L3 | T3 | ICE-V Wireless iCE40UP5k (Basys3 needs-port) | 2026-11-03 |
+| [predictabledesigns-stm32cubemx-generated-code](stm32/predictabledesigns-stm32cubemx-generated-code.md) | L3 | T1 | STM32F103C8 (Basys3 needs-port) | 2026-11-04 |
+| [gdbplus-understanding-stm32-hal-ll-systick](stm32/gdbplus-understanding-stm32-hal-ll-systick.md) | L3 | T0 | STM32 (Basys3 needs-port) | 2026-11-04 |
+| [stm32-community-hal-vs-ll](stm32/stm32-community-hal-vs-ll.md) | L3 | T1 | STM32 (Basys3 needs-port) | 2026-11-04 |

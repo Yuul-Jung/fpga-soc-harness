@@ -51,7 +51,7 @@
 - [x] Arduino FPGA 연동: 아두이노 모듈을 Basys3 Pmod와 연결하는 인터페이스 변환 사례 — 2026-11-03 22시대 사이클: 카드 3건(L3), Arduino↔Basys3 직접 변환 어댑터 사례와 Basys3 Pmod 5V 허용치 공식 수치는 못 찾음(Basys3 레퍼런스 페이지에 전기 사양 없음)
 
 ## STM32 도메인 (2026-11-03 추가, 위에서부터 소비)
-- [ ] STM32 HAL 기초: GPIO/UART/SPI/I2C HAL 드라이버 구조와 큐브MX 코드 생성
+- [x] STM32 HAL 기초: GPIO/UART/SPI/I2C HAL 드라이버 구조와 큐브MX 코드 생성 — 2026-11-04 01시대 사이클: 카드 3건(L3: CubeMX 생성 코드 구조, HAL vs LL 2건), SPI/I2C HAL 개별 드라이버 자료와 ST 공식 UM1725는 못 찾음/미열람
 - [ ] STM32 FreeRTOS: 태스크·큐·세마포어·타이머, CMSIS-RTOS v2 래퍼 사례
 - [ ] STM32 모터 제어: TIM PWM + 엔코더 모드 + FOC 기초 (G0/G4/F4 계열)
 - [ ] STM32 통신: CAN FD, USB CDC, Ethernet LwIP, BLE(WB55) 통합 사례
