@@ -16,6 +16,7 @@
     "AXI4-Lite 완전 핸드셰이크(이 패키지는 mmio-lite 사용)",
     "PID 제어 루프 구현(다음 단계 패키지로 확장)"
   ],
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 원본이며 외부 코드를 포함하지 않는다. 시뮬레이션·합성 결과는 CI가 기록한다.",
   "architecture": {
     "clock": "100 MHz (시뮬레이션에서는 10 ns 클럭)",
     "reset": "rst, active high, 동기",
@@ -139,65 +140,74 @@
     "state": "not-written",
     "note": "이 패키지는 시뮬레이션 전용이며 외부 부품이 없어 회로도 미작성"
   },
-  "hierarchy": [
+  "hierarchy": {
+    "module": "basys3_top",
+    "file": "rtl/basys3_top.v",
+    "children": [
+      {
+        "module": "soc_top",
+        "file": "rtl/soc_top.v",
+        "children": [
+          {"module": "mmio_bus",  "file": "rtl/mmio_bus.v"},
+          {"module": "gpio",      "file": "rtl/gpio.v"},
+          {"module": "uart_tx",   "file": "rtl/uart_tx.v"},
+          {"module": "pwm_ip",    "file": "rtl/pwm_ip.v"},
+          {"module": "qenc_ip",   "file": "rtl/qenc_ip.v"}
+        ]
+      }
+    ]
+  },
+  "memory_map": [
     {
-      "module": "basys3_top",
-      "file": "rtl/basys3_top.v",
-      "children": [
-        {
-          "module": "soc_top",
-          "file": "rtl/soc_top.v",
-          "children": [
-            {"module": "mmio_bus",  "file": "rtl/mmio_bus.v"},
-            {"module": "gpio",      "file": "rtl/gpio.v"},
-            {"module": "uart_tx",   "file": "rtl/uart_tx.v"},
-            {"module": "pwm_ip",    "file": "rtl/pwm_ip.v"},
-            {"module": "qenc_ip",   "file": "rtl/qenc_ip.v"}
-          ]
-        }
+      "base": "0x1000_0000", "size": "0x10000", "block": "gpio", "desc": "GPIO LED/SW",
+      "regs": [
+        {"off": "0x00", "name": "LED",    "access": "RW", "desc": "LED[15:0]"},
+        {"off": "0x04", "name": "SW",     "access": "RO", "desc": "SW[15:0] (2단 동기화)"}
+      ]
+    },
+    {
+      "base": "0x1001_0000", "size": "0x10000", "block": "uart", "desc": "UART TX",
+      "regs": [
+        {"off": "0x00", "name": "DATA",   "access": "WO", "desc": "송신 바이트 [7:0]"},
+        {"off": "0x04", "name": "STATUS", "access": "RO", "desc": "bit0=busy"}
+      ]
+    },
+    {
+      "base": "0x1003_0000", "size": "0x10000", "block": "pwm", "desc": "PWM 2채널",
+      "regs": [
+        {"off": "0x00",   "name": "CTRL",       "access": "RW",   "desc": "bit0=enable"},
+        {"off": "0x04",   "name": "PERIOD",      "access": "RW",   "desc": "[15:0] 클럭 사이클 수"},
+        {"off": "0x08",   "name": "DUTY0",       "access": "RW",   "desc": "[15:0] 채널0 비교값"},
+        {"off": "0x0C",   "name": "DUTY1",       "access": "RW",   "desc": "[15:0] 채널1 비교값"},
+        {"off": "0xFFF0", "name": "ID",          "access": "RO",   "desc": "0x50574D31 (PWM1)"},
+        {"off": "0xFFF4", "name": "VER",         "access": "RO",   "desc": "{rev8,0,major8,minor8} = 0x01000001"},
+        {"off": "0xFFF8", "name": "IRQ_STATUS",  "access": "RW1C", "desc": "bit0=period_end"},
+        {"off": "0xFFFC", "name": "IRQ_ENABLE",  "access": "RW",   "desc": "bit0=period_end IRQ 허용"}
+      ]
+    },
+    {
+      "base": "0x1004_0000", "size": "0x10000", "block": "qdec", "desc": "직교 엔코더",
+      "regs": [
+        {"off": "0x00",   "name": "CTRL",       "access": "RW",   "desc": "bit0=enable, bit1=clear_pos"},
+        {"off": "0x04",   "name": "POS",        "access": "RO",   "desc": "signed 32-bit 위치"},
+        {"off": "0x08",   "name": "DIR",        "access": "RO",   "desc": "bit0: 1=CW, 0=CCW"},
+        {"off": "0x0C",   "name": "ERR",        "access": "RO",   "desc": "[15:0] 비정상 전이 횟수"},
+        {"off": "0xFFF0", "name": "ID",         "access": "RO",   "desc": "0x51454E43 (QENC)"},
+        {"off": "0xFFF4", "name": "VER",        "access": "RO",   "desc": "0x01000001"},
+        {"off": "0xFFF8", "name": "IRQ_STATUS", "access": "RW1C", "desc": "bit0=overflow"},
+        {"off": "0xFFFC", "name": "IRQ_ENABLE", "access": "RW",   "desc": "bit0=overflow IRQ 허용"}
       ]
     }
   ],
-  "memory_map": {
-    "note": "시뮬레이션 전용 주소. 실 SoC 이전 시 mbv-frozen-v2 슬롯 사용",
-    "regions": [
-      {"base": "0x1000_0000", "size": "0x10000", "block": "gpio",  "desc": "GPIO LED/SW"},
-      {"base": "0x1001_0000", "size": "0x10000", "block": "uart",  "desc": "UART TX"},
-      {"base": "0x1003_0000", "size": "0x10000", "block": "pwm",   "desc": "PWM 2채널"},
-      {"base": "0x1004_0000", "size": "0x10000", "block": "qdec",  "desc": "직교 엔코더"}
-    ],
-    "registers": [
-      {"block": "gpio",  "off": "0x00", "name": "LED",    "access": "RW", "desc": "LED[15:0]"},
-      {"block": "gpio",  "off": "0x04", "name": "SW",     "access": "RO", "desc": "SW[15:0] (2단 동기화)"},
-      {"block": "uart",  "off": "0x00", "name": "DATA",   "access": "WO", "desc": "송신 바이트 [7:0]"},
-      {"block": "uart",  "off": "0x04", "name": "STATUS", "access": "RO", "desc": "bit0=busy"},
-      {"block": "pwm",   "off": "0x00", "name": "CTRL",   "access": "RW", "desc": "bit0=enable"},
-      {"block": "pwm",   "off": "0x04", "name": "PERIOD", "access": "RW", "desc": "[15:0] 클럭 사이클 수"},
-      {"block": "pwm",   "off": "0x08", "name": "DUTY0",  "access": "RW", "desc": "[15:0] 채널0 비교값"},
-      {"block": "pwm",   "off": "0x0C", "name": "DUTY1",  "access": "RW", "desc": "[15:0] 채널1 비교값"},
-      {"block": "pwm",   "off": "0xFFF0","name": "ID",    "access": "RO", "desc": "0x50574D31 (PWM1)"},
-      {"block": "pwm",   "off": "0xFFF4","name": "VER",   "access": "RO", "desc": "{rev8,0,major8,minor8} = 0x01000001"},
-      {"block": "pwm",   "off": "0xFFF8","name": "IRQ_STATUS", "access": "RW1C", "desc": "bit0=period_end"},
-      {"block": "pwm",   "off": "0xFFFC","name": "IRQ_ENABLE", "access": "RW",   "desc": "bit0=period_end IRQ 허용"},
-      {"block": "qdec",  "off": "0x00", "name": "CTRL",   "access": "RW", "desc": "bit0=enable, bit1=clear_pos"},
-      {"block": "qdec",  "off": "0x04", "name": "POS",    "access": "RO", "desc": "signed 32-bit 위치"},
-      {"block": "qdec",  "off": "0x08", "name": "DIR",    "access": "RO", "desc": "bit0: 1=CW, 0=CCW"},
-      {"block": "qdec",  "off": "0x0C", "name": "ERR",    "access": "RO", "desc": "[15:0] 비정상 전이 횟수"},
-      {"block": "qdec",  "off": "0xFFF0","name": "ID",    "access": "RO", "desc": "0x51454E43 (QENC)"},
-      {"block": "qdec",  "off": "0xFFF4","name": "VER",   "access": "RO", "desc": "0x01000001"},
-      {"block": "qdec",  "off": "0xFFF8","name": "IRQ_STATUS", "access": "RW1C", "desc": "bit0=overflow"},
-      {"block": "qdec",  "off": "0xFFFC","name": "IRQ_ENABLE", "access": "RW",   "desc": "bit0=overflow IRQ 허용"}
-    ]
-  },
   "roadmap": [
     {"stage": "T1", "state": "done",    "title": "mmio-uart-gpio-skeleton", "refs": ["digilent-basys-3-getting-started-microblaze"]},
     {"stage": "T2", "state": "current", "title": "mmio-pwm-qenc-checker (이 패키지)", "refs": ["element14-eoi-blog3-custom-ip-pwm", "suoglu-axi-lite-slave"]},
     {"stage": "T3", "state": "planned", "title": "pwm-pid-motor-controller (다음 단계)", "refs": []}
   ],
   "references": [
-    {"name": "element14-eoi-blog3-custom-ip-pwm",              "reason": "AXI-Lite PWM IP 레지스터 설계 패턴 참고"},
-    {"name": "suoglu-axi-lite-slave",                           "reason": "Basys3 AXI-Lite 슬레이브 구조 참고"},
-    {"name": "digilent-basys-3-getting-started-microblaze",     "reason": "MMIO 버스 연결 및 보드 래퍼 구조 참고"}
+    {"card": "element14-eoi-blog3-custom-ip-pwm",              "why": "AXI-Lite PWM IP 레지스터 설계 패턴 참고"},
+    {"card": "suoglu-axi-lite-slave",                           "why": "Basys3 AXI-Lite 슬레이브 구조 참고"},
+    {"card": "digilent-basys-3-getting-started-microblaze",     "why": "MMIO 버스 연결 및 보드 래퍼 구조 참고"}
   ],
   "sources": {
     "rtl": [
@@ -214,12 +224,25 @@
     "constraints": ["constr/basys3.xdc"],
     "build": ["Makefile"]
   },
-  "howto": {
-    "sim": "make sim  # iverilog + vvp, build/sim.log에 PASS/FAIL",
-    "lint": "make lint  # verilator --lint-only",
-    "synth": "make synth  # yosys -p 'synth_xilinx -family xc7'",
-    "clean": "make clean"
-  },
+  "howto": [
+    {
+      "title": "시뮬레이션",
+      "steps": [
+        "iverilog, verilator, yosys 설치",
+        "make -C capstones/mmio-pwm-qenc-checker lint sim synth",
+        "build/sim.log에서 PASS 확인"
+      ]
+    },
+    {
+      "title": "Vivado 빌드 (Basys3)",
+      "steps": [
+        "새 RTL 프로젝트, 파트 xc7a35tcpg236-1",
+        "rtl/*.v 추가 (tb/, demo_master.v 제외), constr/basys3.xdc 추가, 최상위 basys3_top",
+        "Generate Bitstream 후 Program Device",
+        "UART 터미널(115200 8N1) 열어 PWM/QDEC 동작 확인"
+      ]
+    }
+  ],
   "verification": {
     "board": "not-tested",
     "notes": "S3는 사람이 Basys3에서 직접 확인해야 한다. CI가 S1(린트+시뮬)과 S2(합성)를 기록한다."
