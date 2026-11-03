@@ -80,3 +80,6 @@
 | [digilent-pmod-oled-reference-manual](amd/digilent-pmod-oled-reference-manual.md) | L3 | T2 | Basys3 (needs-port: 예제 없음) | 2026-11-03 |
 | [lushaylabs-tang-nano-9k-ssd1306-oled](vendor-neutral/lushaylabs-tang-nano-9k-ssd1306-oled.md) | L3 | T1 | Tang Nano 9K (Basys3 needs-port) | 2026-11-03 |
 | [masterplayer-lcd-st7789-sv](vendor-neutral/masterplayer-lcd-st7789-sv.md) | L3 | T2 | 미명시 (Basys3 needs-port) | 2026-11-03 |
+| [cvut-pehnelt-2014-vhdl-periferie-nexys4](papers/cvut-pehnelt-2014-vhdl-periferie-nexys4.md) | L3 | T2 | Nexys4 (Basys3 needs-port) | 2026-11-03 |
+| [analog-maxim-interfacing-ds18x20](papers/analog-maxim-interfacing-ds18x20.md) | L3 | T2 | 없음 (Basys3 needs-port) | 2026-11-03 |
+| [opencores-onewire-ds1820](vendor-neutral/opencores-onewire-ds1820.md) | L2 | T2 | 미명시 (Basys3 needs-port) | 2026-11-03 |

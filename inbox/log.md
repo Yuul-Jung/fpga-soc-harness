@@ -46,3 +46,4 @@
 2026-11-03 09:45 | verify | 재열람 0(WebFetch 권한 요청 무응답 2회 연속: zipcpu-llvga, stnolting-neorv32; 원문 대조 불가로 blocked, 우회 안 함) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +0 | 아이디어 심사 보류(rechecked_at 가진 근거 카드 부족, 재열람 없이 점수 부여 안 함) | audit 오류 0 경고 6, check 통과 | 미재열람 신규 카드 9건(neorv32, unipi-cds105, picorv32, digilent-forum-ethernet, nic100, wiznet-w5500, zipcpu-llvga, columbia-4840, raybox-zero)
 2026-11-03 10:07 | collect | 서보 액추에이터 조합(조이스틱·XADC → 서보) · S6 실패 사례(주: 서보 구동 교훈·전원 분리)+S2 조합 탐색(보조: JSTK2+서보) | 카드 +3 | 아이디어 +1 | 큐 잔여 144 | blocked 0
 2026-11-03 11:08 | collect | 디스플레이 사다리(LCD1602·SSD1306·ST7789) · S7 난이도 사다리(주: 병렬 → SPI 단색 → SPI 컬러)+S5 비정형 출처(보조: 포럼·위키·강의 소개) | 카드 +3 | 아이디어 +1 | 큐 잔여 153 | blocked 1
+2026-11-03 12:13 | collect | 1-Wire DS18B20·DHT11 FSM · S1 인접 도메인 이식(주: Maxim MCU 문서 타이밍 → FPGA FSM)+S6 실패 사례(보조: 고정 대기·Skip ROM 한계) | 카드 +3 | 아이디어 +1 | 큐 잔여 162 | blocked 1

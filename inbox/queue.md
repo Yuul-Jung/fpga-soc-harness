@@ -172,3 +172,12 @@
 - https://www.webpages.uidaho.edu/~jfrenzel/340/Handouts/lcd_module/PmodCLP_rm_RevA.pdf | PmodCLP 매뉴얼 Rev A 사본 — 미열람(L1)
 - https://github.com/hepingood/st7789 | ST7789 드라이버 — 미열람(L1), MCU용 추정
 - 참고: Basys3에서 I2C SSD1306/LCD1602 백팩(PCF8574)을 구동한 FPGA 소스는 이번 검색 8회에서 못 찾음. FPGA 사례는 SPI OLED(Pmod OLED, Tang Nano)와 HD44780 병렬이 대부분.
+- https://github.com/lexgolovchenko/avalon-1wire-master-example | DE0-Nano DS18B20 + Avalon 1-wire master 예제(루트만 열람 L2, 라이선스·README 미열람, 하위 경로 열람 권한 미응답) — blocked 아님, 재시도 필요 | DS18B20 1-Wire master Verilog FPGA GitHub
+- https://dspace.cvut.cz/entities/publication/8d244725-75bb-4bb0-b63f-8df5ae774802 | CTU 2025 학사 논문(DE10-Lite, VHDL, DS18B20+DHT11+VGA) — 서지 페이지만 열람 L2 | DHT11 Verilog FPGA controller
+- https://dspace.cvut.cz/bitstreams/270a751a-dbcf-443c-b502-bb151e8eb762/download | 위 논문 PDF — blocked: 열람 서버 오류 1회 후 중단(재시도 필요 시 1회 더) | DHT11 Verilog FPGA controller
+- https://www.datsi.fi.upm.es/docencia/Informatica_Industrial/DMC/dallas/app120.pdf | Maxim DS1WM 하드웨어 1-Wire 마스터 사용 노트(클럭 분주 0x0F@50 MHz, 열람 L3, 타이밍 수치 없음) — 카드 대기 | DS18B20 1-Wire master
+- https://community.altera.com/discussions/nios-system/altera-de2-and-1-wire-sensor/191985/replies/191991 | DE2 1-Wire 센서 포럼(DS1WM 소스 재배포 불가 언급, 열람 L3 짧음) — 카드 불필요 | DS18B20 1-Wire master
+- https://medium.com/@lakshan.techblog/temperature-sensor-data-reading-with-fpgas-85a2fad2a41e | FPGA 온도 센서 읽기 블로그 — 미열람(L1) | FPGA 1-Wire master DS18B20
+- https://www.secs.oakland.edu/~llamocca/Courses/ECE4710/W21/FinalProject/Group3_RefrigeratorThermometer.pdf | Nexys A7 ADT7420 냉장고 온도계 + VGA 막대(1-Wire 아님, 열람 L3) — 카드 후보(I2C 센서+VGA) | FPGA 1-Wire DS18B20 Nexys
+- https://www.analog.com/en/resources/technical-articles/1wire-communication-through-software.html | Maxim 1-Wire 소프트웨어 통신 문서 — 미열람(L1) | DS18B20 datasheet timing
+- https://digitemp.com/docs/app74.pdf | Maxim AN74 1-Wire 버스 문서 — 미열람(L1) | DS18B20 datasheet timing
