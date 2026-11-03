@@ -121,15 +121,16 @@ module i2s_tx (
             frame_done_r <= 1'b0; // 1사이클 펄스
 
             if (lrclk_fall) begin
-                // L 채널 시작: l_reg 래치, 카운터 초기화
-                l_shift <= l_reg;
-                bit_cnt <= 5'd0;
-                sdin_r  <= 1'b0;
+                // L 채널 시작: l_reg 래치, MSB 즉시 출력 (LJ: lrclk 하강과 동시에 bit15 세팅)
+                // lrclk_fall 과 bclk_fall 이 같은 사이클에 겹치므로 여기서 미리 출력한다.
+                l_shift <= {l_reg[14:0], 1'b0};          // bit15 소비, 나머지 준비
+                bit_cnt <= 5'd1;                          // bit15 이미 출력 처리
+                sdin_r  <= tx_en ? l_reg[15] : 1'b0;
             end else if (lrclk_rise) begin
-                // R 채널 시작: r_reg 래치, 카운터 초기화, frame_done 펄스
-                r_shift      <= r_reg;
-                bit_cnt      <= 5'd0;
-                sdin_r       <= 1'b0;
+                // R 채널 시작: r_reg 래치, MSB 즉시 출력, frame_done 펄스
+                r_shift      <= {r_reg[14:0], 1'b0};
+                bit_cnt      <= 5'd1;
+                sdin_r       <= tx_en ? r_reg[15] : 1'b0;
                 frame_done_r <= 1'b1; // 한 프레임 완료 (L+R 한 쌍)
             end else if (bclk_fall && tx_en) begin
                 if (bit_cnt <= 5'd15) begin
