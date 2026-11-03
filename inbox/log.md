@@ -53,3 +53,4 @@
 2026-11-03 14:08 | collect | Basys3 XADC 아날로그 센서 입력 · S3 빈틈 추적(주: sensor 태그·devices 빈 곳)+S5 비정형 출처(보조: 강의·개인 튜토리얼·포럼) | 카드 +3 | 아이디어 +1 | 큐 잔여 173 | blocked 0 | 부수: topics 비어 §12.2-3로 주제 3개 추가, add_repo/register_repo_root 도구 없음(기존 clone 사용)
 2026-11-03 15:07 | collect | I2C 시계·메모리(DS3231·24LC) · S2 조합 탐색(주: RTC+EEPROM 로거)+S1 인접 도메인 이식(보조: MCU 드라이버 롤오버·ACK 폴링 → FSM) | 카드 +3 | 아이디어 +1 | 큐 잔여 183 | blocked 0 | 부수: add_repo/register_repo_root 도구 없음, 기존 clone 사용
 2026-11-03 15:41 | verify | 재열람 0(WebFetch 권한 요청 무응답/PROVENANCE_REQUIRED 4회 연속; 우회 안 함) | 수정 1(ndroid-hc06 source_rev 형식 오류 → audit 오류 0) | 불일치 0 | 승격 L2→L3 0 | ready +0 | 아이디어 심사 보류(rechecked_at 근거 카드 부족) | 미재열람 카드 누적 약 40건 | 부수: add_repo/register_repo_root 도구 없음, 기존 clone 사용
+2026-11-03 16:08 | collect | IR 리모컨 NEC 디코더 · S2 조합 탐색(주: IR 입력 + 모터/서보 조종)+S6 실패 사례(보조: 반복 코드 미구현·NEC 미시험) | 카드 +3 | 아이디어 +1 | 큐 잔여 193 | blocked 1 | 부수: add_repo/register_repo_root 도구 없음, 기존 clone 사용

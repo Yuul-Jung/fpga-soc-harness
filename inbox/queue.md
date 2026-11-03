@@ -202,3 +202,13 @@
 - https://github.com/daxzio/verilog-i2c | Verilog I2C 마스터 — 검색 결과만(L1), 라이선스 확인 필요 | FPGA Verilog I2C EEPROM 24C02
 - https://github.com/adaptableCoder/I2C-SystemVerilog | I2C SystemVerilog — 검색 결과만(L1) | FPGA Verilog I2C EEPROM 24C02
 - https://github.com/opalkelly-opensource/I2CController | Opal Kelly I2C 컨트롤러 — 검색 결과만(L1) | FPGA Verilog I2C EEPROM 24C02
+- https://GitHub.com/jagumiel/irReceiver | DE1-SoC Sony SIRC 12비트 수신 VHDL(MIT) — 열람(L3), 카드 미작성(NEC 아님), devices/ir 비교 근거 | VHDL infrared receiver NEC FPGA
+- https://GitHub.com/Kampi/VHDL | VHDL 모음(IR 포함 추정) — 검색 결과만(L1) | VHDL infrared receiver NEC FPGA
+- https://www.logicbricks.com/Documentation/Datasheets/IP/logiRC_hds.pdf | logiRC IR 리모컨 IP 데이터시트(상용) — 검색 결과만(L1) | VHDL infrared receiver NEC FPGA
+- https://techdocs.altium.com/display/FPGA/WB_IRRC+-+Wishbone+Infrared+Remote+Control+Codec | WB_IRRC Wishbone IR 코덱 — 검색 결과만(L1), 레지스터 맵 참고 후보 | VHDL infrared receiver NEC FPGA
+- https://techdocs.altium.com/display/FPGA/NEC Infrared Transmission Protocol | NEC 프로토콜 문서 — blocked: 열람 시 다른 도메인으로 리다이렉트(자동 추적 안 함)
+- https://fpga.mit.edu/videos/2012/team00/report.pdf | MIT 6.111 팀 보고서(IR 가능성) — 검색 결과만(L1) | FPGA 적외선 리모컨 NEC 디코더 Verilog 모터 제어
+- https://lab.e-yantra.org/lab-in-a-box/docs/FPGA_DEO/sensors/ir.html | e-Yantra FPGA IR 센서 문서 — 검색 결과만(L1) | FPGA 적외선 리모컨 NEC 디코더 Verilog 모터 제어
+- https://koreascience.kr/article/CFKO201028542324787.pdf | 국내 학회 논문(IR 관련 추정) — 검색 결과만(L1) | FPGA 적외선 리모컨 NEC 디코더 Verilog 모터 제어
+- https://hackaday.io/project/160641/log/151466 | NEC 프로토콜 관련 Hackaday 로그 — 검색 결과만(L1) | NEC infrared protocol timing
+- https://github.com/Elias224/fpga-rf-packet-decoder | FPGA RF 패킷 디코더 — 검색 결과만(L1), IR 아님 가능 | NEC IR remote decoder Verilog FPGA

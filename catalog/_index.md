@@ -92,3 +92,6 @@
 | [angelojacobo-fpga-i2c-implementation](vendor-neutral/angelojacobo-fpga-i2c-implementation.md) | L3 | T1 | AX309 Spartan-6 (Basys3 needs-port) | 2026-11-03 |
 | [digikey-forum-mcp79410-pmod-rtcc-vhdl](amd/digikey-forum-mcp79410-pmod-rtcc-vhdl.md) | L3 | T2 | 미명시 (Basys3 needs-port) | 2026-11-03 |
 | [mines-eeng383-lecture25-24lc256-i2c](papers/mines-eeng383-lecture25-24lc256-i2c.md) | L3 | T2 | 없음 (PIC, Basys3 needs-port) | 2026-11-03 |
+| [marph91-icestick-remote](lattice/marph91-icestick-remote.md) | L3 | T2 | iCEstick (Basys3 needs-port) | 2026-11-03 |
+| [opencores-nec-ir-decoder](vendor-neutral/opencores-nec-ir-decoder.md) | L3 | T1 | DE0-Nano (Basys3 needs-port) | 2026-11-03 |
+| [bcit-elex7660-infrared-communication](papers/bcit-elex7660-infrared-communication.md) | L3 | T2 | Cyclone IV E (Basys3 needs-port) | 2026-11-03 |
