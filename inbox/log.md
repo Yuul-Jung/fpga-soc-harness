@@ -57,3 +57,4 @@
 2026-11-03 17:07 | collect | Arduino 모터 제어(TB6612FNG 엔코더 PID) · S5 비정형 출처(주: 제조사·커뮤니티 튜토리얼·블로그)+S4 제약 역전(보조: MCU 1체배·100 ms 창 한계 → 하드웨어 4체배) | 카드 +3 | 아이디어 +0(I-013 근거 보강) | 큐 잔여 200 | blocked 0 | 부수: add_repo/register_repo_root 도구 없음, 기존 clone 사용; catalog/arduino/ 신설
 2026-11-03 18:07 | collect | Arduino 통신 모듈(nRF24L01·LoRa SX1278) · S7 난이도 사다리(주: nRF24 SPI → LoRa 확장 단계)+S5 비정형 출처(보조: 위키·블로그 튜토리얼) | 카드 +3 | 아이디어 +1 | 큐 잔여 207 | blocked 0 | 부수: add_repo/register_repo_root 도구 없음, 기존 clone 사용
 2026-11-03 18:41 | verify | 재열람 0(WebFetch PROVENANCE_REQUIRED 재발; 우회 안 함) | 수정 4(source_rev 형식 오류 → audit 오류 0) | 불일치 0 | 승격 L2→L3 0 | ready +0 | 아이디어 심사 보류 | 미재열람 누적 약 50건 | 부수: add_repo 도구 없음, 기존 clone 사용
+2026-11-03 18:51 | capstone | skip: ready 아이디어 없음(vetted 2건, raw 33건; 게이트 3 미충족, rechecked_at 근거 카드 부족으로 심사 보류 중). 게이트 1·2는 미확인 갱신 없음 | 부수: add_repo/register_repo_root 도구 없음, 기존 clone 사용
