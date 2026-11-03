@@ -3,7 +3,7 @@
   1) docs/<slug>/index.html   문서 (계통도, 메모리맵, 기술 트리, 소스, 검증 상태 포함)
   2) docs/<slug>/diagram.svg  계통도 (블록 다이어그램)
   3) 실행 소스는 capstones/<slug>/ 그대로 (명세의 sources 목록과 대조해 존재만 검증)
-  4) docs/index.html          메인 허브 (캡스톤 목록, 기술 트리, 수집 현황, 아이디어, 최근 활동)
+  4) docs/hub.html            캡스톤 허브 (docs/index.md는 MkDocs 홈이라 건드리지 않는다) (캡스톤 목록, 기술 트리, 수집 현황, 아이디어, 최근 활동)
   5) docs/<repo 경로>.html    catalog, atlas, soc-map, inbox/ideas, HARNESS.md를 HTML로 옮긴 사본 (경로 구조 동일)
 사용법: python3 tools/build.py [--strict]
 """
@@ -286,9 +286,9 @@ SVG_CSS_STANDALONE = (":root{--muted:#6a6a64;--line:#8a8a82;--text:#1d1d1b;--c-c
 
 # ---------- 사이트 공통 ----------
 def topnav(root):
-    links = [("메인", f"{root}index.html"), ("캡스톤", f"{root}index.html#capstones"), ("기술 트리", f"{root}soc-map/tech-tree.html"),
+    links = [("메인", f"{root}hub.html"), ("캡스톤", f"{root}hub.html#capstones"), ("기술 트리", f"{root}soc-map/tech-tree.html"),
              ("카탈로그", f"{root}catalog/index.html"), ("아이디어", f"{root}inbox/ideas.html"), ("지침", f"{root}harness.html"), ("GitHub", REPO_URL)]
-    return '<header class="top"><a class="brand" href="%sindex.html">FPGA SoC 하네스</a>%s</header>' % (
+    return '<header class="top"><a class="brand" href="%shub.html">FPGA SoC 하네스</a>%s</header>' % (
         root, "".join(f'<a href="{h}">{esc(t)}</a>' for t, h in links))
 
 
@@ -552,7 +552,7 @@ def build_main(specs):
 <div class="panel"><table><tr><th>id</th><th>제목</th><th>단계</th><th>상태</th></tr>{idea_rows or '<tr><td colspan="4" class="muted">아이디어가 없다</td></tr>'}</table></div>
 <p class="muted"><a href="inbox/ideas.html">전체 보기</a></p>
 <h2 id="log">최근 활동</h2><ul>{log_html or '<li class="muted">기록 없음</li>'}</ul>"""
-    write_page(DOCS / "index.html", "FPGA SoC 캡스톤 하네스", body, "")
+    write_page(DOCS / "hub.html", "FPGA SoC 캡스톤 하네스", body, "")
 
 
 def main():
@@ -575,7 +575,7 @@ def main():
         print(f"docs/{spec['slug']}/index.html, diagram.svg, .zip 생성")
     n = render_markdown_site()
     build_main(specs)
-    print(f"docs/index.html 생성, 문서 {n}건을 HTML로 변환")
+    print(f"docs/hub.html 생성, 문서 {n}건을 HTML로 변환")
     return 1 if failed else 0
 
 
