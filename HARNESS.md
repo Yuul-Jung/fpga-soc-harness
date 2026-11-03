@@ -1,6 +1,6 @@
 # FPGA SoC 캡스톤 자료 축적 하네스 지침
 
-버전: 0.7.1 (2026-11-02)
+버전: 0.8 (2026-11-04) — v0.7.2 다중 도메인·MkDocs Pages 반영
 적용 대상: 이 저장소(fpga-soc-harness)에서 자료를 수집·검증·기록하는 에이전트(Claude Code, 프로젝트 지침 등)
 실행 방식: 수동 세션(§4) 또는 자동 운영(§15): 수집 1시간마다(§12, `/harvest`), 검증·개선 3시간마다(§14, `/verify`), 과제화 6시간마다(§13.7, `/capstone`). 자동 모드에서도 §2, §6, §7, §9는 그대로 적용된다.
 산출물: 수집 카드(§3)와, 이를 근거로 만드는 캡스톤 패키지(§13: 문서 HTML + 계통도 + 실행 소스).
@@ -13,6 +13,19 @@
   2. 캡스톤·종합설계급 완성 프로젝트와 보고서
   3. SoC 구성 참고 설계(CPU, 버스, 부트 흐름)
   4. 교육 커리큘럼과 단계별 튜토리얼
+- 도메인 (사용자 지시 2026-11-03, v0.7.2): FPGA·SoC가 1순위이고, 아래 도메인을 추가로 수집한다. 도메인이 달라도 FPGA·SoC와 같은 신뢰 등급(§2), 기록 원칙(§6), 안전(§7)을 적용한다. 비 FPGA 자료는 "Basys3 자원이나 우리 SoC 주변장치로 옮길 수 있는가"를 `재사용 메모`에 판단으로 쓴다.
+
+| 도메인 | 순위 | 카드 폴더 | 비고 |
+|---|---|---|---|
+| FPGA·SoC | 1 | amd/ intel/ lattice/ vendor-neutral/ papers/ | Basys3 기준, 이 지침 전체 |
+| Arduino | 2 | arduino/ | 아두이노 생태계 모듈, SoC 주변장치 연동 우선 |
+| STM32 | 3 | stm32/ | HAL/LL, RTOS, 모터 제어 |
+| ESP32 | 4 | esp32/ | Wi-Fi·BLE, FreeRTOS, 센서 허브 |
+| Raspberry Pi | 5 | rpi/ | Linux GPIO, 카메라 파이프라인 |
+| 임베디드 공통 | 6 | embedded/ | RTOS 비교, 프로토콜, 디버그 기법 |
+| 전자기술 | 7 | electronics/ | 전력전자, 모터 드라이버 회로 (캡스톤 보조) |
+
+- 비 FPGA 카드의 `vendor`는 `neutral`, `cpu`는 `none(MCU 펌웨어)` 등으로 쓴다. `fit_basys3`는 FPGA 재현성이 아니라 "구조를 가져올 수 있는가"로 읽고 `needs-port`를 기본으로 한다.
 - 1차 기준 보드: Digilent Basys3 (XC7A35T, Vivado 2024.2 이상). 다른 보드 자료는 "구조를 가져올 수 있는가"를 기준으로 기록한다.
 - 이 하네스의 산출물은 "찾은 것의 정확한 기록"이다. 추천이나 평가는 근거를 붙인 판단으로만 쓴다.
 
@@ -28,8 +41,10 @@ fpga-soc-harness/
 ├─ .claude/commands/verify.md    `/verify` 명령 (검증·개선 한 사이클)
 ├─ .claude/commands/capstone.md  `/capstone` 명령 (캡스톤 패키지 한 건 작성)
 ├─ capstones/<slug>/       캡스톤 패키지: capstone.json(단일 명세) + rtl/ tb/ constr/ Makefile
-├─ docs/                   생성물(HTML·SVG). git에 올리지 않고 CI가 만들어 게시한다
-├─ .github/workflows/verify.yml  CI: 린트·시뮬레이션·합성 → 문서 생성 → Pages 게시
+├─ docs/                   MkDocs 원본 폴더. index.md(홈)만 추적하고, build.py가 만드는 HTML·SVG(hub.html, <slug>/, catalog/ 등)는 생성물이라 `pages.yml`이 매 배포마다 새로 만든다. 로컬 생성물은 커밋하지 않는다(과거 세션이 일부를 추적에 올렸으나 CI가 덮어쓴다. 추적 해제는 사용자 확인 후)
+├─ mkdocs.yml, .github/workflows/pages.yml  MkDocs Material 사이트 빌드와 Pages 배포(main 푸시마다)
+├─ .github/workflows/verify.yml  CI: 린트·시뮬레이션·합성 → 문서 생성 → 감사 (3시간마다 예약도 있음)
+├─ .github/workflows/harvest.yml, capstone.yml  비활성(수동 실행만): 필요한 harness/ 모듈이 없다
 ├─ tools/check.py          카드·색인 자동 점검 스크립트 (표준 라이브러리만 사용)
 ├─ tools/run_verify.py     캡스톤 린트·시뮬·합성 실행, build/status.json 기록
 ├─ tools/build.py          명세 → 문서 HTML + 계통도 SVG + connections/bom/매니페스트 JSON 생성, 명세·소스 대조
@@ -48,7 +63,8 @@ fpga-soc-harness/
 │   └─ log.md              세션별 한 줄 로그 (collect / verify / capstone)
 ├─ catalog/                소스 1건당 카드 1개 (검증된 것만)
 │   ├─ _index.md           전체 목록 (이름, 등급, 단계, 보드, 갱신일)
-│   ├─ amd/  intel/  lattice/  vendor-neutral/
+│   ├─ amd/  intel/  lattice/  vendor-neutral/   FPGA·SoC
+│   ├─ arduino/  stm32/  esp32/  rpi/  embedded/  electronics/   추가 도메인(§0)
 │   └─ papers/             논문·보고서·강의 자료
 ├─ atlas/                  주제별 종합 (벤더 비교, 주변장치별, 패턴, 교훈)
 ├─ soc-map/                SoC 단계별 테크트리와 소스 매핑
@@ -394,14 +410,15 @@ capstones/<slug>/
 ├─ capstone.json     단일 명세 (원본). 문서와 계통도는 여기서 생성된다
 ├─ rtl/  tb/  constr/  sw/(필요 시)   실행 소스. 명세의 sources에 파일명을 적는다
 └─ Makefile          lint, sim, synth 타깃
-docs/index.html                         메인 허브 (캡스톤 목록, 기술 트리, 수집 현황, 아이디어, 최근 활동)
+docs/index.md                           MkDocs 홈 (사람이 쓴다, 추적)
+docs/hub.html                           캡스톤 허브 (캡스톤 목록, 기술 트리, 수집 현황, 아이디어, 최근 활동)
 docs/<slug>/index.html, diagram.svg, <slug>.zip   캡스톤별 문서, 계통도, 소스 묶음
 docs/{catalog,atlas,soc-map,inbox}/…html, harness.html   md 문서를 같은 경로로 옮긴 HTML
 (docs/ 전체는 생성물이며 git 추적 안 함)
 ```
 - 문서는 소스 파일을 읽어 그대로 넣는다. 문서에 코드를 손으로 옮겨 적지 않는다.
 - 계통도는 명세의 `architecture`(블록, 링크)에서 그린다. 그림 파일을 손으로 고치지 않는다.
-- 캡스톤마다 문서와 계통도가 따로 생기고, 메인 허브(`docs/index.html`)가 이를 모아 보여 준다. 허브의 기술 트리는 패키지의 `stage`와 `roadmap`, 카드의 `stage`에서 만든다.
+- 캡스톤마다 문서와 계통도가 따로 생기고, 캡스톤 허브(`docs/hub.html`, MkDocs 홈에서 연결)가 이를 모아 보여 준다. 허브의 기술 트리는 패키지의 `stage`와 `roadmap`, 카드의 `stage`에서 만든다.
 - md 문서(카탈로그, atlas, soc-map)에 나오는 카드 name은 자동으로 카드 페이지에 연결된다. 그러니 문서에서 카드는 정확한 `name`으로 적는다.
 - `docs/<slug>/`에는 사람이 읽는 파일 외에 기계가 읽는 사본이 함께 생긴다: `connections.json`(디지털 모듈 연결), `bom.csv`(외부 부품), `source_manifest.json`(파일별 sha256), `verification.json`(CI 기록 + 수동 항목).
 - **디지털 계통도와 전기 회로도는 다른 산출물이다.** 계통도(`diagram.svg`)는 모듈 연결만 보여 준다. 전압, 풀업, 커넥터 배선은 문서의 "외부 부품과 전기 회로도" 절에서 따로 다루고, 회로도가 없으면 "미작성"을 명시한다.
@@ -527,7 +544,10 @@ docs/{catalog,atlas,soc-map,inbox}/…html, harness.html   md 문서를 같은 �
 | 과제화 | 6시간마다 :50 (0, 6, 12, 18시) | `/capstone` | `ready` 아이디어를 패키지로 (§13.7) |
 | 전수 감사 | 매시 :20 UTC (CI, 결정적) | `audit.yml` | 카드·명세·소스·문서를 처음부터 대조. 읽기 전용, 커밋하지 않음 (§16) |
 
-- 분 단위를 어긋나게 두어 수집, 검증, 과제화가 이 순서로 이어진다.
+- 분 단위를 어긋나게 두어 수집, 검증, 과제화가 이 순서로 이어진다. 이 세 가지는 **Claude 예약 작업**이 실행한다. CLAUDE.md의 "홀수/짝수 사이클" 표현은 같은 순서(수집 → 검증 → 과제화)를 말하는 것이며 주기는 위 표를 따른다.
+- GitHub Actions의 `harvest.yml`·`capstone.yml`은 같은 일을 하도록 쓰였으나 필요한 모듈이 없어 예약을 꺼 두었다(수동 실행만). 둘을 함께 켜면 같은 저장소에 중복 커밋이 생기므로, 켜기 전에 예약 작업 쪽을 끈다.
+- `verify.yml`의 3시간 예약은 결정적 점검(카드 점검, 감사, 빌드)만 하고 원본을 바꾸지 않는다.
+- Pages: `pages.yml`이 main 푸시마다 `mkdocs build --strict`로 사이트를 만들어 배포한다. 생성 허브는 `docs/hub.html`이며 빌드 때 같이 복사된다.
 - 모든 작업은 푸시 직전에 `git pull --rebase origin main`을 한다. 충돌이 나면 한 번 다시 시도하고, 그래도 안 되면 푸시하지 않고 로그에 남긴다. force push는 하지 않는다.
 - 각 작업은 사람 응답 없이 끝낸다. 판단이 갈리는 점은 가장 보수적인 쪽을 택하고 로그에 쓴다.
 - 작업이 실패하거나 상한에 걸리면 하던 것을 정리하고 끝낸다. 다음 사이클이 이어받는다.
@@ -569,6 +589,7 @@ docs/{catalog,atlas,soc-map,inbox}/…html, harness.html   md 문서를 같은 �
 ### 17.2 현재 방향이 하네스에 미치는 영향
 - **CPU 트랙이 달라도 자료를 버리지 않고 착안해서 개조한다** (사용자 지시 2026-11-02). PicoRV32·자체 CPU 교체 트랙의 *제작*은 보류지만, 그쪽 자료의 수집·카드화는 계속한다. `config/project_profile.json`의 `cpu_tracks`가 개조할 수 있는 것(주변장치 RTL의 레지스터 배치와 FSM, 인터럽트 설계, 부트 흐름, 메모리맵 구성, 시험 환경, CPU 비종속 드라이버 구조)과 못 옮기는 것(CPU 코어, CPU 전용 인터럽트 방식은 `cpu_irq_<cpu>.c` 한 파일로 격리)을 적는다.
 - 개조의 방법: ① 원자료는 복사하지 않고 사양(포트, 레지스터, 동작)만 뽑는다(§16.3) ② 카드 재사용 메모에 `개조:` 줄 ③ 캡스톤은 그 사양으로 IP 표준을 따르는 **자체 RTL**을 새로 쓰고 `free_slots`에 슬롯을 제안한다. 감사는 MicroBlaze V 외 CPU 카드에 `개조:` 줄이 없으면 알림(info)을 낸다.
+- 도메인 확장(§0)은 FPGA·SoC 1순위를 유지한 채 진행한다. 비 FPGA 주제도 모터 제어 사다리와 모듈 조합에 맞춰 고르고, SoC로 옮길 수 있는 부분을 `개조:`에 쓴다.
 - 우선 주제: 모터 제어 사다리(엔코더, PID, 적응 제어, 균형 로봇, 도립진자)와 아두이노·알리익스프레스·디바이스마트 모듈의 입력·출력 조합. 부품별 나열보다 조합으로 재미있는 응용을 찾는다(§12.8의 S2, S7).
 - 캡스톤의 기본 주소맵은 동결 맵이고 새 IP는 `free_slots`에서 한 칸씩 제안한다. 새 IP는 IP 표준을 따르는 래퍼로 설계한다(`config/ip_standard.json`). 표준을 따르지 않는 라이브러리 블록(`library/rtl/axil_regs.v`)은 연습·시험용이며 프로젝트 IP로 쓰지 않는다.
 - 전기 규칙: 보드 I/O는 3.3V, 모터 전원은 보드와 분리하고 GND만 공통, 5V 모듈은 레벨 변환(§13의 외부 부품 검사가 이를 확인한다).
