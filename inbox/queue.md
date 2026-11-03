@@ -283,3 +283,9 @@
 - https://github.com/sirojudinMunir/stm32-FOC | makiuto 글이 연결한 FOC 저장소 — 열람 안 함(L1), 후속 /verify 대상
 - https://github.com/hcd-bdltd/simple-foc-example | SimpleFOC 자동 튜닝 예제 — 검색 결과만(L1)
 - https://www.mathworks.com/help/stm32b/ug/stm32-hall-foc-example.html | MathWorks STM32 홀센서 FOC 예제 — 검색 결과만(L1)
+- https://community.st.com/t5/stm32-mcus-products/problems-with-usb-cdc-implementation-on-stm32f401cb/m-p/426221 | STM32F401 USB CDC 구현 문제 — 검색 결과만(L1) | STM32 USB CDC CDC_Transmit_FS busy
+- https://community.st.com/t5/stm32-mcus-embedded-software/stm32l476rg-cubemx-generated-usb-cdc-code-stops-transmitting-out/m-p/334582 | L476 CubeMX USB CDC 송신 정지 — 검색 결과만(L1) | 같은 질의
+- https://community.st.com/t5/stm32-mcus-products/fdcan-bit-time-config-for-classic-frame-stm32h563vgt6/m-p/783788 | H563 FDCAN 고전 프레임 비트 타이밍 — 검색 결과만(L1), SJW·샘플점 보완 후보 | STM32 FDCAN HAL bitrate
+- https://controllerstech.com/udp-server-using-netconn-with-rtos-in-stm32 | STM32 netconn UDP 서버 RTOS — 검색 결과만(L1) | STM32 LwIP FreeRTOS netconn UDP
+- https://wiki.st.com/stm32mcu/wiki/Connectivity:STM32WB_BLE_STM32CubeMX | STM32WB BLE CubeMX 애플리케이션 위키 — 검색 결과만(L1), BLE 카드 후보 | STM32WB55 BLE GATT
+- https://community.st.com/t5/stm32-mcus-wireless/issues-with-custom-ble-service-generation-in-stm32cubeide/m-p/241225 | WB 커스텀 BLE 서비스 생성 문제 — 검색 결과만(L1) | 같은 질의

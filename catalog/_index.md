@@ -128,3 +128,6 @@
 | [deepbluembedded-stm32-complementary-pwm-dead-time](stm32/deepbluembedded-stm32-complementary-pwm-dead-time.md) | L3 | T2 | STM32F103 (Basys3 needs-port) | 2026-11-04 |
 | [st-community-tim1-complementary-no-deadtime](stm32/st-community-tim1-complementary-no-deadtime.md) | L3 | T2 | STM32 (Basys3 needs-port) | 2026-11-04 |
 | [makiuto-stm32-foc-from-scratch](stm32/makiuto-stm32-foc-from-scratch.md) | L2 | T4 | STM32F407 (Basys3 needs-port) | 2026-11-04 |
+| [st-community-fdcan-8mbps-nucleo](stm32/st-community-fdcan-8mbps-nucleo.md) | L3 | T2 | NUCLEO-G0B1RE 외 5종 (Basys3 needs-port) | 2026-11-04 |
+| [st-community-usb-cdc-transmit-stuck-l452](stm32/st-community-usb-cdc-transmit-stuck-l452.md) | L3 | T1 | STM32L452RE (Basys3 needs-port) | 2026-11-04 |
+| [st-community-lwip-freertos-udp-echo-f767](stm32/st-community-lwip-freertos-udp-echo-f767.md) | L3 | T3 | NUCLEO-F767ZI (Basys3 needs-port) | 2026-11-04 |
