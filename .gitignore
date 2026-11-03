@@ -3,3 +3,5 @@ capstones/*/build/
 __pycache__/
 build/
 
+# build.py의 옛 허브 이름. MkDocs 홈(docs/index.md)과 충돌하므로 추적하지 않는다
+docs/index.html
