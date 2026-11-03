@@ -1,7 +1,7 @@
 # ESP32 사례 종합 (atlas/esp32.md)
 
 갱신일: 2026-11-04
-카드 수: 8 (`catalog/esp32/`)
+카드 수: 11 (`catalog/esp32/`)
 목적: ESP32 Wi-Fi·BLE·FreeRTOS 사례에서 Basys3 SoC 주변장치 IP로 옮길 수 있는 구조와 패턴을 추출한다.
 
 ---
@@ -11,8 +11,8 @@
 | 단계 | 카드 수 | 대표 항목 |
 |------|---------|-----------|
 | T0   | 0 | — |
-| T1   | 2 | FreeRTOS 멀티태스킹, DHT+딥슬립 |
-| T2   | 3 | MQTT FAQ, GATT 서버, SPI 슬레이브 |
+| T1   | 3 | FreeRTOS 멀티태스킹, DHT+딥슬립, Watchdog 타이머 |
+| T2   | 5 | MQTT FAQ, GATT 서버, SPI 슬레이브, FreeRTOS SMP, Ring Buffer IPC |
 | T3   | 2 | BLE Mesh, OTA 업데이트 |
 | T4   | 0 | — |
 | T5   | 0 | — |
@@ -38,12 +38,15 @@
 |------|-----|------|----------|--------------------|
 | espressif-ota-updates-framework | ESP32 | T3 | OTA(듀얼 슬롯, Wi-Fi) | 이중 슬롯 부트로더 구조 → FPGA 비트스트림 업데이트 흐름(ICAP IP) 비교 참고 |
 
-### 2.3 SPI·FreeRTOS
+### 2.3 SPI·FreeRTOS·디버그
 
 | 카드 | CPU | 단계 | 주변장치 | 한계/재사용 포인트 |
 |------|-----|------|----------|--------------------|
 | hideakitai-esp32spislave | ESP32 | T2 | SPI 슬레이브 | DMA 기반 비블로킹 SPI → FPGA SPI 마스터 IP의 CS·데이터 타이밍 참고 |
 | controllerstech-esp32-freertos-multitasking | ESP32 | T1 | FreeRTOS 태스크·뮤텍스·세마포어 | 태스크 간 동기화 패턴 → FPGA에서는 handshake 레지스터(READY/ACK 비트)로 대응 |
+| espressif-idf-freertos-smp-multicore | ESP32 (듀얼코어) | T2 | FreeRTOS SMP, 코어 고정 | Core0=Wi-Fi, Core1=FPGA/UART 분리 구조 → AXI4-Lite DMA 채널 우선순위 분리 근거; 듀얼코어 한정(S2/C3 불가) |
+| espressif-idf-ringbuf-ipc | ESP32 (듀얼코어) | T2 | Ring Buffer(FIFO), IPC | No-Split/Allow-Split/Byte Buffer 타입 선택 기준 → AXI4-Stream FIFO 모드 선택 근거; IPC 패턴 → MicroBlaze V 소프트 인터럽트(SWI) 대응 |
+| espressif-idf-watchdog-timers | ESP32 | T1 | Watchdog(TWDT, IWDT) | WDT 등록→리셋→타임아웃 패닉 흐름 → AXI4-Lite WDT IP(WDT_EN, WDT_TIMEOUT, WDT_RESET 레지스터) 설계 근거; S6 실패 사례 포함 |
 
 ---
 
@@ -55,7 +58,8 @@
 | BLE(GATT·Mesh·스캔) | 3 |
 | sensor | 2 |
 | comm-spi | 1 |
-| debug(OTA) | 1 |
+| comm-uart(FreeRTOS SMP/IPC) | 2 |
+| debug(OTA/WDT) | 2 |
 
 ---
 
@@ -73,8 +77,9 @@
 - SPI 슬레이브의 DMA 타이밍은 Xtensa 코어 버스 전용이라 Basys3 SPI 마스터 IP로 직접 옮기지 않는다.
 
 ### 4.3 내 판단
-- 내 판단: ESP32 카드 8건 중 6건이 T1~T2로 단순 인터페이스가 중심이다. FPGA 관점의 활용 가치는 "ESP32를 보조 무선 MCU로 붙이는 조합"에 있고, rcaelers BLE 스캐너(UART 패킷 형식)와 modestos 딥슬립(1회 측정 사이클)이 가장 직접적인 참고가 된다.
+- 내 판단: ESP32 카드 11건 중 8건이 T1~T2로 단순 인터페이스가 중심이다. FPGA 관점의 활용 가치는 "ESP32를 보조 무선 MCU로 붙이는 조합"에 있고, rcaelers BLE 스캐너(UART 패킷 형식)와 modestos 딥슬립(1회 측정 사이클)이 가장 직접적인 참고가 된다.
 - 내 판단: OTA 카드와 BLE Mesh 카드는 T3 수준이지만 FPGA 주변장치 IP 설계에 직접 쓰기 어렵다. ICAP 비교 참고용으로 아카이브한다.
+- 내 판단: freertos-smp-multicore와 ringbuf-ipc 카드는 MicroBlaze V AXI4-Stream·DMA·소프트 인터럽트 IP 설계에 구체적인 패턴 근거를 제공한다. watchdog-timers 카드의 "등록→리셋→패닉" 흐름은 AXI4-Lite WDT IP 레지스터 설계에 직접 대응된다.
 
 ---
 
