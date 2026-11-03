@@ -58,7 +58,7 @@
 - [x] STM32 캡스톤급: 드론 FC, 산업용 PLC 대체, 로봇 조인트 제어 완성 프로젝트 — 2026-11-04 05시대 사이클: 카드 3건(L3 2, L2 1: stm32flight, FeroFlyF405, 서보 6축 팔), PLC 대체·엔코더 관절 폐루프 사례는 못 찾음, Pulse FC·ArduPilot 지터 스레드는 큐
 
 ## ESP32 도메인 (2026-11-03 추가, 위에서부터 소비)
-- [ ] ESP32 Wi-Fi + MQTT: MQTT 브로커 연결, OTA 업데이트, 전력 절약 딥슬립
+- [x] ESP32 Wi-Fi + MQTT: MQTT 브로커 연결, OTA 업데이트, 전력 절약 딥슬립 — 2026-11-03 사이클: 카드 3건(L3: DHT→MQTT 딥슬립 블로그, Espressif OTA 프레임워크, Espressif MQTT FAQ), 딥슬립 전류 가이드는 큐(L3 열람·카드 미작성), 브로커 연결 TLS·실측 전력 자료는 못 찾음/unverified
 - [ ] ESP32 BLE: GATT 서버·클라이언트, BLE Mesh, 비콘 스캐너
 - [ ] ESP32 FreeRTOS + 멀티코어: Core0/1 핀닝, Task Watchdog, Inter-Core 통신
 - [ ] ESP32 카메라·오디오: ESP32-CAM OV2640 스트리밍, I2S 마이크·스피커 (MAX98357)

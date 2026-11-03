@@ -294,3 +294,8 @@
 - https://github.com/PinkFluffyUnic0rn/stm32flight | 카드화 완료(L2), 위키 열람 필요(루프 주기) | STM32 quadcopter flight controller 질의
 - https://github.com/moogchi/phantom_autopilot/blob/main/DEVLOG.md | 자작 오토파일럿 개발 일지 — blocked: WebFetch 권한 미응답(1회)
 - 참고: STM32 로봇 관절 폐루프 PID 완성 프로젝트(엔코더 관절)는 검색 2회에서 못 찾음; 카드의 팔은 개루프 서보.
+- https://esp32.co.uk/esp32-battery-powered-sensors-deep-sleep-low-power-design-guide/ | 딥슬립 전류·듀티 계산 가이드, 열람 L3 완료·카드 미작성(사이클 카드 상한) | ESP32 MQTT deep sleep 질의
+- https://github.com/home-climate-control/hcc-esp32/issues/18 | MQTT Last Will 요청 이슈(기능 요청, 원인·해결 없음), L2 | ESP32 MQTT QoS keepalive 질의
+- https://developer.espressif.com/workshops/esp-idf-with-esp32-c5/lecture-3/ | Espressif OTA 워크숍 강의, L1 | ESP32 OTA partition 질의
+- https://esphome.io/components/deep_sleep.html | ESPHome deep_sleep 컴포넌트 문서, L1 | ESP32 MQTT deep sleep 질의
+- https://answeroverflow.com/m/1296842045717090347 | MQTT keep-alive 튜닝·재연결 전략 스레드, L1 | ESP32 MQTT QoS keepalive 질의

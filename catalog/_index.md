@@ -134,3 +134,6 @@
 | [pinkfluffyunic0rn-stm32flight](stm32/pinkfluffyunic0rn-stm32flight.md) | L2 | T4 | 자작 FC STM32F405/H723 (Basys3 needs-port) | 2026-11-04 |
 | [circuitdigest-feroflyf405-open-source-fc](stm32/circuitdigest-feroflyf405-open-source-fc.md) | L3 | T4 | FeroFlyF405 (Basys3 needs-port) | 2026-11-04 |
 | [kevinzhang109-stm32-compact-robotic-arm](stm32/kevinzhang109-stm32-compact-robotic-arm.md) | L3 | T3 | STM32F407ZET6 (Basys3 needs-port) | 2026-11-04 |
+| [modestos-esp32-dht-mqtt-deepsleep](esp32/modestos-esp32-dht-mqtt-deepsleep.md) | L3 | T1 | Lolin32 ESP32 (Basys3 needs-port) | 2026-11-03 |
+| [espressif-ota-updates-framework](esp32/espressif-ota-updates-framework.md) | L3 | T3 | ESP32 (Basys3 needs-port) | 2026-11-03 |
+| [espressif-faq-mqtt](esp32/espressif-faq-mqtt.md) | L3 | T2 | ESP32 (Basys3 needs-port) | 2026-11-03 |
