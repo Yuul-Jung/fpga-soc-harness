@@ -89,3 +89,6 @@
 | [digilent-basys-3-xadc-demo](amd/digilent-basys-3-xadc-demo.md) | L3 | T1 | Basys3 | 2026-11-03 |
 | [umd-phys495-basys3-xadc-voltmeter](amd/umd-phys495-basys3-xadc-voltmeter.md) | L3 | T1 | Basys3 | 2026-11-03 |
 | [unilim-vahid-xadc-basys3-vhdl](amd/unilim-vahid-xadc-basys3-vhdl.md) | L3 | T1 | Basys3 | 2026-11-03 |
+| [angelojacobo-fpga-i2c-implementation](vendor-neutral/angelojacobo-fpga-i2c-implementation.md) | L3 | T1 | AX309 Spartan-6 (Basys3 needs-port) | 2026-11-03 |
+| [digikey-forum-mcp79410-pmod-rtcc-vhdl](amd/digikey-forum-mcp79410-pmod-rtcc-vhdl.md) | L3 | T2 | 미명시 (Basys3 needs-port) | 2026-11-03 |
+| [mines-eeng383-lecture25-24lc256-i2c](papers/mines-eeng383-lecture25-24lc256-i2c.md) | L3 | T2 | 없음 (PIC, Basys3 needs-port) | 2026-11-03 |

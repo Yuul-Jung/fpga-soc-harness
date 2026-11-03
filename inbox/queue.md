@@ -192,3 +192,13 @@
 - https://forum.digilent.com/topic/19393-cant-figure-out-physical-connections-for-basys3-xadc-demo | Basys3 XADC 데모 물리 연결 질문(실패 사례) — 미열람(L1), S6 후보 | Basys3 XADC joystick potentiometer
 - https://docs.amd.com/r/en-US/ug480_7Series_XADC/Instantiating-the-XADC | UG480 XADC 인스턴스화 — 검색 결과만(L1), devices/xadc 보강용(입력 한도 원문 확인) | UG480 DRP
 - https://docs.amd.com/r/en-US/ug480_7Series_XADC/Sequencer-Modes | UG480 시퀀서 모드 — 미열람(L1) | UG480 DRP
+- https://github.com/AngeloJacobo/FPGA_I2C_Implementation | DS1307 RTC Verilog I2C — 열람(L3), 카드 작성 | DS1307 OR DS3231 FPGA VHDL I2C
+- https://forum.digikey.com/t/real-time-clock-mcp79410-pmod-controller-vhdl/13136 | MCP79410 Pmod RTCC VHDL — 열람(L3), 카드 작성 | Basys3 I2C master Verilog real-time clock Pmod
+- https://inside.mines.edu/~coulston/courses/EENG383/lecture/lecture25.html | 24LC256 EEPROM PIC 강의 — 열람(L3), 카드 작성 | 24LC256 EEPROM I2C master VHDL Verilog
+- https://vhdlwhiz.com/?p=14073 | VHDLwhiz I2C RTC 유료 강의(Arty S7-50) — 소개문만 열람, 카드 불필요(구매자 전용 본문)
+- https://courses.physics.illinois.edu/PHYS371/sp2023/code/DS3231.pdf | DS3231 데이터시트 — 열람(L3), devices/i2c/ds3231.md 출처
+- https://apache.googlesource.com/nuttx/+/refs/heads/cmake/drivers/timers/ds3231.c | NuttX DS3231 드라이버(Apache-2.0) — 열람(L3), 롤오버 재읽기 근거
+- https://www.cl.cam.ac.uk/teaching/1314/P31/lib/html/ds3231_8h_source.html | DS3231 헤더 — 열람(L3), 알람 주의, 카드 불필요
+- https://github.com/daxzio/verilog-i2c | Verilog I2C 마스터 — 검색 결과만(L1), 라이선스 확인 필요 | FPGA Verilog I2C EEPROM 24C02
+- https://github.com/adaptableCoder/I2C-SystemVerilog | I2C SystemVerilog — 검색 결과만(L1) | FPGA Verilog I2C EEPROM 24C02
+- https://github.com/opalkelly-opensource/I2CController | Opal Kelly I2C 컨트롤러 — 검색 결과만(L1) | FPGA Verilog I2C EEPROM 24C02

@@ -51,3 +51,4 @@
 2026-11-03 12:50 | capstone | skip: ready 아이디어 없음(vetted 2건, 나머지 raw; 게이트 3 미충족). 게이트 1(최신 CI 성공 a3699f2)·2(broken 없음)는 충족
 2026-11-03 13:08 | collect | Bluetooth HC-05/HC-06 UART 브리지 · S1 인접 도메인 이식(주: Arduino AT 설정 라이브러리 → FPGA 절차)+S7 난이도 사다리(보조: 수신 전용 → 설정 → 텔레메트리) | 카드 +3 | 아이디어 +1 | 큐 잔여 168 | blocked 0
 2026-11-03 14:08 | collect | Basys3 XADC 아날로그 센서 입력 · S3 빈틈 추적(주: sensor 태그·devices 빈 곳)+S5 비정형 출처(보조: 강의·개인 튜토리얼·포럼) | 카드 +3 | 아이디어 +1 | 큐 잔여 173 | blocked 0 | 부수: topics 비어 §12.2-3로 주제 3개 추가, add_repo/register_repo_root 도구 없음(기존 clone 사용)
+2026-11-03 15:07 | collect | I2C 시계·메모리(DS3231·24LC) · S2 조합 탐색(주: RTC+EEPROM 로거)+S1 인접 도메인 이식(보조: MCU 드라이버 롤오버·ACK 폴링 → FSM) | 카드 +3 | 아이디어 +1 | 큐 잔여 183 | blocked 0 | 부수: add_repo/register_repo_root 도구 없음, 기존 clone 사용
