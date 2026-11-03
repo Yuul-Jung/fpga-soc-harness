@@ -379,3 +379,13 @@
 - Basys3 적합성의 근거: Pmod 2개(I2C 1세트 SCL/SDA, UART RX 1핀)와 3.3 V 로직으로 충분, FIFO는 BRAM 소량. 센서 3.3 V 모듈 선택 필요(데이터시트 VDD 최대 3.6 V, devices/i2c/bmp280.md). 9600 baud 비트 시간은 100 MHz에서 10,417 클럭(내 계산).
 - 난이도: 3 / 단계: T2
 - 심사: (대기)
+
+## I-037 명령 우선순위 중재 RC카 IP: 원격 명령 vs 거리 안전정지 중재 FSM + 서보 3방향 스캔 결정 레지스터
+- 상태: raw
+- 요약: 내 판단: IR(또는 UART) 명령과 초음파 거리 임계값을 받아, 안전 정지가 항상 명령을 이기는 중재 FSM을 만든다. 서보 3방향(좌·중·우) 거리 표본을 레지스터에 두고 "여유가 큰 쪽" 결정 비트를 노출한다. 테스트벤치는 합성 거리 열과 명령 열로 정지·회전·재개 순서를 PASS/FAIL 점검.
+- 조합: [명령 입력(IR/UART), 거리 측정(HC-SR04), 서보 스캔 PWM, 모터 PWM, 중재 FSM, AXI4-Lite 레지스터·인터럽트]
+- 근거: [masher1-gogo-car, circuitdigest-arduino-obstacle-avoiding-car, hackster-basys3-hcsr04-distance, opencores-nec-ir-decoder]
+- 새로움의 근거: I-034는 명령 해독과 매핑이 중심이다. 이 아이디어는 두 자료 모두에서 문서화되지 않은 "명령 대 자동 회피 우선순위"와 스캔 결정 논리를 하드웨어 규칙으로 고정해 시험하는 점이 다르다(내 판단).
+- Basys3 적합성의 근거: Pmod 2~3개(IR 1핀, TRIG/ECHO 2핀, 서보 1핀, 모터 PWM/DIR 4핀 내외)면 충분, BRAM 불필요. HC-SR04 5 V 에코는 레벨 변환 필요, 모터 전원 분리. 100 MHz에서 58 µs/cm 환산은 설계 시 정함(내 판단).
+- 난이도: 3 / 단계: T2
+- 심사: (대기)

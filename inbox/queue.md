@@ -237,3 +237,10 @@
 - https://teratail.com/questions/5iz4axeucyabgo | ST7789 Arduino UNO SPI 질문(일본어) — 미열람(L1) | ST7789 Arduino 질의
 - https://forum.arduino.cc/t/really-struggling-with-oled-sd1306/1374240 | SSD1306 OLED 실패 사례 — 미열람(L1), S6 후보 | SSD1306 pitfalls 질의
 - blocked: MAX7219 데이터시트(레지스터 맵) 직접 열람 미시도 — 다음 사이클 후보
+- https://circuitdigest.com/microcontroller-projects/record-and-play-3d-printed-robotic-arm-using-arduino | 서보 로봇 팔 기록·재생(Arduino) — 미열람(L1) | Arduino robotic arm 질의
+- https://projecthub.arduino.cc/tanujdeeptds/arduino-obstacle-avoiding-car-using-servo-and-l298n-driver-916fd1 | 서보+L298N 장애물 회피 차 — 미열람(L1) | obstacle car 질의
+- https://www.hackster.io/techstudycell/how-to-make-smart-home-using-arduino-control-relay-module-3ada68 | Arduino 릴레이 스마트 홈 — 미열람(L1) | smart home 질의
+- https://github.com/Circuit-Digest/Obstacle-Avoiding-Car-Using-Arduino | circuitdigest 글의 소스 저장소 — 미열람(L1), 라이선스·SHA 확인 필요 | obstacle car 질의
+- https://github.com/vectrasoft/TrainableRoboticArm | Adafruit 글이 링크한 코드 저장소 — 미열람(L1), 라이선스 확인 필요 | Adafruit 카드 출처
+- https://app.mypolycc.edu.my/journal/index.php/PMJET/article/view/351 | Arduino 스마트 카 장애물 회피 논문 — 미열람(L1) | 한국어 RC카 질의 부수 결과
+- 한국어 Arduino 캡스톤 RC카 보고서: 검색에서 국내 보고서 직접 결과 없음(blocked: 후속 질의 필요)

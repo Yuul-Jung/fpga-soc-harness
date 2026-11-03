@@ -107,3 +107,6 @@
 | [arduino-forum-oled-freezes-nano-display-call](arduino/arduino-forum-oled-freezes-nano-display-call.md) | L3 | T1 | Arduino Nano (Basys3 needs-port) | 2026-11-03 |
 | [arduino-forum-ssd1306-trash-pixels](arduino/arduino-forum-ssd1306-trash-pixels.md) | L3 | T1 | AVR Arduino (Basys3 needs-port) | 2026-11-03 |
 | [howtomechatronics-max7219-matrix-tutorial](arduino/howtomechatronics-max7219-matrix-tutorial.md) | L3 | T1 | Arduino Uno/Nano (Basys3 needs-port) | 2026-11-03 |
+| [adafruit-trainable-robotic-arm](arduino/adafruit-trainable-robotic-arm.md) | L3 | T2 | Arduino Uno (Basys3 needs-port) | 2026-11-03 |
+| [circuitdigest-arduino-obstacle-avoiding-car](arduino/circuitdigest-arduino-obstacle-avoiding-car.md) | L3 | T2 | Arduino Uno (Basys3 needs-port) | 2026-11-03 |
+| [masher1-gogo-car](arduino/masher1-gogo-car.md) | L3 | T2 | Arduino (Basys3 needs-port) | 2026-11-03 |
