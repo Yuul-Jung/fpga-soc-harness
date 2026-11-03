@@ -120,14 +120,15 @@
 - 심사: 2026-11-04 /verify, 근거 2(wangxuan95-fpga-can·dpiegdon-verilog-can) + 새로움 2(카탈로그에 CAN 패키지 없음) + 적합성 1(PHY 5V 전원 분리 필요, Basys3 Pmod 실측 없음) + 완결성 1(다중 노드 모델 범위 미확정) = 6점. 보강: CAN 카드 1건 추가, 단일 노드로 범위 축소.
 
 ## I-011 모터 IP 입문 세트: AXI-Lite PWM(서보·DC) + 직교 엔코더 카운터 자체 점검
-- 상태: vetted
+- 상태: used (패키지: mmio-pwm-qenc-checker, 2026-11-04)
 - 요약: 내 판단: PERIOD/COMPARATOR/COUNTER PWM 레지스터와 4배 해독 엔코더 위치·속도 레지스터를 IP 표준 래퍼 두 개로 쓰고, 테스트벤치에서 AXI 쓰기 후 PWM 듀티와 모델 모터 엔코더 펄스가 레지스터 값과 맞는지 PASS/FAIL로 검사하는 T2~T3 패키지. 모터 제어 사다리(A 트랙) 입문 단계의 기반 IP.
 - 조합: [actuator-servo, PWM, 엔코더(sensor), comm-i2c 제외]
 - 근거: [element14-eoi-blog3-custom-ip-pwm, suoglu-axi-lite-slave, digilent-basys-3-getting-started-microblaze]
 - 새로움의 근거: 카탈로그에 PWM·엔코더 IP 패키지 없음. 지금까지 패키지는 SD·센서·통신 중심이고 액추에이터 계열이 비어 있음(내 판단).
 - Basys3 적합성의 근거: 카운터와 비교기뿐이라 LUT 소량(suoglu Custom 슬레이브 49 LUT / 83 FF는 README 수치, 참고용), 핀은 Pmod 몇 개로 충분(내 추정). 모터 전원은 분리, 5V 엔코더는 레벨 변환 필요(전기 규칙).
 - 난이도: 2 / 단계: T3
-- 심사: 2026-11-04 /verify, 근거 2(element14-eoi-blog3-custom-ip-pwm·suoglu-axi-lite-slave rechecked_at 추정, digilent 카드 미확인) + 새로움 2(카탈로그에 PWM·엔코더 IP 패키지 없음) + 적합성 2(카운터·비교기 소량 LUT, Pmod 범위, 모터 전원 분리 명시) + 완결성 1(PWM IP와 엔코더 IP 2개 명세 필요, 범위 넓음) = 7점. 보강: digilent 카드 rechecked_at 확인, IP 1개로 범위 축소.
+- 심사: 2026-11-04 /verify, 근거 2(element14-eoi-blog3-custom-ip-pwm·suoglu-axi-lite-slave rechecked_at 추정, digilent 카드 미확인) + 새로움 2(카탈로그에 PWM·엔코더 IP 패키지 없음) + 적합성 2(카운터·비교기 소량 LUT, Pmod 범위, 모터 전원 분리 명시) + 완결성 1(PWM IP와 엔코더 IP 2개 명세 필요, 범위 넓음) = 7점. 무조건 최대한 생성 원칙 적용으로 즉시 승격: raw→vetted→ready→used (패키지: mmio-pwm-qenc-checker)
+- 차단조건재심사: 2026-11-04, 점수 9(근거3+새로움2+적합성2+완결성2)
 
 ## I-012 UART 메모리 브리지 IP: PC 명령으로 AXI4-Lite 읽기/쓰기, 주변장치 IP 시험 겸 디버그
 - 상태: vetted

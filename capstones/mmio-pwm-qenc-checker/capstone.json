@@ -1,0 +1,232 @@
+{
+  "slug": "mmio-pwm-qenc-checker",
+  "title": "MMIO PWM + 직교 엔코더 자체 점검",
+  "summary": "MMIO-lite 버스에 2채널 PWM IP와 4× 직교 엔코더 카운터 IP를 연결하고, 시뮬레이션 마스터 FSM으로 주요 기능(듀티비, 위치 카운팅)을 자체 점검한다. IP 표준 Rev.1 관리 레지스터(ID/VER/IRQ) 포함.",
+  "board": "Basys3",
+  "stage": "T2",
+  "goals": [
+    "IP 표준 Rev.1(관리 레지스터 0xFFF0~FFFC)을 따르는 2채널 PWM IP 설계",
+    "4× 직교 엔코더 카운터 IP(2단 동기화, Gray 코드 FSM) 설계",
+    "MMIO-lite 버스 주소 디코더로 GPIO/UART/PWM/QDEC 4개 슬레이브 연결",
+    "시뮬레이션 마스터 FSM으로 PASS/FAIL 자체 점검 테스트벤치 작성",
+    "yosys 합성 성공, iverilog 시뮬레이션 PASS 확인(S2)"
+  ],
+  "non_goals": [
+    "실제 보드에서 모터 연결 또는 엔코더 하드웨어 연결(S3는 사람이 한다)",
+    "AXI4-Lite 완전 핸드셰이크(이 패키지는 mmio-lite 사용)",
+    "PID 제어 루프 구현(다음 단계 패키지로 확장)"
+  ],
+  "architecture": {
+    "clock": "100 MHz (시뮬레이션에서는 10 ns 클럭)",
+    "reset": "rst, active high, 동기",
+    "blocks": [
+      {
+        "id": "top",
+        "name": "basys3_top",
+        "kind": "board-wrapper",
+        "module": "basys3_top",
+        "file": "rtl/basys3_top.v",
+        "desc": "Basys3 보드 최상위 래퍼. 클럭 버퍼, 리셋 버튼(btnC), LED/SW/BTN 연결",
+        "short": "Board wrapper",
+        "side": "top"
+      },
+      {
+        "id": "soc",
+        "name": "soc_top",
+        "kind": "soc-core",
+        "module": "soc_top",
+        "file": "rtl/soc_top.v",
+        "desc": "SoC 코어. MMIO 버스와 슬레이브 4개를 연결. 마스터 포트 노출(CPU 교체 지점)",
+        "short": "SoC core",
+        "side": "core"
+      },
+      {
+        "id": "bus",
+        "name": "mmio_bus",
+        "kind": "bus-decoder",
+        "module": "mmio_bus",
+        "file": "rtl/mmio_bus.v",
+        "desc": "addr[31:16] 기준 4개 슬레이브 선택. ready=1 사이클 고정",
+        "short": "MMIO decoder",
+        "side": "core"
+      },
+      {
+        "id": "gpio",
+        "name": "gpio",
+        "kind": "peripheral",
+        "module": "gpio",
+        "file": "rtl/gpio.v",
+        "desc": "16-bit LED(RW, off=0x00), 16-bit SW(RO, 2단 동기화, off=0x04)",
+        "short": "GPIO LED/SW",
+        "side": "peripheral"
+      },
+      {
+        "id": "uart",
+        "name": "uart_tx",
+        "kind": "peripheral",
+        "module": "uart_tx",
+        "file": "rtl/uart_tx.v",
+        "desc": "UART 8N1 송신 전용. 0x00 DATA(WO), 0x04 STATUS(RO, bit0=busy)",
+        "short": "UART TX",
+        "side": "peripheral"
+      },
+      {
+        "id": "pwm",
+        "name": "pwm_ip",
+        "kind": "peripheral",
+        "module": "pwm_ip",
+        "file": "rtl/pwm_ip.v",
+        "desc": "2채널 PWM. 0x00 CTRL(bit0=enable), 0x04 PERIOD(16-bit), 0x08 DUTY0, 0x0C DUTY1. IP 표준 관리 레지스터 포함",
+        "short": "PWM 2ch",
+        "side": "peripheral"
+      },
+      {
+        "id": "qdec",
+        "name": "qenc_ip",
+        "kind": "peripheral",
+        "module": "qenc_ip",
+        "file": "rtl/qenc_ip.v",
+        "desc": "4× 직교 엔코더. 0x00 CTRL(bit0=enable, bit1=clear), 0x04 POS(signed), 0x08 DIR, 0x0C ERR. IP 표준 관리 레지스터 포함",
+        "short": "QDEC",
+        "side": "peripheral"
+      },
+      {
+        "id": "master",
+        "name": "demo_master",
+        "kind": "sim-master",
+        "module": "demo_master",
+        "file": "rtl/demo_master.v",
+        "desc": "시뮬레이션 전용 마스터 FSM. MMIO 버스에 테스트 시퀀스를 발행하고 결과를 체크",
+        "short": "Sim master",
+        "side": "sim"
+      }
+    ],
+    "links": [
+      {"from": "top", "to": "soc", "label": "clk/rst/io"},
+      {"from": "soc", "to": "bus", "label": "mmio-lite"},
+      {"from": "bus", "to": "gpio", "label": "sel_gpio"},
+      {"from": "bus", "to": "uart", "label": "sel_uart"},
+      {"from": "bus", "to": "pwm", "label": "sel_pwm"},
+      {"from": "bus", "to": "qdec", "label": "sel_qdec"},
+      {"from": "master", "to": "bus", "label": "sim drive (tb only)"}
+    ]
+  },
+  "bus_protocol": {
+    "name": "mmio-lite",
+    "signals": [
+      {"name": "valid", "dir": "M→S", "width": 1, "desc": "트랜잭션 유효"},
+      {"name": "we",    "dir": "M→S", "width": 1, "desc": "쓰기=1, 읽기=0"},
+      {"name": "addr",  "dir": "M→S", "width": 32, "desc": "바이트 주소"},
+      {"name": "wdata", "dir": "M→S", "width": 32, "desc": "쓰기 데이터"},
+      {"name": "rdata", "dir": "S→M", "width": 32, "desc": "읽기 데이터 (버스 MUX 출력)"},
+      {"name": "ready", "dir": "S→M", "width": 1, "desc": "항상 1 (1사이클 응답)"}
+    ],
+    "note": "back-pressure 없음. valid 사이클에 always 응답. AXI4-Lite 비호환"
+  },
+  "integration": {
+    "bus": "mmio-lite",
+    "address_map": "custom",
+    "compat": "incompatible",
+    "target_map": "mbv-frozen-v2",
+    "plan": "mbv-frozen-v2 맵으로 이전 시 pwm=[07]=0x4007_0000, qdec=[0F]=0x400F_0000 슬롯 사용. 이 패키지는 시뮬레이션 전용 주소(0x1000~0x1004 세그먼트)를 사용하므로 compat=incompatible.",
+    "frozen_mapping": [
+      {"block": "pwm",  "region": "pwm",  "base": "0x4007_0000", "intc": null},
+      {"block": "qdec", "region": "qdec", "base": "0x400F_0000", "intc": 7}
+    ]
+  },
+  "external_parts": [],
+  "schematic": {
+    "state": "not-written",
+    "note": "이 패키지는 시뮬레이션 전용이며 외부 부품이 없어 회로도 미작성"
+  },
+  "hierarchy": [
+    {
+      "module": "basys3_top",
+      "file": "rtl/basys3_top.v",
+      "children": [
+        {
+          "module": "soc_top",
+          "file": "rtl/soc_top.v",
+          "children": [
+            {"module": "mmio_bus",  "file": "rtl/mmio_bus.v"},
+            {"module": "gpio",      "file": "rtl/gpio.v"},
+            {"module": "uart_tx",   "file": "rtl/uart_tx.v"},
+            {"module": "pwm_ip",    "file": "rtl/pwm_ip.v"},
+            {"module": "qenc_ip",   "file": "rtl/qenc_ip.v"}
+          ]
+        }
+      ]
+    }
+  ],
+  "memory_map": {
+    "note": "시뮬레이션 전용 주소. 실 SoC 이전 시 mbv-frozen-v2 슬롯 사용",
+    "regions": [
+      {"base": "0x1000_0000", "size": "0x10000", "block": "gpio",  "desc": "GPIO LED/SW"},
+      {"base": "0x1001_0000", "size": "0x10000", "block": "uart",  "desc": "UART TX"},
+      {"base": "0x1003_0000", "size": "0x10000", "block": "pwm",   "desc": "PWM 2채널"},
+      {"base": "0x1004_0000", "size": "0x10000", "block": "qdec",  "desc": "직교 엔코더"}
+    ],
+    "registers": [
+      {"block": "gpio",  "off": "0x00", "name": "LED",    "access": "RW", "desc": "LED[15:0]"},
+      {"block": "gpio",  "off": "0x04", "name": "SW",     "access": "RO", "desc": "SW[15:0] (2단 동기화)"},
+      {"block": "uart",  "off": "0x00", "name": "DATA",   "access": "WO", "desc": "송신 바이트 [7:0]"},
+      {"block": "uart",  "off": "0x04", "name": "STATUS", "access": "RO", "desc": "bit0=busy"},
+      {"block": "pwm",   "off": "0x00", "name": "CTRL",   "access": "RW", "desc": "bit0=enable"},
+      {"block": "pwm",   "off": "0x04", "name": "PERIOD", "access": "RW", "desc": "[15:0] 클럭 사이클 수"},
+      {"block": "pwm",   "off": "0x08", "name": "DUTY0",  "access": "RW", "desc": "[15:0] 채널0 비교값"},
+      {"block": "pwm",   "off": "0x0C", "name": "DUTY1",  "access": "RW", "desc": "[15:0] 채널1 비교값"},
+      {"block": "pwm",   "off": "0xFFF0","name": "ID",    "access": "RO", "desc": "0x50574D31 (PWM1)"},
+      {"block": "pwm",   "off": "0xFFF4","name": "VER",   "access": "RO", "desc": "{rev8,0,major8,minor8} = 0x01000001"},
+      {"block": "pwm",   "off": "0xFFF8","name": "IRQ_STATUS", "access": "RW1C", "desc": "bit0=period_end"},
+      {"block": "pwm",   "off": "0xFFFC","name": "IRQ_ENABLE", "access": "RW",   "desc": "bit0=period_end IRQ 허용"},
+      {"block": "qdec",  "off": "0x00", "name": "CTRL",   "access": "RW", "desc": "bit0=enable, bit1=clear_pos"},
+      {"block": "qdec",  "off": "0x04", "name": "POS",    "access": "RO", "desc": "signed 32-bit 위치"},
+      {"block": "qdec",  "off": "0x08", "name": "DIR",    "access": "RO", "desc": "bit0: 1=CW, 0=CCW"},
+      {"block": "qdec",  "off": "0x0C", "name": "ERR",    "access": "RO", "desc": "[15:0] 비정상 전이 횟수"},
+      {"block": "qdec",  "off": "0xFFF0","name": "ID",    "access": "RO", "desc": "0x51454E43 (QENC)"},
+      {"block": "qdec",  "off": "0xFFF4","name": "VER",   "access": "RO", "desc": "0x01000001"},
+      {"block": "qdec",  "off": "0xFFF8","name": "IRQ_STATUS", "access": "RW1C", "desc": "bit0=overflow"},
+      {"block": "qdec",  "off": "0xFFFC","name": "IRQ_ENABLE", "access": "RW",   "desc": "bit0=overflow IRQ 허용"}
+    ]
+  },
+  "roadmap": [
+    {"stage": "T1", "state": "done",    "title": "mmio-uart-gpio-skeleton", "refs": ["digilent-basys-3-getting-started-microblaze"]},
+    {"stage": "T2", "state": "current", "title": "mmio-pwm-qenc-checker (이 패키지)", "refs": ["element14-eoi-blog3-custom-ip-pwm", "suoglu-axi-lite-slave"]},
+    {"stage": "T3", "state": "planned", "title": "pwm-pid-motor-controller (다음 단계)", "refs": []}
+  ],
+  "references": [
+    {"name": "element14-eoi-blog3-custom-ip-pwm",              "reason": "AXI-Lite PWM IP 레지스터 설계 패턴 참고"},
+    {"name": "suoglu-axi-lite-slave",                           "reason": "Basys3 AXI-Lite 슬레이브 구조 참고"},
+    {"name": "digilent-basys-3-getting-started-microblaze",     "reason": "MMIO 버스 연결 및 보드 래퍼 구조 참고"}
+  ],
+  "sources": {
+    "rtl": [
+      "rtl/basys3_top.v",
+      "rtl/soc_top.v",
+      "rtl/mmio_bus.v",
+      "rtl/gpio.v",
+      "rtl/uart_tx.v",
+      "rtl/pwm_ip.v",
+      "rtl/qenc_ip.v",
+      "rtl/demo_master.v"
+    ],
+    "tb": ["tb/tb_pwm_qenc.v"],
+    "constraints": ["constr/basys3.xdc"],
+    "build": ["Makefile"]
+  },
+  "howto": {
+    "sim": "make sim  # iverilog + vvp, build/sim.log에 PASS/FAIL",
+    "lint": "make lint  # verilator --lint-only",
+    "synth": "make synth  # yosys -p 'synth_xilinx -family xc7'",
+    "clean": "make clean"
+  },
+  "verification": {
+    "board": "not-tested",
+    "notes": "S3는 사람이 Basys3에서 직접 확인해야 한다. CI가 S1(린트+시뮬)과 S2(합성)를 기록한다."
+  },
+  "risks": [
+    "PERIOD=0일 때 PWM 동작 미정의 — CTRL.enable을 쓰기 전에 PERIOD를 반드시 설정할 것",
+    "직교 엔코더 2단 동기화 지연으로 짧은 펄스(< 2사이클)가 누락될 수 있음",
+    "yosys 자원 추정은 Vivado와 다를 수 있음 (Vivado 미검증)"
+  ]
+}
