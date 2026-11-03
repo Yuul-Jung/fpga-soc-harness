@@ -1,0 +1,46 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>opencores-roboarm-stepper</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../../index.html">FPGA SoC 하네스</a><a href="../../index.html">메인</a><a href="../../index.html#capstones">캡스톤</a><a href="../../soc-map/tech-tree.html">기술 트리</a><a href="../../catalog/index.html">카탈로그</a><a href="../../inbox/ideas.html">아이디어</a><a href="../../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/catalog/vendor-neutral/opencores-roboarm-stepper.md">GitHub 원본: catalog/vendor-neutral/opencores-roboarm-stepper.md</a></p><h1>opencores-roboarm-stepper</h1><div class="panel fm"><table><tr><td>name</td><td><a href="opencores-roboarm-stepper.html">opencores-roboarm-stepper</a></td></tr><tr><td>url</td><td>https://ftp.gwdg.de/pub/misc/opencores/cores/robotic/roboarm.shtml</td></tr><tr><td>source_type</td><td>repo</td></tr><tr><td>vendor</td><td>neutral</td></tr><tr><td>board</td><td>[미명시]</td></tr><tr><td>fit_basys3</td><td>needs-port</td></tr><tr><td>cpu</td><td>none(FSM)</td></tr><tr><td>language</td><td>VHDL</td></tr><tr><td>tools</td><td>[unverified: 페이지에 없음]</td></tr><tr><td>bus</td><td>none</td></tr><tr><td>peripherals</td><td>[actuator-servo]</td></tr><tr><td>stage</td><td>T1</td></tr><tr><td>license</td><td>unknown</td></tr><tr><td>stats</td><td>{last_update: 2001-04-25}</td></tr><tr><td>doc_language</td><td>en</td></tr><tr><td>verification</td><td>L3</td></tr><tr><td>checked_at</td><td>2026-11-02</td></tr><tr><td>status</td><td>2001년 작성된 오래된 코어. 미러 페이지 기준</td></tr><tr><td>sources</td><td>[https://ftp.gwdg.de/pub/misc/opencores/cores/robotic/roboarm.shtml]</td></tr></table></div><h2>요약</h2>
+<p>OpenCores 미러에 올라 있는 로봇 팔용 스테퍼 구동 코어. 풀스텝과 하프스텝 시퀀스를 만들어 4선 권선 패턴을 내보내는 가장 단순한 형태의 FSM이다.</p>
+<h2>구조</h2>
+<ul><li style="margin-left:0.0em">최상위 ROBO_ARM: 입력 CLK, DIR_SEL, STOP, STEP_SEL, 출력 ARM_IN[3:0].</li><li style="margin-left:0.0em">모듈: 풀스텝용 2비트 카운터와 패턴 매핑, 하프스텝용 3비트 카운터(8상태)와 패턴 매핑, 선택 MUX (페이지 서술).</li><li style="margin-left:0.0em">스텝 간격은 외부 클럭 분주에 맡긴다. 페이지는 스텝 간 1~5ms를 요구한다고 적는다.</li><li style="margin-left:0.0em">출력단은 달링턴 트랜지스터 4개 + 권선별 프리휠링 다이오드 (페이지 서술).</li></ul>
+<h2>검증·재현성</h2>
+<ul><li style="margin-left:0.0em">테스트벤치, 리셋 입력, 합성 결과: 없음 (페이지에 언급 없음).</li></ul>
+<h2>한계·위험</h2>
+<ul><li style="margin-left:0.0em">라이선스 unknown → 코드 반입 금지, 구조만 참고.</li><li style="margin-left:0.0em">비표준 패키지(<code>work.std_arith</code>)에 의존해 이식성이 낮다 (페이지 서술).</li><li style="margin-left:0.0em">리셋이 없어 시뮬레이션에서 초기값이 X가 된다 (내 판단).</li><li style="margin-left:0.0em">가감속, 위치 지정, 원점 복귀 없음.</li></ul>
+<h2>재사용 메모</h2>
+<ul><li style="margin-left:0.0em">내 판단: 28BYJ-48/ULN2003 같은 4선 단극 모터의 입문 단계(T1) 기준 설계로 쓸 수 있다. 자체 RTL에는 리셋과 <code>step_tick</code> 입력을 추가한다.</li><li style="margin-left:0.0em">내 판단: 하프스텝 8상태 표는 데이터시트 값이므로 자체 RTL에서 새로 작성하고, 자체 점검 테스트벤치로 8상태 순서를 <code>!==</code>로 비교한다.</li><li style="margin-left:0.0em">개조: 해당 없음 (CPU 비종속 자료). 레지스터는 DIR, STOP, MODE, DIV를 IP 표준 맵으로 제안.</li></ul></main></body></html>

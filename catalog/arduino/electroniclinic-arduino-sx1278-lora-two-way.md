@@ -16,9 +16,9 @@ stats: {last_update: 2024-09-21}
 doc_language: en
 verification: L3
 checked_at: 2026-11-03
-source_rev: "unverified: 블로그 글, 커밋 해시 없음"
 sources: [https://www.electroniclinic.com/arduino-sx1278-lora-based-two-way-communication-system/]
 ---
+변경: 2026-11-03 source_rev 필드 제거(형식 오류). 사유 보존 — unverified: 블로그 글, 커밋 해시 없음
 
 ## 요약
 Arduino 두 대가 SX1278 LoRa 모듈로 주소 지정 양방향 메시지를 주고받는 블로그 예제. 마스터는 가변저항 값을 보내고, 슬레이브는 버튼 상태를 보내며 받은 값을 OLED에 표시한다(2021-10-07 게시, 2024-09-21 갱신).

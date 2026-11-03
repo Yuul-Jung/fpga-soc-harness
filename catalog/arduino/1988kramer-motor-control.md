@@ -16,9 +16,9 @@ stats: {stars: 49, commits: 57}
 doc_language: en
 verification: L3
 checked_at: 2026-11-03
-source_rev: "unverified: 페이지에서 커밋 해시가 보이지 않음"
 sources: [https://github.com/1988kramer/motor_control]
 ---
+변경: 2026-11-03 source_rev 필드 제거(형식 오류). 사유 보존 — unverified: 페이지에서 커밋 해시가 보이지 않음
 
 ## 요약
 TB6612FNG와 직교 엔코더를 쓰는 DC 모터의 속도·위치 제어 Arduino 라이브러리. 클래스를 `Motor`, `Encoder`, `SpeedControl`, `PositionControl` 네 층으로 나눈 점이 구조적 특징이다(README 서술, 차동구동 로봇이 목적).

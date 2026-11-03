@@ -16,9 +16,9 @@ stats: {last_update: 2026-10-09}
 doc_language: en
 verification: L3
 checked_at: 2026-11-03
-source_rev: "unverified: 블로그 글, 커밋 해시 없음"
 sources: [https://microcontrollerslab.com/sx1278-lora-rf-module-pinout-arduino-interfacing-datasheet/]
 ---
+변경: 2026-11-03 source_rev 필드 제거(형식 오류). 사유 보존 — unverified: 블로그 글, 커밋 해시 없음
 
 ## 요약
 SX1278(Ra-02) 433 MHz LoRa 모듈의 핀 배치와 Arduino 연결을 소개하는 입문 글. 레지스터 수준 설명은 없고, 모듈 개요와 LoRa 라이브러리 호출 목록 중심이다(2020-01-22 게시, 2026-10-09 수정 메타데이터).

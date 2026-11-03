@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-uart-gpio-skeleton",
+  "kind": "digital-block-diagram",
+  "note": "디지털 모듈 연결도다. 외부 부품의 전기 배선(전압, 저항, 커넥터)은 포함하지 않는다.",
+  "bus": "mmio-lite",
+  "blocks": [
+    {
+      "id": "clk",
+      "name": "clk 100MHz",
+      "kind": "clock",
+      "module": "-",
+      "file": null
+    },
+    {
+      "id": "x_btn",
+      "name": "btnU / btnC",
+      "kind": "external",
+      "module": "-",
+      "file": null
+    },
+    {
+      "id": "master",
+      "name": "demo_master",
+      "kind": "cpu",
+      "module": "demo_master",
+      "file": "rtl/demo_master.v"
+    },
+    {
+      "id": "bus",
+      "name": "mmio_bus",
+      "kind": "bus",
+      "module": "mmio_bus",
+      "file": "rtl/mmio_bus.v"
+    },
+    {
+      "id": "gpio",
+      "name": "gpio",
+      "kind": "periph",
+      "module": "gpio",
+      "file": "rtl/gpio.v"
+    },
+    {
+      "id": "uart",
+      "name": "uart_tx",
+      "kind": "periph",
+      "module": "uart_tx",
+      "file": "rtl/uart_tx.v"
+    },
+    {
+      "id": "x_sw",
+      "name": "SW / LED",
+      "kind": "external",
+      "module": "-",
+      "file": null
+    },
+    {
+      "id": "x_uart",
+      "name": "RsTx (USB-UART)",
+      "kind": "external",
+      "module": "-",
+      "file": null
+    }
+  ],
+  "links": [
+    {
+      "from": "x_btn",
+      "to": "master",
+      "label": "btnU"
+    },
+    {
+      "from": "master",
+      "to": "bus",
+      "label": "mmio-lite"
+    },
+    {
+      "from": "bus",
+      "to": "gpio",
+      "label": "sel/rdata"
+    },
+    {
+      "from": "bus",
+      "to": "uart",
+      "label": "sel/rdata"
+    },
+    {
+      "from": "gpio",
+      "to": "x_sw",
+      "label": "sw, led"
+    },
+    {
+      "from": "uart",
+      "to": "x_uart",
+      "label": "txd"
+    }
+  ]
+}

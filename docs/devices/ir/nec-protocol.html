@@ -1,0 +1,46 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NEC 적외선 리모컨 프로토콜</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../../index.html">FPGA SoC 하네스</a><a href="../../index.html">메인</a><a href="../../index.html#capstones">캡스톤</a><a href="../../soc-map/tech-tree.html">기술 트리</a><a href="../../catalog/index.html">카탈로그</a><a href="../../inbox/ideas.html">아이디어</a><a href="../../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/devices/ir/nec-protocol.md">GitHub 원본: devices/ir/nec-protocol.md</a></p><h1>NEC 적외선 리모컨 프로토콜</h1>
+<p>갱신: 2026-11-03 · 등급: L3(카드 근거 3건 열람의 교차 확인) · 출처: <a href="../../catalog/papers/bcit-elex7660-infrared-communication.html">bcit-elex7660-infrared-communication</a>, <a href="../../catalog/vendor-neutral/opencores-nec-ir-decoder.html">opencores-nec-ir-decoder</a>, <a href="../../catalog/lattice/marph91-icestick-remote.html">marph91-icestick-remote</a></p>
+<h2>프레임 (문서 수치)</h2>
+<div class="panel"><table><tr><th>구간</th><th>값</th></tr><tr><td class="nw">리더</td><td>9 ms 버스트 + 4.5 ms 공백</td></tr><tr><td class="nw">필드</td><td>주소 8비트, 주소 반전 8비트, 명령 8비트, 명령 반전 8비트 (LSB 먼저)</td></tr><tr><td class="nw">비트 0</td><td>562.5 µs 버스트 + 562.5 µs 공백</td></tr><tr><td class="nw">비트 1</td><td>562.5 µs 버스트 + 1.6875 ms 공백</td></tr><tr><td class="nw">종료</td><td>562.5 µs 버스트</td></tr><tr><td class="nw">전체</td><td>약 67.5 ms (BCIT 보고서)</td></tr><tr><td class="nw">반송파</td><td>38 kHz (BCIT 보고서)</td></tr></table></div>
+<h2>해독 FSM 주의</h2>
+<ul><li style="margin-left:0.0em">IR 수신 모듈 출력은 보통 active-low(반송파가 있으면 Low)이며 두 동기화 단계가 필요하다(내 판단). jagumiel/irReceiver(Sony SIRC, DE1-SoC, MIT, 카드 없음)는 열람 결과 입력 동기화기가 없었다.</li><li style="margin-left:0.0em">단계마다 시간 창을 두고, 벗어나면 프레임을 버려 대기로 복귀한다.</li><li style="margin-left:0.0em">반전 바이트 일치 검사로 오류를 거른다.</li><li style="margin-left:0.0em">반복 코드(버튼 유지)는 OpenCores 코어에서 미구현. 리더 뒤 짧은 프레임 형태라는 서술은 이 저장소 열람 자료에 없어 unverified.</li></ul>
+<h2>Basys3 (내 계산·판단)</h2>
+<ul><li style="margin-left:0.0em">100 MHz에서 562.5 µs = 56,250 클럭. 판정 경계는 비트 0·1 공백의 중간(약 1.1 ms)을 쓰면 여유가 있다.</li><li style="margin-left:0.0em">IR 수신 모듈은 3.3 V 급전형을 쓰면 레벨 변환이 필요 없다. 5 V형은 변환 필요.</li></ul>
+<h2>unverified</h2>
+<ul><li style="margin-left:0.0em">반복 코드 정확한 형식, 확장 NEC(16비트 주소) 해석: 열람 자료에 없음. Altium 문서는 리다이렉트로 열람하지 못함.</li></ul></main></body></html>

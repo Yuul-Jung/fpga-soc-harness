@@ -16,9 +16,9 @@ stats: {last_update: "unverified: 페이지에 최종 수정일 없음"}
 doc_language: en
 verification: L3
 checked_at: 2026-11-03
-source_rev: "unverified: 위키 문서라 oldid=92199가 보이나 커밋 해시 아님"
 sources: [https://www.mikrocontroller.net/articles/NRF24L01_Tutorial]
 ---
+변경: 2026-11-03 source_rev 필드 제거(형식 오류). 사유 보존 — unverified: 위키 문서라 oldid=92199가 보이나 커밋 해시 아님
 
 ## 요약
 nRF24L01+ 2.4 GHz 트랜시버를 SPI로 제어해 송신기·수신기를 만드는 독일어 위키 튜토리얼(열람은 영어 요약 기준). 명령 바이트, 레지스터, TX/RX 순서, CE·IRQ 사용법을 한곳에 정리한 점이 가치다.

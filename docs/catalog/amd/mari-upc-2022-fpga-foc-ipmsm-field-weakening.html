@@ -1,0 +1,46 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>mari-upc-2022-fpga-foc-ipmsm-field-weakening</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../../index.html">FPGA SoC 하네스</a><a href="../../index.html">메인</a><a href="../../index.html#capstones">캡스톤</a><a href="../../soc-map/tech-tree.html">기술 트리</a><a href="../../catalog/index.html">카탈로그</a><a href="../../inbox/ideas.html">아이디어</a><a href="../../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/catalog/amd/mari-upc-2022-fpga-foc-ipmsm-field-weakening.md">GitHub 원본: catalog/amd/mari-upc-2022-fpga-foc-ipmsm-field-weakening.md</a></p><h1>mari-upc-2022-fpga-foc-ipmsm-field-weakening</h1><div class="panel fm"><table><tr><td>name</td><td><a href="mari-upc-2022-fpga-foc-ipmsm-field-weakening.html">mari-upc-2022-fpga-foc-ipmsm-field-weakening</a></td></tr><tr><td>url</td><td>https://upcommons.upc.edu/bitstreams/3e26da9d-9dd9-44c4-b8a5-51eeb59dc867/download</td></tr><tr><td>source_type</td><td>paper</td></tr><tr><td>vendor</td><td>amd</td></tr><tr><td>board</td><td>[MYIR Z-Turn (Zynq-7020), Cora Z7-10 시도]</td></tr><tr><td>fit_basys3</td><td>no</td></tr><tr><td>cpu</td><td>ARM(Zynq PS, 선택적)</td></tr><tr><td>language</td><td>Simulink/Vitis Model Composer</td></tr><tr><td>tools</td><td>[Vivado, Vitis Model Composer, PetaLinux]</td></tr><tr><td>bus</td><td>unknown</td></tr><tr><td>peripherals</td><td>[actuator-servo, sensor, comm-can]</td></tr><tr><td>stage</td><td>T4</td></tr><tr><td>license</td><td>unknown</td></tr><tr><td>stats</td><td>{}</td></tr><tr><td>doc_language</td><td>en</td></tr><tr><td>verification</td><td>L3</td></tr><tr><td>checked_at</td><td>2026-11-02</td></tr><tr><td>sources</td><td>[https://upcommons.upc.edu/bitstreams/3e26da9d-9dd9-44c4-b8a5-51eeb59dc867/download]</td></tr></table></div><h2>요약</h2>
+<p>UPC ETSETB 2022년 학사 졸업논문. 4륜 구동 차량용 IPMSM에 필드 위킹(약계자)을 포함한 FOC를 Zynq에서 구현하는 계획과 시뮬레이션 결과를 다룬다. 본문 언어는 카탈로니아어(doc_language 허용값 제한으로 en 표기, 제목만 영어 병기 없음).</p>
+<h2>구조</h2>
+<ul><li style="margin-left:0.0em">블록: Clarke/Park/역Park(사인·코사인 LUT), 전류 PI 2개(안티윈드업, 디커플링), 전압 제한기, 속도 PI, MTPA(LUT), 9,000rpm 초과 시 약계자 PI. 각도·속도는 AD2S1210 레졸버-디지털 변환기에서 받음.</li><li style="margin-left:0.0em">고정소수점, 파이프라인, 10ns 클럭. SVPWM은 삼각 반송파 비교, 16kHz, 데드타임 1µs, SiC MOSFET 인버터.</li><li style="margin-left:0.0em">전류 센서 ADC 종류: unverified: 본문에 특정되지 않음. 자원 사용은 부록 B 참조라고 하나 수치는 열람 못함.</li></ul>
+<h2>검증·재현성</h2>
+<ul><li style="margin-left:0.0em">단위 시험(사인/코사인, 반송파, SVPWM, 전압 제한기)과 Simulink 전체 시뮬레이션, Vivado 시뮬레이션. 전력 보드와 시험대 검증은 0%(미실시), CAN 검증 미완.</li></ul>
+<h2>한계·위험</h2>
+<ul><li style="margin-left:0.0em">실측 근거가 없고 시뮬레이션뿐. 게인은 수동 조정. Zynq 필수라 Basys3에 그대로 못 옮김. 제어기 코드는 Model Composer 생성물이라 원문 소스 공개 여부 unverified.</li></ul>
+<h2>재사용 메모</h2>
+<ul><li style="margin-left:0.0em">내 판단: 고급 FOC의 확장 요소(MTPA, 약계자, 안티윈드업, 디커플링)를 한 곳에서 보는 참고용이다. 입문용으로는 과하다.</li><li style="margin-left:0.0em">개조: PI 안티윈드업·전압 제한 구조는 PID IP 표준 레지스터(적분 클램프)로 옮길 수 있다. 레졸버 변환기·SiC 인버터·Zynq PS·CAN은 못 옮긴다. 데드타임 1µs 같은 수치는 설계 참고값으로만 쓴다.</li></ul></main></body></html>
