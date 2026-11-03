@@ -181,3 +181,9 @@
 - https://www.secs.oakland.edu/~llamocca/Courses/ECE4710/W21/FinalProject/Group3_RefrigeratorThermometer.pdf | Nexys A7 ADT7420 냉장고 온도계 + VGA 막대(1-Wire 아님, 열람 L3) — 카드 후보(I2C 센서+VGA) | FPGA 1-Wire DS18B20 Nexys
 - https://www.analog.com/en/resources/technical-articles/1wire-communication-through-software.html | Maxim 1-Wire 소프트웨어 통신 문서 — 미열람(L1) | DS18B20 datasheet timing
 - https://digitemp.com/docs/app74.pdf | Maxim AN74 1-Wire 버스 문서 — 미열람(L1) | DS18B20 datasheet timing
+- https://github.com/bryanl1/FPGA-UART | Nexys A7 Verilog UART(README 짧음, 보율·라이선스 미확인) — 열람 L2 | Verilog UART Bluetooth HC-05 FPGA
+- https://community.altera.com/discussions/fpga-device/interfacing-bluetooth-with-de10-nano/292132 | DE10-Nano HC-05 연결 문의, 답변은 UART+GPIO 로직 필요 정도(L3 짧음) — 카드 불필요
+- https://www.electronicwings.com/sensors-modules/bluetooth-module-hc-05- | HC-05 튜토리얼(L3) — devices/bluetooth/hc-05.md의 출처로 사용
+- https://github.com/CopterFail/BtSPortOsd | 검색 결과에만 등장 — 미열람(L1)
+- https://ee6115b.mit.edu/document/bluetooth_hc06_guide_2022.pdf | MIT HC-06 가이드 — 미열람(L1)
+- https://boletin.upiita.ipn.mx/Archivos/Articulos/2026/05/fe69641993a8485f9c478b900cd0440f.pdf | 멕시코 학회 글(FPGA 블루투스 추정) — 미열람(L1)

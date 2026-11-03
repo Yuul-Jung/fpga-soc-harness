@@ -83,3 +83,6 @@
 | [cvut-pehnelt-2014-vhdl-periferie-nexys4](papers/cvut-pehnelt-2014-vhdl-periferie-nexys4.md) | L3 | T2 | Nexys4 (Basys3 needs-port) | 2026-11-03 |
 | [analog-maxim-interfacing-ds18x20](papers/analog-maxim-interfacing-ds18x20.md) | L3 | T2 | 없음 (Basys3 needs-port) | 2026-11-03 |
 | [opencores-onewire-ds1820](vendor-neutral/opencores-onewire-ds1820.md) | L2 | T2 | 미명시 (Basys3 needs-port) | 2026-11-03 |
+| [ndroid-hc06-at-commandcenter](vendor-neutral/ndroid-hc06-at-commandcenter.md) | L3 | T2 | 없음 (Arduino, Basys3 needs-port) | 2026-11-03 |
+| [hackster-ee2259-lab8-bluetooth-uart](vendor-neutral/hackster-ee2259-lab8-bluetooth-uart.md) | L3 | T1 | 미명시 (Basys3 needs-port) | 2026-11-03 |
+| [epfl-prsoc-bluetooth-hc05](vendor-neutral/epfl-prsoc-bluetooth-hc05.md) | L3 | T2 | PrSoc (Basys3 needs-port) | 2026-11-03 |

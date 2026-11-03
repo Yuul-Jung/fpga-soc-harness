@@ -35,4 +35,4 @@
 ## 빈 곳 보충 2 (2026-11-03 §12.2-3, 위에서부터 소비)
 - [x] 디스플레이 사다리: HD44780 LCD1602 → SSD1306 OLED(SPI/I2C) → ST7789 SPI 컬러 LCD 구동 FSM (display 카드 0건, S7) — 2026-11-03 11시대 사이클: 카드 3건(L3), Basys3 직접 사례와 I2C 백팩 FPGA 사례는 못 찾음, HD44780 두 글은 큐에 남김
 - [x] 1-wire 온도 센서(DS18B20)·DHT11 단선 프로토콜 FSM과 Basys3 구현 (devices/1-wire 비어 있음) — 2026-11-03 사이클: 카드 3건(L3 2, L2 1)+devices/1-wire/ds18b20.md, DHT11 FSM 직접 자료는 열람 못 함(Dibya·Elich PDF 열람 불가), Basys3 직접 사례 못 찾음
-- [ ] Bluetooth HC-05/HC-06 UART 브리지: AT 설정과 FPGA 텔레메트리 (comm-bt 직접 카드 0건)
+- [x] Bluetooth HC-05/HC-06 UART 브리지: AT 설정과 FPGA 텔레메트리 — 2026-11-03 13시대 사이클: 카드 3건(L3), Basys3 HC-05 직접 사례와 제조사 데이터시트는 못 찾음/unverified, 보조 devices/bluetooth/hc-05.md(L2)
