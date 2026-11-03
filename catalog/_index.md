@@ -71,3 +71,6 @@
 | [digilent-forum-basys3-ethernet-ipv4-udp](amd/digilent-forum-basys3-ethernet-ipv4-udp.md) | L3 | T1 | Basys3 (needs-port: 핀 직결 방식은 비권장) | 2026-11-03 |
 | [digilent-pmod-nic100-reference-manual](amd/digilent-pmod-nic100-reference-manual.md) | L3 | T2 | Basys3 (needs-port, 단종) | 2026-11-03 |
 | [wiznet-makers-gavinchang-w5500-udp-loopback](vendor-neutral/wiznet-makers-gavinchang-w5500-udp-loopback.md) | L3 | T2 | 미명시 (Basys3 needs-port) | 2026-11-03 |
+| [zipcpu-llvga-video-timing](vendor-neutral/zipcpu-llvga-video-timing.md) | L3 | T1 | Basys3 | 2026-11-03 |
+| [columbia-4840-tiles-tutorial](intel/columbia-4840-tiles-tutorial.md) | L3 | T3 | DE1-SoC (Basys3 needs-port) | 2026-11-03 |
+| [algofoogle-raybox-zero](vendor-neutral/algofoogle-raybox-zero.md) | L3 | T4 | DE0-Nano·Tiny Tapeout (Basys3 needs-port) | 2026-11-03 |

@@ -144,3 +144,12 @@
 - https://opencores.org/project,cheap_ethernet | 10BASE-T 직결 송신 코어 — 미열람(L1)
 - https://maker.wiznet.io/mason/projects/w5500-vs-enc28j60-which-spi-ethernet-controller-wins/ | W5500 vs ENC28J60 비교 — 미열람(L1)
 - 참고: ENC28J60을 Verilog로 구동한 FPGA 사례는 검색 2회에서 못 찾음(Arduino/MCU 드라이버 위주). Basys3에서 W5500·ENC28J60 직접 사례도 못 찾음
+- https://github.com/hdl-util/vga-text-mode | VGA 텍스트 모드 Verilog(MIT 표기, 글리프 ROM 방식) — 열람 L2(README 얕음, 프레임 버퍼 서술·포트 없음, 보드 미명시), 카드 보류
+- https://github.com/ChrisPVille/VGA-CharGen | VGA 문자 생성기 — 미열람(L1)
+- https://github.com/AdvaitParanjpe/pixelForge | 타일/스프라이트형 그래픽 후보 — 미열람(L1) | FPGA VGA without frame buffer
+- https://www1.cs.columbia.edu/~sedwards/classes/2025/4840-spring/reports/ScreamJump-report.pdf | Columbia 2025 타일 기반 게임 보고서 — 미열람(L1)
+- https://www.cs.columbia.edu/~sedwards/classes/2026/4840-spring/designs/Plants-FPGA-Zombies.pdf | Columbia 2026 스프라이트 게임 설계 — 미열람(L1)
+- https://hackaday.com/tag/altera-de1 | Racing The Beam(Super Hexagon, DE1) 기사 — 미열람(L1)
+- https://github.com/IObundle/iob-vga | VGA 코어 — 미열람(L1)
+- https://github.com/algofoogle/raybox | raybox 원형 저장소 — 미열람(L1)
+- 참고: 프레임 버퍼 없는 VGA 사례 중 Basys3에서 직접 구현한 것은 검색 6회에서 못 찾음(ZipCPU 글이 Basys3 프로젝트를 언급할 뿐)
