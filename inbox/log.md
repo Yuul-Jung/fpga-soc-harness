@@ -70,3 +70,4 @@
 2026-11-04 01:08 | collect | STM32 HAL 기초(CubeMX 생성 코드·HAL vs LL) · S7 난이도 사다리(주: 생성 코드 구조 → HAL/LL 선택)+S5 비정형 출처(보조: 블로그·뉴스레터·포럼) | 카드 +3 | 아이디어 +0 | 큐 잔여 271 | blocked 0 | 부수: add_repo/register_repo_root 도구 없음, 기존 clone 사용; 검색 3회 열람 3건
 2026-11-04 02:07 | collect | STM32 FreeRTOS(스택 오버플로·HAL 타임아웃·UART 설계) · S6 실패 사례(주: 포럼 실패·원인 추적)+S5 비정형 출처(보조: 포럼 스레드) | 카드 +3 | 아이디어 +0 | 큐 잔여 278 | blocked 0 | 부수: add_repo/register_repo_root 도구 없음, 기존 clone 사용; 검색 3회 열람 4건
 2026-11-04 03:12 | collect | STM32 모터 제어(상보 PWM·데드타임·FOC 기초) · S1 인접 도메인 이식(주: MCU 상보 PWM/데드타임 → FPGA PWM IP 레지스터)+S5 비정형 출처(보조: 블로그·포럼) | 카드 +3 | 아이디어 +0 | 큐 잔여 285 | blocked 0 | 부수: add_repo/register_repo_root 도구 없음, 기존 clone 사용; 검색 3회 열람 4건
+2026-11-04 03:42 | verify | 재열람 0(WebFetch PROVENANCE_REQUIRED 3/3 실패: 신규 stm32 카드 출처, 권한 요청 무응답; 우회 안 함) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +0 | 아이디어 심사 보류(근거 카드 rechecked_at 없음) | 미재열람 누적 약 77건 | check 통과, audit 오류 0 경고 6 | 부수: add_repo 도구 없음, 기존 clone 사용
