@@ -129,7 +129,7 @@ module relay_autotune_ip #(
                         cross_cnt      <= 16'd0;
                         spd_max        <= speed_in;
                         spd_min        <= speed_in;
-                        prev_cross_dir <= above_setpoint;
+                        prev_cross_dir <= 1'b0;  // 항상 아래 상태로 시작 (relay=1이 위로 밀어 첫 교차 보장)
                     end
                 end
 
