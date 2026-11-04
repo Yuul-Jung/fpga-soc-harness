@@ -1,0 +1,304 @@
+{
+  "slug": "mmio-ps2-mouse-cursor",
+  "title": "PS/2 마우스 호스트 FSM + VGA 커서 오버레이 (프레임 버퍼 없음)",
+  "summary": "PS/2 마우스를 초기화(BAT 대기 → F4 전송 → 스트리밍)하고 3바이트 패킷을 디코딩해 커서 좌표(X/Y 클램프)를 갱신하는 호스트 FSM. VGA 640×480 60Hz에서 프레임 버퍼 없이 커서만 오버레이한다. IP 표준 rev.1 관리 레지스터(ID=PS2M) 포함.",
+  "board": "Digilent Basys3 (XC7A35T)",
+  "stage": "T2",
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 원본이며 외부 코드를 포함하지 않는다. 아이디어 I-008 기반. Basys3 USB-HID PS/2 에뮬레이션(C17/B17) + 보드 내장 VGA 커넥터 사용. kbd 주변장치([0B])와 동일 PS/2 포트 공유 불가 — 마우스 사용 시 키보드 IP 비활성 필요.",
+
+  "goals": [
+    "PS/2 마우스 초기화: BAT 수신(0xAA→0x00) 후 F4 전송, ACK(0xFA) 대기",
+    "3바이트 이동 패킷 디코딩: (flags, dx, dy), 부호 확장·오버플로 처리",
+    "커서 좌표 클램프: X 0–639, Y 0–479, PS/2 Y 반전(위=Y감소) 처리",
+    "mmio-lite 슬레이브로 MOUSE_X/Y/BTN/STATUS 레지스터 노출",
+    "IP 표준 rev.1 관리 레지스터(ID=PS2M / VER / IRQ_STATUS W1C / IRQ_ENABLE) 포함",
+    "VGA 640×480 60Hz: 프레임 버퍼 없이 5×5픽셀 흰색 커서 오버레이",
+    "iverilog 시뮬레이션 PASS 확인(S1 목표)"
+  ],
+
+  "non_goals": [
+    "실제 MicroBlaze V CPU 연동 및 드라이버 작성",
+    "AXI4-Lite 래퍼 RTL(동결 맵 이식 시 별도 작성)",
+    "보드에서 직접 검증(S3)은 사용자 담당",
+    "PS/2 키보드와 동시 사용, USB HID 직접 제어",
+    "VGA 프레임 버퍼, 배경 그래픽, 스프라이트",
+    "마우스 가속·감도 소프트웨어 제어"
+  ],
+
+  "architecture": {
+    "clock": "100 MHz 단일 클럭 (CLK_100, W5), 비동기 리셋 (BTNC, U18, 액티브 하이)",
+    "blocks": [
+      {
+        "id": "clk",
+        "name": "CLK_100 100 MHz",
+        "kind": "clock",
+        "desc": "보드 100 MHz 클럭 입력 (W5)",
+        "short": "보드 클럭",
+        "side": "in"
+      },
+      {
+        "id": "x_btnc",
+        "name": "BTNC",
+        "kind": "external",
+        "desc": "센터 버튼, 비동기 리셋 (U18, 액티브 하이)",
+        "short": "리셋 버튼",
+        "side": "in"
+      },
+      {
+        "id": "x_ps2_clk",
+        "name": "PS2_CLK",
+        "kind": "external",
+        "desc": "PS/2 CLK (오픈 드레인, Basys3 C17). 호스트가 CLK를 Low로 당겨 전송 억제",
+        "short": "PS/2 CLK",
+        "side": "inout"
+      },
+      {
+        "id": "x_ps2_data",
+        "name": "PS2_DATA",
+        "kind": "external",
+        "desc": "PS/2 DATA (오픈 드레인, Basys3 B17)",
+        "short": "PS/2 DATA",
+        "side": "inout"
+      },
+      {
+        "id": "x_vga",
+        "name": "VGA 커넥터",
+        "kind": "external",
+        "desc": "VGA 12비트 색상(R[3:0]/G[3:0]/B[3:0]), HSYNC(P19), VSYNC(R19)",
+        "short": "VGA 출력",
+        "side": "out"
+      },
+      {
+        "id": "x_led",
+        "name": "LED[3:0]",
+        "kind": "external",
+        "desc": "LED[3]=irq, LED[2]=streaming, LED[1]=init_done, LED[0]=left_btn",
+        "short": "상태 LED",
+        "side": "out"
+      },
+      {
+        "id": "ps2_host",
+        "name": "ps2_mouse_host",
+        "kind": "ip",
+        "module": "ps2_mouse_host",
+        "file": "rtl/ps2_mouse_host.v",
+        "desc": "PS/2 마우스 호스트 FSM. 초기화·패킷 디코더·커서 좌표 누산기·mmio-lite 슬레이브. IP 표준 rev.1 관리 레지스터 포함.",
+        "short": "PS/2 호스트 IP"
+      },
+      {
+        "id": "vga_cur",
+        "name": "vga_sync_cursor",
+        "kind": "ip",
+        "module": "vga_sync_cursor",
+        "file": "rtl/vga_sync_cursor.v",
+        "desc": "VGA 640×480 60Hz 동기 생성기 + 프레임 버퍼 없는 커서 오버레이. 100MHz에서 /4 픽셀 클럭 생성.",
+        "short": "VGA + 커서"
+      }
+    ],
+    "links": [
+      { "from": "clk",      "to": "ps2_host", "label": "clk" },
+      { "from": "clk",      "to": "vga_cur",  "label": "clk" },
+      { "from": "x_btnc",   "to": "ps2_host", "label": "rst" },
+      { "from": "x_btnc",   "to": "vga_cur",  "label": "rst" },
+      { "from": "x_ps2_clk","to": "ps2_host", "label": "ps2_clk_in/oe" },
+      { "from": "x_ps2_data","to":"ps2_host", "label": "ps2_data_in/oe" },
+      { "from": "ps2_host", "to": "vga_cur",  "label": "cursor_x/y, cursor_en" },
+      { "from": "ps2_host", "to": "x_led",    "label": "irq/status" },
+      { "from": "vga_cur",  "to": "x_vga",   "label": "HS/VS/R/G/B" }
+    ]
+  },
+
+  "bus_protocol": {
+    "name": "mmio-lite",
+    "signals": [
+      { "name": "sel",    "dir": "master→slave", "desc": "슬레이브 선택 (이 사이클이 이 IP 대상)" },
+      { "name": "we",     "dir": "master→slave", "desc": "1=쓰기, 0=읽기" },
+      { "name": "offset", "dir": "master→slave", "desc": "16비트 오프셋 (addr[15:0])" },
+      { "name": "wdata",  "dir": "master→slave", "desc": "32비트 쓰기 데이터" },
+      { "name": "rdata",  "dir": "slave→master", "desc": "32비트 읽기 데이터 (sel=1 사이클 유효)" }
+    ],
+    "note": "1사이클 완료. 미매핑 오프셋 읽기는 32'h0 반환. 쓰기 무시. 대기·오류 없음."
+  },
+
+  "integration": {
+    "bus": "mmio-lite (자체, 단독 실행용)",
+    "address_map": "custom",
+    "compat": "incompatible",
+    "target_map": "mbv-frozen-v2",
+    "plan": "이 패키지는 단독 시뮬레이션과 보드 합성 확인을 위해 mmio-lite 버스(offset[15:0] 직접 비교)를 사용한다. 동결 맵(mbv-frozen-v2) 슬롯 [16]=0x4016_0000 / intc=13 에 이식하려면 (1) IP 표준 래퍼(axil_slave 패턴, 64KB 창)를 추가 작성하고 (2) AXI Interconnect에 연결하며 (3) IRQ는 INTC 입력 13번으로 배선한다. 레지스터 오프셋(0x0000~0x0010, 0xFFF0~0xFFFC)은 그대로 유지된다. VGA와 PS/2 CLK/DATA는 이식 시에도 보드 핀(C17/B17/P19/R19)을 직접 사용한다.",
+    "frozen_mapping": [
+      {
+        "block": "ps2_host",
+        "region": "[16] ps2_mouse 0x4016_0000, intc=13 (제안, 미동결)"
+      }
+    ]
+  },
+
+  "external_parts": [
+    {
+      "id": "p_mouse",
+      "name": "PS/2 마우스 (Basys3 USB-HID 에뮬레이션)",
+      "block": "x_ps2_clk",
+      "interface": "PS/2 CLK+DATA (오픈 드레인)",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": true,
+      "arduino_compatible": false,
+      "notes": "Basys3 USB HID 포트가 PS/2 마우스를 에뮬레이션. 보드 내장 풀업 저항 포함. kbd 주변장치([0B])와 동시 사용 불가. USB HID 허브 미지원으로 키보드+마우스 동시 불가."
+    },
+    {
+      "id": "p_vga",
+      "name": "VGA 모니터 (Basys3 내장 15핀 커넥터)",
+      "block": "x_vga",
+      "interface": "VGA 아날로그 RGB + HSYNC/VSYNC",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": true,
+      "arduino_compatible": false,
+      "notes": "Basys3 보드 내장 VGA 커넥터. 저항 DAC(4비트 각 채널)로 아날로그 RGB 출력. 별도 연결 불필요."
+    },
+    {
+      "id": "p_led",
+      "name": "Basys3 LED 4개",
+      "block": "x_led",
+      "interface": "GPIO 출력",
+      "io_voltage": 3.3,
+      "qty": 4,
+      "board_resident": true,
+      "arduino_compatible": false,
+      "notes": "LED[3]=irq, LED[2]=streaming, LED[1]=init_done, LED[0]=left_btn"
+    },
+    {
+      "id": "p_btnc",
+      "name": "Basys3 센터 버튼 (BTNC)",
+      "block": "x_btnc",
+      "interface": "GPIO 입력",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": true,
+      "arduino_compatible": false,
+      "notes": "비동기 리셋"
+    }
+  ],
+
+  "schematic": {
+    "state": "not-written",
+    "note": "PS/2 마우스와 VGA 모니터 모두 Basys3 보드 내장 커넥터. 외부 배선 불필요. 추가 회로도 미작성."
+  },
+
+  "hierarchy": {
+    "module": "basys3_ps2_mouse_cursor_top",
+    "file": "rtl/basys3_ps2_mouse_cursor_top.v",
+    "children": [
+      {
+        "module": "ps2_mouse_host",
+        "file": "rtl/ps2_mouse_host.v"
+      },
+      {
+        "module": "vga_sync_cursor",
+        "file": "rtl/vga_sync_cursor.v"
+      }
+    ]
+  },
+
+  "memory_map": [
+    {
+      "base": "0x1000_0000",
+      "size": "0x10000",
+      "block": "ps2_host",
+      "note": "시뮬레이션용 주소. 동결 맵 이식 시 0x4016_0000으로 변경",
+      "regs": [
+        { "off": "0x0000", "name": "CTRL",        "access": "RW",  "desc": "bit[0]=enable(패킷 처리), bit[1]=cursor_en(VGA 오버레이). 리셋 시 0." },
+        { "off": "0x0004", "name": "MOUSE_X",     "access": "RO",  "desc": "현재 커서 X 좌표 (0–639). 리셋 시 320." },
+        { "off": "0x0008", "name": "MOUSE_Y",     "access": "RO",  "desc": "현재 커서 Y 좌표 (0–479). 리셋 시 240." },
+        { "off": "0x000C", "name": "MOUSE_BTN",   "access": "RO",  "desc": "bit[0]=왼쪽, bit[1]=오른쪽, bit[2]=중간 버튼 상태." },
+        { "off": "0x0010", "name": "STATUS",      "access": "RO",  "desc": "bit[0]=init_done(BAT+ACK 완료), bit[1]=streaming(F4 이후 패킷 수신 중)" },
+        { "off": "0xFFF0", "name": "ID",          "access": "RO",  "desc": "IP ID = 0x5053_324D ('PS2M')" },
+        { "off": "0xFFF4", "name": "VER",         "access": "RO",  "desc": "0x0100_0100 = [31:24]=표준 rev1, [15:8]=주1, [7:0]=부0" },
+        { "off": "0xFFF8", "name": "IRQ_STATUS",  "access": "W1C", "desc": "bit[0]=packet_irq. 패킷 수신 완료 시 셋. W1C." },
+        { "off": "0xFFFC", "name": "IRQ_ENABLE",  "access": "RW",  "desc": "bit[0]=packet_irq 활성화. 리셋 시 0." }
+      ]
+    }
+  ],
+
+  "roadmap": [
+    {
+      "stage": "T1",
+      "state": "done",
+      "title": "MMIO 뼈대 (GPIO + UART)",
+      "refs": ["mmio-uart-gpio-skeleton"]
+    },
+    {
+      "stage": "T2",
+      "state": "current",
+      "title": "PS/2 마우스 호스트 IP + VGA 커서 오버레이 — mmio-lite, IP 표준 관리 레지스터",
+      "refs": ["oakland-ece378-group7-paintervga", "digilent-basys-3-keyboard"]
+    },
+    {
+      "stage": "T3",
+      "state": "planned",
+      "title": "AXI4-Lite 래퍼 추가, 동결 맵 슬롯 [16]에 이식, MicroBlaze V 연동",
+      "refs": []
+    }
+  ],
+
+  "references": [
+    {
+      "card": "oakland-ece378-group7-paintervga",
+      "why": "PS/2 마우스 초기화·패킷 디코딩 패턴, 커서 좌표 누산 방식 근거"
+    },
+    {
+      "card": "digilent-basys-3-keyboard",
+      "why": "Basys3 PS/2 USB-HID 에뮬레이션 특성(단일 포트, 풀업) 확인 근거"
+    }
+  ],
+
+  "sources": {
+    "rtl": [
+      "rtl/ps2_mouse_host.v",
+      "rtl/vga_sync_cursor.v",
+      "rtl/basys3_ps2_mouse_cursor_top.v"
+    ],
+    "tb": ["tb/tb_ps2_mouse_cursor.v"],
+    "constraints": ["constr/basys3_ps2_mouse_cursor.xdc"],
+    "build": ["Makefile"]
+  },
+
+  "howto": [
+    {
+      "title": "시뮬레이션",
+      "steps": [
+        "iverilog, verilator, yosys 설치",
+        "make -C capstones/mmio-ps2-mouse-cursor lint sim synth",
+        "build/sim_ps2.log 에서 'PASS' 확인"
+      ]
+    },
+    {
+      "title": "Vivado 합성 (보드)",
+      "steps": [
+        "Vivado 2024.2 에서 새 프로젝트 생성 (xc7a35tcpg236-1)",
+        "rtl/*.v, constr/basys3_ps2_mouse_cursor.xdc 추가",
+        "상위 모듈 basys3_ps2_mouse_cursor_top 선택 후 Generate Bitstream",
+        "Programming 후 PS/2 마우스 연결: LED[1](init_done) 점등 확인",
+        "마우스 움직임 → LED[0](left_btn), VGA 흰색 커서 이동 확인"
+      ]
+    }
+  ],
+
+  "verification": {
+    "lint": "verilator --lint-only -Wall -Wno-fatal --top-module basys3_ps2_mouse_cursor_top rtl/*.v",
+    "sim": "iverilog -g2005 -o build/sim_ps2.vvp tb/tb_ps2_mouse_cursor.v rtl/ps2_mouse_host.v && vvp build/sim_ps2.vvp | tee build/sim_ps2.log | grep -E 'PASS|FAIL'",
+    "synth": "yosys -p 'read_verilog rtl/*.v; synth_xilinx -top basys3_ps2_mouse_cursor_top -family xc7; stat'",
+    "board": "pending",
+    "notes": "board 검증은 사용자 담당(S3). CI에서 lint+sim+synth → S1/S2 목표. 시뮬레이션은 ps2_mouse_host.v 단독 테스트(VGA 모듈 제외)."
+  },
+
+  "risks": [
+    "Basys3 USB-HID 에뮬레이션이 마우스와 키보드 동시 연결을 지원하지 않음(허브 미지원) — kbd IP([0B])와 동시 사용 불가",
+    "PS/2 마우스가 없거나 HID 에뮬레이터가 마우스 프로토콜을 지원하지 않으면 BAT 수신 실패(init_done 미점등)",
+    "PS/2 타이밍: 100 MHz 기준 CLK 억제 100 μs(INHIBIT_CNT=10000). 일부 마우스는 더 긴 억제 시간 필요",
+    "VGA 픽셀 클럭: 100 MHz /4 = 25 MHz (표준 25.175 MHz보다 0.7% 느림). 대부분의 모니터는 허용",
+    "커서 오버레이는 프레임 버퍼 없이 온더플라이 계산 — 커서 외 배경 색은 고정(검정·진한 파랑)",
+    "동결 맵 이식(T3)에서 AXI4-Lite 래퍼 추가 필요. IRQ 선번(intc=13)은 프로젝트에서 동결 전까지 제안값"
+  ]
+}

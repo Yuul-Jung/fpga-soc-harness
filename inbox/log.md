@@ -109,3 +109,4 @@
 2026-11-04 14:34 | capstone | mmio-loop-jitter-mon (I-039, 차단조건재심사 ready) | 등급 S2 (CI 성공: lint+sim PASS 13건, yosys 합성 LUT 432·FF 224) | check 오류 0 / build.py 경고 2(예상됨) | 선택 경로: §13.7 차단조건재심사(근거2+새로움2+적합성3+완결성2=9점≥7) | 지터 측정 IP: tick 주기 32비트 카운터·min/max/오버런·IP표준 rev.1 관리레지스터 T2 패키지 | CI run_id 41779569238 conclusion success
 2026-11-04 14:41 | verify | 재열람 0(차단: WebFetch PROVENANCE_REQUIRED 전면 차단) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +2(I-025·I-026, 차단조건재심사: 9점·8점) | raw 심사 +1(I-054 vetted 6점) | check 통과(161건)
 2026-11-04 15:23 | collect | RPi OS 프로젝트: Buildroot 최소 이미지·부트 최적화 · S1 인접 도메인 이식(주)+S5 비정형 출처(보조) | 카드 +3 | 아이디어 +3 | 큐 잔여 348 | blocked 1
+2026-11-04 15:29 | capstone | mmio-ps2-mouse-cursor (I-008, ready) | 등급 S0 (iverilog 없음, CI에서 S1/S2 결정) | check 오류 0 / build.py 경고 3(예상됨) / audit 오류 0 | 선택 경로: §13.7 I-008 ready→used: PS/2 마우스 FSM+VGA 오버레이 T2 패키지 | ps2_mouse_host.v(BAT/0xF4/3바이트 패킷 디코더·클램프) + vga_sync_cursor.v(5×5 커서) + basys3_top.v + tb(PASS/FAIL 6개)

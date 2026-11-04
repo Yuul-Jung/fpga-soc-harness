@@ -91,7 +91,7 @@
 - 차단조건재심사: 2026-11-04 /verify, 근거 2(rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 8점 → ready 승격 (사이클 2번째). WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-008 PS/2 마우스 초기화·패킷 디코더 → 커서 좌표 + VGA 오버레이 (프레임 버퍼 없음)
-- 상태: ready
+- 상태: used (패키지: mmio-ps2-mouse-cursor, 2026-11-04)
 - 요약: 내 판단: 마우스 식별(AA→00)과 데이터 보고 활성화(F4) 시퀀스를 보내는 호스트 FSM, 3바이트 패킷 디코더(부호 확장·화면 경계 클램프), 커서만 그리는 VGA 오버레이를 쓰고, 테스트벤치의 마우스 모델이 시퀀스와 패킷을 보내 좌표를 검사하는 T2 패키지. 그림판 프레임 버퍼를 빼서 BRAM 부담을 없앤다.
 - 조합: [hid-ps2, video-vga]
 - 근거: [oakland-ece378-group7-paintervga, digilent-basys-3-keyboard]
