@@ -506,7 +506,7 @@ always @(*) begin
     mmio_rdata = 32'd0;
     if (mmio_cs && !mmio_we) begin
         case (mmio_addr[15:0])
-            16'h0000: mmio_rdata = {18'd0, r_init_done, 1'b0, r_err, r_busy, 8'd0};
+            16'h0000: mmio_rdata = {18'd0, r_init_done, 1'b0, r_err, r_busy, 10'd0};
             16'h0004: mmio_rdata = {26'd0, r_tx_len};
             16'h000C: mmio_rdata = {26'd0, r_tx_ptr};
             16'hFFF0: mmio_rdata = 32'h5735_5544; /* "W5UD" */
