@@ -10,7 +10,7 @@
 module tb_ps2_mouse_cursor;
 
 // ─── 파라미터 ────────────────────────────────────────────
-parameter INHIBIT = 200;     // 인히빗: ps2_send 종료 후 600ns 갭을 커버 (200×10ns=2000ns)
+parameter INHIBIT = 200;     // 인히빗 2μs: ps2_send(0x00) 복귀(~700ns) 보다 충분히 김 (200×10ns=2000ns)
 parameter CLK_HALF = 5;      // 100 MHz 클럭 반주기 (5ns)
 parameter PS2_HALF = 100;    // PS/2 CLK 반주기 (100ns = 10MHz, 시뮬용)
 
@@ -163,15 +163,12 @@ task ps2_recv_host_tx;
             tb_ps2_clk_drive = 1'b0; #PS2_HALF;
         end
 
-        // ACK 전송 (DATA 로우 1 사이클)
-        #(PS2_HALF/2);
-        tb_ps2_data_drive = 1'b1;
-        tb_ps2_clk_drive  = 1'b1; #PS2_HALF;
-        tb_ps2_clk_drive  = 1'b0; #PS2_HALF;
-        tb_ps2_data_drive = 1'b0;
-        #(PS2_HALF * 2);
-
         // 0xFA ACK 전송
+        // 주의: 하드웨어 ACK 펄스(DATA 로우 1 CLK)는 생략한다.
+        // ACK 펄스를 보내면 DUT 수신기의 bit_cnt가 0→1로 증가한 채로
+        // ps2_send(0xFA)가 시작되어 11비트 프레임이 오정렬된다.
+        // DUT S_WAIT_ACK는 rx_byte==0xFA 전체 프레임만 확인하므로 문제없다.
+        #(PS2_HALF * 4);
         ps2_send(8'hFA);
 
         data = recv_byte;
