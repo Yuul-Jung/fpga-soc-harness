@@ -160,3 +160,6 @@
 | [chili-chips-ba-openeye-camsi](vendor-neutral/chili-chips-ba-openeye-camsi.md) | L3 | T4 | Artix-7 XC7A35T / Trenz TE0711-01 (Basys3 needs-port) | 2026-11-04 |
 | [qengineering-libcamera-opencv-rpi-bullseye-64os](rpi/qengineering-libcamera-opencv-rpi-bullseye-64os.md) | L2 | T3 | RPi4 (Basys3 needs-port) | 2026-11-04 |
 | [rpshredow-fpga-raspberry-image-display](rpi/rpshredow-fpga-raspberry-image-display.md) | L2 | T2 | DE0 (Basys3 needs-port) | 2026-11-04 |
+| [obuda-preempt-rt-latency-tutorial](rpi/obuda-preempt-rt-latency-tutorial.md) | L3 | T1 | RPi4 (Basys3 needs-port) | 2026-11-04 |
+| [applied-ee-rpi-realtime-linux](rpi/applied-ee-rpi-realtime-linux.md) | L3 | T2 | RPi4/RPi5 (Basys3 needs-port) | 2026-11-04 |
+| [ppisa-rpi-rt-control](rpi/ppisa-rpi-rt-control.md) | L2 | T2 | RPi (Basys3 needs-port) | 2026-11-04 |

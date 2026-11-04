@@ -67,7 +67,7 @@
 ## Raspberry Pi 도메인 (2026-11-03 추가, 위에서부터 소비)
 - [x] RPi GPIO: pigpio/gpiozero 기초, SPI/I2C 커널 드라이버와 Python 바인딩 — 2026-11-04 11시대 사이클: 카드 3건(L3: doceme-py-spidev, zbotic 스택 가이드, abelectronics SPI 튜토리얼), pigpio 공식 문서·gpiozero GitHub는 PROVENANCE_REQUIRED로 열람 불가, 아이디어 3건(I-048~I-050, raw)
 - [x] RPi 카메라 파이프라인: Picamera2 + libcamera, OpenCV 실시간 영상 처리 — 2026-11-04 12시대 사이클: 카드 3건(L3: automaticdai-rpi-object-detection, fpgadeveloper-rpi-camera-fmc, chili-chips-ba-openeye-camsi), Picamera2 공식 PDF·libcamera API 가이드는 큐에 남김, 아이디어 3건(I-051~I-053)
-- [ ] RPi 실시간성: PREEMPT_RT 패치, isolcpus, 사이클릭 테스트 (모터 제어 목표)
+- [x] RPi 실시간성: PREEMPT_RT 패치, isolcpus, 사이클릭 테스트 (모터 제어 목표) — 2026-11-04 13시대 사이클: 카드 3건(L3 2, L2 1), ppisa README 열람 불가(blocked), CVUT rtime.ciirc 페이지 blocked
 - [ ] RPi FPGA 연동: RPi SPI/I2C로 FPGA 제어, AXI 스트림 데이터 전송 사례
 - [ ] RPi OS 프로젝트: Buildroot 최소 이미지, 부트 시간 최적화, 임베디드 배포
 

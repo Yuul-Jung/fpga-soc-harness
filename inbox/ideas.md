@@ -618,3 +618,15 @@
 - 난이도: 5
 - 단계: T4
 - 상태: raw
+
+## I-054 RPi4 PREEMPT_RT 외부 루프 + Basys3 MicroBlaze V 내부 루프 이중 도메인 모터 제어 (S2 조합+S7 사다리)
+내 판단: applied-ee-rpi-realtime-linux의 핵심 결론 "BLDC 20kHz는 PREEMPT_RT에서 불가 → FPGA/MCU 분리 필요"와 ppisa-rpi-rt-control의 "SPI로 외부 FPGA에 명령 전달" 패턴을 Basys3로 이식. RPi4 PREEMPT_RT가 1kHz 외부 PID 루프(위치 setpoint 계산)를 담당하고, AXI-UART Lite 또는 SPI Pmod로 MicroBlaze V에 명령 전달, Basys3 AXI-PWM+직교 엔코더 IP(mmio-pwm-qenc-checker 패키지 기반)가 100kHz 내부 PWM 생성·엔코더 카운터 읽기를 담당하는 T3 패키지.
+- id: I-054
+- 조합: [comm-uart(AXI-UART Lite)/comm-spi(SPI Pmod), actuator-servo(PWM H-브리지), sensor(직교 엔코더), debug(PREEMPT_RT cyclictest)]
+- 근거 카드: [[applied-ee-rpi-realtime-linux]], [[ppisa-rpi-rt-control]], [[mmio-pwm-qenc-checker]]
+- 근거 URL: https://applied-ee.github.io/embedded/docs/foundations/embedded-os-sbc/real-time-linux/, https://github.com/ppisa/rpi-rt-control
+- 새로움 근거: 카탈로그에 RPi PREEMPT_RT 외부 루프 + Basys3 FPGA 내부 루프 이중 도메인 모터 제어 카드·패키지 없음.
+- Basys3 적합성 근거: Pmod JA/JB via UART(내 판단: 115200bps로 1kHz 패킷 가능)·SPI Pmod. mmio-pwm-qenc-checker(S2) 패키지가 T2 내부 루프 RTL을 이미 제공. RPi4 PREEMPT_RT Pi OS apt 커널 존재.
+- 난이도: 3
+- 단계: T3
+- 상태: raw

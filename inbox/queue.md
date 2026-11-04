@@ -359,3 +359,10 @@
 - https://github.com/arducam/libcamera | Arducam libcamera 포크 — 미열람(L1), 다양한 카메라 모듈 지원 | arducam libcamera fork camera modules
 - https://github.com/cetex/camera-streamer | camera-streamer: libcamera GStreamer 카메라 스트리밍 도구 — 미열람(L1) | camera streamer libcamera GStreamer Raspberry Pi
 - https://github.com/Qengineering/OpenCV-Livecam-Raspberry-Pi | Qengineering OpenCV 라이브캠 RPi — 미열람(blocked: PROVENANCE_REQUIRED) | OpenCV live camera Raspberry Pi
+
+## 2026-11-04 13시대 수집 — RPi 실시간성 (PREEMPT_RT)
+- https://github.com/ppisa/rpi-rt-control | PPisa CVUT RPi RT 제어 실험 저장소 (DC서보·IRC·PMSM·CAN) — 메인 페이지 L2 열람, README 미열람(blocked: PROVENANCE_REQUIRED) | raspberry pi realtime motor control PREEMPT_RT
+- https://rtime.ciirc.cvut.cz/gitweb/ert_linux_web.git/blob/259326afb259f3294501be679b079aefbaf663fb:/rpi-motor-control/index.html | CVUT rtime RPi 모터 제어 튜토리얼(301 Redirect 차단) — blocked: PROVENANCE_REQUIRED (두 번째 URL로 재시도도 차단) | CVUT rtime raspberry pi motor control realtime Linux
+- https://hackweek.opensuse.org/projects/learn-real-time-linux-on-raspberry-pi-aarch64-and-build-4wd-robot | openSUSE Hackweek RPi aarch64 RT Linux + 4WD 로봇 프로젝트 — 미열람(L1) | openSUSE raspberry pi realtime 4WD robot
+- https://behai-nguyen.github.io/2025/02/18/linuxcnc-05-pi-4b-preempt-rt-revisited.html | LinuxCNC RPi4B PREEMPT_RT 재검토 블로그(2025-02) — 미열람(L1) | LinuxCNC Raspberry Pi 4 PREEMPT_RT revisited
+- https://www.markaicode.com/realtime-linux-kernel-robotics/ | markaicode RT Linux 커널 로보틱스 90분 가이드 (patch-6.6.15-rt22, isolcpus 2,3, 50µs 목표) — L3 열람 완료, 카드 미작성(잠정) | PREEMPT_RT 6.6.15-rt22 kernel robotics guide
