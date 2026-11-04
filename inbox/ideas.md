@@ -581,3 +581,36 @@
 - 난이도: 2
 - 단계: T3
 - 상태: raw
+
+## I-051 openeye-CamSI 착안 no-D-PHY Artix-7 ISERDES 라인 버퍼 IP (S4 제약 역전)
+내 판단: chili-chips-ba openeye-CamSI의 핵심 혁신(D-PHY 칩 없이 IBUFDS+IDELAY2+ISERDES2 프리미티브로 MIPI CSI-2 수신)을 Basys3 XC7A35T에서 재현하되, 카메라 입력을 MIPI CSI-2 대신 OV7670 병렬 픽셀 버스(8비트 RGB565 + PCLK/HSYNC/VSYNC)로 교체한 AXI-Stream ISP 사다리 T2→T4 패키지. 프레임 버퍼 없이 라인 단위 AsyncFIFO CDC 패턴을 그대로 활용해 BRAM 한계를 역이용한다.
+- id: I-051, 조합: [camera(OV7670 병렬), AXI4-Stream, video-vga, accelerator(ISP 라인 버퍼)]
+- 근거 카드: [[chili-chips-ba-openeye-camsi]], [[kwondo99-fpga-vga-photobooth-project]]
+- 근거 URL: https://github.com/chili-chips-ba/openeye-CamSI, https://github.com/kwondo99/FPGA-VGA-PhotoBooth-Project
+- 새로움 근거: 카탈로그에 D-PHY 없는 ISERDES 패턴을 Basys3 OV7670 병렬 버스에 적용한 카드·패키지 없음.
+- Basys3 적합성 근거: OV7670은 Basys3 Pmod 2개(HREF/VSYNC/PCLK/D[7:0])로 직접 연결 가능. BRAM 36개로 라인 더블 버퍼 충분(720픽셀×2×16bit = 23KB).
+- 난이도: 4
+- 단계: T4
+- 상태: raw
+
+## I-052 automaticdai 착안 RPi ML 추론 결과 → UART → Basys3 VGA 오버레이 IP (S2 조합 탐색)
+내 판단: automaticdai/rpi-object-detection의 역할 분리 패턴에서 착안해, RPi CM4/CM5가 YOLO11n 또는 TFLite로 객체 검출을 수행하고 바운딩박스 좌표(x, y, w, h, 클래스 1바이트)를 115200bps UART로 MicroBlaze V에 전달하면, FPGA는 AXI-UART Lite로 수신 후 VGA 오버레이 IP(박스 그리기·클래스 레이블)로 출력하는 T3 캡스톤 패키지.
+- id: I-052, 조합: [camera(RPi Picamera2), comm-uart(AXI-UART Lite), video-vga, sensor, AXI4-Lite]
+- 근거 카드: [[automaticdai-rpi-object-detection]], [[kwondo99-fpga-vga-photobooth-project]]
+- 근거 URL: https://github.com/automaticdai/rpi-object-detection, https://github.com/kwondo99/FPGA-VGA-PhotoBooth-Project
+- 새로움 근거: 카탈로그에 RPi ML 추론 결과를 UART로 Basys3에 전달해 VGA 오버레이하는 카드·패키지 없음.
+- Basys3 적합성 근거: Basys3 USB-UART(JA Pmod 또는 FTDI)로 115200bps UART 가능. 바운딩박스 10바이트 패킷 기준 초당 최대 1150 패킷.
+- 난이도: 3
+- 단계: T3
+- 상태: raw
+
+## I-053 Picamera2 ZSL DMA 라인 버퍼 패턴 → Basys3 AXI-Stream ISP 사다리 T2→T4 (S4+S7 난이도 사다리)
+내 판단: Picamera2의 ZSL DMA 버퍼 패턴을 Basys3 BRAM 더블 버퍼링 개념으로 옮겨, AXI-Stream 라인 버퍼 ISP 사다리(OV7670 → 디베이어 → 데드픽셀 보정 → 가감 연산 → VGA 출력)를 T2→T3→T4 단계 체인으로 구성하는 연구 과제.
+- id: I-053, 조합: [camera(OV7670), AXI4-Stream, video-vga, accelerator(ISP 디베이어·데드픽셀·VGA)]
+- 근거 카드: [[automaticdai-rpi-object-detection]], [[chili-chips-ba-openeye-camsi]], [[kwondo99-fpga-vga-photobooth-project]]
+- 근거 URL: https://github.com/automaticdai/rpi-object-detection, https://github.com/chili-chips-ba/openeye-CamSI
+- 새로움 근거: 카탈로그에 Picamera2 ZSL 개념을 Basys3 BRAM 더블 버퍼로 직접 옮긴 사례 없음. I-051이 단일 T4 카메라 입력이면 I-053은 T2→T4 사다리 체인 전체를 목표로 한다.
+- Basys3 적합성 근거: OV7670 병렬 입력 카드 존재(I-006). 디베이어 IP는 BRAM 1개로 충분(3-라인 버퍼). VGA 출력은 Basys3 표준 인터페이스. BRAM 36개 중 25개 이하 사용 예상(내 판단, 미검증).
+- 난이도: 5
+- 단계: T4
+- 상태: raw

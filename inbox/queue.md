@@ -345,3 +345,11 @@
 - https://www.kernel.org/doc/html/latest/driver-api/spi.html | Linux 커널 SPI 서브시스템 문서 — 미열람(L1), spidev 커널 드라이버 원리 근거 | Linux kernel SPI subsystem spidev documentation
 - https://pinout.xyz/ | RPi GPIO 핀배치 시각화(pinout.xyz) — 미열람(L1), SPI/I2C 핀 번호 확인 | Raspberry Pi GPIO pinout SPI I2C
 - https://www.rmedium.com/raspberry-pi-spi-master-to-fpga-slave | RPi SPI → FPGA SPI 슬레이브 연결 사례(미확인 출처) — 미열람(L1), RPi→FPGA 직접 연결 근거 | Raspberry Pi SPI master FPGA slave
+- https://datasheets.raspberrypi.com/camera/picamera2-manual.pdf | Picamera2 공식 매뉴얼 PDF(목차 열람 L1; ZSL·DMA 버퍼·YUV/RGB 형식 등 세부 미열람) — 카드 후보 | Picamera2 official manual PDF DMA buffer
+- https://libcamera.org/guides/pipeline-handler.html | libcamera 파이프라인 핸들러 개발 가이드(미열람 L1; 5계층 구조 세부 절차) — 카드 후보 | libcamera pipeline handler development guide
+- https://github.com/raspberrypi/picamera2/tree/main/examples | Picamera2 공식 예제 디렉터리(미열람 L1; ZSL/MJpeg/ML 예제 모음) — 큐 등록 | Picamera2 examples GitHub official
+- https://libcamera.org/api-html/index.html | libcamera C++ API 레퍼런스(미열람 L1; FrameBuffer·ControlList 세부) — 큐 등록 | libcamera C++ API reference FrameBuffer
+- https://github.com/nicowillis/raspberry-pi-picamera2-h264-stream | RPi Picamera2 H.264 하드웨어 인코더 스트리밍 사례(미열람 L1; /dev/video11 V4L2 M2M 활용) — 큐 등록 | Picamera2 H264 hardware encoder V4L2 M2M
+- https://wikidocs.net/336295 | 한국어 libcamera/Picamera2 가이드 1편(이전 사이클 차단됨; 재시도 대상) — blocked: PROVENANCE_REQUIRED, 재열람 필요 | 한국어 libcamera picamera2 가이드
+- https://github.com/chili-chips-ba/openeye-CamSI/tree/main/0.hw | openeye-CamSI 하드웨어 폴더(IMX219 커넥터·IBUFDS 핀맵 세부 — 루트 열람으로 미확인) — 재열람 필요 | openeye CamSI hardware IMX219 connector pinmap
+- https://github.com/nicowillis/raspberry-pi-picamera2-h264-stream | RPi Picamera2 H.264 HW 인코더 — 미열람(L1) | picamera2 h264 stream hardware encoder
