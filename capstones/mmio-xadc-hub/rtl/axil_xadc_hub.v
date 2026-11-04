@@ -132,6 +132,7 @@ module axil_xadc_hub #(
     reg  [1:0] ch_ptr;
     reg  [4:0] scan_cnt;
     reg [19:0] accum [0:3];
+    reg [15:0] drp_do_lat;  // drp_drdy 클럭에서 drp_do를 래치 (다음 클럭에 DRP 모델이 소거하기 전에 포착)
 
     wire [4:0] avg_len = 5'd1 << ctrl_avg;
 
@@ -269,6 +270,7 @@ module axil_xadc_hub #(
             ch_avg_r[1] <= 12'h0;
             ch_avg_r[2] <= 12'h0;
             ch_avg_r[3] <= 12'h0;
+            drp_do_lat  <= 16'h0;
         end else begin
             scan_done <= 1'b0;  // 기본: 펄스 없음
 
@@ -297,13 +299,15 @@ module axil_xadc_hub #(
 
                 S_WAIT: begin
                     drp_den <= 1'b0;
-                    if (drp_drdy)
-                        state <= S_ACCUM;
+                    if (drp_drdy) begin
+                        drp_do_lat <= drp_do;  // drp_drdy 클럭에 drp_do 포착 (DRP 모델이 소거하기 전)
+                        state      <= S_ACCUM;
+                    end
                 end
 
                 S_ACCUM: begin
-                    // ADC 결과는 DRP DO[15:4]에 12비트로 정렬됨
-                    accum[ch_ptr] <= accum[ch_ptr] + {8'd0, drp_do[15:4]};
+                    // drp_do_lat: drp_drdy 클럭에서 포착한 ADC 결과 (DO[15:4] = 12비트)
+                    accum[ch_ptr] <= accum[ch_ptr] + {8'd0, drp_do_lat[15:4]};
                     state         <= S_NEXT;
                 end
 
