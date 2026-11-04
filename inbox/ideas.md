@@ -968,7 +968,7 @@
 - 차단조건재심사: 2026-11-04 /verify(8차), 모든 WebFetch PROVENANCE_REQUIRED 차단(8차 연속). 7차에서 raw→vetted 첫 심사 완료, 8차는 차단조건재심사 적용 가능. 근거 카드 총 3건(industrialmonitordirect-irs2110-half-bridge, zbotic-backem-flyback-protection, lcsc-mosfet-selection-motor-control, rechecked_at 불문) → 근거 3 + 새로움 2(AXI4-Lite 데드타임 IP 카드 없음; IRS2110 HIN/LIN 구동용 타이밍 IP 없음) + 적합성 2(Pmod JA/JB 3.3V 출력, 100MHz 10ns 분해능, FSM+카운터 LUT 최소) + 완결성 1(IRS2110 외부 연결 절차 미정) = 8점 ≥ 7 → ready 승격. 8차 2번째 승격(상한 채움).
 
 ## I-073 역기전력 보호 회로 + FPGA XADC 과전류 감지 조합 T2
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: RC 스너버·TVS·쇼트키 다이오드 하드웨어 보호와 Basys3 XADC 션트 저항 전류 측정을 결합한 소프트·하드 2중 모터 보호 시스템.
 - 조합: [Basys3 XADC(전류 샘플), zbotic 플라이백 보호 회로, mmio-motor-safety-wrapper RTL 연장]
 - 근거: [zbotic-backem-flyback-protection, industrialmonitordirect-irs2110-half-bridge]
@@ -977,9 +977,10 @@
 - 난이도: 3 / 단계: T2
 - 심사: 2026-11-04 /verify(7차), 근거 0(zbotic-backem-flyback-protection·industrialmonitordirect-irs2110-half-bridge 모두 rechecked_at 없음; 근거 카드 2건만) + 새로움 2(XADC 연동 과전류 감지+하드웨어 플라이백 보호 조합 카드 없음; 기존 아이디어는 RTL 슛스루·데드타임만) + 적합성 2(Basys3 XADC JXADC 커넥터 사용 가능, 션트 저항 0–1V 범위 측정 가능; 단 외부 보호 회로 설계 미정) + 완결성 1(XADC IP+과전류 비교 로직+하드웨어 보호 회로 각각 명세 복잡, RTL+TB 범위 완전히 정의 안 됨) = 5점 → vetted. 보강: 근거 카드 rechecked_at 취득(카드 2건 부족, 1건 추가 필요), 범위 세분화. ※ 첫 raw→vetted 심사이므로 차단조건재심사 불적용(§14.2).
 - 차단조건재심사: 2026-11-04 /verify(8차), 모든 WebFetch PROVENANCE_REQUIRED 차단(8차 연속). 7차에서 raw→vetted 첫 심사 완료, 8차는 차단조건재심사 적용 가능. 근거 카드 총 2건(zbotic-backem-flyback-protection, industrialmonitordirect-irs2110-half-bridge, rechecked_at 불문) → 근거 2 + 새로움 2 + 적합성 2(XADC JXADC 커넥터 가용, 션트 저항 0–1V 범위) + 완결성 1(RTL+TB 범위 미정) = 7점 ≥ 7이나 8차 2건 상한 초과로 보류 → vetted 유지. 다음 사이클 1순위 후보.
+- 차단조건재심사: 2026-11-04 /verify(9차), 모든 WebFetch PROVENANCE_REQUIRED 차단(9차 연속). 8차 1순위 보류 건이므로 9차에 우선 승격. 근거 카드 총 2건(zbotic-backem-flyback-protection, industrialmonitordirect-irs2110-half-bridge, rechecked_at 불문) → 근거 2 + 새로움 2(XADC 연동 과전류+하드웨어 플라이백 조합 카드 없음) + 적합성 2(XADC JXADC 커넥터 가용, 션트 저항 0–1V 범위) + 완결성 1(RTL+TB 범위 미정) = 7점 ≥ 7 → ready 승격.
 
 ## I-074 Basys3 Pmod 3.3V 직구동 로직레벨 H-브리지 테스트베드 T1
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: 별도 게이트 드라이버 없이 Basys3 Pmod 3.3V 신호로 VGS(th)<2.5V 로직레벨 MOSFET을 직접 구동하는 소신호 모터 테스트베드. 소전류 모터(< 500 mA) 대상 최소 구성.
 - 조합: [Basys3 Pmod 직접 출력, 로직레벨 MOSFET(VGS(th)<2.5V), 쇼트키 플라이백]
 - 근거: [lcsc-mosfet-selection-motor-control, zbotic-backem-flyback-protection]
@@ -988,24 +989,27 @@
 - 난이도: 1 / 단계: T1
 - 심사: 2026-11-04 /verify(7차), 근거 0(lcsc-mosfet-selection-motor-control·zbotic-backem-flyback-protection 모두 rechecked_at 없음; 근거 카드 2건만) + 새로움 2(Pmod 직접 구동 최소 구성 테스트베드 카드 없음; 기존 카드는 모두 별도 드라이버 IC 사용) + 적합성 1(Pmod 3.3V 출력 가능하나 출력 전류 제한 < 24 mA per pin 미확인; 2N7002 게이트 전류 감당 가능성 미확인; 소전류 모터 직구동 가능성 불확실) + 완결성 2(T1 단계 단순 Verilog PWM+H-브리지 출력, 범위 최소, RTL+외부 BOM 작성 가능) = 5점 → vetted. 보강: Pmod 출력 전류 제한 공식 확인, 근거 카드 rechecked_at 취득, 근거 카드 1건 추가. ※ 첫 raw→vetted 심사이므로 차단조건재심사 불적용(§14.2).
 - 차단조건재심사: 2026-11-04 /verify(8차), 모든 WebFetch PROVENANCE_REQUIRED 차단(8차 연속). 7차에서 raw→vetted 첫 심사 완료, 8차는 차단조건재심사 적용 가능. 근거 카드 총 2건(lcsc-mosfet-selection-motor-control, zbotic-backem-flyback-protection, rechecked_at 불문) → 근거 2 + 새로움 2 + 적합성 1(Pmod 전류 제한 미확인) + 완결성 2(T1 단순 Verilog PWM+H-브리지, 범위 최소) = 7점 ≥ 7이나 8차 2건 상한 초과로 보류 → vetted 유지. 다음 사이클 2순위 후보.
+- 차단조건재심사: 2026-11-04 /verify(9차), 모든 WebFetch PROVENANCE_REQUIRED 차단(9차 연속). 8차 2순위 보류 건이므로 9차에 승격. 근거 카드 총 2건(lcsc-mosfet-selection-motor-control, zbotic-backem-flyback-protection, rechecked_at 불문) → 근거 2 + 새로움 2(Pmod 직접 구동 최소 구성 테스트베드 카탈로그에 없음) + 적합성 1(Pmod 전류 제한 미확인) + 완결성 2(T1 단순 Verilog PWM+H-브리지, 범위 최소) = 7점 ≥ 7 → ready 승격.
 
 ## I-075 Basys3 XADC 전원 모니터 AXI-Lite IP — 코어·보조 전압 감시 T2
-- 상태: raw
+- 상태: vetted
 - 요약: 내 판단: Artix-7 내장 XADC를 이용해 Vccint(1.0V), Vccaux(1.8V), Vccbram 세 레일을 주기적으로 샘플링하고, 임계값 초과 시 MicroBlaze V 인터럽트를 발생시키는 AXI4-Lite 슬레이브 IP. 외부 하드웨어 불필요.
 - 조합: [Basys3 XADC 내부 채널, AXI4-Lite 슬레이브 레지스터, MicroBlaze V 인터럽트 컨트롤러, Vishay 전원 순서화 개념]
 - 근거: [vishay-fpga-power-supply-consideration, altium-ldo-vs-switching-regulator]
 - 새로움의 근거: 카탈로그 내 XADC를 전원 모니터로 쓰는 AXI-Lite IP 아이디어 없음. 기존 XADC 아이디어는 외부 센서(온도, 전류 샘플) 위주
 - Basys3 적합성의 근거: Artix-7 XC7A35T에 XADC 하드 블록 내장. Vccint·Vccaux·Vccbram은 별도 외부 핀 불필요. XADC IP 코어는 Vivado에서 무료 사용 가능
 - 난이도: 2 / 단계: T2
+- 심사: 2026-11-04 /verify(9차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(vishay-fpga-power-supply-consideration·altium-ldo-vs-switching-regulator 모두 rechecked_at 없음) + 새로움 2(XADC를 전원 모니터로 쓰는 AXI-Lite IP 아이디어 카탈로그 없음; 기존 XADC 아이디어는 외부 전류·온도 센서 위주) + 적합성 3(Artix-7 XC7A35T 내장 XADC 하드 블록, Vccint/Vccaux/Vccbram 외부 핀 불필요, Vivado XADC IP 코어 무료 사용 가능) + 완결성 2(AXI4-Lite 슬레이브 IP 범위 명확, 임계값 비교+인터럽트 출력 RTL+TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득 필요, AXI4-Lite 슬레이브 레지스터 세부 범위(채널 수, 임계값 레지스터 수) 명세화.
 
 ## I-076 외부 보조 전원 보드 설계 가이드: 12V→5V+3.3V 이중 레일 for Basys3 확장 T0
-- 상태: raw
+- 상태: vetted
 - 요약: 내 판단: 모터·서보·센서 확장 모듈을 Basys3에 연결할 때 쓰는 외부 이중 레일 전원 보드. 12V→DC-DC 벅→5V/3A, 5V→LDO→3.3V/1A, GND 공통, USB 5V 격리 설계 가이드.
 - 조합: [12V 입력, 벅 컨버터(MP1584·XL4016 등), LDO(AMS1117-3.3), 커플링 커패시터, 패러사이틱 인덕턴스 차단]
 - 근거: [vishay-fpga-power-supply-consideration, wevolver-buck-converter-design-guide, altium-ldo-vs-switching-regulator]
 - 새로움의 근거: 카탈로그 내 Basys3 모터 확장용 외부 전원 보드 설계 가이드 없음. 전원 순서화·GND 분리·USB 격리를 하나의 설계 가이드로 묶은 아이디어 없음
 - Basys3 적합성의 근거: Basys3 외부 전원은 별도 보드로 공급(USB+배럴잭 모두 5V 한계). 모터·서보는 별도 전원 필수(전기 규칙 §17.2). 가이드 문서 형태이므로 RTL 불필요, 범위 T0
 - 난이도: 1 / 단계: T0
+- 심사: 2026-11-04 /verify(9차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(vishay-fpga-power-supply-consideration·wevolver-buck-converter-design-guide·altium-ldo-vs-switching-regulator 모두 rechecked_at 없음; 3건이지만 불문) + 새로움 2(Basys3 모터 확장용 외부 전원 보드 설계 가이드 카탈로그 없음; 전원 순서화·GND 분리·USB 격리 통합 가이드 아이디어 없음) + 적합성 2(Basys3 외부 전원 별도 보드 필수, 모터 전원 §17.2 분리 필수; 가이드 문서이므로 직접 RTL 불필요 → 적합성 판단 쉬우나 Basys3 RTL 연결 없어 3점 미달) + 완결성 1(T0 가이드 문서지만 범위 여전히 넓음; 어떤 부품·토폴로지 선정 기준을 RTL+TB 없이 문서로 완결할 수 있는지 불명확) = 5점 → vetted. 보강: 설계 가이드 범위 세분화(어떤 선택 항목 다루는지), 근거 카드 rechecked_at 취득.
 
 ## I-077 단상 풀브리지 SPWM 생성기 AXI4-Lite IP — 데드타임 레지스터 포함 T2
 
