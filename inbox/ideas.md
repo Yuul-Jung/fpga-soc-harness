@@ -1021,7 +1021,7 @@
 - 근거 URL: [https://community.element14.com/technologies/fpga-group/b/blog/posts/vhdl-pwm-generator-with-dead-time-the-design, https://industrialmonitordirect.com/blogs/knowledgebase/igbt-h-bridge-shoot-through-fixing-pwm-timing-driver-issues]
 - 새로움의 근거: 카탈로그 내 SPWM 전용 AXI4-Lite IP 없음; IRS2110 카드는 드라이버 IC 설계에 집중하고 RTL FSM 미포함
 - Basys3 적합성의 근거: 100MHz 클럭 기준 500ns 데드타임 = 50 클럭 틱, 6비트 카운터 충분. Pmod 출력으로 HIN/LIN 쌍 직접 연결. 동결 맵 free_slots 1 블록(64KB) 배정
-- 난이도: 2 / 단계: T2 / 상태: ready
+- 난이도: 2 / 단계: T2 / 상태: used (패키지: mmio-spwm-deadtime-ip, 2026-11-04)
 - 심사: 2026-11-05 /verify(10차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(근거 카드 모두 rechecked_at 없음) + 새로움 2(카탈로그 내 SPWM 전용 AXI4-Lite IP 없음; IRS2110 카드는 드라이버 IC 설계에 집중하고 RTL FSM 미포함) + 적합성 3(100MHz 클럭 기준 500ns 데드타임 = 50 클럭 틱, 6비트 카운터 충분; Pmod 출력으로 HIN/LIN 쌍 직접 연결 가능; 동결 맵 free_slots 1 블록 배정 가능) + 완결성 2(SPWM+데드타임 FSM+AXI4-Lite RTL 범위 명확, 보완 출력 TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득, 삼각파-기준파 비교 RTL 세부 파라미터 명세화.
 - 차단조건재심사: 2026-11-05 /verify(11차), 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(element14-cumps-deadtime-vhdl-pynqz2, industrialmonitordirect-irs2110-half-bridge, industrialmonitordirect-igbt-shootthrough, rechecked_at 불문) → 근거 3 + 새로움 2(카탈로그 내 SPWM 전용 AXI4-Lite IP 없음) + 적합성 3(100MHz 클럭 500ns 데드타임 50 클럭 틱, 6비트 카운터 충분, Pmod 출력 HIN/LIN 쌍 직접 연결, 동결 맵 free_slots 배정 가능) + 완결성 2(SPWM+데드타임 FSM+AXI4-Lite RTL 범위 명확, 보완 출력 TB 작성 가능) = 10점 ≥ 7 → ready 승격.
 

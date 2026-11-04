@@ -1,0 +1,250 @@
+{
+  "slug": "mmio-spwm-deadtime-ip",
+  "title": "단상 풀브리지 SPWM 생성기 AXI4-Lite IP — 데드타임 레지스터 포함",
+  "summary": "32-항목 사인 LUT 기반 단상 SPWM 발생기. 소프트웨어에서 AXI4-Lite 레지스터로 반송파 주기·변조 지수·데드타임을 설정. 보완 출력(HIN_A/LIN_A, HIN_B/LIN_B)으로 풀브리지 게이트 드라이버 직접 구동. 슛스루 방지 FSM 내장.",
+  "board": "Basys3 (XC7A35T)",
+  "stage": "T2",
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 Verilog-2001 원본이며 외부 코드를 포함하지 않는다. 시뮬레이션·합성 결과는 CI가 기록한다.",
+  "goals": [
+    "AXI4-Lite 슬레이브로 CTRL/PERIOD/MOD_IDX/DEADTIME/STATUS/ID/PHASE_CTR 7개 레지스터 제공",
+    "삼각파 반송파 vs 사인 LUT 기준파 비교로 raw SPWM 생성",
+    "데드타임 FSM: 천이 시 HIN·LIN 모두 비활성 → 지연 후 목표 상태 → 슛스루 원천 차단",
+    "TRIP 입력(외부 고장) 또는 소프트웨어 비활성화 시 즉시 모든 출력 비활성",
+    "iverilog 시뮬레이션에서 TC1~TC5 자기점검 PASS, yosys 합성 성공"
+  ],
+  "non_goals": [
+    "세 상 인버터 또는 다채널 SPWM",
+    "폐루프 전압/전류 제어 (I-079가 담당)",
+    "게이트 드라이버 IC(IRS2110 등) 회로 설계 — 연결 절차만 문서화",
+    "MicroBlaze V CPU 통합 — IP 단독 동작 데모만 포함"
+  ],
+  "architecture": {
+    "clock": "100 MHz (Basys3 W5), 리셋 btnC active-high",
+    "blocks": [
+      {
+        "id": "top",
+        "name": "basys3_top",
+        "kind": "wrapper",
+        "module": "basys3_top",
+        "file": "rtl/basys3_top.v",
+        "desc": "Basys3 보드 최상위 래퍼. demo_master로 IP 레지스터를 초기화하고 SPWM 출력을 Pmod JB에 연결.",
+        "short": "Basys3 래퍼",
+        "side": "board"
+      },
+      {
+        "id": "demo",
+        "name": "demo_master",
+        "kind": "controller",
+        "module": "demo_master",
+        "file": "rtl/basys3_top.v",
+        "desc": "리셋 후 AXI4-Lite write로 PERIOD=5000, MOD_IDX=26214, DEADTIME=50, CTRL.EN=1 순서로 IP를 초기화하는 단순 FSM. CPU 없는 독립 데모용.",
+        "short": "AXI 데모 마스터",
+        "side": "left"
+      },
+      {
+        "id": "ip",
+        "name": "spwm_ip",
+        "kind": "ip",
+        "module": "spwm_ip",
+        "file": "rtl/spwm_ip.v",
+        "desc": "SPWM 발생기 IP 본체. AXI4-Lite 슬레이브 + 삼각파 반송파 + 32-항목 Q15 사인 LUT + raw_pwm 비교기 + 2x 데드타임 FSM(레그 A/B).",
+        "short": "SPWM IP",
+        "side": "right"
+      },
+      {
+        "id": "pmod",
+        "name": "pmod_jb_out",
+        "kind": "external",
+        "module": null,
+        "file": null,
+        "desc": "Pmod JB 헤더. 핀 1=HIN_A, 2=LIN_A, 3=HIN_B, 4=LIN_B.",
+        "short": "Pmod JB",
+        "side": "right"
+      }
+    ],
+    "links": [
+      {"from": "demo", "to": "ip", "label": "AXI4-Lite write (CTRL/PERIOD/MOD_IDX/DEADTIME)"},
+      {"from": "ip",   "to": "pmod", "label": "HIN_A, LIN_A, HIN_B, LIN_B (보완 쌍)"}
+    ]
+  },
+  "bus_protocol": {
+    "name": "AXI4-Lite",
+    "data_width": 32,
+    "addr_width": 32,
+    "signals": [
+      {"name": "s_awaddr[31:0]",  "dir": "master→slave", "desc": "쓰기 주소"},
+      {"name": "s_awvalid",       "dir": "master→slave", "desc": "주소 유효"},
+      {"name": "s_awready",       "dir": "slave→master", "desc": "주소 수락"},
+      {"name": "s_wdata[31:0]",   "dir": "master→slave", "desc": "쓰기 데이터"},
+      {"name": "s_wstrb[3:0]",    "dir": "master→slave", "desc": "바이트 스트로브 (4'hF만 처리)"},
+      {"name": "s_wvalid",        "dir": "master→slave", "desc": "데이터 유효"},
+      {"name": "s_wready",        "dir": "slave→master", "desc": "데이터 수락"},
+      {"name": "s_bresp[1:0]",    "dir": "slave→master", "desc": "응답 (항상 OKAY)"},
+      {"name": "s_bvalid",        "dir": "slave→master", "desc": "응답 유효"},
+      {"name": "s_bready",        "dir": "master→slave", "desc": "응답 수락"},
+      {"name": "s_araddr[31:0]",  "dir": "master→slave", "desc": "읽기 주소"},
+      {"name": "s_arvalid",       "dir": "master→slave", "desc": "읽기 주소 유효"},
+      {"name": "s_arready",       "dir": "slave→master", "desc": "읽기 주소 수락"},
+      {"name": "s_rdata[31:0]",   "dir": "slave→master", "desc": "읽기 데이터"},
+      {"name": "s_rresp[1:0]",    "dir": "slave→master", "desc": "읽기 응답 (항상 OKAY)"},
+      {"name": "s_rvalid",        "dir": "slave→master", "desc": "읽기 데이터 유효"},
+      {"name": "s_rready",        "dir": "master→slave", "desc": "읽기 데이터 수락"}
+    ],
+    "note": "WSTRB는 전체 워드(4'hF)만 처리, 비트 마스크 미지원. bresp/rresp는 항상 2'b00(OKAY). 없는 주소 읽으면 0 반환."
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "custom",
+    "compat": "partial",
+    "plan": "mbv-frozen-v2 free_slot [16] = 0x4016_0000 사용 제안. intc 13 사용 제안(STATUS[1] TRIP_LATCH 인터럽트). 프로젝트 인덱스 표가 동결한다.",
+    "frozen_mapping": [
+      {
+        "block": "ip",
+        "region": "free_slot_16",
+        "base": "0x4016_0000",
+        "intc": 13
+      }
+    ],
+    "note": "MicroBlaze V SoC에서 사용 시: IP_BASE = 0x4016_0000, IP 인터럽트를 INTC 입력 13에 연결. demo_master 블록은 MBv 통합 시 제거하고 MBv가 AXI 마스터가 된다."
+  },
+  "external_parts": [
+    {
+      "id": "gate_drv",
+      "name": "IRS2110 또는 IR2110 게이트 드라이버 (2개)",
+      "block": "pmod",
+      "interface": "PMOD JB",
+      "io_voltage": 3.3,
+      "qty": 2,
+      "board_resident": false,
+      "supply_voltage": 15.0,
+      "level_shift": "IRS2110 내장 로직 대응 (별도 레벨 시프터 불필요)",
+      "power_note": "게이트 드라이버 VCC는 보드와 분리된 별도 15V 공급. GND만 공통.",
+      "arduino_compatible": false,
+      "notes": "Pmod 3.3V → IRS2110 HIN/LIN 입력 호환. 출력 전압(HO/LO)은 부트스트랩 회로로 15V. 레벨 변환은 IRS2110 내장 로직으로 대신한다. 별도 레벨 시프터 불필요."
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "디지털 계통도(diagram.svg)와 별개. 게이트 드라이버 부트스트랩 회로·MOSFET H-브리지·전류 감지 저항은 미작성. 하드웨어 테스트 전 작성 필요."
+  },
+  "hierarchy": {
+    "module": "basys3_top",
+    "file": "rtl/basys3_top.v",
+    "children": [
+      {
+        "module": "demo_master",
+        "file": "rtl/basys3_top.v",
+        "children": []
+      },
+      {
+        "module": "spwm_ip",
+        "file": "rtl/spwm_ip.v",
+        "children": []
+      }
+    ]
+  },
+  "memory_map": [
+    {
+      "base": "0x4016_0000",
+      "size": "0x10000",
+      "block": "ip",
+      "desc": "SPWM IP 레지스터 영역 (AXI4-Lite 슬레이브)",
+      "regs": [
+        {"off": "0x00", "name": "CTRL",      "access": "RW", "desc": "[0]=EN(IP 활성화), [1]=TRIP_CLR(1 write → TRIP latch 해제)"},
+        {"off": "0x04", "name": "PERIOD",    "access": "RW", "desc": "[15:0] 반송파 반주기 클럭 틱 (기본 5000 = 10 kHz @ 100 MHz)"},
+        {"off": "0x08", "name": "MOD_IDX",   "access": "RW", "desc": "[14:0] Q15 변조 지수 0..32767 (기본 26214 ≈ 80%)"},
+        {"off": "0x0C", "name": "DEADTIME",  "access": "RW", "desc": "[9:0] 데드타임 클럭 틱 (기본 50 = 500 ns @ 100 MHz)"},
+        {"off": "0x10", "name": "STATUS",    "access": "RO", "desc": "[0]=ACTIVE, [1]=TRIP_LATCH"},
+        {"off": "0x14", "name": "ID",        "access": "RO", "desc": "0x5350_5731 고정 (ASCII SPW1)"},
+        {"off": "0x18", "name": "PHASE_CTR", "access": "RO", "desc": "[4:0] 현재 사인 LUT 인덱스 (디버그 읽기)"}
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T2",
+      "state": "current",
+      "title": "단상 SPWM IP — 데드타임 FSM, AXI4-Lite 레지스터",
+      "refs": ["element14-cumps-deadtime-vhdl-pynqz2", "industrialmonitordirect-irs2110-half-bridge"]
+    },
+    {
+      "stage": "T3",
+      "state": "planned",
+      "title": "SPWM + XADC 폐루프 (I-079): XADC 출력 전압 피드백으로 MOD_IDX 자동 조정",
+      "refs": ["arxiv-1002340-spartan3e-spwm-inverter"]
+    }
+  ],
+  "references": [
+    {
+      "card": "element14-cumps-deadtime-vhdl-pynqz2",
+      "why": "VHDL 데드타임 삽입 FSM 설계 원리. 천이 감지 → 양쪽 비활성 → 카운터 → 목표 상태 패턴을 Verilog로 재구현."
+    },
+    {
+      "card": "industrialmonitordirect-irs2110-half-bridge",
+      "why": "IRS2110 게이트 드라이버 HIN/LIN 입력 전기 규격 및 데드타임 요구사항 (최소 350 ns) 근거."
+    },
+    {
+      "card": "industrialmonitordirect-igbt-shootthrough",
+      "why": "슛스루 메커니즘과 데드타임 필요성 설명. TB TC2(슛스루 감지)의 근거."
+    }
+  ],
+  "sources": {
+    "rtl": [
+      "rtl/spwm_ip.v",
+      "rtl/basys3_top.v"
+    ],
+    "tb": [
+      "tb/tb_spwm_ip.v"
+    ],
+    "constraints": [
+      "constr/basys3.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
+  },
+  "howto": [
+    {
+      "title": "시뮬레이션 (iverilog + vvp)",
+      "steps": [
+        "iverilog, yosys 설치 (Ubuntu: sudo apt install iverilog yosys)",
+        "make -C capstones/mmio-spwm-deadtime-ip sim",
+        "build/sim.log에서 'PASS: ALL' 확인 (TC1~TC5)"
+      ]
+    },
+    {
+      "title": "린트 (verilator)",
+      "steps": [
+        "verilator 설치 (Ubuntu: sudo apt install verilator)",
+        "make -C capstones/mmio-spwm-deadtime-ip lint"
+      ]
+    },
+    {
+      "title": "합성 (yosys 추정)",
+      "steps": [
+        "make -C capstones/mmio-spwm-deadtime-ip synth",
+        "build/synth.log에서 LUT/FF 자원 확인 (yosys 추정; Vivado 수치와 다를 수 있음)"
+      ]
+    },
+    {
+      "title": "Vivado 빌드 (Basys3 보드 테스트)",
+      "steps": [
+        "Vivado 2024.2: Create Project → RTL Project → Part xc7a35tcpg236-1",
+        "Add Sources: rtl/spwm_ip.v, rtl/basys3_top.v (tb/ 제외)",
+        "Add Constraints: constr/basys3.xdc",
+        "Run Synthesis → Implementation → Generate Bitstream → Program Device",
+        "Pmod JB 1~4번 핀에 IRS2110 게이트 드라이버 HIN_A/LIN_A/HIN_B/LIN_B 연결 후 동작 확인"
+      ]
+    }
+  ],
+  "verification": {
+    "board": "not-tested",
+    "notes": "S3(보드 동작 확인)은 사람만 올릴 수 있다. 에이전트는 board: pass를 쓰지 않는다."
+  },
+  "risks": [
+    "데드타임 미달: DEADTIME 레지스터를 0으로 설정하면 슛스루 발생 가능. 최솟값 제한 없음 — 소프트웨어 책임.",
+    "외부 부품 전압: Pmod 3.3V → IRS2110 HIN/LIN은 호환이나, MOSFET 게이트 드라이브 전압(15V) 및 H-브리지 전원은 보드와 분리 필요.",
+    "사인 LUT 주파수: 반송파 10 kHz, LUT 32항목 기준 출력 주파수는 약 312.5 Hz(10000/32). 50 Hz 출력이 필요하면 PERIOD를 조정하거나 위상 증분 레지스터를 추가해야 함.",
+    "yosys 자원 추정은 Vivado LUT/FF/타이밍(WNS)과 다를 수 있다."
+  ]
+}

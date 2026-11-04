@@ -151,3 +151,4 @@
 2026-11-05 01:43 | verify | 재열람 0(차단: WebFetch PROVENANCE_REQUIRED 전면 차단 11차 연속) | 수정 1(mmio-i2c-master-ip capstone.json: memory_map 형식·references 키명·hierarchy 형식 수정) | 불일치 1(capstone.json 명세 형식) | 승격 L2→L3 0 | ready +2(I-077·I-079, 차단조건재심사 11차: 각 10점) | raw→vetted +3(I-082 5점·I-083 5점·I-084 5점) | 차단조건재심사 보류: I-081 10점(다음 사이클 1순위)·I-080 9점(다음 사이클 2순위)
 2026-11-05 01:58 | capstone | mmio-xadc-pwr-mon (I-075) · 무조건생성원칙 | S0(CI 대기) | Vccint·Vccaux·Vccbram 전원 감시 AXI4-Lite IP, DRP FSM + 임계값 비교 + IRQ W1C, TC1~TC5 자체 점검 테스트벤치
 2026-11-05 02:15 | collect | RPi GPIO/SPI 호스트·Basys3 IP 제어시험 · S3+S1 | 카드 +3 | 아이디어 +2 | 큐 잔여 ~435 | blocked 0
+2026-11-05 02:32 | capstone | mmio-spwm-deadtime-ip (I-077) | 등급 S0 (로컬 iverilog/yosys 없음; CI에서 S1/S2 결정) | SPWM 단상 데드타임 IP: 삼각파 반송파+32-엔트리 Q15 사인 LUT+3상태 데드타임 FSM, AXI4-Lite 슬레이브, 슬롯[16]=0x4016_0000 | TB TC1~TC5(ID·슈트스루·데드타임갭·MOD_IDX변경·EN=0) | build.py 경고 1건(custom 맵, compat=partial)
