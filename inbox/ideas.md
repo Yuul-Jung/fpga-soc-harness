@@ -1167,3 +1167,36 @@
 - 내 판단: 두 카드의 아이디어를 조합하면 MicroBlaze V 소프트웨어에서 단순 레지스터 쓰기만으로 7세그 고급 제어가 가능한 IP 완성. T1→T2 전환점의 대표 예제로 적합.
 - 난이도: 2 / 단계: T1-T2 / 상태: vetted
 - 심사: 2026-11-05 /verify(13차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(byu-ecen320-seven-segment4·element14-arty-s7-7seg-brightness 모두 rechecked_at 없음) + 새로움 2(카탈로그에 blank·dp·PWM 밝기를 AXI4-Lite 레지스터로 통합한 Basys3 IP 없음; 기존 7세그 카드들은 개별 기능만 다룸) + 적합성 3(Basys3 4자리 공통 애노드 7세그 직접 지원, REFRESH_RATE=200 → 100MHz 분주 충분, PWM 밝기 duty cycle 카운터 LUT 최소 소모) + 완결성 2(DIGIT_DATA+BRIGHTNESS 레지스터 2개 구조 제안, 범위 명확, RTL+TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득 후 ready 재심사.
+
+## I-087 AXI4-Lite 멀티 버튼 IP — 디바운스+긴 누름+원샷 에지 검출 통합, 소프트웨어 가변 임계값 (T2)
+
+- 내 판단: Basys3 5개 버튼(BTNC·BTNL·BTNR·BTNU·BTND)에 대해 디바운스(5 ms)+긴 누름 임계값(소프트웨어 가변)+원샷 에지 검출을 단일 AXI4-Lite 슬레이브 IP로 통합. MicroBlaze V에서 `DEBOUNCE_MS`·`LONGPRESS_MS` 레지스터를 쓰면 모든 버튼의 임계값이 런타임에 바뀜. IRQ 선으로 인터럽트 발생, STATUS 레지스터로 어느 버튼이 눌렸는지 확인.
+- 조합: [byu-ecen220-lab08-debounce-basys3, doyk0215-2d-labyrinth-on-fpga, nandland-project4-debounce-switch]
+- 근거 카드: [byu-ecen220-lab08-debounce-basys3, doyk0215-2d-labyrinth-on-fpga, nandland-project4-debounce-switch]
+- 근거 URL: [https://ecen220wiki.groups.et.byu.net/labs/lab-08/, https://nandland.com/project-4-debounce-a-switch/]
+- 새로움의 근거: 카탈로그에 5버튼 all-in-one AXI4-Lite IP 아이디어 없음. 기존 카드들은 개별 버튼 디바운스만 다루며 MicroBlaze V 가변 임계값 조합 없음.
+- Basys3 적합성의 근거: Basys3 5개 버튼 직접 지원. 디바운스 카운터(20비트 × 5) + 긴 누름 카운터(27비트 × 5) = ~235 FF, XC7A35T에 여유. AXI4-Lite 슬레이브 추가 LUT ~100개 추정(내 판단). free_slots 한 칸 배정 가능.
+- 내 판단: S4 제약 역전 + S2 조합 — FPGA 병렬 카운터 5개를 동시에 독립 증가시키는 구조는 MCU로 불가. MicroBlaze V 인터럽트 패턴 연습과 AXI4-Lite 슬레이브 IP 설계 연습을 동시에 커버하는 T2 대표 과제.
+- 난이도: 2 / 단계: T2 / 상태: raw
+
+## I-088 Basys3 더블 클릭·긴 누름 패턴 감지 FSM — 타이머 2개 계층 구조 (T1-T2)
+
+- 내 판단: 단일 버튼에서 ① 짧은 클릭(50~500 ms) ② 더블 클릭(두 번째 클릭이 500 ms 안에 도착) ③ 긴 누름(2초 이상) 세 가지를 FSM으로 구분. 계층 구조: 1단계 FSM(디바운스+에지 검출) → 2단계 FSM(클릭 패턴 분류). 출력: `o_single`, `o_double`, `o_long` 세 개 1클럭 펄스. MicroBlaze V 없이도 동작하는 순수 FSM + AXI4-Lite 래퍼 추가 가능.
+- 조합: [byu-ecen220-lab08-debounce-basys3, doyk0215-2d-labyrinth-on-fpga]
+- 근거 카드: [byu-ecen220-lab08-debounce-basys3, doyk0215-2d-labyrinth-on-fpga]
+- 근거 URL: [https://ecen220wiki.groups.et.byu.net/labs/lab-08/, https://github.com/doyk0215/2D-Labyrinth-on-FPGA/pull/74]
+- 새로움의 근거: 카탈로그에 더블 클릭 감지 FSM 아이디어 없음. doyk0215는 긴 누름만, byu-ecen220은 단순 디바운스만 다루며 멀티 클릭 분류 조합 없음.
+- Basys3 적합성의 근거: Basys3 버튼 1개(예: BTNC)로 충분. 2단계 FSM 각 ~5상태, 타이머 2개(10ms 디바운스용, 500ms 더블클릭 창용). XC7A35T LUT/FF 여유. 7세그에 클릭 종류 표시하면 보드 없이도 시뮬레이션으로 검증 가능.
+- 내 판단: S7 난이도 사다리 — T0 단순 디바운스(byu-ecen220) → T1 에지 검출 → T2 패턴 분류 세 단계로 이어지는 학습 체인의 중간 계단. 더블 클릭 창 타이머와 짧은 클릭 타이머를 FSM 안에서 어떻게 공유·분리하는지를 가르치는 대표 예제(내 판단).
+- 난이도: 3 / 단계: T1-T2 / 상태: raw
+
+## I-089 FPGA 버튼 디바운스 비교 테스트벤치 — 카운터·FSM·SR래치 3방식 타이밍 비교 (T0-T1)
+
+- 내 판단: 같은 채터 파형에 대해 ① 단순 카운터(nandland-project4-debounce-switch) ② FSM+타이머(byu-ecen220-lab08-debounce-basys3) ③ SR 래치 방식(설계 직접 작성) 세 모듈을 단일 테스트벤치로 비교. 10 ms 채터 버스트 → 15 ms 안정 → 1 ms 추가 채터 패턴에서 각 모듈의 출력 타이밍 차이를 $display로 출력. 어느 방식이 가장 빠르고 어느 방식이 가장 보수적인지 사이클 수로 측정.
+- 조합: [nandland-project4-debounce-switch, byu-ecen220-lab08-debounce-basys3]
+- 근거 카드: [nandland-project4-debounce-switch, byu-ecen220-lab08-debounce-basys3]
+- 근거 URL: [https://nandland.com/project-4-debounce-a-switch/, https://ecen220wiki.groups.et.byu.net/labs/lab-08/]
+- 새로움의 근거: 카탈로그에 디바운스 3방식을 같은 테스트벤치로 비교하는 아이디어 없음. 기존 카드들은 각자 단일 방식을 다루며 비교 연구 조합 없음.
+- Basys3 적합성의 근거: 순수 Verilog 시뮬레이션으로 보드 없이 검증 가능(iverilog/verilator). RTL 약 200줄 이내. 비교 출력을 7세그에 연결하면 T1 보드 실험도 가능.
+- 내 판단: S4 제약 역전 사례 — FPGA는 세 모듈이 동일 클럭에서 병렬 동작하므로 비교 테스트벤치 작성이 MCU에서보다 훨씬 간단. 디바운스 방식 선택의 근거를 실측 사이클 수로 보여주는 교육 가치가 높음(내 판단). 하네스 CI의 iverilog에서 바로 실행 가능.
+- 난이도: 2 / 단계: T0-T1 / 상태: raw

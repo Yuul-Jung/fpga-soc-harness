@@ -213,3 +213,6 @@
 | [element14-arty-s7-7seg-brightness](amd/element14-arty-s7-7seg-brightness.md) | L3 | T1 | Arty S7 (Basys3 needs-port) | 2026-11-04 |
 | [ecen220wiki-basys3-debounce-fsm](vendor-neutral/ecen220wiki-basys3-debounce-fsm.md) | L3 | T0 | Basys3 (yes) | 2026-11-05 |
 | [mg04-fpga-button-long-short-press](vendor-neutral/mg04-fpga-button-long-short-press.md) | L3 | T0 | 보드 불명 (needs-port) | 2026-11-05 |
+| [doyk0215-2d-labyrinth-on-fpga](amd/doyk0215-2d-labyrinth-on-fpga.md) | L3 | T4 | Basys3 | 2026-11-05 |
+| [byu-ecen220-lab08-debounce-basys3](papers/byu-ecen220-lab08-debounce-basys3.md) | L3 | T0 | Basys3 | 2026-11-05 |
+| [nandland-project4-debounce-switch](vendor-neutral/nandland-project4-debounce-switch.md) | L3 | T0 | NandLand Go Board (Basys3 needs-port) | 2026-11-05 |

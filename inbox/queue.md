@@ -496,3 +496,12 @@
 - https://ecen220wiki.groups.et.byu.edu/labs/lab-08/ | Basys3 100MHz 디바운스 FSM + 단발 에지 검출, L3 열람, 카드 작성 완료 | Basys3 button debounce FSM Verilog course
 - https://mg-04.github.io/posts/2025/02/lab1 | FPGA 짧은 누름/긴 누름 FSM (50MHz, SystemVerilog), L3 열람, 카드 작성 완료 | FPGA button long short press FSM SystemVerilog
 - https://www.instructables.com/Debouncing-Button-on-Basys-3/ | Basys3 디바운스 instructables (L2 — 메타데이터만) | Basys3 debounce button instructables
+- https://github.com/doyk0215/2D-Labyrinth-on-FPGA | doyk0215/2D-Labyrinth-on-FPGA: Basys3 2D 미로 게임, centre_button 긴 누름 2초 FSM + OLED + PS/2 — 카드 완료(L3) | Basys3 button long press debounce FSM Verilog game
+- https://nandland.com/project-4-debounce-a-switch/ | NandLand Project 4: iCE40 카운터 기반 스위치 디바운스, Verilog+VHDL 양언어 — 카드 완료(L3) | debounce switch counter Verilog VHDL iCE40 NandLand
+- https://github.com/MadLittleMods/fpga-kaleidoscope | MadLittleMods/fpga-kaleidoscope: Basys3 버튼 디바운스 + RGB LED, MIT, 멀티 버튼 처리 사례 — 미열람(L1) | Basys3 button debounce RGB LED MIT
+- https://www.fpga4fun.com/Debouncer.html | fpga4fun: 버튼 디바운서 튜토리얼 (동기화+카운터, 다단계 설명), 보드 무관 — 미열람(L1) | debounce button fpga4fun tutorial synchronizer counter
+- https://github.com/jncraton/debounce | jncraton/debounce: 단순 디바운스 모듈 MIT, Basys3 xdc 포함 — 미열람(L1) | debounce Verilog Basys3 MIT simple
+- https://www.instructables.com/FPGA-Push-Button-Debouncer/ | Instructables: FPGA 버튼 디바운서 프로젝트, Verilog, 단계별 — 미열람(L1) | FPGA push button debouncer Instructables Verilog
+- https://electronics.stackexchange.com/questions/177834/button-debounce-on-fpga | EE StackExchange: FPGA 버튼 디바운스 질답, FF 동기화+카운터 비교 — 미열람(L1) | FPGA button debounce FF synchronizer counter stackexchange
+- https://github.com/YSYouJack/FPGA_Button_Multi_Click_Detection | YSYouJack/FPGA_Button_Multi_Click_Detection: 멀티 클릭 감지 모듈 (더블/트리플 클릭), Verilog — 미열람(L1) | FPGA button multi click detection Verilog double triple
+- https://hackaday.com/2015/12/09/embed-with-elliot-debounce-your-noisy-buttons-part-i/ | Hackaday Embed with Elliot: 버튼 디바운스 원리 시리즈 파트 1, MCU→FPGA 비교 포함 — 미열람(L1) | debounce button Hackaday MCU FPGA comparison
