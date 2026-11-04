@@ -120,9 +120,8 @@ always @(posedge SCL) begin
                 slave_bit = slave_bit - 1;
         end
         SS_RX_NAK: begin
-            /* 마스터 NAK 수신 → IDLE */
+            /* 마스터 NAK 수신 → IDLE (SDA 릴리즈는 negedge default에서 처리) */
             slave_state = SS_IDLE;
-            sda_slave   = 1'b1;
         end
         default: ;
     endcase
