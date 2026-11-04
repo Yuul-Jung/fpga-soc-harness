@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-ov7670-sccb-capture",
+  "kind": "digital-block-diagram",
+  "note": "디지털 모듈 연결도다. 외부 부품의 전기 배선(전압, 저항, 커넥터)은 포함하지 않는다.",
+  "bus": "mmio-lite (단독 시뮬레이션용)",
+  "blocks": [
+    {
+      "id": "top",
+      "name": "basys3_top",
+      "kind": "wrapper",
+      "module": "basys3_top",
+      "file": "rtl/basys3_top.v"
+    },
+    {
+      "id": "core",
+      "name": "ov7670_sccb_top",
+      "kind": "mmio_slave",
+      "module": "ov7670_sccb_top",
+      "file": "rtl/ov7670_sccb_top.v"
+    },
+    {
+      "id": "sccb",
+      "name": "sccb_tx",
+      "kind": "serial_master",
+      "module": "sccb_tx",
+      "file": "rtl/sccb_tx.v"
+    },
+    {
+      "id": "capture",
+      "name": "ov7670_capture",
+      "kind": "capture",
+      "module": "ov7670_capture",
+      "file": "rtl/ov7670_capture.v"
+    },
+    {
+      "id": "sync_fd",
+      "name": "sync_pulse (frame_done)",
+      "kind": "cdc",
+      "module": "sync_pulse",
+      "file": "rtl/sync_pulse.v"
+    },
+    {
+      "id": "sync_pv",
+      "name": "sync_pulse (pixel_valid)",
+      "kind": "cdc",
+      "module": "sync_pulse",
+      "file": "rtl/sync_pulse.v"
+    },
+    {
+      "id": "sync_fs",
+      "name": "sync_pulse (frame_start)",
+      "kind": "cdc",
+      "module": "sync_pulse",
+      "file": "rtl/sync_pulse.v"
+    },
+    {
+      "id": "ov7670",
+      "name": "OV7670",
+      "kind": "external",
+      "module": "-",
+      "file": null
+    }
+  ],
+  "links": [
+    {
+      "from": "top",
+      "to": "core",
+      "label": "mmio_addr/wdata/wen/ren/rdata"
+    },
+    {
+      "from": "core",
+      "to": "sccb",
+      "label": "start/done/na_err/reg_addr/reg_data"
+    },
+    {
+      "from": "sccb",
+      "to": "ov7670",
+      "label": "SIO_C, SIO_D (오픈 드레인)"
+    },
+    {
+      "from": "ov7670",
+      "to": "capture",
+      "label": "PCLK/VSYNC/HREF/D[7:0]"
+    },
+    {
+      "from": "capture",
+      "to": "sync_fd",
+      "label": "frame_done (PCLK)"
+    },
+    {
+      "from": "capture",
+      "to": "sync_pv",
+      "label": "pixel_valid + pixel_data (PCLK)"
+    },
+    {
+      "from": "capture",
+      "to": "sync_fs",
+      "label": "frame_start (PCLK)"
+    },
+    {
+      "from": "sync_fd",
+      "to": "core",
+      "label": "sys_frame_done (SYS CLK)"
+    },
+    {
+      "from": "sync_pv",
+      "to": "core",
+      "label": "sys_pixel_valid (SYS CLK)"
+    },
+    {
+      "from": "sync_fs",
+      "to": "core",
+      "label": "sys_frame_start (SYS CLK)"
+    },
+    {
+      "from": "top",
+      "to": "ov7670",
+      "label": "IOBUF SIO_D (Pmod JA2)"
+    }
+  ]
+}
