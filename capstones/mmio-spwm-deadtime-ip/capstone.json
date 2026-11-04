@@ -238,8 +238,14 @@
     }
   ],
   "verification": {
+    "grade": "S2",
+    "ci_run": "https://github.com/Yuul-Jung/fpga-soc-harness/actions/runs/41881999019",
+    "ci_commit": "54e40ba7a22b7dff3762c2a309091e334f55d207",
+    "lint": "pass (verilator, 6 warnings)",
+    "sim": "pass (iverilog -g2001, TB TC1~TC5 모두 PASS)",
+    "synth": "pass (yosys synth_xilinx: LUT 222, FF 162)",
     "board": "not-tested",
-    "notes": "S3(보드 동작 확인)은 사람만 올릴 수 있다. 에이전트는 board: pass를 쓰지 않는다."
+    "notes": "S3(보드 동작 확인)은 사람만 올릴 수 있다. 에이전트는 board: pass를 쓰지 않는다. 합성 자원은 yosys 추정이며 Vivado 결과와 다를 수 있다."
   },
   "risks": [
     "데드타임 미달: DEADTIME 레지스터를 0으로 설정하면 슛스루 발생 가능. 최솟값 제한 없음 — 소프트웨어 책임.",
