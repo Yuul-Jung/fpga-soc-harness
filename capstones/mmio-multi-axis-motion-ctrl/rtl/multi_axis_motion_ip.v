@@ -149,8 +149,8 @@ module multi_axis_motion_ip (
 
     // ---- 주기 타이머 (공통) --------------------------------------------
     reg  [19:0] period_cnt;
-    reg         tick;         // 1클럭 펄스 (매 주기 시작)
-    reg         tick_ev_r;   // IRQ용 이벤트 래치
+    reg         tick;           // 1클럭 펄스 (매 주기 시작)
+    reg         tick_ev_r;     // IRQ용 이벤트 래치
 
     // PERIOD 레지스터 쓰기 감지 (조합 신호 — 타이머 즉시 리로드용)
     wire period_wr = valid && we && (addr[15:0] == 16'h0004);
@@ -241,7 +241,13 @@ module multi_axis_motion_ip (
             if (valid && we && addr[15:0] == 16'hFFF8)
                 irq_status_r <= irq_status_r & ~wdata[0];
 
-            // PI 갱신 (tick 다음 클럭: 엔코더 래치 완료 후)
+            // ITERM MMIO 쓰기 (윈드업 클리어용; PI 갱신보다 낮은 우선순위 — 같은 클럭이면 덮어씀)
+            if (valid && we) begin
+                if (addr[15:0] == 16'h0024) ca_iterm_r <= wdata;
+                if (addr[15:0] == 16'h0044) cb_iterm_r <= wdata;
+            end
+
+            // PI 갱신 (tick 다음 클럭: 엔코더 래치 완료 후, MMIO 쓰기보다 높은 우선순위)
             if (tick_d1 && enable_r && !emstop_r) begin
                 // 채널 A
                 ca_iterm_r <= $signed(ca_iterm_r) + ca_ki_inc;
@@ -272,30 +278,31 @@ module multi_axis_motion_ip (
     end
 
     // ---- 쓰기 레지스터 --------------------------------------------------
+    // 주의: ca_iterm_r / cb_iterm_r 은 위의 PI 갱신 블록에서 관리 (다중 드라이버 방지)
     always @(posedge clk) begin
         if (rst) begin
-            enable_r   <= 1'b0;
-            emstop_r   <= 1'b0;
-            period_r   <= 20'd100000;   // 1kHz
-            ca_setpt_r <= 16'd0; cb_setpt_r <= 16'd0;
-            ca_kp_r    <= 16'd0; ca_ki_r    <= 16'd0;
-            cb_kp_r    <= 16'd0; cb_ki_r    <= 16'd0;
-            irq_enable_r <= 1'b0;
-        end else if (valid && we) begin
-            case (addr[15:0])
-                16'h0000: begin enable_r <= wdata[0]; emstop_r <= wdata[1]; end
-                16'h0004: period_r   <= wdata[19:0];
-                16'h0010: ca_setpt_r <= wdata[15:0];
-                16'h0014: ca_kp_r    <= wdata[15:0];
-                16'h0018: ca_ki_r    <= wdata[15:0];
-                16'h0024: ca_iterm_r <= wdata;
-                16'h0030: cb_setpt_r <= wdata[15:0];
-                16'h0034: cb_kp_r    <= wdata[15:0];
-                16'h0038: cb_ki_r    <= wdata[15:0];
-                16'h0044: cb_iterm_r <= wdata;
-                16'hFFFC: irq_enable_r <= wdata[0];
-                default: ;
-            endcase
+            enable_r      <= 1'b0;
+            emstop_r      <= 1'b0;
+            period_r      <= 20'd100000;   // 1kHz
+            ca_setpt_r    <= 16'd0; cb_setpt_r <= 16'd0;
+            ca_kp_r       <= 16'd0; ca_ki_r    <= 16'd0;
+            cb_kp_r       <= 16'd0; cb_ki_r    <= 16'd0;
+            irq_enable_r  <= 1'b0;
+        end else begin
+            if (valid && we) begin
+                case (addr[15:0])
+                    16'h0000: begin enable_r <= wdata[0]; emstop_r <= wdata[1]; end
+                    16'h0004: period_r <= wdata[19:0];
+                    16'h0010: ca_setpt_r <= wdata[15:0];
+                    16'h0014: ca_kp_r    <= wdata[15:0];
+                    16'h0018: ca_ki_r    <= wdata[15:0];
+                    16'h0030: cb_setpt_r <= wdata[15:0];
+                    16'h0034: cb_kp_r    <= wdata[15:0];
+                    16'h0038: cb_ki_r    <= wdata[15:0];
+                    16'hFFFC: irq_enable_r <= wdata[0];
+                    default: ;
+                endcase
+            end
         end
     end
 
