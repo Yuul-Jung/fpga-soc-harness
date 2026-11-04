@@ -272,7 +272,7 @@
 - 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(arief-2026-ijecbe-artix7-36v-bldc-hall-sixstep·wangxuan95-fpga-foc·mari-upc-2022-fpga-foc-ipmsm-field-weakening, rechecked_at 불문) → 차단 근거 3 + 새로움 2(6스텝→FOC 샘플링 사다리 없음) + 적합성 2(홀 3핀+PWM 6핀 Pmod 2개, 인버터 전원 분리) + 완결성 1(FOC 샘플링 창 범위 미정) = 8점 ≥ 7 → ready 승격. §14.2 차단 조건 적용(사이클 2번째).
 
 ## I-024 소리·기울기 반응 LED 매트릭스 IP: PDM/I2S 마이크 대역 에너지 + ADXL345 기울기 → MAX7219 열 버퍼 레지스터
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: MAX7219 SPI 출력을 열 버퍼·밝기·갱신 트리거 레지스터를 가진 AXI4-Lite 래퍼로 만들고, 소리 대역 에너지(16대역 이하)와 가속도 기울기 중 하나를 모드 레지스터로 골라 막대나 점으로 그린다. 테스트벤치는 합성 사인파 입력으로 대역 막대 높이를, 가짜 ADXL 값으로 점 위치를 확인한다.
 - 조합: [MAX7219 SPI 출력, I2S/PDM 마이크 입력, ADXL345 SPI/I2C, AXI4-Lite 레지스터]
 - 근거: [vhdplus-spectrum-analyzer-max7219, renesas-forgefpga-fg015-running-string, mit-6111-2017-team20-audio-spectrum-analyzer, https://jpralves.net/post/2017/12/10/visual-accelerometer.html]
@@ -317,7 +317,7 @@
 - 차단조건재심사: 2026-11-04 13:38 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 4건(columbia-4840-tiles-tutorial, zipcpu-llvga-video-timing, microchip-an532-dc-servo-pid, ubc-elex2117-lab6-quadrature-encoder, rechecked_at 불문) → 근거 3 + 새로움 2(제어 루프 타일 VGA 계기판 없음) + 적합성 3(VGA 보드 내장 Pmod 불필요, 타일 메모리 16KB < Basys3 BRAM 225KB, Columbia 131,456bit 근거 있음) + 완결성 2(타일맵 렌더러+숫자·막대 타일+레지스터 접근 범위 명확) = 10점 ≥ 7 → ready 승격.
 
 ## I-028 조이스틱 서보 로봇팔 IP: PmodJSTK2 SPI 판독 → 2축 서보 PWM, 범위·모의 시험 모델 테스트벤치
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: JSTK2 SPI 판독 IP(X/Y/버튼 레지스터)와 서보 PWM IP(채널별 최소·최대 펄스 폭, 위치 레지스터)를 AXI4-Lite로 나누고, 소프트웨어 루프가 조이스틱 값을 서보 위치로 매핑하며 기울기 제한으로 급가속을 막는다. 테스트벤치는 JSTK2 응답 모델이 7바이트 패킷을 돌려주고 서보 펄스 폭을 `!==`로 검사한다.
 - 조합: [Pmod JSTK2(SPI), 서보 PWM 2채널, AXI4-Lite 레지스터, 타이머 인터럽트]
 - 근거: [digikey-forum-jstk2-pmod-controller-vhdl, vhdlwhiz-rc-servo-controller, shashankr-basys3-fpga-robotic-arm]
@@ -1226,7 +1226,8 @@
 - 근거 URL: [https://xilinx.github.io/xup_embedded_system_design_flow/lab7.html]
 - 새로움의 근거: 카탈로그에 AXI CDMA + VGA 더블 버퍼 조합 아이디어 없음. 기존 VGA 카드들은 BRAM 단일 버퍼 또는 OV7670 직결 방식이고, CDMA 하드웨어 블록 복사를 VGA 파이프라인에 연결하는 패턴 없음.
 - Basys3 적합성의 근거: Basys3 BRAM 50블록 × 18Kb = 225Kb 가용. 320×240 1bpp 흑백 = 9.375Kb(1블록 미만), 320×240 8bpp = 75Kb(5블록). AXI CDMA는 DDR 없이 BRAM-to-BRAM 전송 가능(free_slots 2슬롯). VGA 타이밍 카운터는 T2 수준 기존 RTL 재사용.
-- 난이도: 3 / 단계: T3 / 상태: raw
+- 난이도: 3 / 단계: T3 / 상태: vetted
+- 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(AXI CDMA+VGA 더블 버퍼 조합 없음) + 적합성 2(BRAM 계산 명시, DDR 불필요) + 완결성 1(CDMA 슬롯 2개 배정 범위 미결) = 5점. 보강: 근거 카드 rechecked_at 1건 이상.
 
 ## I-091 인터럽트 없는 폴링 DMA 엔진 순수 FSM — CPU 오프로드 블록 복사 (S2 조합: DMA + 베어메탈)
 
@@ -1237,7 +1238,8 @@
 - 근거 URL: [https://billauer.co.il/blog/?p=1898]
 - 새로움의 근거: 카탈로그에 커스텀 DMA FSM(IP 없이 순수 RTL) 아이디어 없음. billauer 블로그의 Linux AXI DMA 버그 경험을 베어메탈 FSM으로 단순화해 재현 가능한 T3 패턴을 만드는 접근(S6 교훈 역용).
 - Basys3 적합성의 근거: AXI4-Lite 슬레이브 FSM + BRAM-to-BRAM 버스트(16워드 고정). DDR 불필요. 소스·목적 주소는 동결 맵 `free_slots` 범위 내 선택. free_slots 2슬롯(소스 BRAM 1 + 목적 BRAM 1). XC7A35T LUT 여유 충분(추정).
-- 난이도: 3 / 단계: T3 / 상태: raw
+- 난이도: 3 / 단계: T3 / 상태: vetted
+- 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(커스텀 DMA FSM IP 없음) + 적합성 2(AXI4-Lite FSM+BRAM-to-BRAM, DDR 불필요) + 완결성 2(소스/목적 주소 레지스터+버스트 범위 명확) = 6점. 보강: 근거 카드 rechecked_at 1건 이상.
 
 ## I-092 AXI CDMA BRAM-to-BRAM 스캐터-개더 패턴 MicroBlaze V 골격 (S6 교훈 → T3 캡스톤)
 
@@ -1248,7 +1250,8 @@
 - 근거 URL: [https://billauer.co.il/blog/?p=1898, https://xilinx.github.io/xup_embedded_system_design_flow/lab7.html]
 - 새로움의 근거: 카탈로그에 Basys3 AXI CDMA 스캐터-개더 디스크립터 패턴 아이디어 없음. 기존 T3 패키지는 단순 폴링 전송까지만. S6 교훈(billauer Linux DMA 버그 경험)을 베어메탈 Vitis BSP로 옮겨 재현하는 접근 없음.
 - Basys3 적합성의 근거: AXI CDMA SG 모드는 DDR 없이 디스크립터를 BRAM에 직접 저장 가능. 디스크립터 체인 2~4개는 소량 BRAM(< 1블록). MicroBlaze V Vitis BSP `XAxiCdma_SgTransfer()` 사용 가능. free_slots 2슬롯 필요.
-- 난이도: 4 / 단계: T3 / 상태: raw
+- 난이도: 4 / 단계: T3 / 상태: vetted
+- 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(SG 디스크립터 체인 패턴 없음) + 적합성 2(BRAM 디스크립터, DDR 불필요) + 완결성 1(Vitis BSP SW 범위 미결) = 5점. 보강: Vitis BSP 범위 구체화, 근거 카드 rechecked_at.
 
 ## I-093 AXI4-Lite 타이머 IP + PWM 비교 출력 + 엔코더 캡처 통합 주변장치 (T2 SoC 접착)
 
@@ -1259,7 +1262,8 @@
 - 근거 URL: [https://github.com/efabless/EF_TCC32, https://github.com/mij001/axil-timer]
 - 새로움의 근거: 카탈로그에 타이머·PWM·엔코더 캡처를 단일 AXI4-Lite IP에 통합한 Basys3 아이디어 없음. 기존 PWM 카드(element14-eoi-blog3)는 비교 출력만. 캡처+PWM+IRQ 3기능 조합은 모터 제어 사다리(§17.2 우선 주제)와 직결.
 - Basys3 적합성의 근거: 32비트 카운터 1개 + 비교 레지스터 1개 + 캡처 레지스터 1개 = LUT < 100개 예상. Pmod JA의 PWM 출력 핀과 엔코더 A/B 입력 핀 모두 3.3V. free_slots 1슬롯 (64KB).
-- 난이도: 3 / 단계: T2 / 상태: raw
+- 난이도: 3 / 단계: T2 / 상태: vetted
+- 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(타이머+PWM+캡처 3기능 통합 IP 없음) + 적합성 3(LUT < 100개 예상, Pmod 핀 3.3V, free_slots 1슬롯) + 완결성 2(AXI4-Lite 타이머+비교+캡처 레지스터 범위 명확) = 7점. 보강: 근거 카드 rechecked_at 1건 이상.
 
 ## I-094 주기 타이머 + 소프트웨어 카운터로 구현하는 다중 채널 타임아웃 감시자 (T2 MicroBlaze V 펌웨어 패턴)
 
@@ -1270,7 +1274,8 @@
 - 근거 URL: [https://github.com/mij001/axil-timer, https://zipcpu.com/zipcpu/2018/04/17/ziptimer.html]
 - 새로움의 근거: 카탈로그에 다중 채널 소프트 타이머 패턴 카드 없음. 하드 IP 1개 + 소프트 멀티플렉싱 패턴은 자원 절약 효과가 명확하며 T2 펌웨어 설계 패턴 사례로 가치 있음.
 - Basys3 적합성의 근거: 하드웨어 IP 1개(free_slots 1슬롯)로 모든 타임아웃 처리. BRAM 사용 없음. 채널 배열 크기 선택 자유.
-- 난이도: 2 / 단계: T2 / 상태: raw
+- 난이도: 2 / 단계: T2 / 상태: vetted
+- 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(다중 채널 소프트 타이머 패턴 없음) + 적합성 3(하드 IP 1개, BRAM 불필요, free_slots 1슬롯) + 완결성 2(1ms ISR+소프트 카운터 배열 범위 명확) = 7점. 보강: 근거 카드 rechecked_at 1건 이상.
 
 ## I-095 SPI 슬레이브 FSM + AXI4-Lite 래퍼로 MicroBlaze V에 외부 MCU 인터페이스 추가 (T2)
 
@@ -1281,7 +1286,8 @@
 - 근거 URL: [https://github.com/arpitsingh7634/SPI_Master_Slave, https://github.com/taada33/basys3-spi]
 - 새로움의 근거: 카탈로그에 SPI 슬레이브→AXI4-Lite 버스 마스터 역할을 하는 완성 IP 카드 없음. airhdl-spi-to-axi-bridge는 AXI4-Lite 타깃이지만 Basys3 XDC 없음. 본 아이디어는 Basys3 XDC+MicroBlaze V 동결 맵까지 포함하는 최초 패키지.
 - Basys3 적합성의 근거: SPI 슬레이브 FSM은 Pmod 핀 4개(SCLK, MOSI, MISO, CS)로 구현 가능. AXI4-Lite 래퍼는 LUT 수백 개 수준. 동결 맵 free_slots 1칸 사용. arpitsingh7634 카드가 Basys3 XDC 존재를 확인.
-- 난이도: 3 / 단계: T2 / 상태: raw
+- 난이도: 3 / 단계: T2 / 상태: vetted
+- 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(SPI 슬레이브→AXI4-Lite 버스 마스터 역할 없음) + 적합성 2(Pmod 핀 4개, AXI4-Lite 래퍼 LUT 수백 개) + 완결성 2(FSM 설계 범위 명확) = 6점. 보강: 근거 카드 rechecked_at 1건 이상.
 
 ## I-096 Verilog Arduino SPI 마스터 모델 테스트벤치 (MCU SPI 타이밍 에뮬레이션) (T1)
 
@@ -1292,4 +1298,5 @@
 - 근거 URL: [https://github.com/arpitsingh7634/SPI_Master_Slave, https://github.com/nandland/spi-slave]
 - 새로움의 근거: 카탈로그에 "MCU SPI 마스터를 Verilog 테스트벤치로 모델링"하는 카드 없음. SPI 슬레이브 FSM을 MCU 없이 CI에서 검증하는 패턴으로 하베스트 주제 [B3]의 핵심 요구사항(마스터 시뮬레이터 테스트벤치)과 직접 대응.
 - Basys3 적합성의 근거: 테스트벤치 전용(합성 불필요). iverilog·verilator 모두 지원. SPI 타이밍은 클럭 주기 계산으로 결정론적 구현 가능. T1 수준 LUT 사용.
-- 난이도: 2 / 단계: T1 / 상태: raw
+- 난이도: 2 / 단계: T1 / 상태: vetted
+- 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(MCU SPI 마스터 Verilog 모델 없음) + 적합성 2(테스트벤치 전용, 합성 불필요, CI 직접 활용) + 완결성 2(SPI 타이밍 모델+CPOL/CPHA 범위 명확) = 6점. 보강: 근거 카드 rechecked_at 1건 이상.

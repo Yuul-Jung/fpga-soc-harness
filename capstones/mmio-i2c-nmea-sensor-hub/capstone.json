@@ -20,21 +20,103 @@
   "architecture": {
     "clock": "100 MHz 단일 클럭 (clk), 동기 리셋 (rst_n active-low)",
     "blocks": [
-      {"id": "top",        "name": "axil_i2c_nmea_hub",   "kind": "top",      "module": "axil_i2c_nmea_hub",   "file": "rtl/axil_i2c_nmea_hub.v",   "desc": "AXI4-Lite 슬레이브 + 레지스터 디코더 최상위",         "short": "AXI Hub",   "side": "left"},
-      {"id": "i2c_fsm",   "name": "i2c_cycle_fsm",        "kind": "rtl",      "module": "i2c_cycle_fsm",        "file": "rtl/i2c_cycle_fsm.v",        "desc": "I2C 비트 뱅 마스터 + 3장치 순회 FSM",                  "short": "I2C FSM",   "side": "left"},
-      {"id": "uart_rx",   "name": "nmea_uart_rx",          "kind": "rtl",      "module": "nmea_uart_rx",         "file": "rtl/nmea_uart_rx.v",         "desc": "9600 baud UART 수신기, '\\n' 종단 감지",             "short": "NMEA RX",   "side": "left"},
-      {"id": "ts_fifo",   "name": "ts_fifo",               "kind": "rtl",      "module": "ts_fifo",              "file": "rtl/ts_fifo.v",              "desc": "타임스탬프 붙인 샘플 FIFO (깊이 16, 72비트 엔트리)", "short": "TS FIFO",   "side": "right"},
-      {"id": "pmod_i2c",  "name": "Pmod I2C 버스",          "kind": "external", "module": null,                   "file": null,                         "desc": "JA Pmod SCL/SDA (MPU-6050, BMP280, HMC5883L 공유)", "short": "JA Pmod",   "side": "right"},
-      {"id": "pmod_uart", "name": "Pmod UART RX",          "kind": "external", "module": null,                   "file": null,                         "desc": "JB Pmod pin 1 (GPS 모듈 TX, 9600 baud)",            "short": "JB RX",     "side": "right"}
+      {
+        "id": "top",
+        "name": "axil_i2c_nmea_hub",
+        "kind": "top",
+        "module": "axil_i2c_nmea_hub",
+        "file": "rtl/axil_i2c_nmea_hub.v",
+        "desc": "AXI4-Lite 슬레이브 + 레지스터 디코더 최상위",
+        "short": "AXI Hub",
+        "side": "left"
+      },
+      {
+        "id": "i2c_fsm",
+        "name": "i2c_cycle_fsm",
+        "kind": "rtl",
+        "module": "i2c_cycle_fsm",
+        "file": "rtl/i2c_cycle_fsm.v",
+        "desc": "I2C 비트 뱅 마스터 + 3장치 순회 FSM",
+        "short": "I2C FSM",
+        "side": "left"
+      },
+      {
+        "id": "uart_rx",
+        "name": "nmea_uart_rx",
+        "kind": "rtl",
+        "module": "nmea_uart_rx",
+        "file": "rtl/nmea_uart_rx.v",
+        "desc": "9600 baud UART 수신기, '\\n' 종단 감지",
+        "short": "NMEA RX",
+        "side": "left"
+      },
+      {
+        "id": "ts_fifo",
+        "name": "ts_fifo",
+        "kind": "rtl",
+        "module": "ts_fifo",
+        "file": "rtl/ts_fifo.v",
+        "desc": "타임스탬프 붙인 샘플 FIFO (깊이 16, 72비트 엔트리)",
+        "short": "TS FIFO",
+        "side": "right"
+      },
+      {
+        "id": "pmod_i2c",
+        "name": "Pmod I2C 버스",
+        "kind": "external",
+        "module": null,
+        "file": null,
+        "desc": "JA Pmod SCL/SDA (MPU-6050, BMP280, HMC5883L 공유)",
+        "short": "JA Pmod",
+        "side": "right"
+      },
+      {
+        "id": "pmod_uart",
+        "name": "Pmod UART RX",
+        "kind": "external",
+        "module": null,
+        "file": null,
+        "desc": "JB Pmod pin 1 (GPS 모듈 TX, 9600 baud)",
+        "short": "JB RX",
+        "side": "right"
+      }
     ],
     "links": [
-      {"from": "top",      "to": "i2c_fsm",   "label": "ctrl/data"},
-      {"from": "top",      "to": "uart_rx",   "label": "ctrl/data"},
-      {"from": "top",      "to": "ts_fifo",   "label": "pop/status"},
-      {"from": "i2c_fsm",  "to": "ts_fifo",   "label": "push sample"},
-      {"from": "uart_rx",  "to": "ts_fifo",   "label": "push line_done"},
-      {"from": "i2c_fsm",  "to": "pmod_i2c",  "label": "SCL/SDA"},
-      {"from": "uart_rx",  "to": "pmod_uart", "label": "RX"}
+      {
+        "from": "top",
+        "to": "i2c_fsm",
+        "label": "ctrl/data"
+      },
+      {
+        "from": "top",
+        "to": "uart_rx",
+        "label": "ctrl/data"
+      },
+      {
+        "from": "top",
+        "to": "ts_fifo",
+        "label": "pop/status"
+      },
+      {
+        "from": "i2c_fsm",
+        "to": "ts_fifo",
+        "label": "push sample"
+      },
+      {
+        "from": "uart_rx",
+        "to": "ts_fifo",
+        "label": "push line_done"
+      },
+      {
+        "from": "i2c_fsm",
+        "to": "pmod_i2c",
+        "label": "SCL/SDA"
+      },
+      {
+        "from": "uart_rx",
+        "to": "pmod_uart",
+        "label": "RX"
+      }
     ]
   },
   "bus_protocol": {
@@ -42,35 +124,123 @@
     "data_width": 32,
     "addr_width": 8,
     "signals": [
-      {"name": "s_awaddr",  "width": 8,  "dir": "in",  "desc": "쓰기 주소"},
-      {"name": "s_awvalid", "width": 1,  "dir": "in",  "desc": "쓰기 주소 유효"},
-      {"name": "s_awready", "width": 1,  "dir": "out", "desc": "쓰기 주소 수락"},
-      {"name": "s_wdata",   "width": 32, "dir": "in",  "desc": "쓰기 데이터"},
-      {"name": "s_wstrb",   "width": 4,  "dir": "in",  "desc": "바이트 스트로브"},
-      {"name": "s_wvalid",  "width": 1,  "dir": "in",  "desc": "쓰기 데이터 유효"},
-      {"name": "s_wready",  "width": 1,  "dir": "out", "desc": "쓰기 데이터 수락"},
-      {"name": "s_bresp",   "width": 2,  "dir": "out", "desc": "쓰기 응답"},
-      {"name": "s_bvalid",  "width": 1,  "dir": "out", "desc": "쓰기 응답 유효"},
-      {"name": "s_bready",  "width": 1,  "dir": "in",  "desc": "쓰기 응답 수락"},
-      {"name": "s_araddr",  "width": 8,  "dir": "in",  "desc": "읽기 주소"},
-      {"name": "s_arvalid", "width": 1,  "dir": "in",  "desc": "읽기 주소 유효"},
-      {"name": "s_arready", "width": 1,  "dir": "out", "desc": "읽기 주소 수락"},
-      {"name": "s_rdata",   "width": 32, "dir": "out", "desc": "읽기 데이터"},
-      {"name": "s_rresp",   "width": 2,  "dir": "out", "desc": "읽기 응답"},
-      {"name": "s_rrvalid", "width": 1,  "dir": "out", "desc": "읽기 데이터 유효"},
-      {"name": "s_rready",  "width": 1,  "dir": "in",  "desc": "읽기 데이터 수락"},
-      {"name": "irq",       "width": 1,  "dir": "out", "desc": "FIFO 반가득·UART 줄 완료 인터럽트"}
+      {
+        "name": "s_awaddr",
+        "width": 8,
+        "dir": "in",
+        "desc": "쓰기 주소"
+      },
+      {
+        "name": "s_awvalid",
+        "width": 1,
+        "dir": "in",
+        "desc": "쓰기 주소 유효"
+      },
+      {
+        "name": "s_awready",
+        "width": 1,
+        "dir": "out",
+        "desc": "쓰기 주소 수락"
+      },
+      {
+        "name": "s_wdata",
+        "width": 32,
+        "dir": "in",
+        "desc": "쓰기 데이터"
+      },
+      {
+        "name": "s_wstrb",
+        "width": 4,
+        "dir": "in",
+        "desc": "바이트 스트로브"
+      },
+      {
+        "name": "s_wvalid",
+        "width": 1,
+        "dir": "in",
+        "desc": "쓰기 데이터 유효"
+      },
+      {
+        "name": "s_wready",
+        "width": 1,
+        "dir": "out",
+        "desc": "쓰기 데이터 수락"
+      },
+      {
+        "name": "s_bresp",
+        "width": 2,
+        "dir": "out",
+        "desc": "쓰기 응답"
+      },
+      {
+        "name": "s_bvalid",
+        "width": 1,
+        "dir": "out",
+        "desc": "쓰기 응답 유효"
+      },
+      {
+        "name": "s_bready",
+        "width": 1,
+        "dir": "in",
+        "desc": "쓰기 응답 수락"
+      },
+      {
+        "name": "s_araddr",
+        "width": 8,
+        "dir": "in",
+        "desc": "읽기 주소"
+      },
+      {
+        "name": "s_arvalid",
+        "width": 1,
+        "dir": "in",
+        "desc": "읽기 주소 유효"
+      },
+      {
+        "name": "s_arready",
+        "width": 1,
+        "dir": "out",
+        "desc": "읽기 주소 수락"
+      },
+      {
+        "name": "s_rdata",
+        "width": 32,
+        "dir": "out",
+        "desc": "읽기 데이터"
+      },
+      {
+        "name": "s_rresp",
+        "width": 2,
+        "dir": "out",
+        "desc": "읽기 응답"
+      },
+      {
+        "name": "s_rrvalid",
+        "width": 1,
+        "dir": "out",
+        "desc": "읽기 데이터 유효"
+      },
+      {
+        "name": "s_rready",
+        "width": 1,
+        "dir": "in",
+        "desc": "읽기 데이터 수락"
+      },
+      {
+        "name": "irq",
+        "width": 1,
+        "dir": "out",
+        "desc": "FIFO 반가득·UART 줄 완료 인터럽트"
+      }
     ],
     "note": "단방향 슬레이브. BRESP/RRESP 항상 2'b00(OKAY)."
   },
   "integration": {
     "bus": "AXI4-Lite",
-    "address_map": "mbv-frozen-v1",
-    "compat": "compatible",
+    "address_map": "custom",
+    "compat": "partial",
     "plan": "free_slots [18]=0x4018_0000 사용, 인터럽트 13번 할당(intc_free). MicroBlaze V XPS/Vitis에서 AXI-INTC 채널 13에 연결. 슬레이브 ID 레지스터 0x4018_0000+0x00=0x4B485542('KHUB').",
-    "frozen_mapping": {
-      "i2c_nmea_hub": "0x4018_0000 ~ 0x4018_FFFF"
-    }
+    "frozen_mapping": []
   },
   "external_parts": [
     {
@@ -138,9 +308,21 @@
     "module": "axil_i2c_nmea_hub",
     "file": "rtl/axil_i2c_nmea_hub.v",
     "children": [
-      {"module": "i2c_cycle_fsm", "file": "rtl/i2c_cycle_fsm.v", "children": []},
-      {"module": "nmea_uart_rx",  "file": "rtl/nmea_uart_rx.v",  "children": []},
-      {"module": "ts_fifo",       "file": "rtl/ts_fifo.v",        "children": []}
+      {
+        "module": "i2c_cycle_fsm",
+        "file": "rtl/i2c_cycle_fsm.v",
+        "children": []
+      },
+      {
+        "module": "nmea_uart_rx",
+        "file": "rtl/nmea_uart_rx.v",
+        "children": []
+      },
+      {
+        "module": "ts_fifo",
+        "file": "rtl/ts_fifo.v",
+        "children": []
+      }
     ]
   },
   "memory_map": [
@@ -149,35 +331,124 @@
       "size": "0x10000",
       "block": "top",
       "regs": [
-        {"off": "0x00", "name": "ID",          "access": "RO", "desc": "슬레이브 ID: 0x4B485542 ('KHUB')"},
-        {"off": "0x04", "name": "CTRL",        "access": "RW", "desc": "[0]=EN(허브 활성), [1]=IE(인터럽트 활성), [2]=FIFO_CLR"},
-        {"off": "0x08", "name": "STATUS",      "access": "RO", "desc": "[3:0]=FIFO_CNT, [4]=FIFO_FULL, [5]=I2C_BUSY, [6]=UART_LINE_RDY"},
-        {"off": "0x0C", "name": "IRQ_STATUS",  "access": "RW1C","desc": "[0]=FIFO_HF(절반 가득), [1]=UART_LINE_DONE"},
-        {"off": "0x10", "name": "I2C_CFG",     "access": "RW", "desc": "[15:0]=주기 카운터 임계(기본 10,000,000=100ms@100MHz)"},
-        {"off": "0x14", "name": "FIFO_DATA_HI","access": "RO", "desc": "팝 샘플 [71:40]: 타임스탬프[31:0]"},
-        {"off": "0x18", "name": "FIFO_DATA_LO","access": "RO", "desc": "팝 샘플 [39:0]: 타입[7:0]+데이터[31:0]. 읽으면 팝 완료"},
-        {"off": "0x1C", "name": "UART_CFG",    "access": "RW", "desc": "[15:0]=BAUD_DIV(기본 10417=9600baud@100MHz)"}
+        {
+          "off": "0x00",
+          "name": "ID",
+          "access": "RO",
+          "desc": "슬레이브 ID: 0x4B485542 ('KHUB')"
+        },
+        {
+          "off": "0x04",
+          "name": "CTRL",
+          "access": "RW",
+          "desc": "[0]=EN(허브 활성), [1]=IE(인터럽트 활성), [2]=FIFO_CLR"
+        },
+        {
+          "off": "0x08",
+          "name": "STATUS",
+          "access": "RO",
+          "desc": "[3:0]=FIFO_CNT, [4]=FIFO_FULL, [5]=I2C_BUSY, [6]=UART_LINE_RDY"
+        },
+        {
+          "off": "0x0C",
+          "name": "IRQ_STATUS",
+          "access": "RW1C",
+          "desc": "[0]=FIFO_HF(절반 가득), [1]=UART_LINE_DONE"
+        },
+        {
+          "off": "0x10",
+          "name": "I2C_CFG",
+          "access": "RW",
+          "desc": "[15:0]=주기 카운터 임계(기본 10,000,000=100ms@100MHz)"
+        },
+        {
+          "off": "0x14",
+          "name": "FIFO_DATA_HI",
+          "access": "RO",
+          "desc": "팝 샘플 [71:40]: 타임스탬프[31:0]"
+        },
+        {
+          "off": "0x18",
+          "name": "FIFO_DATA_LO",
+          "access": "RO",
+          "desc": "팝 샘플 [39:0]: 타입[7:0]+데이터[31:0]. 읽으면 팝 완료"
+        },
+        {
+          "off": "0x1C",
+          "name": "UART_CFG",
+          "access": "RW",
+          "desc": "[15:0]=BAUD_DIV(기본 10417=9600baud@100MHz)"
+        }
       ]
     }
   ],
   "roadmap": [
-    {"stage": "T1", "state": "done",    "title": "UART+GPIO skeleton",    "refs": ["ArmmyC-HolySoC"]},
-    {"stage": "T2", "state": "current", "title": "I2C+NMEA 센서 허브 IP", "refs": ["ammar-bin-amir-arty-a7-i2c-mpu-6050", "shillehtek-nano-mpu6050-neo6m-vehicle-logger"]},
-    {"stage": "T3", "state": "planned", "title": "센서 융합·칼만 가속기",  "refs": []}
+    {
+      "stage": "T1",
+      "state": "done",
+      "title": "UART+GPIO skeleton",
+      "refs": [
+        "ArmmyC-HolySoC"
+      ]
+    },
+    {
+      "stage": "T2",
+      "state": "current",
+      "title": "I2C+NMEA 센서 허브 IP",
+      "refs": [
+        "ammar-bin-amir-arty-a7-i2c-mpu-6050",
+        "shillehtek-nano-mpu6050-neo6m-vehicle-logger"
+      ]
+    },
+    {
+      "stage": "T3",
+      "state": "planned",
+      "title": "센서 융합·칼만 가속기",
+      "refs": []
+    }
   ],
   "references": [
-    {"card": "shillehtek-nano-mpu6050-neo6m-vehicle-logger", "why": "MPU-6050+NEO-6M I2C/UART 조합 패턴"},
-    {"card": "arduino-forum-nano-crash-3-i2c-gps",           "why": "I2C 3장치 충돌 사례 — 주소 분리 근거"},
-    {"card": "jpralves-car-hud-speed-compass",               "why": "GPS+나침반 HUD 조합 참고"},
-    {"card": "ammar-bin-amir-arty-a7-i2c-mpu-6050",          "why": "FPGA I2C 마스터 RTL 구조 참고"},
-    {"card": "angelojacobo-fpga-i2c-implementation",         "why": "순수 RTL I2C 비트뱅 FSM 구조"},
-    {"card": "ecen220wiki-basys3-debounce-fsm",              "why": "Basys3 100MHz 타이밍 기준"}
+    {
+      "card": "shillehtek-nano-mpu6050-neo6m-vehicle-logger",
+      "why": "MPU-6050+NEO-6M I2C/UART 조합 패턴"
+    },
+    {
+      "card": "arduino-forum-nano-crash-3-i2c-gps",
+      "why": "I2C 3장치 충돌 사례 — 주소 분리 근거"
+    },
+    {
+      "card": "jpralves-car-hud-speed-compass",
+      "why": "GPS+나침반 HUD 조합 참고"
+    },
+    {
+      "card": "ammar-bin-amir-arty-a7-i2c-mpu-6050",
+      "why": "FPGA I2C 마스터 RTL 구조 참고"
+    },
+    {
+      "card": "angelojacobo-fpga-i2c-implementation",
+      "why": "순수 RTL I2C 비트뱅 FSM 구조"
+    },
+    {
+      "card": "ecen220wiki-basys3-debounce-fsm",
+      "why": "Basys3 100MHz 타이밍 기준"
+    }
   ],
   "sources": {
-    "rtl":         ["rtl/axil_i2c_nmea_hub.v", "rtl/i2c_cycle_fsm.v", "rtl/nmea_uart_rx.v", "rtl/ts_fifo.v"],
-    "tb":          ["tb/tb_i2c_nmea_hub.v"],
-    "constraints": ["constr/basys3.xdc"],
-    "build":       ["Makefile"]
+    "rtl": [
+      "rtl/axil_i2c_nmea_hub.v",
+      "rtl/i2c_cycle_fsm.v",
+      "rtl/nmea_uart_rx.v",
+      "rtl/ts_fifo.v"
+    ],
+    "tb": [
+      "tb/tb_i2c_nmea_hub.v"
+    ],
+    "constraints": [
+      "constr/basys3.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
   },
   "howto": [
     {

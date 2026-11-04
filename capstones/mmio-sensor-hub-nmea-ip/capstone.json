@@ -36,10 +36,30 @@
         "id": "demo",
         "name": "demo_axil_master",
         "kind": "sim",
-        "module": "tb_sensor_hub_nmea",
+        "module": null,
         "file": "tb/tb_sensor_hub_nmea.v",
         "desc": "시뮬레이션용 AXI4-Lite 마스터 + I2C 슬레이브 모델 × 3 + NMEA 발생기.",
         "short": "시뮬레이션 마스터",
+        "side": "right"
+      },
+      {
+        "id": "pmod_i2c",
+        "name": "Pmod I2C 버스",
+        "kind": "external",
+        "module": null,
+        "file": null,
+        "desc": "JA Pmod SCL/SDA (MPU-6050, BMP280, HMC5883L 공유 I2C 버스)",
+        "short": "JA Pmod",
+        "side": "right"
+      },
+      {
+        "id": "pmod_uart",
+        "name": "Pmod UART RX",
+        "kind": "external",
+        "module": null,
+        "file": null,
+        "desc": "JB Pmod pin 1 (NEO-6M GPS TX 수신, 9600 baud)",
+        "short": "JB RX",
         "side": "right"
       }
     ],
@@ -70,7 +90,26 @@
     "name": "AXI4-Lite",
     "data_width": 32,
     "addr_width": 16,
-    "note": "WSTRB는 전체 워드(0xF)만 사용. 비정렬 접근 미지원."
+    "signals": [
+      {"name": "s_awaddr[15:0]", "dir": "master→slave", "desc": "쓰기 주소"},
+      {"name": "s_awvalid",      "dir": "master→slave", "desc": "주소 유효"},
+      {"name": "s_awready",      "dir": "slave→master", "desc": "주소 수락"},
+      {"name": "s_wdata[31:0]",  "dir": "master→slave", "desc": "쓰기 데이터"},
+      {"name": "s_wstrb[3:0]",   "dir": "master→slave", "desc": "바이트 인에이블 (0xF만 사용)"},
+      {"name": "s_wvalid",       "dir": "master→slave", "desc": "데이터 유효"},
+      {"name": "s_wready",       "dir": "slave→master", "desc": "데이터 수락"},
+      {"name": "s_bresp[1:0]",   "dir": "slave→master", "desc": "응답 (00=OKAY)"},
+      {"name": "s_bvalid",       "dir": "slave→master", "desc": "응답 유효"},
+      {"name": "s_bready",       "dir": "master→slave", "desc": "응답 수락"},
+      {"name": "s_araddr[15:0]", "dir": "master→slave", "desc": "읽기 주소"},
+      {"name": "s_arvalid",      "dir": "master→slave", "desc": "읽기 주소 유효"},
+      {"name": "s_arready",      "dir": "slave→master", "desc": "읽기 주소 수락"},
+      {"name": "s_rdata[31:0]",  "dir": "slave→master", "desc": "읽기 데이터"},
+      {"name": "s_rresp[1:0]",   "dir": "slave→master", "desc": "읽기 응답"},
+      {"name": "s_rvalid",       "dir": "slave→master", "desc": "읽기 데이터 유효"},
+      {"name": "s_rready",       "dir": "master→slave", "desc": "읽기 데이터 수락"}
+    ],
+    "note": "WSTRB는 전체 워드(0xF)만 사용. 비정렬 접근 미지원. awready/wready 상시 1(단순 슬레이브)."
   },
   "integration": {
     "bus": "AXI4-Lite",
@@ -92,7 +131,7 @@
     {
       "id": "mpu6050",
       "name": "GY-521 (MPU-6050)",
-      "block": "hub",
+      "block": "pmod_i2c",
       "interface": "I2C",
       "io_voltage": 3.3,
       "qty": 1,
@@ -105,7 +144,7 @@
     {
       "id": "bmp280",
       "name": "BMP280 기압/온도 모듈",
-      "block": "hub",
+      "block": "pmod_i2c",
       "interface": "I2C",
       "io_voltage": 3.3,
       "qty": 1,
@@ -118,7 +157,7 @@
     {
       "id": "hmc5883l",
       "name": "GY-271 (HMC5883L)",
-      "block": "hub",
+      "block": "pmod_i2c",
       "interface": "I2C",
       "io_voltage": 3.3,
       "qty": 1,
@@ -131,13 +170,13 @@
     {
       "id": "neo6m",
       "name": "NEO-6M GPS 모듈",
-      "block": "hub",
+      "block": "pmod_uart",
       "interface": "UART",
       "io_voltage": 3.3,
       "qty": 1,
       "board_resident": false,
       "supply_voltage": 5.0,
-      "level_shift": true,
+      "level_shift": "",
       "power_note": "TX 출력이 3.3V여서 Basys3 직결 가능. VCC는 5V 별도 공급.",
       "arduino_compatible": true,
       "notes": "9600baud 기본. UART TX→Basys3 Pmod RX. 레벨 변환 불필요(TX 3.3V)."
@@ -145,7 +184,7 @@
     {
       "id": "pullup_i2c",
       "name": "4.7kΩ 저항 × 2 (I2C 풀업)",
-      "block": "hub",
+      "block": "pmod_i2c",
       "interface": "I2C",
       "io_voltage": 3.3,
       "qty": 2,
@@ -296,13 +335,29 @@
       "Makefile"
     ]
   },
-  "howto": {
-    "sim": "make sim  # iverilog + vvp, PASS/FAIL 출력 확인",
-    "lint": "make lint  # verilator --lint-only",
-    "synth": "make synth  # yosys synth_xilinx 자원 추정 (Vivado 기준과 다를 수 있음)",
-    "vivado": "Vivado에서 basys3_sensor_hub.xdc와 rtl/sensor_hub_top.v를 불러와 최상위를 sensor_hub_top으로 설정. I2C Pmod: JA[0]=SCL, JA[1]=SDA. UART Pmod: JB[0]=RX.",
-    "note": "시뮬레이션은 소규모 파라미터(I2C_HALF=4, BAUD_CNT=10)로 빠르게 돌린다."
-  },
+  "howto": [
+    {
+      "title": "시뮬레이션",
+      "steps": [
+        "iverilog, yosys 설치 (Ubuntu: sudo apt install iverilog yosys verilator)",
+        "make -C capstones/mmio-sensor-hub-nmea-ip lint sim synth",
+        "build/sim.log에서 'PASS' 확인",
+        "시뮬레이션은 소규모 파라미터(I2C_HALF=4, BAUD_CNT=10)로 빠르게 돌린다"
+      ]
+    },
+    {
+      "title": "Vivado 빌드 (Basys3 보드 테스트)",
+      "steps": [
+        "새 RTL 프로젝트, 파트 xc7a35tcpg236-1",
+        "rtl/*.v (tb/ 제외) + constr/basys3_sensor_hub.xdc 추가, 최상위 basys3_top",
+        "I2C Pmod: JA[0]=SCL, JA[1]=SDA (MPU-6050, BMP280, HMC5883L 공유 버스)",
+        "UART Pmod: JB[0]=RX (NEO-6M GPS TX 연결, 9600baud)",
+        "Generate Bitstream 후 Program Device",
+        "UART 터미널(9600baud)로 센서 판독값과 GPS NMEA 문장 수신 확인"
+      ]
+    }
+  ],
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 Verilog-2001 원본이며 외부 코드를 포함하지 않는다. 시뮬레이션·합성 결과는 CI가 기록한다.",
   "verification": {
     "board": "not-tested",
     "notes": "S2: CI lint pass (경고 8건), iverilog 시뮬레이션 PASS, yosys 합성 LUT 254 FF 279. 2026-11-04 commit a4d868e."
