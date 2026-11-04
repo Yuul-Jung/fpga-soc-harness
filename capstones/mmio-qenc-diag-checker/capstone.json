@@ -29,17 +29,7 @@
         "file": "rtl/basys3_qenc_top.v",
         "desc": "보드 최상위: clk/btnC/JA[1:0] 입력, AXI 마스터 포트 미연결(standalone 시험용)",
         "short": "보드 래퍼",
-        "side": "left"
-      },
-      {
-        "id": "enc_hw",
-        "name": "enc_hw",
-        "kind": "external",
-        "module": "",
-        "file": "",
-        "desc": "외부 직교 인크리멘탈 엔코더 (JA Pmod, A=JA[0], B=JA[1])",
-        "short": "엔코더",
-        "side": "right"
+        "side": "external"
       },
       {
         "id": "wrap",
@@ -60,6 +50,14 @@
         "desc": "4체배 디코더 코어: 직전/현재 {A,B} 2비트 Gray 전이 테이블 → position/direction/error_cnt, 10ms 창 속도",
         "short": "4x 디코더 코어",
         "side": "right"
+      },
+      {
+        "id": "enc_ext",
+        "name": "직교 엔코더 (외부)",
+        "kind": "external",
+        "desc": "2상 직교 엔코더: A·B 채널, 5V 모터에 내장된 경우 레벨 변환 필요",
+        "short": "엔코더",
+        "side": "right"
       }
     ],
     "links": [
@@ -72,11 +70,6 @@
         "from": "wrap",
         "to": "core",
         "label": "sync signals"
-      },
-      {
-        "from": "enc_hw",
-        "to": "top",
-        "label": "enc_a, enc_b"
       }
     ]
   },
@@ -87,129 +80,130 @@
     "signals": [
       {
         "name": "awaddr",
-        "width": 8,
         "dir": "in",
-        "desc": "쓰기 주소 (바이트)"
+        "width": 32,
+        "desc": "AXI4-Lite 쓰기 주소"
       },
       {
         "name": "awvalid",
-        "width": 1,
         "dir": "in",
-        "desc": "쓰기 주소 유효"
+        "width": 1,
+        "desc": "AXI4-Lite 쓰기 주소 유효"
       },
       {
         "name": "awready",
-        "width": 1,
         "dir": "out",
-        "desc": "쓰기 주소 수락"
+        "width": 1,
+        "desc": "AXI4-Lite 쓰기 주소 수신 준비"
       },
       {
         "name": "wdata",
-        "width": 32,
         "dir": "in",
-        "desc": "쓰기 데이터"
+        "width": 32,
+        "desc": "AXI4-Lite 쓰기 데이터"
       },
       {
         "name": "wstrb",
-        "width": 4,
         "dir": "in",
-        "desc": "바이트 스트로브"
+        "width": 4,
+        "desc": "AXI4-Lite 쓰기 스트로브"
       },
       {
         "name": "wvalid",
-        "width": 1,
         "dir": "in",
-        "desc": "쓰기 데이터 유효"
+        "width": 1,
+        "desc": "AXI4-Lite 쓰기 데이터 유효"
       },
       {
         "name": "wready",
-        "width": 1,
         "dir": "out",
-        "desc": "쓰기 데이터 수락"
+        "width": 1,
+        "desc": "AXI4-Lite 쓰기 데이터 수신 준비"
       },
       {
         "name": "bresp",
-        "width": 2,
         "dir": "out",
-        "desc": "쓰기 응답 (00=OKAY)"
+        "width": 2,
+        "desc": "AXI4-Lite 쓰기 응답"
       },
       {
         "name": "bvalid",
-        "width": 1,
         "dir": "out",
-        "desc": "응답 유효"
+        "width": 1,
+        "desc": "AXI4-Lite 쓰기 응답 유효"
       },
       {
         "name": "bready",
-        "width": 1,
         "dir": "in",
-        "desc": "응답 수락"
+        "width": 1,
+        "desc": "AXI4-Lite 쓰기 응답 수신 준비"
       },
       {
         "name": "araddr",
-        "width": 8,
         "dir": "in",
-        "desc": "읽기 주소 (바이트)"
+        "width": 32,
+        "desc": "AXI4-Lite 읽기 주소"
       },
       {
         "name": "arvalid",
-        "width": 1,
         "dir": "in",
-        "desc": "읽기 주소 유효"
+        "width": 1,
+        "desc": "AXI4-Lite 읽기 주소 유효"
       },
       {
         "name": "arready",
-        "width": 1,
         "dir": "out",
-        "desc": "읽기 주소 수락"
+        "width": 1,
+        "desc": "AXI4-Lite 읽기 주소 수신 준비"
       },
       {
         "name": "rdata",
-        "width": 32,
         "dir": "out",
-        "desc": "읽기 데이터"
+        "width": 32,
+        "desc": "AXI4-Lite 읽기 데이터"
       },
       {
         "name": "rresp",
-        "width": 2,
         "dir": "out",
-        "desc": "읽기 응답"
+        "width": 2,
+        "desc": "AXI4-Lite 읽기 응답"
       },
       {
         "name": "rvalid",
-        "width": 1,
         "dir": "out",
-        "desc": "읽기 데이터 유효"
+        "width": 1,
+        "desc": "AXI4-Lite 읽기 응답 유효"
       },
       {
         "name": "rready",
-        "width": 1,
         "dir": "in",
-        "desc": "읽기 데이터 수락"
+        "width": 1,
+        "desc": "AXI4-Lite 읽기 응답 수신 준비"
       }
     ],
-    "note": "AXI4-Lite 슬레이브 전용(마스터 포트 없음). 단일 비트 wstrb(전체 32비트 쓰기), 버스트 없음, 256바이트 주소 공간 사용.",
     "limits": [
       "단일 비트 wstrb만 사용(전체 쓰기), 버스트 없음"
-    ]
+    ],
+    "note": "AXI4-Lite 슬레이브. 32비트 단순 R/W. 버스트·스트로브·오류 응답 없음."
   },
   "integration": {
     "bus": "AXI4-Lite",
-    "address_map": "mbv-frozen-v2",
-    "compat": "compatible",
-    "plan": "동결 맵 qdec 영역(0x400F_0000)에 맞게 주소 적용. qdec 영역이 MicroBlaze V SoC에서 직교 엔코더 디코더 슬롯으로 정해진 경우 그대로 사용.",
+    "address_map": "custom",
+    "compat": "partial",
+    "plan": "동결 맵의 free_slots [16]에 배정 제안: base=0x4016_0000, size=0x10000. INTC 입력 미사용(폴링).",
     "frozen_mapping": [
       {
         "block": "wrap",
-        "frozen": "qdec"
+        "region": "slot [16] 0x4016_0000"
       }
-    ]
+    ],
+    "target_map": "mbv-frozen-v2"
   },
   "external_parts": [
     {
       "id": "enc",
       "name": "직교 인크리멘탈 엔코더 (3.3 V 호환)",
-      "block": "enc_hw",
+      "block": "enc_ext",
       "interface": "JKPMOD JA 핀 (A=JA[0], B=JA[1])",
       "io_voltage": "3.3",
       "qty": 1,
@@ -240,10 +234,10 @@
   },
   "memory_map": [
     {
-      "base": "0x400F_0000",
+      "base": "0x4016_0000",
       "size": "0x10000",
       "block": "wrap",
-      "region": "qenc_diag",
+      "desc": "qenc_diag 레지스터 공간",
       "regs": [
         {
           "off": "0x00",
@@ -356,21 +350,21 @@
   },
   "howto": [
     {
-      "title": "시뮬레이션 (iverilog)",
+      "title": "sim",
       "steps": [
-        "make lint  — RTL 문법 검사 (iverilog -g2001 -Wall)",
-        "make sim   — 자체 점검 테스트벤치 실행; PASS all 7 checks 확인",
-        "make synth — yosys로 자원 추정 (XC7A35T 기준)"
+        "make sim  # iverilog tb/tb_axil_qenc_wrap.v rtl/qenc_diag.v rtl/axil_qenc_wrap.v && vvp a.out"
       ]
     },
     {
-      "title": "Vivado 합성",
+      "title": "lint",
       "steps": [
-        "rtl/qenc_diag.v, rtl/axil_qenc_wrap.v, rtl/basys3_qenc_top.v를 프로젝트에 추가한다.",
-        "constr/qenc_basys3.xdc를 제약 파일로 추가한다.",
-        "top=basys3_qenc_top으로 합성·구현한다.",
-        "합성 후 LUT/FF/BRAM 사용량과 WNS를 기록한다.",
-        "AXI4-Lite 포트는 set_false_path 처리됨. MicroBlaze V SoC 통합 시 AXI4-Lite 버스에 연결한다."
+        "make lint  # verilator --lint-only rtl/qenc_diag.v rtl/axil_qenc_wrap.v"
+      ]
+    },
+    {
+      "title": "synth",
+      "steps": [
+        "make synth  # yosys -p 'synth_xilinx -top axil_qenc_wrap' rtl/qenc_diag.v rtl/axil_qenc_wrap.v"
       ]
     }
   ],
@@ -383,5 +377,5 @@
     "글리치 필터 없음: 소음 많은 환경에서 오류 카운터가 빠르게 증가할 수 있음",
     "10ms 창 속도는 저속(< 400 rpm, 100선 엔코더 가정)에서 분해능 1 count"
   ],
-  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 Verilog-2001 원본이며 외부 코드를 포함하지 않는다. 아이디어 I-016 기반(ready 상태, 차단조건재심사 9점). AXI4-Lite, 동결 맵 qdec 슬롯(0x400F_0000) 적용. 시뮬레이션·합성 결과는 CI에서 검증한다."
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 Verilog-2001 원본이며 외부 코드를 포함하지 않는다. 아이디어 I-016 (ready, 차단조건재심사 9점)으로 생성됨 (2026-11-04). 직교 엔코더 디코더 + 불가능 전이 카운터 + AXI4-Lite 슬레이브."
 }
