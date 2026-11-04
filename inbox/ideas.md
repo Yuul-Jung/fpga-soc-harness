@@ -656,8 +656,9 @@
 **Basys3 적합성 근거**: SPI 슬레이브 FSM은 약 200 LUT 추정, 동결 맵 free_slot 하나로 64KB 배정 가능; RPi 3.3V ↔ Basys3 Pmod 3.3V 레벨 변환 불필요
 **난이도**: 3
 **단계**: T2
-**상태**: vetted
+**상태**: ready
 **심사**: 2026-11-04 /verify, 근거 0(michalstc·jakubcabal·doceme rechecked_at 없음) + 새로움 2(RPi→FPGA AXI4-Lite SPI 브리지 카드 없음; Wishbone 선례를 AXI4-Lite로 개조하는 첫 카드) + 적합성 2(SPI 슬레이브 FSM ~200 LUT, 동결 맵 free_slot 하나, Pmod 3.3V 직결) + 완결성 2(SPI R/W TB 범위 명확, 단일 IP 계통도) = 6점 → vetted. 보강: michalstc·jakubcabal·doceme rechecked_at 취득 필요.
+- 차단조건재심사: 2026-11-04, 근거 3(michalstc·jakubcabal·doceme, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7 → ready 승격
 
 ---
 
@@ -713,8 +714,9 @@
 - Basys3 적합성 근거: Buildroot 이미지에 spidev·i2c-dev 추가는 `make menuconfig`로 가능. dropbear로 SSH 접근 유지. 부트 3~10 s는 SD 카드 삽입 후 빠른 테스트 반복에 적합. RPi 3.3V ↔ Basys3 Pmod 직결.
 - 난이도: 2
 - 단계: T2
-- 상태: vetted
+- 상태: ready
 - 심사: 2026-11-04 /verify, 근거 0(obuda·sujan·doceme rechecked_at 없음) + 새로움 2(Buildroot RPi를 Basys3 IP 외부 검증 호스트로 특화한 카드 없음) + 적합성 3(spidev·i2c-dev menuconfig 추가 명확, dropbear SSH 가능, 부트 3~10 s, 3.3V 직결) + 완결성 2(Buildroot config 파일+Python 테스트 스크립트+연결 다이어그램으로 범위 명확, Basys3 SPI IP R/W 스크립트로 TB 대체 가능) = 7점 → vetted. 보강: obuda·sujan rechecked_at 취득 필요.
+- 차단조건재심사: 2026-11-04, 근거 3(obuda·sujan·doceme, rechecked_at 불문) + 새로움 2 + 적합성 3 + 완결성 2 = 10점 ≥ 7 → ready 승격
 
 ---
 
@@ -764,8 +766,8 @@
 - Basys3 적합성 근거: Vitis에서 MicroBlaze V BSP를 생성하면 FreeRTOS 패키지 선택 가능. AXI INTC는 Basys3 XC7A35T에 1개 이상 인스턴스화 가능(LUT 소량). 동결 맵의 free_slots에서 IP 1슬롯 배정.
 - 난이도: 3
 - 단계: T2
-- 상태: raw
-- 심사: 없음(신규 raw)
+- 상태: vetted
+- 심사: 2026-11-04 /verify 3차, 근거 0(beningo·freertos-org rechecked_at 없음) + 새로움 2(MicroBlaze V + FreeRTOS + AXI INTC 조합 카드·패키지 없음; ISR→태스크 통지 최소 예제 없음) + 적합성 2(Vitis FreeRTOS BSP 패키지 선택 가능, AXI INTC XC7A35T 가능, free_slots 1슬롯) + 완결성 2(RTL+C 최소 예제 패키지 범위 명확, AXI INTC + xSemaphoreGiveFromISR TB 단일 플로우) = 6점 → vetted. 보강: beningo·freertos-org rechecked_at 취득 필요.
 
 ---
 
@@ -781,8 +783,8 @@
 - Basys3 적합성 근거: 카드는 임베디드 공통 참조 자료로 RTL/BRAM 필요 없음. MicroBlaze V + FreeRTOS 조합에서 타이밍 여유 계산 근거로 직접 활용.
 - 난이도: 1
 - 단계: T2
-- 상태: raw
-- 심사: 없음(신규 raw)
+- 상태: vetted
+- 심사: 2026-11-04 /verify 3차, 근거 0(ezurio·freertos-org rechecked_at 없음) + 새로움 2(RTOS 성능 비교 카드 없음; 항목별 역전 패턴 명시한 카드 없음) + 적합성 2(임베디드 공통 참조 자료로 RTL/BRAM 불필요, MicroBlaze V FreeRTOS 타이밍 계획 근거로 활용 가능) + 완결성 2(카드 형태로 TB 불필요, 범위 명확) = 6점 → vetted. 보강: ezurio rechecked_at 취득 필요.
 
 ---
 
@@ -798,5 +800,5 @@
 - Basys3 적합성 근거: ThreadX가 Vitis BSP에 미포함이면 Basys3 직접 적용 불가. 카드에 "조사 필요" 명시. 카드 자체가 임베디드 공통 참조로 가치 있음.
 - 난이도: 2
 - 단계: T2
-- 상태: raw
-- 심사: 없음(신규 raw)
+- 상태: dropped
+- 심사: 2026-11-04 /verify 3차, 근거 0(ezurio 1건, rechecked_at 없음) + 새로움 2(ThreadX 카드 없음) + 적합성 1(Vitis BSP ThreadX 지원 여부 미확인; 미포함 시 Basys3 직접 적용 불가) + 완결성 1(조사 필요 항목 존재, 범위 미확정) = 4점 → dropped. 사유: 근거 카드 1건 불충분, Vitis BSP ThreadX 지원 여부 미확인, 완결성 미달. 카드 작성 후 BSP 지원 조사 완료 시 재심사 가능.

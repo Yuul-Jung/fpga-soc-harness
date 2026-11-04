@@ -1,6 +1,6 @@
 # SoC 기술 트리 (단계별 카드 연결)
 
-갱신: 2026-11-04 (/verify 2차). 카드 167건 기준. 비 FPGA 도메인(STM32 18건·ESP32 11건·RPi·Arduino·임베디드·전자기술 포함).
+갱신: 2026-11-04 (/verify 3차). 카드 170건 기준. 비 FPGA 도메인(STM32 18건·ESP32 11건·RPi·Arduino·임베디드·전자기술 포함).
 
 ---
 
@@ -55,6 +55,18 @@ Buildroot·Linux 이미지 카드는 Basys3 LiteX Linux·MicroBlaze V BSP 개발
 | T0 | sujan-coder-buildroot-linux-rpi3 | Buildroot 구성 → LiteX Linux 최소 rootfs 패턴 |
 | T0 | obuda-buildroot-mini-linux-tutorial | 이미지 크기·부팅 시간 비교 측정 절차 → LiteX 환경 적용 |
 | T1 | smartmechatronics-embedded-linux-boot-time-reduction | U-Boot 딜레이 제거·SD 로드·커널 모듈화 → LiteX U-Boot 이식(I-059), BusyBox init(I-060) |
+
+## 임베디드 도메인 단계 연결 (RTOS, 개조 참고)
+
+FreeRTOS·Zephyr 비교 카드는 MicroBlaze V + AXI INTC RTOS 설계에 개조 경로가 있다.
+
+| 단계 | 카드 | 개조 대상 |
+|---|---|---|
+| T2 | freertos-org-faq-memory | 스케줄러 236B + 태스크 64B → MicroBlaze V BSP BRAM 할당 계획 |
+| T2 | ezurio-freertos-vs-zephyr-benchmark | STM32F4 협력형/뮤텍스 사이클 비교 → MicroBlaze V ISR 반응성 타이밍 계획 근거 |
+| T2 | beningo-freertos-to-zephyr-migration | API 대응표·ISR 포팅 함정 → FreeRTOS→Zephyr 이식 경로 참고 (Vitis BSP FreeRTOS 경로 권장) |
+
+---
 
 ## gap 목록 (내 판단)
 
