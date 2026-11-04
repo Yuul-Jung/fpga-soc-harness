@@ -171,8 +171,12 @@ module sensor_hub_top #(
                         nmea_wp           <= nmea_wp + 7'd1;
                     end
                 end
+            end else if (!irq_stat[1]) begin
+                // irq_stat[1] cleared by W1C → lower nmea_line_rdy
+                // must be else-if so the '\n'-receive set is not overridden
+                // by this clear in the same clock (NBA last-wins anti-pattern)
+                nmea_line_rdy <= 1'b0;
             end
-            if (!irq_stat[1]) nmea_line_rdy <= 1'b0;
         end
     end
 
