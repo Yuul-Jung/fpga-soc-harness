@@ -199,3 +199,6 @@
 | [sparkfun-acs712-current-sensor](electronics/sparkfun-acs712-current-sensor.md) | L3 | T2 | 없음 (튜토리얼) | 2026-11-05 |
 | [applied-ee-analog-front-end](electronics/applied-ee-analog-front-end.md) | L3 | T2 | 없음 (참조 가이드) | 2026-11-05 |
 | [xilinx-xapp795-driving-xadc](electronics/xilinx-xapp795-driving-xadc.md) | L3 | T2 | Basys3 (yes) | 2026-11-05 |
+| [vasam2230-pmod-als-spi-adc](amd/vasam2230-pmod-als-spi-adc.md) | L3 | T1 | Basys3 yes | 2026-11-05 |
+| [epdtonthenet-xadc-digitally-enhanced-analogue](electronics/epdtonthenet-xadc-digitally-enhanced-analogue.md) | L3 | T2 | 없음 (기사, Basys3 XADC 참고) | 2026-11-05 |
+| [amd-ug480-xadc-external-inputs](electronics/amd-ug480-xadc-external-inputs.md) | L3 | T2 | 없음 (공식 문서) | 2026-11-05 |
