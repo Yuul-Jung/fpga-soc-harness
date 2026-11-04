@@ -137,9 +137,10 @@ module tb_motor_safety;
         check_eq(pwm_ah, 1'b0, "TC2:pwm_ah=0");
         check_eq(pwm_al, 1'b0, "TC2:pwm_al=0");
 
-        // 초기화
+        // 초기화 — AH→0 하강이 DT_CYCLES짜리 데드타임을 유발하므로
+        //          FSM이 S_IDLE로 복귀할 때까지 충분히 기다린다
         mmio_write(B + OFF_PWM_IN, 32'h0);
-        repeat(5) @(posedge clk);
+        repeat(DT_CYCLES + 5) @(posedge clk);
 
         // -----------------------------------------------------------------
         // TC3: 데드타임 — AH_in 하강 후 AL_out은 DT_CYCLES 뒤에 등장
