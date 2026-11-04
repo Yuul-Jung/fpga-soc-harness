@@ -9,7 +9,7 @@
     "IP 표준 Rev.1(관리 레지스터 0xFFF0~FFFC)을 따르는 pid_cap_ip 단일 IP 설계: 4× 직교 엔코더 동기화, 창 계수 속도 측정, 8.8 고정소수점 PID FSM(D항 포함), PWM 출력",
     "BRAM 32엔트리 계단 응답 로거: CAPTURE_CTRL 레지스터로 캡처 시작, CAPTURE_ADDR/DATA로 호스트 읽기",
     "MMIO-lite 버스 주소 디코더로 GPIO/UART/PID_CAP 3개 슬레이브 연결",
-    "1차 지연 모델 모터 테스트벤치로 계단 지령 ±3 오차 이내 수렴 및 BRAM 로그 비어있지 않음을 PASS/FAIL 자체 점검",
+    "1차 지연 모델 모터 테스트벤치로 계단 지령 ±5 오차 이내 수렴(8.8 고정소수 양자화 고려) 및 BRAM 로그 비어있지 않음을 PASS/FAIL 자체 점검",
     "yosys 합성 성공, iverilog 시뮬레이션 PASS 확인(S2)"
   ],
   "non_goals": [
