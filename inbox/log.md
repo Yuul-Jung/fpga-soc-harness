@@ -157,3 +157,4 @@
 2026-11-05 02:34 | capstone | I-026 W5500 UDP TX · ready 경로(차단조건재심사 8점) | +1 패키지(mmio-w5500-udp-tx-ip) | 아이디어 +0 | S0→CI 대기(push 후 10분) | ready 경로
 
 2026-11-05 03:01 | capstone-ci | mmio-spwm-deadtime-ip tb fix (attempt 1/3) | S0→S2 | CI verify #237 success: lint PASS, sim PASS(TC1~TC5), synth PASS(LUT 222 FF 162 yosys) | commit 54e40ba
+2026-11-05 03:20 | collect | Basys3 7세그 멀티플렉서 고급 활용(blank·dp·PWM 밝기) · S3 빈틈 추적(주)+S2 조합 탐색(보조) | 카드 +3 | 아이디어 +1 | 큐 잔여 466 | blocked 1

@@ -479,3 +479,15 @@
 - https://github.com/jakubcabal/spi-fpga | jakubcabal/spi-fpga: VHDL SPI 마스터·슬레이브 코어 (Artix-7·Nexys A7 타깃, MIT) — 미열람(L1) | FPGA SPI VHDL cores Artix-7
 - https://github.com/charkster/cmod_a7_spi_sram | charkster/cmod_a7_spi_sram: Cmod A7(Artix-7) SPI 슬레이브 → 외부 SRAM 맵핑 — 미열람(L1) | Artix-7 SPI slave SRAM memory mapping
 - https://stackoverflow.com/questions/64011451/32-bits-data-transfer-from-Pi-to-FPGA-using-spidev | Stack Overflow: RPi spidev로 FPGA에 32비트 전송 (답변 미흡, L1) | Raspberry Pi spidev FPGA SPI 32-bit transfer
+
+## Basys3 7세그 멀티플렉서 고급 활용 (2026-11-04 사이클, S3+S2)
+- https://byu-cpe.github.io/ecen320/labs/lab-07 | BYU ECEN320 Lab-07: Basys3 seven_segment4 SystemVerilog, blank[3:0]+dp_in[3:0]+REFRESH_RATE 파라미터 — 카드 작성 완료(L2) | Basys3 seven segment blank dp SystemVerilog
+- https://telkomnika.uad.ac.id/index.php/TELKOMNIKA/article/view/27610 | TELKOMNIKA 2026 논문: Artix-7 카운터 중심 BCD→7세그 드라이버, 고스팅 제거 — 카드 작성 완료(L3) | Artix-7 seven segment BCD multiplexed driver ghosting elimination
+- https://community.element14.com/technologies/fpga-group/b/blog/posts/seven-segment-display-controlled-by-arty-s7-board | element14 블로그: Arty S7 7세그 15단계 PWM 밝기 pulseDuration[3:0]+dotPoint — 카드 작성 완료(L3) | Arty S7 seven segment PWM brightness dotPoint Verilog
+- https://github.com/Digilent/Basys-3-Library/tree/master/IP/Seven_Segment_Display | Digilent Basys-3 라이브러리 공식 7세그 IP — 미열람(L1) | Digilent Basys3 seven segment IP library
+- https://reference.digilentinc.com/learn/programmable-logic/tutorials/basys3-seven-segment-display-tutorial/start | Digilent 공식 Basys3 7세그 튜토리얼(멀티플렉싱 기초) — 미열람(L1) | Basys3 seven segment tutorial Digilent
+- https://github.com/Nematjon1/rapid_reporter | Rapid Reporter: Basys3 7세그+버튼+LED 종합 예제 — 미열람(L1) | Basys3 seven segment LED button Verilog
+- https://hackaday.io/project/196147-basys3-7-segment-display-clock | Hackaday: Basys3 7세그 디지털 시계, 초침 깜박임 — 미열람(L1) | Basys3 seven segment clock blinking Hackaday
+- https://www.fpga4fun.com/Odom.html | fpga4fun: 7세그 주행거리계 예제, 소수점 DP 활용 — 미열람(L1) | seven segment odometer decimal point fpga4fun
+- https://github.com/CARWHO/FPGA-Reaction-Timer | CARWHO/FPGA-Reaction-Timer: Basys3 반응속도 타이머, 7세그+소수점 카운트다운, 8커밋 — 미열람(L1) | Basys3 reaction timer seven segment decimal point
+- https://github.com/gmcastil/basys3 | gmcastil/basys3: MIT, 210커밋, Basys3 IP 컬렉션; 7세그 모듈 존재 추정 — src/ 차단(blocked) | Basys3 IP collection seven segment MIT

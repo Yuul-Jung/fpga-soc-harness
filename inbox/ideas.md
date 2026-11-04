@@ -1138,3 +1138,22 @@
 - 내 판단: LiteX/iCEBreaker 환경을 Basys3+MicroBlaze V 환경으로 옮기는 개조 경로가 명확. Pico 대신 RPi4를 쓸 때는 spidev로 같은 9바이트 프레임 전송 가능(I-085와 상호 보완).
 - 난이도: 3 / 단계: T2-T3 / 상태: vetted
 - 심사: 2026-11-05 /verify(12차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(enjoy-digital-litex-rp2040-pmod-test·airhdl-spi-to-axi-bridge 모두 rechecked_at 없음) + 새로움 2(RP2040 Pico를 Basys3 Pmod 호스트로 쓰는 AXI-Lite 단독 검증 카탈로그 없음; I-085와 호스트 MCU 다름) + 적합성 3(Basys3 Pmod 3.3V ↔ Pico GPIO 3.3V 직결 가능, spibone_gen.py --mode hybrid-axi-lite 순수 Verilog 출력, SPIBone 9바이트 프레임 단순·Pico MicroPython machine.SPI 직접 구현 가능) + 완결성 2(spibone_gen.py 출력→Basys3 배정→Pico MicroPython test 경로 명확, 개조 단계 세부화 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득, spibone_gen.py --mode hybrid-axi-lite Verilog AXI-Lite 호환성 검증, 대상 free_slot 선택.
+
+---
+
+### I-072 AXI4-Lite 7세그먼트 IP — 자리별 blank+dp+PWM 밝기 통합 슬레이브
+
+- id: I-072
+- 제목: AXI4-Lite 래핑 Basys3 7세그 고급 IP (blank·dp·PWM 밝기 레지스터 제어)
+- 한 줄 요약: MicroBlaze V에서 레지스터 2개(DIGIT_DATA, BRIGHTNESS)로 4자리 7세그먼트를 완전 제어하는 AXI4-Lite 슬레이브 IP
+- 조합 주변장치: 7seg-mux, PWM 밝기 제어(pulseDuration), 소수점(dp), 자리별 blank
+- 근거 카드:
+  - byu-ecen320-seven-segment4 (blank[3:0]+dp_in[3:0]+REFRESH_RATE 파라미터)
+  - element14-arty-s7-7seg-brightness (pulseDuration[3:0] 15단계 PWM 밝기+dotPoint)
+- 근거 URL:
+  - https://byu-cpe.github.io/ecen320/labs/lab-07
+  - https://community.element14.com/technologies/fpga-group/b/blog/posts/seven-segment-display-controlled-by-arty-s7-board
+- 새로움의 근거: 카탈로그에 blank·dp·PWM 밝기를 AXI4-Lite 레지스터로 통합한 Basys3 IP 없음. 기존 카드들은 개별 기능만 다루며 조합 IP 아이디어 없음.
+- Basys3 적합성의 근거: Basys3 4자리 공통 애노드 7세그 직접 지원. REFRESH_RATE=200 → 4자리 × 200 Hz = 800 Hz 애노드 순환, 100 MHz 클럭 분주로 충분. PWM 밝기는 duty cycle 카운터로 추가 LUT 최소 소모.
+- 내 판단: 두 카드의 아이디어를 조합하면 MicroBlaze V 소프트웨어에서 단순 레지스터 쓰기만으로 7세그 고급 제어가 가능한 IP 완성. T1→T2 전환점의 대표 예제로 적합.
+- 난이도: 2 / 단계: T1-T2 / 상태: raw

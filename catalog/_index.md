@@ -208,3 +208,6 @@
 | [ananthu-islam-ahb-apb-bridge-rpi-artix7](papers/ananthu-islam-ahb-apb-bridge-rpi-artix7.md) | L3 | T2 | Artix-7 100TCSG324 (Basys3 needs-port) | 2026-11-05 |
 | [airhdl-spi-to-axi-bridge](vendor-neutral/airhdl-spi-to-axi-bridge.md) | L3 | T2 | 보드 없음 (Basys3 yes) | 2026-11-05 |
 | [enjoy-digital-litex-rp2040-pmod-test](rpi/enjoy-digital-litex-rp2040-pmod-test.md) | L3 | T3 | iCEBreaker (Basys3 needs-port) | 2026-11-05 |
+| [byu-ecen320-seven-segment4](amd/byu-ecen320-seven-segment4.md) | L2 | T1 | Basys3 | 2026-11-04 |
+| [elngar-telkomnika-7seg-artix7](papers/elngar-telkomnika-7seg-artix7.md) | L3 | T1 | Nexys-4 DDR (Basys3 needs-port) | 2026-11-04 |
+| [element14-arty-s7-7seg-brightness](amd/element14-arty-s7-7seg-brightness.md) | L3 | T1 | Arty S7 (Basys3 needs-port) | 2026-11-04 |
