@@ -1300,3 +1300,25 @@
 - Basys3 적합성의 근거: 테스트벤치 전용(합성 불필요). iverilog·verilator 모두 지원. SPI 타이밍은 클럭 주기 계산으로 결정론적 구현 가능. T1 수준 LUT 사용.
 - 난이도: 2 / 단계: T1 / 상태: vetted
 - 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(MCU SPI 마스터 Verilog 모델 없음) + 적합성 2(테스트벤치 전용, 합성 불필요, CI 직접 활용) + 완결성 2(SPI 타이밍 모델+CPOL/CPHA 범위 명확) = 6점. 보강: 근거 카드 rechecked_at 1건 이상.
+
+## I-097 I2C 멀티마스터 버스 중재기 + 7세그 버스 상태 모니터 (Basys3 T2)
+- 내 판단: Basys3의 Pmod I2C(SDA/SCL)에 2개의 I2C 마스터 FSM을 붙이고, 버스 충돌(ARBLOST) 감지 로직을 AXI4-Lite 슬레이브로 감싸 MicroBlaze V `free_slots` 한 칸에 배정. 7세그 디스플레이에 현재 버스 점유 상태(마스터 ID, 중재 패배 카운터)를 실시간 표시. S2(조합) + S7(T1 단일 마스터 → T2 멀티마스터 연장) 전략 직접 구현.
+- id: I-097
+- 조합: [I2C-multimaster-FSM, ARBLOST-AXI4-Lite-wrapper, 7-seg-controller, Pmod-I2C]
+- 근거 카드: [alexforencich-verilog-i2c, hdl-util-i2c, tom-urkin-i2c]
+- 근거 URL: [https://github.com/alexforencich/verilog-i2c, https://github.com/hdl-util/i2c]
+- 새로움의 근거: 카탈로그에 멀티마스터 중재를 Basys3 7세그와 연동한 카드·패키지 없음.
+- Basys3 적합성의 근거: Pmod 핀 2개(SDA+SCL) + 외부 2.2kΩ 풀업. 7세그 보드 내장. 2개 마스터 FSM은 LUT 수백 개. free_slots 1칸(64KB) 사용.
+- 난이도: 3 / 단계: T2 / 상태: raw
+- 심사: 2026-11-05 /harvest(S2+S7), 근거 0+새로움 2+적합성 2+완결성 1 = 5점. 보강: 근거 카드 L3 열람 1건 이상, 클럭 스트레칭 처리 방식 명세.
+
+## I-098 I2C 버스 충돌 주입 테스트벤치 (멀티마스터 시뮬레이션 사다리 T1→T2)
+- 내 판단: 단일 I2C 마스터 FSM(T1)과 멀티마스터 충돌 시뮬레이션(T2)을 한 테스트벤치로 묶는 패턴. 1단계: 단일 마스터 정상 동작. 2단계: 두 마스터가 동시에 START 발행, SDA 충돌 삽입, 중재 패배 FSM이 버스 양보 검증. 3단계: 클럭 스트레칭 확인. CI iverilog/verilator에서 PASS/FAIL 자동 검증. S7 전략의 직접 구현.
+- id: I-098
+- 조합: [I2C-master-FSM, I2C-multimaster-arbitration-TB, clock-stretching-TB, iverilog-CI]
+- 근거 카드: [alexforencich-verilog-i2c, tom-urkin-i2c, hdl-util-i2c]
+- 근거 URL: [https://github.com/alexforencich/verilog-i2c, https://github.com/tom-urkin/I2C, https://github.com/hdl-util/i2c]
+- 새로움의 근거: 카탈로그에 "버스 충돌 주입" 테스트벤치를 단계별로 구성한 카드·패키지 없음.
+- Basys3 적합성의 근거: 테스트벤치 전용(합성 불필요). iverilog·verilator 모두 지원.
+- 난이도: 2 / 단계: T1 / 상태: raw
+- 심사: 2026-11-05 /harvest(S7), 근거 0+새로움 2+적합성 2+완결성 2 = 6점. 보강: 근거 카드 rechecked_at 1건 이상.

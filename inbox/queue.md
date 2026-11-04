@@ -532,3 +532,11 @@
 - https://www.latticesemi.com/en/Products/DesignSoftwareAndIP/IntellectualProperty/ReferenceDesigns/ReferenceDesign03/SPISlaveController | Lattice SPI 슬레이브 컨트롤러 레퍼런스 디자인 (S5 비정형 출처, Lattice 벤더 IP) — 미열람 L1 | Lattice SPI slave reference design
 - https://www.digikey.cn/zh/maker/tutorials/2025/spi-peripheral-design-in-systemverilog | DigiKey Maker SPI 주변장치 SystemVerilog 설계 튜토리얼 (S5 비정형 출처) — 미열람 L1 | DigiKey SPI peripheral design SystemVerilog
 - https://github.com/schang412/verilog-spi | Verilog SPI 슬레이브 라이브러리 — 미열람 L1 | nandland SPI slave search
+
+- https://github.com/sushi0706/i2c | I2C SystemVerilog 구현(멀티마스터 가능성 미확인) — 미열람(L1) | FPGA SystemVerilog I2C multimaster arbitration search
+- https://opencores.org/project,iicmb | OpenCores IICMB(I2C Multi-Bus Master) — 멀티마스터·버스 중재 전용 IP — 미열람(L1), 라이선스 확인 필요 | I2C multimaster arbitration opencores FPGA
+- https://opencores.org/websvn/filedetails?repname=i2c&path=%2Fi2c%2Ftrunk%2Fdoc%2Fi2c_specs.pdf | OpenCores I2C 마스터 코어 사양서(멀티마스터 중재 조건 포함 가능성) — 미열람(L1) | I2C master arbitration spec opencores
+- https://github.com/cp024s/I2C | I2C Verilog 구현 — 미열람(L1), 멀티마스터 여부 미확인 | FPGA Verilog I2C master slave multimaster search
+- https://industrialmonitordirect.com/blogs/knowledgebase/i2c-ip-corner-case-test-plan-state-machine-arbitration-verification | I2C IP 코너 케이스·중재 검증 테스트 계획(S6 실패·엣지 케이스) — 미열람(L1) | I2C arbitration corner case verification test plan
+- https://www.i2c-bus.org/multimaster/ | I2C-bus.org 멀티마스터 중재 프로토콜 공식 가이드(S5 비정형) — 미열람(L1) | I2C multimaster arbitration protocol specification
+- https://github.com/truhy/fpga_i2c | FPGA I2C 마스터 Verilog(멀티마스터 중재 여부 미확인) — 미열람(L1) | FPGA Verilog I2C master arbitration clock stretching

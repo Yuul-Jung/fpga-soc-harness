@@ -225,3 +225,6 @@
 | [arpitsingh7634-spi-master-slave](amd/arpitsingh7634-spi-master-slave.md) | L2 | T1 | Basys3 yes | 2026-11-04 |
 | [taada33-basys3-spi](amd/taada33-basys3-spi.md) | L2 | T2 | Basys3 yes | 2026-11-04 |
 | [nandland-spi-slave](vendor-neutral/nandland-spi-slave.md) | L2 | T1 | 없음 (Basys3 needs-port) | 2026-11-04 |
+| [alexforencich-verilog-i2c](vendor-neutral/alexforencich-verilog-i2c.md) | L2 | T1 | 없음 (Basys3 needs-port) | 2026-11-05 |
+| [hdl-util-i2c](vendor-neutral/hdl-util-i2c.md) | L2 | T1 | 없음 (Basys3 needs-port) | 2026-11-05 |
+| [tom-urkin-i2c](vendor-neutral/tom-urkin-i2c.md) | L2 | T1 | 없음 (Basys3 needs-port) | 2026-11-05 |
