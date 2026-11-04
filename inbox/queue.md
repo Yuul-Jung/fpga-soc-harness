@@ -442,3 +442,6 @@
 - https://www.inflearn.com/community/questions/1741734/벅컨버터-입력-출력-커패시터-선정-과정-질문 | 인프런 커뮤니티: 벅컨버터 입출력 커패시터 선정 과정 Q&A(2026-01, 한국어) — 열람 L3, 카드 대기 | 벅컨버터 커패시터 선정 임베디드 한국어
 - https://recom-power.com/ko/rec-n-an-introduction-to-buck,-boost,-and-buck-boost-converters-131.html | RECOM Power 한국어 벅/부스트/벅-부스트 컨버터 입문(제품 가이드, 효율 96%) — 열람 L2 | DC-DC buck boost converter 벅 컨버터 설계 한국어
 - https://www.digikey.at/en/articles/how-to-use-small-modular-small-dc-dc-converters-to-minimize-power-rail-noise | DigiKey: 소형 모듈 DC-DC 컨버터로 전원 레일 노이즈 최소화 — 미열람(L1) | DC-DC converter minimize power rail noise embedded FPGA
+- https://jtec.utem.edu.my/jtec/article/view/3581 | Lam & Ehkan(JTEC 2018): Altera DE2 기반 FPGA 사다리꼴 프로파일 스텝모터 컨트롤러, FSM, 15.88 µm 해상도, 로직 1% | 검색어: stepper motor trapezoidal velocity profile FPGA Verilog accumulator 2024
+- https://hackaday.com/2015/09/21/fpga-cnc | Hackaday FPGA CNC: FPGA로 CNC 스텝 펄스 직접 생성 사례 (DDA 알고리즘, Verilog) | 검색어: stepper motor FPGA CNC step generation hardware
+- https://thesis.unipd.it/bitstream/20.500.12608/93395/1/Ragazzo_Alberto.pdf | Ragazzo(UniPD): FPGA 다축 스텝모터 가감속 프로파일 구현 논문 — 미열람(L1) | stepper motor trapezoidal velocity profile FPGA multi-axis

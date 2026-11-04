@@ -79,7 +79,7 @@
 - [x] 안전 기능: MISRA C, 워치독, 스택 카나리, CRC 검사, FMEA 예시 — 2026-11-04: 카드 3건(L3), openMSP430 워치독 Verilog·HEIA-FR Zephyr 스택 보호·TUM IEC 61508 강의, 큐 8건, 아이디어 2건, S7 난이도 사다리+S1 인접 도메인 이식 전략
 
 ## 전자기술 도메인 (2026-11-03 추가, 위에서부터 소비)
-- [ ] 모터 드라이버 회로: H-브리지 MOSFET 선택·게이트 드라이버·데드타임·역기전력 보호
+- [x] 모터 드라이버 회로: H-브리지 MOSFET 선택·게이트 드라이버·데드타임·역기전력 보호 — 2026-11-04 사이클: 카드 3건(L3: zbotic-backem-flyback-protection, industrialmonitordirect-irs2110-half-bridge, lcsc-mosfet-selection-motor-control), 큐 8건
 - [x] 전력 공급: DC-DC 벅/부스트 컨버터 설계, LDO vs 스위칭 레귤레이터 선택 기준 — 2026-11-04 사이클에서 완료(catalog/electronics/ 카드 3건: altium LDO vs switching, wevolver 벅 설계 가이드, vishay FPGA 전원 애플리케이션 노트)
 - [ ] 인버터 기초: 단상 풀브리지 SPWM, 게이트 격리(포토커플러/게이트 드라이버 IC)
 - [ ] 센서 신호 처리: ADC 입력 필터링, 차동 증폭, 홀 전류 센서 보정

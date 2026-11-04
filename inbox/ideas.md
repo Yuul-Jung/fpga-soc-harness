@@ -206,7 +206,7 @@
 - 차단조건재심사: 2026-11-04 /verify(5차), 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 4건(hakan-demirli-pid-fpga, microchip-an532-dc-servo-pid, 1runxu-520-pid-fpga, deepc94-pid-fpga-vhdl, rechecked_at 불문) → 근거 3 + 새로움 2(응답 캡처·BRAM 버퍼 IP 없음) + 적합성 2(BRAM 소량·Pmod 2개·곱셈기 소수) + 완결성 2(와인드업·BRAM 캡처 범위 명확) = 9점 ≥ 7 → ready 승격. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-018 스텝모터 가감속 IP: 단위시간당 스텝 누산기 FSM + 스텝 손실 시험 시나리오
-- 상태: ready
+- 상태: used (패키지: mmio-stepper-ramp-ip, 2026-11-04)
 - 요약: 내 판단: 이동 스텝 수, 최대 속도, 가속도를 AXI4-Lite 레지스터로 받아 사다리꼴 프로파일 스텝 펄스를 만드는 IP. 덧셈과 비교만 쓰고, 테스트벤치는 가속/등속/감속 구간 스텝 수 합과 짧은 이동(삼각형 프로파일)을 비교한다. 28BYJ-48 풀/하프스텝 패턴과 STEP/DIR 출력 모드를 레지스터로 고른다.
 - 조합: [스텝 펄스 FSM(actuator-servo), 4선 시퀀서(ULN2003), STEP/DIR 출력(A4988), 상태 레지스터]
 - 근거: [stepmotion-vp-steps-per-time, eeict-2011-xpisid00-stepper-linear-speed-controller, opencores-roboarm-stepper], https://www.machinedesign.com/archive/avoiding-step-loss
