@@ -202,3 +202,6 @@
 | [vasam2230-pmod-als-spi-adc](amd/vasam2230-pmod-als-spi-adc.md) | L3 | T1 | Basys3 yes | 2026-11-05 |
 | [epdtonthenet-xadc-digitally-enhanced-analogue](electronics/epdtonthenet-xadc-digitally-enhanced-analogue.md) | L3 | T2 | 없음 (기사, Basys3 XADC 참고) | 2026-11-05 |
 | [amd-ug480-xadc-external-inputs](electronics/amd-ug480-xadc-external-inputs.md) | L3 | T2 | 없음 (공식 문서) | 2026-11-05 |
+| [jlcpcb-decoupling-capacitor-guide](electronics/jlcpcb-decoupling-capacitor-guide.md) | L3 | T0 | 없음 (기사) | 2026-11-05 |
+| [rfessentials-split-ground-plane-emi](electronics/rfessentials-split-ground-plane-emi.md) | L3 | T1 | 없음 (기사) | 2026-11-05 |
+| [ema-eda-fpga-pcb-design-guide](electronics/ema-eda-fpga-pcb-design-guide.md) | L3 | T2 | 없음 (기사, FPGA PCB 체크리스트) | 2026-11-05 |

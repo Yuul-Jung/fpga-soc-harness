@@ -93,7 +93,7 @@
 - [x] 전력 공급: DC-DC 벅/부스트 컨버터 설계, LDO vs 스위칭 레귤레이터 선택 기준 — 2026-11-04 사이클에서 완료(catalog/electronics/ 카드 3건: altium LDO vs switching, wevolver 벅 설계 가이드, vishay FPGA 전원 애플리케이션 노트)
 - [x] 인버터 기초: 단상 풀브리지 SPWM, 게이트 격리(포토커플러/게이트 드라이버 IC)
 - [x] [B3] 센서 신호 처리: ADC 입력 필터링, 차동 증폭, 홀 전류 센서 보정 — 2026-11-05 사이클(복수): sparkfun-acs712, applied-ee-analog-front-end, xilinx-xapp795 (별도 세션) + vasam2230-pmod-als-spi-adc, epdtonthenet-xadc, amd-ug480 (이번 세션), 총 6건
-- [ ] [B3] PCB 설계 체크리스트: 전류 경로, GND 플레인 분리, EMC 디커플링, 레이아웃 규칙
+- [x] [B3] PCB 설계 체크리스트: 전류 경로, GND 플레인 분리, EMC 디커플링, 레이아웃 규칙
 
 ## 도메인 보충 4 (2026-11-03 §12.2-3: stm32/esp32/rpi/embedded/electronics 카드 0건, 위에서부터 소비)
 - [x] STM32 모터 제어: 타이머 엔코더 모드 + PWM + PID (HAL/LL) 사례와 FPGA 엔코더/PWM IP 레지스터로의 개조 (stm32 카드 0건, S3) — 2026-11-03 23시대 사이클: 카드 3건(L3), catalog/stm32/ 신설, PID 이득·샘플 주기 공개 자료와 LL 드라이버 직접 자료는 못 찾음, mbed 32비트 확장은 리다이렉트로 열람 못 함

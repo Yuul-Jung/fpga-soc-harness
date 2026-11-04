@@ -465,3 +465,10 @@
 - https://github.com/WangXuan95/FpOC | WangXuan95 FPGA FOC: 순수 Verilog FOC·BLDC 제어, AD7928 SPI ADC, Clark/Park 변환, PI 제어기 — 열람 L3, GPL-3.0 주의 | FPGA FOC BLDC motor control Verilog current sensing
 - https://wolles-elektronikkiste.de/en?p=10692 | Wolfgang's Elektronikkiste: ACS712 측정 정확도 개선, 오프셋 보정, 소프트웨어 필터링(독일어 블로그) — 미열람(L1) | ACS712 accuracy improvement software filtering
 - https://zbotic.in/instrumentation-amplifier-ina128-differential-signal-guide/ | Zbotic: INA128 계장 증폭기 가이드(차동 신호, 게인 설정, Rg 테이블) — 미열람(L1) | INA128 instrumentation amplifier differential gain
+- https://www.allpcb.com/setups/pcb_design_guideline_emc.html | AllPCB EMC 가이드라인: 디커플링, GND 플레인, 고속 신호 레이아웃 체크리스트 — 미열람(L1) | PCB EMC guidelines decoupling ground plane
+- https://www.intel.com/content/www/us/en/docs/programmable/683853/current/decoupling-capacitor-guidelines.html | Intel FPGA 디커플링 커패시터 가이드라인(공식 문서) — 미열람(L1) | Intel FPGA decoupling capacitor guideline
+- https://www.altium.com/learn/pcb-design/high-speed-pcb-design | Altium 고속 PCB 설계 가이드: 임피던스 제어, 차동 쌍, 종단 — 미열람(L1) | high-speed PCB design impedance control differential pair termination
+- https://medium.com/@vacatronics/how-to-properly-decouple-power-supply-on-pcb-5a1b3c8e9f04 | Medium Vacatronics: PCB 전원 디커플링 올바른 방법(100nF/10µF/벌크) — 미열람(L1) | PCB power supply decoupling capacitor placement
+- https://www.analog.com/en/resources/app-notes/an-347.html | Analog Devices AN-347: 혼합 신호 PCB 레이아웃에서 접지 평면 분리 — 미열람(L1) | analog devices mixed signal PCB ground plane separation
+- https://www.ti.com/lit/an/slva407a/slva407a.pdf | TI SLVA407A: FPGA 디커플링 커패시터 선택·배치 가이드(TI 앱노트) — 미열람(L1) | TI FPGA decoupling capacitor selection placement application note
+- https://dev.to/pcbdesign/fpga-pcb-design-tips-signal-integrity | Dev.to: FPGA PCB 설계 팁 — 신호 무결성, 임피던스, 패키지 선택 — 미열람(L1) | FPGA PCB design signal integrity tips

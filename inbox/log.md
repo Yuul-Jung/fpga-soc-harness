@@ -147,3 +147,4 @@
 2026-11-05 00:19 | collect | 센서 신호 처리(ADC 필터링·홀 전류 센서·XADC 프런트엔드) · S1+S5 | 카드 +3 | 아이디어 +2 | 큐 잔여 444 | blocked 0
 2026-11-05 00:44 | verify | 재열람 0(차단: WebFetch PROVENANCE_REQUIRED 전면 차단 10차 연속) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +2(I-075·I-076, 차단조건재심사 10차: 9점·8점) | raw→vetted +5(I-077 7점·I-078 5점·I-079 7점·I-081 7점·I-080 7점) | I-079 ID 충돌 수정(YAML 중복 → I-081 마크다운) | 근거 카드 오류 수정(digilent-basys3-xadc-analog-input 존재하지 않음 → xilinx-xapp795-driving-xadc로 교체) | atlas 신설(electronics.md, 14건) | soc-map 갱신(200건)
 2026-11-05 00:44 | capstone | skip: 게이트 3(a) 불충족(ready 15건 모두 근거 카드 rechecked_at 없음) · 3(b) 불충족(docs.amd.com WebFetch 성공 → 전면 차단 아님; Digilent·WIZnet URLs PROVENANCE_REQUIRED) | 수집 완료: 카드 +3(vasam2230-pmod-als-spi-adc·epdtonthenet-xadc-digitally-enhanced-analogue·amd-ug480-xadc-external-inputs) | check 통과(200건)
+2026-11-05 01:16 | collect | PCB 설계 체크리스트 · S7 난이도 사다리(주)+S5 비정형 출처(보조) | 카드 +3 | 아이디어 +3 | 큐 잔여 425 | blocked 0

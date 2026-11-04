@@ -1069,3 +1069,36 @@
 - 내 판단: N이 2의 거듭제곱이 아닌 경우 나눗셈 비용 발생 — N을 항상 2의 거듭제곱으로 제한하거나 별도 처리 필요.
 - 난이도: 2 / 단계: T1 / 상태: vetted
 - 심사: 2026-11-05 /verify(10차), 첫 raw→vetted 심사(차단조건재심사 불적용). 형식 변환: YAML 형식 → 마크다운 형식. 근거 카드 수정: digilent-basys3-xadc-analog-input(존재하지 않음) → amd-ug480-xadc-external-inputs. 근거 0(근거 카드 모두 rechecked_at 없음) + 새로움 2(library/rtl/ 디지털 필터 모듈 없음; CIC 이동 평균은 카탈로그 내 RTL 없음) + 적합성 3(순수 Verilog-2001, 2의 거듭제곱 N으로 나눗셈→비트 선택, LUT/FF 사용량 O(log N)) + 완결성 2(library/rtl/ 위치 명확, 파라미터 TB 작성 가능, Fco 공식으로 필터 특성 검증 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득, N 비2의거듭제곱 처리 방안 결정.
+
+## I-082 MicroBlaze V AXI4-Lite SPI Pmod PCB 확장 보드 — PCB 설계 체크리스트 실습 (T2)
+
+- 내 판단: Basys3 Pmod 포트에 연결하는 소형 PCB 확장 보드 설계 가이드라인 작성. 디커플링(100nF + 1µF 계층), GND 플레인, 3W 규칙, 직렬 종단(SPI 클럭·데이터)을 실제 KiCad 체크리스트 형태로 정리. MicroBlaze V AXI4-Lite 슬레이브를 거쳐 SPI Pmod 주변장치(온도 센서, DAC 등)를 구동.
+- 조합: [jlcpcb-decoupling-capacitor-guide, rfessentials-split-ground-plane-emi, ema-eda-fpga-pcb-design-guide, MicroBlaze V AXI4-Lite SPI IP]
+- 근거 카드: [jlcpcb-decoupling-capacitor-guide, rfessentials-split-ground-plane-emi, ema-eda-fpga-pcb-design-guide]
+- 근거 URL: [https://jlcpcb.com/blog/decoupling-capacitors-guide, https://rfessentials.com/rf-knowledge-base/how-do-i-design-a-split-ground-plane-on-a-pcb-without-creating-emi-problems/, https://www.ema-eda.com/ema-resources/blog/essential-fpga-pcb-design-guide-emd/]
+- 새로움의 근거: 카탈로그에 Pmod 확장 PCB 설계 체크리스트 형태 아이디어 없음. 기존 PCB 관련 아이디어(없음) 대비 하드웨어·소프트웨어 통합 체크리스트 접근
+- Basys3 적합성의 근거: Basys3 표준 Pmod 포트(3.3V, JA-JD 커넥터), SPI는 MicroBlaze V AXI Quad SPI IP 활용, Pmod 핀 2개씩 배선 간격 ≥ 3×폭(3W 규칙) 적용 가능, 커넥터 근처 100nF + 1µF 배치
+- 내 판단: S7 난이도 사다리의 최종 응용 단계. 디커플링(T0) → GND 분리(T1) → SI·FPGA 체크리스트(T2)를 Pmod PCB 설계에 통합 적용하는 캡스톤형 실습.
+- 난이도: 3 / 단계: T2 / 상태: raw
+
+## I-083 모터 드라이버 보드 GND 분리 + 스타 접지 실습 PCB 체크리스트 — MicroBlaze V PWM·H-브리지 경계 (T2)
+
+- 내 판단: MicroBlaze V AXI GPIO PWM 출력이 H-브리지(12V+)를 구동하는 보드에서, 디지털 GND(FPGA I/O)와 모터 전원 GND(H-브리지)를 스타 접지로 분리하는 PCB 설계 가이드. rfessentials-split-ground-plane-emi의 스타 접지(연결 브리지 2~5mm 폭, 10nF+100pF 스티칭 커패시터) 직접 적용 사례.
+- 조합: [rfessentials-split-ground-plane-emi, jlcpcb-decoupling-capacitor-guide, MicroBlaze V PWM IP, H-브리지 모터 드라이버]
+- 근거 카드: [rfessentials-split-ground-plane-emi, jlcpcb-decoupling-capacitor-guide, industrialmonitordirect-irs2110-half-bridge]
+- 근거 URL: [https://rfessentials.com/rf-knowledge-base/how-do-i-design-a-split-ground-plane-on-a-pcb-without-creating-emi-problems/]
+- 새로움의 근거: 카탈로그에 MicroBlaze V PWM ↔ H-브리지 GND 분리 체크리스트 아이디어 없음. 기존 H-브리지(industrialmonitordirect-irs2110-half-bridge) 카드는 회로 가이드이며 GND 분리·스타 접지 조합 없음
+- Basys3 적합성의 근거: Basys3 Pmod/GPIO 3.3V ↔ 12V 모터 전원 분리. H-브리지는 외부 보드(IRS2110 또는 L298N). GND 연결 브리지 2~5mm 폭, 광커플러 또는 MOSFET 드라이버 디커플링. FPGA 보드 자체는 무수정.
+- 내 판단: 모터 제어 사다리(엔코더→PID→모터 드라이버)에서 PCB 하드웨어 단 보완 사례로 적합. 기존 아이디어와 겹치지 않음.
+- 난이도: 3 / 단계: T2 / 상태: raw
+
+## I-084 FPGA SoC PCB 전원 무결성 검증 가이드 — VCCINT·VCCO·VCCAUX 디커플링 계층 체크 (T1)
+
+- 내 판단: Basys3 XC7A35T의 VCCINT(1.0V)·VCCO(3.3V)·VCCAUX(1.8V) 각 전원 레일에 100nF + 1µF 쌍을 배치하는 체크리스트 작성. jlcpcb-decoupling-capacitor-guide의 계층별 값 선택 기준 + ema-eda-fpga-pcb-design-guide의 via-in-pad·GND 플레인 근접 배치 규칙을 조합. MicroBlaze V SoC IP 추가 시 PDN 임피던스 목표값 추정 방법 포함.
+- 조합: [jlcpcb-decoupling-capacitor-guide, ema-eda-fpga-pcb-design-guide, vishay-fpga-power-supply-consideration]
+- 근거 카드: [jlcpcb-decoupling-capacitor-guide, ema-eda-fpga-pcb-design-guide, vishay-fpga-power-supply-consideration]
+- 근거 URL: [https://jlcpcb.com/blog/decoupling-capacitors-guide, https://www.ema-eda.com/ema-resources/blog/essential-fpga-pcb-design-guide-emd/]
+- 새로움의 근거: 카탈로그에 XC7A35T 전원 레일별 디커플링 계층 체크리스트 아이디어 없음. vishay-fpga-power-supply-consideration(기존 T0)은 범용 가이드이며 XC7A35T 레일별 적용 조합 없음
+- Basys3 적합성의 근거: XC7A35T 전원 핀 직접 해당. via-in-pad는 2층 기판 외 옵션, 4층 기판 권장 시 근접 GND 플레인 활용. Basys3 확장 보드 설계 시 적용 가능.
+- 내 판단: S7 사다리의 T1 위치(입문 디커플링 개념 습득 후, 고급 SI 규칙 적용 전). 비교적 좁은 범위이지만 MicroBlaze V SoC 주변장치 PCB 설계 시 필수 체크 항목.
+- 난이도: 2 / 단계: T1 / 상태: raw
