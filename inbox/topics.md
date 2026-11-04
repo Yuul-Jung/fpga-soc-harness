@@ -62,7 +62,7 @@
 - [x] ESP32 BLE: GATT 서버·클라이언트, BLE Mesh, 비콘 스캐너 — 2026-11-04 07시대 사이클: 카드 3건(L3: GATT 서버 워크스루, 비콘 스캐너, BLE Mesh), GATT 클라이언트·iBeacon 직접 비교·BLE5.x 자료는 못 찾음
 - [x] ESP32 FreeRTOS + 멀티코어: Core0/1 핀닝, Task Watchdog, Inter-Core 통신 — 2026-11-04 사이클: 카드 3건(L3), Ring Buffer·IPC·TWDT 카드 작성, esp32.com 포럼·최신 WDT v5.4 문서는 열람 차단(PROVENANCE_REQUIRED), Arduino 포럼 S6 실패 사례 활용
 - [x] ESP32 카메라·오디오: ESP32-CAM OV2640 스트리밍, I2S 마이크·스피커 (MAX98357) — 2026-11-04 09시대 사이클: 카드 3건(L3: espressif-esp32-camera, nopnop2002-esp-idf-websocket-camera, randomnerdtutorials-esp32-inmp441-i2s), rzeldent·Neumi PROVENANCE_REQUIRED 차단, MAX98357 스피커 카드 미작성(큐에 적재)
-- [ ] ESP32 엣지 AI: TFLite Micro 제스처·키워드 인식, ESP-IDF AI 예제 캡스톤
+- [x] ESP32 엣지 AI: TFLite Micro 제스처·키워드 인식, ESP-IDF AI 예제 캡스톤
 
 ## Raspberry Pi 도메인 (2026-11-03 추가, 위에서부터 소비)
 - [ ] RPi GPIO: pigpio/gpiozero 기초, SPI/I2C 커널 드라이버와 Python 바인딩

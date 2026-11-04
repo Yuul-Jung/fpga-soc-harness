@@ -324,3 +324,13 @@
 - https://soldered.com/blogs/learn/stereo-i2s-audio-amplifier-max98357-professional-audio-for-your-diy-projects | Soldered MAX98357 스테레오 I2S 앰프 튜토리얼, L1 | ESP32 I2S MAX98357 질의
 - https://github.com/alanesq/esp32cam-demo | alanesq ESP32-CAM 종합 데모: 다중 카메라 전환·SD 저장·파일서버·텔레그램 봇 통합, L1(제목만) | ESP32-CAM 종합 데모 질의
 - https://mc.dfrobot.com.cn/article-314899.html | DFRobot ESP32-CAM OV2640 비디오 스트리밍 웹서버 중국어 사례, L1 | ESP32-CAM 中文 질의
+- https://github.com/edgeimpulse/example-standalone-inferencing-espressif-esp32 | Edge Impulse 공식 ESP32 독립 추론 예제(C++ SDK 직접 통합), L1 | ESP32 Edge Impulse 질의
+- https://github.com/Tiny-Prism-Labs/ESP32-S3_MultiImpulse | ESP32-S3 멀티 임펄스(복수 ML 모델 동시 실행) 예제, L1 | ESP32-S3 Edge Impulse 멀티모델 질의
+- https://github.com/klumw/wakeword | ESP32 wake word 모델 모음(TFLite 기반), L1 | ESP32 keyword spotting wake word 질의
+- https://github.com/MorningstarOwl/wake-word-models | ESP32 wake word 모델 사례, L1 | ESP32 wake word models 질의
+- https://components.espressif.com/components/espressif/esp-tflite-micro | Espressif 공식 ESP-TFLite-Micro IDF 컴포넌트(v1.3.5), L1 | ESP TFLite Micro 컴포넌트 질의
+- https://github.com/tanakamasayuki/Arduino_TensorFlowLite_ESP32 | Arduino 환경용 TFLite ESP32 라이브러리(tanakamasayuki), L1 | Arduino TFLite ESP32 질의
+- https://github.com/lumang/Arduino_TensorFlowLite_ESP32 | Arduino TFLite ESP32 포크, L1 | Arduino TFLite ESP32 질의
+- https://dev.to/zediot/esp32-s3-tensorflow-lite-micro-a-practical-guide-to-local-wake-word-edge-ai-inference-5540 | ESP32-S3 TFLite Micro wake word 실용 가이드(블로그, int8 CNN, 50~60ms 추론), L2 | ESP32 TFLite 엣지 AI 질의
+- https://hackster.io/projects/tags/tinyml?by=1year | Hackster.io TinyML 최신 프로젝트 목록(ESP32 포함), L1 | ESP32 TFLite Edge Impulse Hackster 질의
+- https://osrtos.com/projects/gesture-detecting-macro-keyboard | jakkra Gesture-Detecting Macro Keyboard 소개(RTOS 관점), L1 | gesture detecting macro keyboard osrtos 질의

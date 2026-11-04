@@ -486,3 +486,45 @@
 - 난이도: 4
 - 단계: T2-T3
 - 상태: raw
+
+---
+
+- id: I-045
+- 제목: ESP32 TFLite 제스처 인식 → UART → Basys3 서보 PWM 제어 (S2 조합)
+- 한 줄 요약: 내 판단: ESP32가 IMU(1D CNN) 제스처를 추론하고, 판정 명령(1바이트)을 UART로 MicroBlaze V에 전달, FPGA가 서보 PWM을 생성하는 역할 분담 캡스톤.
+- 조합: [IMU-gyroscope(ESP32측), UART-bridge, AXI4-Lite, actuator-servo(Basys3측)]
+- 근거 카드: [[espressif-esp-sensairshuttle-gesture-tflite]], [[jakkra-gesture-detecting-macro-keyboard]]
+- 근거 URL: https://developer.espressif.com/blog/2026/04/gesture-recognition-based-on-tflite/
+- 새로움 근거: 카탈로그에 ESP32+TFLite와 Basys3 서보를 연결하는 카드가 없음. kimdk1005-collab-MimicArm-FPGA는 FPGA 단독 서보 제어이고, 여기서는 ESP32가 ML 추론을 담당하는 역할 분리 구조.
+- Basys3 적합성 근거: Basys3 Pmod에 UART 포트 1개, 서보 PWM 출력 Pmod 1~2개 가능. MicroBlaze V AXI-UART Lite 수신 + 커스텀 PWM IP(free_slots 1개). IMU 처리는 ESP32 외부, FPGA 자원 여유.
+- 난이도: 3
+- 단계: T2
+- 상태: raw
+
+---
+
+- id: I-046
+- 제목: ESP32-C6 키워드 스팟팅 → UART → MicroBlaze V 음성 명령 FSM (S2 조합)
+- 한 줄 요약: 내 판단: ESP32-C6가 I2S 마이크로 오디오를 캡처해 ML 키워드 판정, UART로 Basys3 MicroBlaze V에 명령 전달, FPGA FSM이 LED·모터·디스플레이를 제어하는 보이스 커맨드 캡스톤.
+- 조합: [I2S-mic(ESP32-C6), UART-bridge, AXI4-Lite, comm-uart, hid-ps2(선택)]
+- 근거 카드: [[sl45sms-esp32c6-keyword-spotting]], [[randomnerdtutorials-esp32-inmp441-i2s]]
+- 근거 URL: https://github.com/sl45sms/esp32c6-Keyword-Spotting
+- 새로움 근거: 카탈로그에 오디오 ML 판정 결과를 Basys3로 전달하는 사례 없음. randomnerdtutorials-esp32-inmp441-i2s(I2S 캡처)와 sl45sms-esp32c6-keyword-spotting(Edge Impulse 추론)을 조합한 신규 흐름.
+- Basys3 적합성 근거: Basys3 UART 1개, AXI-UART Lite 수신 인터럽트. 오디오 처리는 ESP32-C6 외부. FPGA 자원 거의 추가 사용 없음(명령 디코더 FSM만). randomnerdtutorials I2S 카드가 마이크 연결 패턴 근거.
+- 난이도: 3
+- 단계: T2
+- 상태: raw
+
+---
+
+- id: I-047
+- 제목: TFLite 1D CNN IMU 모델을 Basys3 HLS/RTL 가속기로 포팅 비교 (S3 빈틈)
+- 한 줄 요약: 내 판단: ESP32에서 돌리는 1D CNN 제스처 모델(Conv1D×2+GAP+Dense)을 Verilog RTL 또는 Vivado HLS로 Basys3에 직접 구현하고, 추론 지연시간·BRAM 사용량을 ESP32와 비교하는 연구형 캡스톤.
+- 조합: [AXI4-Stream(모델 입력), AXI4-Lite(제어·결과), BRAM(가중치), sensor]
+- 근거 카드: [[espressif-esp-sensairshuttle-gesture-tflite]], [[jakkra-gesture-detecting-macro-keyboard]]
+- 근거 URL: https://developer.espressif.com/blog/2026/04/gesture-recognition-based-on-tflite/
+- 새로움 근거: soc-map/tech-tree.md의 T4 가속기 항목에 ML 추론 가속기 카드가 없음(S3 빈틈). ESP32 TFLite 대 FPGA RTL 비교 사례는 카탈로그 전체에 없음.
+- Basys3 적합성 근거: 1D CNN(200×3→3), float32 → int8 양자화 시 가중치 소규모(수 KB). Conv1D는 MAC 연산이라 DSP48 활용 가능. XC7A35T DSP48 90개, BRAM 50개. 가중치 한 세트를 BRAM 1~2개에 적재 가능. 추론 창 200타임스텝은 FIFO로 관리. 현실적이나 Vivado HLS 지식 필요.
+- 난이도: 5
+- 단계: T4
+- 상태: raw

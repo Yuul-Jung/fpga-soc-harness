@@ -146,3 +146,6 @@
 | [espressif-esp32-camera](esp32/espressif-esp32-camera.md) | L3 | T2 | ESP32/S2/S3 (Basys3 needs-port) | 2026-11-04 |
 | [nopnop2002-esp-idf-websocket-camera](esp32/nopnop2002-esp-idf-websocket-camera.md) | L3 | T2 | AI-Thinker ESP32-CAM, Freenove ESP32-S3 (Basys3 needs-port) | 2026-11-04 |
 | [randomnerdtutorials-esp32-inmp441-i2s](esp32/randomnerdtutorials-esp32-inmp441-i2s.md) | L3 | T1 | ESP32-S3, ESP32 DevKit V1 (Basys3 needs-port) | 2026-11-04 |
+| [jakkra-gesture-detecting-macro-keyboard](esp32/jakkra-gesture-detecting-macro-keyboard.md) | L3 | T4 | ESP32 (Basys3 needs-port) | 2026-11-04 |
+| [sl45sms-esp32c6-keyword-spotting](esp32/sl45sms-esp32c6-keyword-spotting.md) | L3 | T3 | ESP32-C6 (Basys3 needs-port) | 2026-11-04 |
+| [espressif-esp-sensairshuttle-gesture-tflite](esp32/espressif-esp-sensairshuttle-gesture-tflite.md) | L3 | T4 | ESP32-C5 via ESP-SensAirShuttle (Basys3 needs-port) | 2026-11-04 |
