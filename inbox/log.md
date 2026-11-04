@@ -143,3 +143,4 @@
 2026-11-04 22:40 | verify | 재열람 0(차단: WebFetch PROVENANCE_REQUIRED 전면 차단 8차 연속) | 수정 7(라이선스 경고 카드 7건 재사용 메모 보완: beningo-freertos-to-zephyr-migration·rtime-cvut-openmsp430-watchdog·ezurio-freertos-vs-zephyr-benchmark·promwad-rtos-freertos-zephyr-threadx-comparison·egerobotics-esp32s3-ethercat-soes·randomnerdtutorials-esp32-inmp441-i2s·zbotic-rpi-gpio-stack-guide) | 불일치 7 | 승격 L2→L3 0 | ready +2(I-071·I-072, 차단조건재심사 8차: 9점·8점) | vetted 차단조건재심사 보류 +2(I-073 7점·I-074 7점, 2건 상한 초과) | I-073 다음 사이클 1순위·I-074 2순위
 2026-11-04 23:27 | collect | 인버터 기초: 단상 풀브리지 SPWM, 게이트 격리 · S6+S3 | 카드 +3 | 아이디어 +3 | 큐 잔여 408 | blocked 1(wiwinhartini/spwm_fpga PROVENANCE_REQUIRED)
 2026-11-04 23:39 | verify | 재열람 0(차단: WebFetch PROVENANCE_REQUIRED 전면 차단 9차 연속) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +2(I-073·I-074, 차단조건재심사 9차: 7점·7점) | vetted +2(I-075 7점·I-076 5점, 첫 raw→vetted 심사)
+2026-11-05 00:19 | collect | 센서 신호 처리(ADC 필터링·홀 전류 센서·XADC 프런트엔드) · S1+S5 | 카드 +3 | 아이디어 +2 | 큐 잔여 444 | blocked 0

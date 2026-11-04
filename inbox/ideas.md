@@ -1040,3 +1040,36 @@
 - 새로움의 근거: 카탈로그 내 SPWM + XADC 폐루프 조합 없음. XADC는 Basys3 내장 IP이므로 외부 ADC 불필요
 - Basys3 적합성의 근거: Basys3 XC7A35T에 XADC 블록 내장(12비트 1MSPS). 분압 저항으로 출력 전압 0–1V로 스케일해 XADC VAUXP/VAUXN에 연결(Pmod JA). I-077의 SPWM IP와 연동
 - 난이도: 4 / 단계: T3 / 상태: raw
+
+---
+id: I-079
+title: Basys3 XADC + ACS712 전류 측정 AXI4-Lite IP
+summary: ACS712 홀 전류 센서를 분압기·op-amp 버퍼로 조건화해 Basys3 XADC에 연결, Verilog 이동 평균 필터와 오프셋 보정 로직을 갖춘 AXI4-Lite 슬레이브 IP로 패키징
+조합: [ACS712, Basys3 XADC, Verilog 이동 평균 필터, AXI4-Lite 슬레이브]
+근거 카드:
+  - sparkfun-acs712-current-sensor (ACS712 감도·보정 절차, XADC 호환 주의)
+  - digilent-basys3-xadc-analog-input (JXADC 핀 매핑, 0~1V 범위, RC 필터 값)
+  - applied-ee-analog-front-end (분압기·버퍼·RC 안티앨리어싱 설계 공식)
+근거 URL:
+  - https://learn.sparkfun.com/tutorials/acs712-low-current-sensor-hookup-guide/all?print=1
+  - https://digilent.com/reference/programmable-logic/basys-3/demos/xadc
+새로움의 근거: 카탈로그 내 XADC + 홀 전류 센서 조합 카드 없음. 기존 XADC 아이디어(I-077)는 SPWM 출력 전압 감시 목적, 이 아이디어는 입력 전류 측정 AXI IP
+Basys3 적합성의 근거: Basys3 XADC 내장(XC7A35T), JXADC 헤더 4채널 사용. R1·R2(4kΩ/1kΩ)로 ACS712 출력(0~5V)을 0~1V로 스케일. RC 필터(150Ω, 1nF). 외부 부품 비용 최소
+난이도: 3 / 단계: T2 / 상태: raw
+내 판단: ACS712 출력 2.5V 중심이므로 분압 후 최대 0.5V·최소 0V 범위가 됨 — ±5A 범위를 절반만 측정하거나 오프셋을 소프트웨어로 보정해야 함. 단방향 전류(0~5A)면 0~0.5V 범위로 간단하게 가능.
+
+---
+id: I-080
+title: FPGA Verilog 범용 디지털 LPF 라이브러리 블록 (이동 평균 CIC 형식)
+summary: N을 파라미터로 받는 이동 평균 필터(CIC 형식: y[n] = y[n-1] + x[n] − x[n-N]) Verilog 모듈을 library/rtl/에 추가, XADC·인코더·열전대 등 다양한 ADC 데이터에 재사용
+조합: [Verilog CIC 이동 평균, 파라미터 N, XADC 데이터, 센서 필터링]
+근거 카드:
+  - digilent-basys3-xadc-analog-input (XADC 출력 12비트 데이터 연결 대상)
+  - applied-ee-analog-front-end (디지털 필터가 아날로그 RC를 보완하는 설계 패턴)
+근거 URL:
+  - https://www.allaboutcircuits.com/technical-articles/implementing-a-low-pass-filter-on-fpga-with-verilog/
+  - https://digilent.com/reference/programmable-logic/basys-3/demos/xadc
+새로움의 근거: 현재 library/rtl/에 디지털 필터 모듈 없음. CIC 이동 평균은 곱셈기 불필요, LUT 소모 최소 → Basys3 자원 여유 충분
+Basys3 적합성의 근거: 순수 Verilog-2001, 파라미터 N(2의 거듭제곱) → 나눗셈이 비트 선택으로 대체됨. LUT/FF 사용량 O(log N)
+난이도: 2 / 단계: T1 / 상태: raw
+내 판단: N이 2의 거듭제곱이 아닌 경우 나눗셈 비용 발생 — N을 항상 2의 거듭제곱으로 제한하거나 별도 처리 필요. AllAboutCircuits 공식 Fco = 0.442947/√(N²−1) 참조.

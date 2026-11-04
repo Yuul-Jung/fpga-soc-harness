@@ -92,7 +92,7 @@
 - [x] 모터 드라이버 회로: H-브리지 MOSFET 선택·게이트 드라이버·데드타임·역기전력 보호 — 2026-11-04 사이클: 카드 3건(L3: zbotic-backem-flyback-protection, industrialmonitordirect-irs2110-half-bridge, lcsc-mosfet-selection-motor-control), 큐 8건
 - [x] 전력 공급: DC-DC 벅/부스트 컨버터 설계, LDO vs 스위칭 레귤레이터 선택 기준 — 2026-11-04 사이클에서 완료(catalog/electronics/ 카드 3건: altium LDO vs switching, wevolver 벅 설계 가이드, vishay FPGA 전원 애플리케이션 노트)
 - [x] 인버터 기초: 단상 풀브리지 SPWM, 게이트 격리(포토커플러/게이트 드라이버 IC)
-- [ ] [B3] 센서 신호 처리: ADC 입력 필터링, 차동 증폭, 홀 전류 센서 보정
+- [x] [B3] 센서 신호 처리: ADC 입력 필터링, 차동 증폭, 홀 전류 센서 보정
 - [ ] [B3] PCB 설계 체크리스트: 전류 경로, GND 플레인 분리, EMC 디커플링, 레이아웃 규칙
 
 ## 도메인 보충 4 (2026-11-03 §12.2-3: stm32/esp32/rpi/embedded/electronics 카드 0건, 위에서부터 소비)

@@ -196,3 +196,6 @@
 | [element14-cumps-deadtime-vhdl-pynqz2](electronics/element14-cumps-deadtime-vhdl-pynqz2.md) | L3 | T2 | Pynq-Z2 (Basys3 needs-port) | 2026-11-04 |
 | [arxiv-1002340-spartan3e-spwm-inverter](electronics/arxiv-1002340-spartan3e-spwm-inverter.md) | L3 | T2 | Spartan-3E (Basys3 needs-port) | 2026-11-04 |
 | [industrialmonitordirect-igbt-shootthrough](electronics/industrialmonitordirect-igbt-shootthrough.md) | L3 | T2 | 없음 (회로 가이드) | 2026-11-04 |
+| [sparkfun-acs712-current-sensor](electronics/sparkfun-acs712-current-sensor.md) | L3 | T2 | 없음 (튜토리얼) | 2026-11-05 |
+| [applied-ee-analog-front-end](electronics/applied-ee-analog-front-end.md) | L3 | T2 | 없음 (참조 가이드) | 2026-11-05 |
+| [xilinx-xapp795-driving-xadc](electronics/xilinx-xapp795-driving-xadc.md) | L3 | T2 | Basys3 (yes) | 2026-11-05 |

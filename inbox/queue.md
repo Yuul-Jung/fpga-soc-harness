@@ -455,3 +455,13 @@
 - https://sites.google.com/view/besongjohn/portfolio/high-fidelity-gate-driver | John Besong 개인 포트폴리오: High-Fidelity 게이트 드라이버 프로젝트 — 미열람(L1) | high fidelity gate driver project portfolio FPGA
 - https://industrialmonitordirect.com/blogs/knowledgebase/configuring-nmos-and-pmos-for-bipolar-10v-switching-with-fpga | industrialmonitordirect: FPGA로 ±10V 바이폴라 스위칭(NMOS/PMOS) 설정 — 미열람(L1) | FPGA NMOS PMOS bipolar switching 10V gate drive
 - https://doaj.org/article/3a932b8bb3fc404f972ea9fd162deca4 | DOAJ: Engineering and Technology Journal SPWM 단상 인버터 FPGA 2022 — 미열람(L1) | SPWM single phase inverter FPGA Engineering Technology Journal DOAJ
+- https://learn.sparkfun.com/tutorials/acs712-low-current-sensor-hookup-guide/all?print=1 | SparkFun ACS712 홀 전류 센서 튜토리얼: 보정, ADC 인터페이스, 노이즈 저감 — 열람 L3, 카드 완성 | ACS712 hall current sensor calibration ADC
+- https://embedded-lab.com/blog/a-brief-overview-of-allegro-acs712-current-sensor-part-1/ | embedded-lab ACS712 개요 Part 1: 감도(185/100/66 mV/A), 필터 커패시터, 비율계량 특성 — 열람 L3 | ACS712 overview sensitivity filter
+- https://applied-ee.github.io/embedded/docs/sensor-integration/analog-front-end/signal-conditioning-circuits/ | Applied-EE 아날로그 프런트엔드 신호 조건화: 분압·버퍼·INA·RC 필터·보호 회로·공식 — 열람 L3, 카드 완성 | signal conditioning AFE op-amp RC filter embedded
+- https://digilent.com/reference/programmable-logic/basys-3/demos/xadc | Digilent Basys3 XADC 공식 데모: JXADC 헤더 채널(XA1-XA4), 0~1V 입력, 7세그 출력 — 열람 L3, 카드 완성 | Basys3 XADC analog input differential
+- https://www.physics.umd.edu/hep/drew/495/xapp795-driving-xadc.pdf | XAPP795 XADC 드라이빙 가이드: 안티앨리어싱 필터(R=150Ω C=1nF), 버퍼 없이 직접 연결 가능 조건 — 열람 L3 | XADC driving application note anti-aliasing filter
+- https://dev.to/carolineee/the-principle-configuration-and-simulation-of-xadc-ip-in-xilinx-fpga-27ca | DEV.to: XADC IP 설정·시뮬레이션(단일채널·시퀀서·CONVST, 12비트 MSB 정렬) — 열람 L3 | XADC IP configuration simulation Artix-7
+- https://www.allaboutcircuits.com/technical-articles/implementing-a-low-pass-filter-on-fpga-with-verilog/ | All About Circuits: FPGA Verilog 이동 평균 디지털 LPF 구현(CIC 형식, 차단주파수 ≈ 0.44/√N²−1) — 열람 L3 | FPGA Verilog moving average low-pass filter digital
+- https://github.com/WangXuan95/FpOC | WangXuan95 FPGA FOC: 순수 Verilog FOC·BLDC 제어, AD7928 SPI ADC, Clark/Park 변환, PI 제어기 — 열람 L3, GPL-3.0 주의 | FPGA FOC BLDC motor control Verilog current sensing
+- https://wolles-elektronikkiste.de/en?p=10692 | Wolfgang's Elektronikkiste: ACS712 측정 정확도 개선, 오프셋 보정, 소프트웨어 필터링(독일어 블로그) — 미열람(L1) | ACS712 accuracy improvement software filtering
+- https://zbotic.in/instrumentation-amplifier-ina128-differential-signal-guide/ | Zbotic: INA128 계장 증폭기 가이드(차동 신호, 게인 설정, Rg 테이블) — 미열람(L1) | INA128 instrumentation amplifier differential gain
