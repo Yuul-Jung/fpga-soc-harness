@@ -50,3 +50,4 @@ Hackaday 프로젝트 페이지 직접 열람(L2). GitHub 코드 미열람. Twin
 - EtherCAT 슬레이브 아키텍처 이해용 참고 사례. 소프트 ESC(레지스터 메모리 에뮬레이션 + FMMU)의 원리를 Verilog로 구현하면 FPGA EtherCAT 슬레이브 IP로 이식 가능.
 - Basys3로의 개념 이식: W5500 Pmod를 Basys3 SPI로 연결하고 MicroBlaze V 소프트코어로 SOES 구동하는 경로 가능(내 판단). 단, TwinCAT 사이클 타임(100 μs 이하) 충족 여부는 MicroBlaze 성능·인터럽트 레이턴시 측정 필요.
 - 개조: MicroBlaze V SoC에 EtherCAT 슬레이브를 붙이려면 ① SPI-W5500 AXI 마스터 IP(기존 `wiznet-makers-gavinchang-w5500-udp-loopback` 카드 참고) ② RAM 기반 ESC 레지스터 공간(0x88A4 필터링 포함) ③ SOES 포팅(ESP-IDF→FreeRTOS on MicroBlaze) 순서. 가장 복잡한 산업 프로토콜 캡스톤 후보(내 판단).
+- **라이선스 확인 필요**: 출처 라이선스 unknown (GitHub 미열람). 코드 직접 복사 금지. 아키텍처 개념만 참고, 자체 RTL·C 코드 새로 작성.

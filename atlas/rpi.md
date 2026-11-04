@@ -1,6 +1,6 @@
 # Raspberry Pi 도메인 종합
 
-갱신: 2026-11-04 (verify 사이클 2차 — Buildroot 최소 이미지·부트 최적화 카드 3건 추가)
+갱신: 2026-11-04 (8차 verify: zbotic-rpi-gpio-stack-guide 재사용 메모 라이선스 고지 추가)
 
 ## 개요
 

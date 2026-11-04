@@ -57,3 +57,4 @@ Raspberry Pi의 GPIO 제어 소프트웨어 스택 전체를 pigpio·spidev·smb
 - GPIO 소프트웨어 스택 계층화 패턴이 Basys3 MicroBlaze V BSP 설계와 직접 대응: gpiozero(고수준 디바이스 API) → pigpio/RPi.GPIO(레지스터 접근) → spidev/smbus2(커널 드라이버) → 하드웨어. MicroBlaze V에서는 C 디바이스 추상화 → AXI4-Lite HAL → RTL 주변장치 순서로 같은 구조 적용 가능 (내 판단).
 - smbus2의 `write_byte_data(addr, reg, val)` / `read_byte_data(addr, reg)` 는 AXI I2C master IP의 커맨드 레지스터 인터페이스(슬레이브 주소 + 레지스터 오프셋 + 데이터)와 동일한 의미론 (내 판단).
 - `개조:` pigpio 데몬의 마이크로초 타이밍 정밀도는 Basys3 100 MHz 클럭(10 ns 분해능)에서는 클럭 카운터 IP로 훨씬 정밀하게 대체 가능. gpiozero의 핀 팩토리 교체 패턴은 Basys3 C BSP에서 SPI/I2C 드라이버를 AXI IP 종류에 따라 교체하는 구조로 옮길 수 있다. OS·데몬 의존 부분(pigpiod 소켓, /dev 노드, udev)은 직접 이식 불가 (내 판단).
+- **라이선스 확인 필요**: 출처 라이선스 unknown. 코드 직접 복사 금지. 아키텍처 패턴·계층화 개념 참고만 허용.

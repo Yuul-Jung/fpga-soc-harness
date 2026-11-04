@@ -71,3 +71,4 @@ FreeRTOS와 Zephyr RTOS를 메모리 풋프린트·성능·생태계 관점에�
 FreeRTOS와 Zephyr 두 RTOS의 정량적 비교 근거로 임베디드 공통 카드로서 가치가 높다. SoC 주변장치 드라이버 계층을 설계할 때 인터럽트 지연(ISR 반응성)과 컨텍스트 전환 오버헤드가 설계 제약이 되므로, 이 수치가 타이밍 여유를 계산하는 기준이 된다.
 
 개조: Basys3·MicroBlaze V SoC 관점에서 직접 이식하는 항목은 없다(MCU 전용 RTOS). 그러나 ① AXI 슬레이브 IP의 인터럽트 서비스 루틴 지연을 얼마나 허용할지 결정할 때 Cortex-M 벤치마크가 하한 참고값이 된다. ② MicroBlaze V + FreeRTOS 조합(Vitis에서 지원)의 태스크 오버헤드를 추정할 기준으로 쓸 수 있다. ③ 사용자 MCU 보조 프로세서(STM32/ESP32)와 Basys3 FPGA 간 협력형 설계 시 MCU 쪽 RTOS 선택 근거로 직접 활용.
+- **라이선스 확인 필요**: 출처 라이선스 unknown. 벤치마크 수치는 사실로 인용 가능하나 코드 복사 금지.

@@ -1,6 +1,6 @@
 # 임베디드 RTOS 비교 (FreeRTOS · Zephyr · ThreadX)
 
-갱신: 2026-11-04 (/verify 3차). 카드 3건 기준 (beningo-freertos-to-zephyr-migration, ezurio-freertos-vs-zephyr-benchmark, freertos-org-faq-memory).
+갱신: 2026-11-04 (/verify 8차). 카드 3건 기준 (beningo-freertos-to-zephyr-migration, ezurio-freertos-vs-zephyr-benchmark, freertos-org-faq-memory). 8차: beningo·ezurio·promwad 3건 재사용 메모에 라이선스 확인 필요 고지 추가(unknown 라이선스 경고 해소).
 
 ---
 

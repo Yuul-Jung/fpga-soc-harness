@@ -50,3 +50,4 @@ INMP441 I2S 디지털 마이크를 ESP32-S3에 연결해 소리 에너지(peak)�
 ## 재사용 메모
 - INMP441은 3.3V I2S 디지털 마이크로 Basys3 Pmod 포트에 직접 연결 가능.
 - 개조: Basys3 FPGA에서 INMP441 직접 수신 — Pmod JA의 세 핀(BCLK, LRCLK, DOUT)에 연결, AXI I2S RX 커스텀 IP로 32비트 슬롯 수신 후 >> 8 처리, AXI-Stream으로 MicroBlaze V에 전달. 샘플레이트 16 kHz → Basys3 100MHz 기준으로 분주기 계수 3125 (내 계산). 클랩 감지 임계값 로직은 C 펌웨어에서 그대로 사용 가능. I2S 클럭 발생은 MCU 대신 FPGA가 마스터로 동작하므로 `I2S_MODE_MASTER` 역할이 FPGA 측으로 옮겨온다.
+- **라이선스 확인 필요**: 출처 라이선스 unknown (튜토리얼 기사). 코드 직접 복사 금지. 클랩 감지 임계값 로직 개념 참고만 허용, 자체 C 코드로 재작성.

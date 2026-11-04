@@ -80,3 +80,4 @@ FreeRTOS에서 Zephyr RTOS로 마이그레이션하는 방법을 API 매핑 테�
 RTOS 간 포팅 비용을 정량화하는 근거 카드. MCU 보조 프로세서(STM32, ESP32)가 FreeRTOS에서 Zephyr로 전환될 때 얼마나 큰 코드 변경이 필요한지 사전 평가 기준이 된다.
 
 개조: MicroBlaze V SoC 직접 이식 대상은 없다(MCU 전용 RTOS). 그러나 ① AXI 슬레이브 IP 드라이버를 MCU 보조 프로세서에서 구동할 때 FreeRTOS와 Zephyr 중 어느 쪽에서 더 간단하게 쓸 수 있는지 선택 근거가 된다. ② "우선순위 반전" 함정은 MicroBlaze V + FreeRTOS 조합에서도 동일하게 발생 — Vitis에서 태스크 우선순위 설정 시 주의 사항으로 메모 필요. ③ ISR에서 세마포어 give/큐 send 패턴은 AXI 인터럽트 핸들러(ISR) → FreeRTOS 태스크 통지 패턴에 그대로 적용됨. MicroBlaze V XPS 인터럽트 핸들러에서 `xSemaphoreGiveFromISR()` 호출하는 패턴 설계에 활용.
+- **라이선스 확인 필요**: 블로그 글 라이선스 미명시(unknown). 코드 스니펫을 직접 복사하기 전에 라이선스를 확인한다. 패턴·개념 참고만 허용.

@@ -1,6 +1,6 @@
 # ESP32 사례 종합 (atlas/esp32.md)
 
-갱신일: 2026-11-04
+갱신일: 2026-11-04 (8차 verify: egerobotics-ethercat·randomnerdtutorials-inmp441 2건 재사용 메모 라이선스 고지 추가)
 카드 수: 14 (`catalog/esp32/`)
 목적: ESP32 Wi-Fi·BLE·FreeRTOS 사례에서 Basys3 SoC 주변장치 IP로 옮길 수 있는 구조와 패턴을 추출한다.
 
