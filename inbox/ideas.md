@@ -291,7 +291,7 @@
 - 차단조건재심사: 2026-11-04, 근거 3(stnolting-neorv32·ammar-bin-amir-arty-a7-i2c-mpu-6050·yosyshq-picorv32, rechecked_at 불문) + 새로움 2(CPU 중립 CTRL/DATA I2C IP 없음) + 적합성 2(I2C 2핀 Pmod, 풀업 필요) + 완결성 2(CTRL/DATA 레지스터·MPU-6050 슬레이브 모델 범위 명확) = 9점 → ready 승격. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-026 UDP 텔레메트리 송신 IP: W5500 SPI 초기화 ROM + BRAM 송수신 창, 레지스터 응답 모델 테스트벤치
-- 상태: ready
+- 상태: used (패키지: mmio-w5500-udp-tx-ip, 2026-11-04)
 - 요약: 내 판단: 범용 SPI 전송 FSM과 W5500 초기화 시퀀스(ROM)를 분리하고, IP/MAC/PORT 설정, TX 길이, 데이터 창, 수신 완료 인터럽트를 AXI4-Lite 레지스터로 노출한다. 제어 루프(PID/IMU)의 값을 UDP로 PC에 보내는 텔레메트리 용도. 테스트벤치는 W5500 레지스터 응답 모델로 초기화 순서와 SEND 명령 후 버퍼 내용을 점검한다.
 - 조합: [W5500 이더넷 SPI, AXI4-Lite 레지스터, BRAM 버퍼, INTC 입력]
 - 근거: [wiznet-makers-gavinchang-w5500-udp-loopback, digilent-pmod-nic100-reference-manual, digilent-forum-basys3-ethernet-ipv4-udp]

@@ -152,3 +152,4 @@
 2026-11-05 01:58 | capstone | mmio-xadc-pwr-mon (I-075) · 무조건생성원칙 | S0(CI 대기) | Vccint·Vccaux·Vccbram 전원 감시 AXI4-Lite IP, DRP FSM + 임계값 비교 + IRQ W1C, TC1~TC5 자체 점검 테스트벤치
 2026-11-05 02:15 | collect | RPi GPIO/SPI 호스트·Basys3 IP 제어시험 · S3+S1 | 카드 +3 | 아이디어 +2 | 큐 잔여 ~435 | blocked 0
 2026-11-05 02:32 | capstone | mmio-spwm-deadtime-ip (I-077) | 등급 S0 (로컬 iverilog/yosys 없음; CI에서 S1/S2 결정) | SPWM 단상 데드타임 IP: 삼각파 반송파+32-엔트리 Q15 사인 LUT+3상태 데드타임 FSM, AXI4-Lite 슬레이브, 슬롯[16]=0x4016_0000 | TB TC1~TC5(ID·슈트스루·데드타임갭·MOD_IDX변경·EN=0) | build.py 경고 1건(custom 맵, compat=partial)
+2026-11-05 02:34 | capstone | I-026 W5500 UDP TX · ready 경로(차단조건재심사 8점) | +1 패키지(mmio-w5500-udp-tx-ip) | 아이디어 +0 | S0→CI 대기(push 후 10분) | ready 경로

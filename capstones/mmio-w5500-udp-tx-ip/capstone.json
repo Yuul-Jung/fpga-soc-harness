@@ -1,0 +1,317 @@
+{
+  "slug": "mmio-w5500-udp-tx-ip",
+  "title": "CTRL/DATA형 W5500 UDP TX IP",
+  "summary": "W5500 Ethernet 모듈의 SPI를 직접 구동해 UDP 패킷을 송신하는 Basys3 mmio-lite IP. 초기화(Socket 0 설정), TX 버퍼 적재, SEND 커맨드 발행, SENDOK 폴링까지 FSM 한 개로 처리하고, IRQ로 완료를 알린다.",
+  "board": "Basys3",
+  "stage": "T2",
+  "goals": [
+    "mmio-lite 버스 위에서 W5500 SPI 마스터를 구동해 UDP 단일 패킷 송신 제공",
+    "CTRL 레지스터(GO/INIT 비트 자기 소거, BUSY·ERR·INIT_DONE 플래그)와 TX_DATA FIFO로 간단한 인터페이스 제공",
+    "IP 표준 Rev.1 관리 레지스터(IP_ID·VER·IRQ_STATUS·IRQ_ENABLE) 준수",
+    "iverilog 시뮬레이션에서 가짜 W5500 슬레이브와 SENDOK 폴링 PASS 확인"
+  ],
+  "non_goals": [
+    "멀티 소켓 (Socket 0 전용)",
+    "TCP, ICMP, ARP 등 UDP 외 프로토콜",
+    "목적지 IP/MAC/포트 런타임 변경 (init ROM에 고정)",
+    "400 kHz 이상 SPI 클럭 (CLK_DIV 파라미터로 조정 가능)",
+    "AXI4-Lite 버스 인터페이스 (mmio-lite 전용)",
+    "보드 동작 확인 (S3)"
+  ],
+  "architecture": {
+    "clock": "100 MHz 시스템 클럭(clk); SPI 클럭 = clk / (CLK_DIV * 2) → CLK_DIV=500이면 SPI 100 kHz",
+    "blocks": [
+      {
+        "id": "top",
+        "name": "basys3_top",
+        "kind": "board_wrapper",
+        "module": null,
+        "file": null,
+        "desc": "Basys3 보드 래퍼 (SoC 통합 시 추가, 미구현)",
+        "short": "Board Top",
+        "side": "top"
+      },
+      {
+        "id": "ip",
+        "name": "w5500_udp_tx_ip",
+        "kind": "peripheral",
+        "module": "w5500_udp_tx_ip",
+        "file": "rtl/w5500_udp_tx_ip.v",
+        "desc": "W5500 SPI 마스터 FSM + MMIO 레지스터 + TX 버퍼",
+        "short": "W5500 TX IP",
+        "side": "right"
+      },
+      {
+        "id": "pmod",
+        "name": "pmod_w5500",
+        "kind": "external",
+        "module": null,
+        "file": null,
+        "desc": "Pmod NIC100 또는 W5500 직결 모듈 (Pmod JA 1-4번 핀)",
+        "short": "Pmod W5500",
+        "side": "right"
+      }
+    ],
+    "links": [
+      {
+        "from": "top",
+        "to": "ip",
+        "label": "clk, rst_n, mmio_addr/wdata/rdata/we/cs"
+      },
+      {
+        "from": "ip",
+        "to": "pmod",
+        "label": "spi_sck, spi_mosi, spi_csn (출력)"
+      },
+      {
+        "from": "pmod",
+        "to": "ip",
+        "label": "spi_miso (입력)"
+      }
+    ]
+  },
+  "bus_protocol": {
+    "name": "mmio-lite",
+    "type": "single-cycle synchronous",
+    "signals": [
+      {
+        "name": "mmio_addr",
+        "width": 16,
+        "dir": "in",
+        "desc": "레지스터 바이트 주소"
+      },
+      {
+        "name": "mmio_wdata",
+        "width": 32,
+        "dir": "in",
+        "desc": "쓰기 데이터"
+      },
+      {
+        "name": "mmio_rdata",
+        "width": 32,
+        "dir": "out",
+        "desc": "읽기 데이터"
+      },
+      {
+        "name": "mmio_we",
+        "width": 1,
+        "dir": "in",
+        "desc": "쓰기 활성"
+      },
+      {
+        "name": "mmio_cs",
+        "width": 1,
+        "dir": "in",
+        "desc": "칩 선택"
+      },
+      {
+        "name": "spi_sck",
+        "width": 1,
+        "dir": "out",
+        "desc": "SPI 클럭 (MODE=0, 아이들 로우)"
+      },
+      {
+        "name": "spi_mosi",
+        "width": 1,
+        "dir": "out",
+        "desc": "SPI 마스터→슬레이브 데이터"
+      },
+      {
+        "name": "spi_csn",
+        "width": 1,
+        "dir": "out",
+        "desc": "SPI 칩 선택 (액티브 로우)"
+      },
+      {
+        "name": "spi_miso",
+        "width": 1,
+        "dir": "in",
+        "desc": "SPI 슬레이브→마스터 데이터"
+      },
+      {
+        "name": "irq",
+        "width": 1,
+        "dir": "out",
+        "desc": "인터럽트 (tx_done_en=1 && tx_done=1일 때)"
+      }
+    ],
+    "note": "AXI4-Lite 비호환. ready/valid 핸드셰이크 없음. 한 사이클 응답. SPI 전송 중 BUSY=1이므로 CPU가 폴링 필요."
+  },
+  "integration": {
+    "bus": "mmio-lite",
+    "address_map": "custom",
+    "compat": "partial",
+    "plan": "mbv-frozen-v2 맵으로 이식 시 slot [16] = 0x4016_0000 사용 예정. IRQ는 동결 맵 slot 13번 사용 예정. integration.compat=compatible로 올리려면 AXI4-Lite 래퍼 추가 및 사용자 동결 승인 필요.",
+    "note": "이 패키지는 mmio-lite 버스 전용 독립 데모이며 MicroBlaze V SoC에 직접 연결되지 않음."
+  },
+  "external_parts": [
+    {
+      "id": "ext_w5500_pmod",
+      "name": "Pmod NIC100 (W5500 기반 Ethernet Pmod)",
+      "block": "pmod",
+      "interface": "SPI",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": 3.3,
+      "level_shift": false,
+      "power_note": "Pmod 3.3V 전원. W5500은 3.3V 동작, 5V 비호환.",
+      "arduino_compatible": false,
+      "notes": "Digilent Pmod NIC100 또는 호환 W5500 SPI 모듈. 직결 시 Pmod JA 핀 사용."
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "Pmod SPI 4선(SCK/MOSI/MISO/CSn) + VCC/GND만 연결. 별도 회로도 미작성."
+  },
+  "hierarchy": {
+    "module": "w5500_udp_tx_ip",
+    "file": "rtl/w5500_udp_tx_ip.v",
+    "children": []
+  },
+  "memory_map": [
+    {
+      "region": "w5500_udp_tx",
+      "base": "0x0000_0000",
+      "size": "0x10000",
+      "block": "ip",
+      "regs": [
+        {
+          "off": "0x0000",
+          "name": "CTRL",
+          "access": "RW",
+          "desc": "[0]=go(W1P) [1]=init(W1P) [10]=busy(RO) [11]=err(RO) [13]=init_done(RO)"
+        },
+        {
+          "off": "0x0004",
+          "name": "TX_LEN",
+          "access": "RW",
+          "desc": "[5:0]=송신 바이트 수 (1..64)"
+        },
+        {
+          "off": "0x0008",
+          "name": "TX_DATA",
+          "access": "WO",
+          "desc": "[7:0]=TX 버퍼 적재 (쓰기마다 TX_PTR 증가)"
+        },
+        {
+          "off": "0x000C",
+          "name": "TX_PTR",
+          "access": "RO",
+          "desc": "[5:0]=현재 TX 버퍼 포인터 (go 전에 읽어야 함 — go가 초기화)"
+        },
+        {
+          "off": "0xFFF0",
+          "name": "IP_ID",
+          "access": "RO",
+          "desc": "0x5735_5544 (ASCII W5UD)"
+        },
+        {
+          "off": "0xFFF4",
+          "name": "IP_VER",
+          "access": "RO",
+          "desc": "0x0000_0100 (Rev 1.0)"
+        },
+        {
+          "off": "0xFFF8",
+          "name": "IRQ_STATUS",
+          "access": "RW",
+          "desc": "[0]=tx_done (W1C)"
+        },
+        {
+          "off": "0xFFFC",
+          "name": "IRQ_ENABLE",
+          "access": "RW",
+          "desc": "[0]=tx_done_en"
+        }
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T1",
+      "state": "done",
+      "title": "UART+GPIO 기초 SoC",
+      "refs": [
+        "mmio-uart-gpio-skeleton"
+      ]
+    },
+    {
+      "stage": "T2",
+      "state": "current",
+      "title": "W5500 UDP TX IP (SPI 마스터, 고정 목적지)",
+      "refs": []
+    },
+    {
+      "stage": "T2",
+      "state": "planned",
+      "title": "W5500 UDP RX + 양방향 소켓",
+      "refs": []
+    },
+    {
+      "stage": "T3",
+      "state": "planned",
+      "title": "MicroBlaze V AXI4-Lite 래퍼",
+      "refs": []
+    }
+  ],
+  "references": [
+    {
+      "card": "wiznet-makers-gavinchang-w5500-udp-loopback",
+      "why": "W5500 SPI 프레임 구조(addr+ctrl+data)와 Socket 0 송수신 흐름 참조"
+    },
+    {
+      "card": "digilent-pmod-nic100-reference-manual",
+      "why": "Pmod NIC100 핀배치 및 W5500 3.3V 전원 사양 참조"
+    },
+    {
+      "card": "digilent-forum-basys3-ethernet-ipv4-udp",
+      "why": "Basys3 Pmod JA SPI 연결과 UDP 송신 초기화 순서 참조"
+    }
+  ],
+  "sources": {
+    "rtl": [
+      "rtl/w5500_udp_tx_ip.v"
+    ],
+    "tb": [
+      "tb/tb_w5500_udp_tx.v"
+    ],
+    "constraints": [
+      "constr/basys3_w5500.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
+  },
+  "howto": [
+    {
+      "title": "시뮬레이션 (iverilog)",
+      "steps": [
+        "make lint  — RTL 문법 검사 (iverilog -tnull)",
+        "make sim   — 가짜 W5500 슬레이브와 UDP TX SENDOK 검증; PASS 출력 확인",
+        "make synth — yosys로 자원 추정 (XC7A35T 기준)"
+      ]
+    },
+    {
+      "title": "Vivado 합성",
+      "steps": [
+        "Vivado에서 capstone.json의 sources 목록 파일을 프로젝트에 추가한다.",
+        "constr/basys3_w5500.xdc를 제약 파일로 추가한다.",
+        "top=w5500_udp_tx_ip으로 합성·구현한다 (SoC 통합 전 단독 검증용).",
+        "합성 후 LUT/FF/BRAM 사용량과 WNS를 기록한다."
+      ]
+    }
+  ],
+  "verification": {
+    "board": "not-tested",
+    "notes": "시뮬레이션: 가짜 W5500 SPI 슬레이브로 SEND 커맨드 → SENDOK 폴링 → IRQ 동작까지 검증. S3(보드 동작)는 미수행."
+  },
+  "risks": [
+    "mmio-lite 단일 사이클 응답: 긴 SPI 전송 중 BUSY=1이므로 CPU가 폴링 필요",
+    "init ROM 고정: 목적지 IP/MAC/포트를 바꾸려면 RTL 수정 필요",
+    "SENDOK 폴링 무한 루프 방지: poll_cnt == 16'hFFFF이면 ERR로 전환하므로 ~65535 사이클 대기",
+    "Pmod SPI 선로 용량: 긴 케이블이나 Pmod 체인 사용 시 타이밍 열화 가능",
+    "단일 소켓: 여러 연결을 쓰려면 멀티 소켓 확장 필요"
+  ],
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 Verilog-2001 원본이며 외부 코드를 포함하지 않는다. mmio-lite 버스(AXI4-Lite 비호환, 시뮬 전용). 가짜 W5500 SPI 슬레이브를 포함한 자체 점검 테스트벤치로 SENDOK 폴링 및 IRQ 동작을 검증한다."
+}
