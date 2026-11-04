@@ -60,13 +60,14 @@ integer slave_tx_bit;
 integer slave_reg_ptr;
 reg [7:0] slave_regs [0:255];
 
-localparam SS_IDLE      = 0,
-           SS_RX_ADDR   = 1,
-           SS_ACK_ADDR  = 2,
-           SS_RX_DATA   = 3,
-           SS_ACK_DATA  = 4,
-           SS_TX_DATA   = 5,
-           SS_RX_NAK    = 6;
+localparam SS_IDLE           = 0,
+           SS_RX_ADDR        = 1,
+           SS_ACK_ADDR       = 2,
+           SS_RX_DATA        = 3,
+           SS_ACK_DATA       = 4,
+           SS_TX_DATA        = 5,
+           SS_RX_NAK         = 6,
+           SS_ACK_ADDR_DONE  = 7; /* posedge(ACK) 를 지나고 나서 상태 전환 */
 
 integer k;
 initial begin
@@ -133,17 +134,25 @@ always @(negedge SCL) begin
     case (slave_state)
         SS_ACK_ADDR: begin
             if (slave_rx[7:1] == SLAVE_ADDR) begin
-                sda_slave = 1'b0; /* ACK */
-                if (slave_rx[0] == 1'b0) begin
-                    slave_state = SS_RX_DATA; /* 쓰기 모드 */
-                end else begin
-                    slave_tx     = slave_regs[slave_reg_ptr]; /* 읽기 모드 */
-                    slave_tx_bit = 7;
-                    slave_state  = SS_TX_DATA;
-                end
+                sda_slave   = 1'b0;             /* ACK */
+                slave_state = SS_ACK_ADDR_DONE; /* ACK posedge 를 지나고 나서 전환 */
             end else begin
                 sda_slave   = 1'b1; /* NAK */
                 slave_state = SS_IDLE;
+            end
+        end
+        SS_ACK_ADDR_DONE: begin
+            /* ACK posedge 이후 negedge: 이제 데이터 단계로 전환 */
+            if (slave_rx[0] == 1'b0) begin
+                /* 쓰기 모드: SDA 릴리즈 후 SS_RX_DATA */
+                sda_slave   = 1'b1;
+                slave_state = SS_RX_DATA;
+            end else begin
+                /* 읽기 모드: 첫 비트(bit7)를 지금 구동해 마스터가 p_h에서 샘플 */
+                slave_tx     = slave_regs[slave_reg_ptr];
+                sda_slave    = slave_regs[slave_reg_ptr][7]; /* bit 7 */
+                slave_tx_bit = 6;            /* 이후 bit 6..0은 SS_TX_DATA 에서 */
+                slave_state  = SS_TX_DATA;
             end
         end
         SS_ACK_DATA: begin
