@@ -1,4 +1,3 @@
-# 캡스톤 아이디어 큐
 
 상태: `raw` → `vetted` → `ready` → `used` 또는 `dropped`. 지우지 않고 상태와 사유만 바꾼다. (HARNESS.md §12.8, §14.2)
 아이디어는 사실이 아니라 판단이다. 각 항목은 "내 판단:"으로 시작한다.
@@ -347,6 +346,7 @@
 
 ## I-032 아날로그 입력 허브 IP: XADC 4채널(JXADC) 스캔 + 채널별 스케일·평균 레지스터, 모의 ADC 모델 테스트벤치
 - 상태: used (mmio-xadc-hub-checker, 2026-11-04)
+- 상태: used (패키지: mmio-xadc-hub, 2026-11-04)
 - 요약: 내 판단: XADC 프리미티브를 래퍼 안에 숨기고 채널별 12비트 값, 샘플 주기, 이동 평균 길이, 변환 완료 인터럽트를 AXI4-Lite 레지스터로 노출한다. 가변저항·조이스틱·전류 센서 값을 제어 루프의 지령/되먹임으로 쓰는 공통 입력 IP. 테스트벤치는 DRP 응답을 흉내 내는 모의 모델로 시험한다(XADC 프리미티브 자체는 시뮬레이터에 없음).
 - 조합: [XADC(JXADC 4채널), AXI4-Lite 레지스터, 완료 인터럽트, 서보/PWM 지령]
 - 근거: [digilent-basys-3-xadc-demo, umd-phys495-basys3-xadc-voltmeter, unilim-vahid-xadc-basys3-vhdl, shashankr-basys3-fpga-robotic-arm]
