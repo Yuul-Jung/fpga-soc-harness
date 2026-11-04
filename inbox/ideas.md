@@ -103,7 +103,8 @@
 - 차단조건재심사: 2026-11-04 /verify (1차), 근거 2(rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 1 = 7점, 사이클 상한 2건 도달로 vetted 유지. 2026-11-04 /verify (2차), 사이클 상한 해제 → ready 승격. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-009 센서 허브 IP 자체 점검: HC-SR04 + DHT11 + I2C(MPU-6050) 장치 모델 테스트벤치
-- 상태: ready
+- 상태: used
+- 패키지: mmio-sensor-hub-checker, 2026-11-04
 - 요약: 내 판단: 트리거/에코 측정 FSM, DHT11 단선 프로토콜 수신 FSM, I2C 마스터(레지스터 읽기)를 레지스터 맵 하나로 묶은 센서 허브를 쓰고, 테스트벤치의 센서 모델(초음파 에코 지연, DHT11 40비트 응답과 체크섬 오류, MPU-6050 레지스터 ACK)이 값을 돌려주면 허브 레지스터 값과 오류 플래그를 PASS/FAIL로 검사하는 T2 패키지.
 - 조합: [sensor(HC-SR04), sensor(DHT11/1-wire), comm-i2c, 7seg]
 - 근거: [lauriela8-fpga-multi-module-system, hackster-basys3-hcsr04-distance, ammar-bin-amir-arty-a7-i2c-mpu-6050]

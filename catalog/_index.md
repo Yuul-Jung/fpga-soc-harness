@@ -149,3 +149,6 @@
 | [jakkra-gesture-detecting-macro-keyboard](esp32/jakkra-gesture-detecting-macro-keyboard.md) | L3 | T4 | ESP32 (Basys3 needs-port) | 2026-11-04 |
 | [sl45sms-esp32c6-keyword-spotting](esp32/sl45sms-esp32c6-keyword-spotting.md) | L3 | T3 | ESP32-C6 (Basys3 needs-port) | 2026-11-04 |
 | [espressif-esp-sensairshuttle-gesture-tflite](esp32/espressif-esp-sensairshuttle-gesture-tflite.md) | L3 | T4 | ESP32-C5 via ESP-SensAirShuttle (Basys3 needs-port) | 2026-11-04 |
+| [zediot-esp32-s3-tflite-wake-word](esp32/zediot-esp32-s3-tflite-wake-word.md) | L3 | T3 | ESP32-S3 (Basys3 no) | 2026-11-04 |
+| [alibukharai-esp-dl-gesture](esp32/alibukharai-esp-dl-gesture.md) | L3 | T3 | ESP32-S3 (Basys3 no) | 2026-11-04 |
+| [espressif-esp-tflite-micro](esp32/espressif-esp-tflite-micro.md) | L3 | T3 | ESP32-S3/P4/C3 (Basys3 no) | 2026-11-04 |
