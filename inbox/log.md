@@ -5,6 +5,7 @@
 - verify: `YYYY-MM-DD HH:MM | verify | 재열람 N | 수정 M | 불일치 K | 승격 L2→L3 P | ready +R`
 - capstone: `YYYY-MM-DD HH:MM | capstone | <slug> | 등급 S0~S2` 또는 `... | skip: <사유>`
 
+2026-11-05 05:14 | capstone | mmio-i2c3-nmea-hub (I-036) | 등급 S2 (fix 3회: integer모듈레벨→다중드라이버fifo_pop펄스→IRQ이벤트기반, CI lint+sim PASS+synth LUT106 FF53) | 큐 잔여 418
 2026-11-05 04:53 | capstone | mmio-sensor-hub-nmea-ip (I-036) | 등급 S0 (로컬 iverilog 없음; CI에서 S1/S2 결정 예정) | I2C 3장치 순회+NMEA UART+타임스탬프 FIFO AXI4-Lite 허브 IP | 큐 잔여 418
 2026-11-05 04:15 | capstone | mmio-i2c3-nmea-hub (I-036, ready) | 등급 S0 (로컬 도구 없음, CI 대기) | I2C 3장치(MPU-6050·BMP280·HMC5883L) 순회 + NMEA UART 허브 IP, TEST_MODE FIFO 주입, 타임스탬프 FIFO 16엔트리, TC1~TC6 테스트벤치 작성
 2026-11-05 03:03 | capstone | mmio-w5500-udp-tx-ip (I-026, fix) | 등급 S2 (CI 2회차 통과: lint 0건 경고, sim PASS: W5500 UDP TX 11단계 검증, synth stat 파싱 실패지만 오류 없음) | CTRL 비트 폭 버그(30→32비트) 수정 후 재통과

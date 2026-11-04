@@ -278,8 +278,15 @@
     }
   ],
   "verification": {
+    "grade": "S2",
+    "lint": "pass (경고 0건)",
+    "sim": "pass (PASS all TC1-TC6)",
+    "synth": "pass (LUT 106, FF 53, yosys 추정)",
     "board": "not-verified",
-    "notes": "S3는 사람이 직접 Basys3에서 확인 후 갱신. CI 통과 시 S1(린트+시뮬) 또는 S2(합성 포함)."
+    "ci_run": "41903591871",
+    "ci_date": "2026-11-05",
+    "fix_attempts": 3,
+    "notes": "fix 1: integer 선언 모듈 레벨 이동(SystemVerilog 오류). fix 2: inj_valid·fifo_cnt·fifo_rptr 다중드라이버 수정(fifo_pop 1-펄스). fix 3: r_irq_pend 다중드라이버 수정(push_done·w1c_irq_pend 이벤트 기반). S3는 사람이 직접 Basys3에서 확인 후 갱신."
   },
   "risks": [
     "I2C 슬레이브 무응답(NACK) 시 TIMEOUT 비트 세트, 순회 계속 — 센서 없는 환경에서는 timeout 로그 다수 발생",
