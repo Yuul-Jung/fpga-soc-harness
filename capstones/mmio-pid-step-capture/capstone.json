@@ -95,23 +95,77 @@
       }
     ],
     "links": [
-      {"from": "top", "to": "soc", "label": "clk/rst/io"},
-      {"from": "soc", "to": "bus", "label": "mmio-lite"},
-      {"from": "bus", "to": "gpio", "label": "sel_gpio"},
-      {"from": "bus", "to": "uart", "label": "sel_uart"},
-      {"from": "bus", "to": "pid_cap", "label": "sel_pid_cap"},
-      {"from": "master", "to": "bus", "label": "sim drive (tb only)"}
+      {
+        "from": "top",
+        "to": "soc",
+        "label": "clk/rst/io"
+      },
+      {
+        "from": "soc",
+        "to": "bus",
+        "label": "mmio-lite"
+      },
+      {
+        "from": "bus",
+        "to": "gpio",
+        "label": "sel_gpio"
+      },
+      {
+        "from": "bus",
+        "to": "uart",
+        "label": "sel_uart"
+      },
+      {
+        "from": "bus",
+        "to": "pid_cap",
+        "label": "sel_pid_cap"
+      },
+      {
+        "from": "master",
+        "to": "bus",
+        "label": "sim drive (tb only)"
+      }
     ]
   },
   "bus_protocol": {
     "name": "mmio-lite",
     "signals": [
-      {"name": "valid", "dir": "M→S", "width": 1, "desc": "트랜잭션 유효"},
-      {"name": "we",    "dir": "M→S", "width": 1, "desc": "쓰기=1, 읽기=0"},
-      {"name": "addr",  "dir": "M→S", "width": 32, "desc": "바이트 주소"},
-      {"name": "wdata", "dir": "M→S", "width": 32, "desc": "쓰기 데이터"},
-      {"name": "rdata", "dir": "S→M", "width": 32, "desc": "읽기 데이터 (버스 MUX 출력)"},
-      {"name": "ready", "dir": "S→M", "width": 1, "desc": "항상 1 (1사이클 응답)"}
+      {
+        "name": "valid",
+        "dir": "M→S",
+        "width": 1,
+        "desc": "트랜잭션 유효"
+      },
+      {
+        "name": "we",
+        "dir": "M→S",
+        "width": 1,
+        "desc": "쓰기=1, 읽기=0"
+      },
+      {
+        "name": "addr",
+        "dir": "M→S",
+        "width": 32,
+        "desc": "바이트 주소"
+      },
+      {
+        "name": "wdata",
+        "dir": "M→S",
+        "width": 32,
+        "desc": "쓰기 데이터"
+      },
+      {
+        "name": "rdata",
+        "dir": "S→M",
+        "width": 32,
+        "desc": "읽기 데이터 (버스 MUX 출력)"
+      },
+      {
+        "name": "ready",
+        "dir": "S→M",
+        "width": 1,
+        "desc": "항상 1 (1사이클 응답)"
+      }
     ],
     "note": "back-pressure 없음. valid 사이클에 always 응답. AXI4-Lite 비호환"
   },
@@ -122,7 +176,12 @@
     "target_map": "mbv-frozen-v2",
     "plan": "mbv-frozen-v2 맵으로 이전 시 pid_cap=[16]=0x4016_0000 슬롯 사용(free_slots 첫 빈 칸). INTC 13 사용(free_intc 첫 빈 번호). 이 패키지는 시뮬레이션 전용 주소(0x1000~0x1002 세그먼트)를 사용하므로 compat=incompatible.",
     "frozen_mapping": [
-      {"block": "pid_cap", "region": "pid_cap_ip", "base": "0x4016_0000", "intc": 13}
+      {
+        "block": "pid_cap",
+        "region": "pid_cap_ip",
+        "base": "0x4016_0000",
+        "intc": 13
+      }
     ]
   },
   "external_parts": [],
@@ -134,70 +193,253 @@
     "module": "basys3_top",
     "file": "rtl/basys3_top.v",
     "children": [
-      {"module": "demo_master", "file": "rtl/demo_master.v"},
       {
         "module": "soc_top",
         "file": "rtl/soc_top.v",
         "children": [
-          {"module": "mmio_bus",    "file": "rtl/mmio_bus.v"},
-          {"module": "gpio",        "file": "rtl/gpio.v"},
-          {"module": "uart_tx",     "file": "rtl/uart_tx.v"},
-          {"module": "pid_cap_ip",  "file": "rtl/pid_cap_ip.v"}
+          {
+            "module": "demo_master",
+            "file": "rtl/demo_master.v"
+          },
+          {
+            "module": "mmio_bus",
+            "file": "rtl/mmio_bus.v",
+            "children": [
+              {
+                "module": "gpio",
+                "file": "rtl/gpio.v"
+              },
+              {
+                "module": "uart_tx",
+                "file": "rtl/uart_tx.v"
+              },
+              {
+                "module": "pid_cap_ip",
+                "file": "rtl/pid_cap_ip.v"
+              }
+            ]
+          }
         ]
       }
     ]
   },
   "memory_map": [
     {
-      "base": "0x1000_0000", "size": "0x10000", "block": "gpio", "desc": "GPIO LED/SW",
+      "base": "0x1000_0000",
+      "size": "0x10000",
+      "block": "gpio",
+      "desc": "GPIO LED/SW",
       "regs": [
-        {"off": "0x00", "name": "LED", "access": "RW", "desc": "LED[15:0]"},
-        {"off": "0x04", "name": "SW",  "access": "RO", "desc": "SW[15:0] (2단 동기화)"}
+        {
+          "off": "0x00",
+          "name": "LED",
+          "access": "RW",
+          "desc": "LED[15:0]"
+        },
+        {
+          "off": "0x04",
+          "name": "SW",
+          "access": "RO",
+          "desc": "SW[15:0] (2단 동기화)"
+        }
       ]
     },
     {
-      "base": "0x1001_0000", "size": "0x10000", "block": "uart", "desc": "UART TX",
+      "base": "0x1001_0000",
+      "size": "0x10000",
+      "block": "uart",
+      "desc": "UART TX",
       "regs": [
-        {"off": "0x00", "name": "DATA",   "access": "WO", "desc": "송신 바이트 [7:0]"},
-        {"off": "0x04", "name": "STATUS", "access": "RO", "desc": "bit0=busy"}
+        {
+          "off": "0x00",
+          "name": "DATA",
+          "access": "WO",
+          "desc": "송신 바이트 [7:0]"
+        },
+        {
+          "off": "0x04",
+          "name": "STATUS",
+          "access": "RO",
+          "desc": "bit0=busy"
+        }
       ]
     },
     {
-      "base": "0x1002_0000", "size": "0x10000", "block": "pid_cap", "desc": "PID 캡처 제어",
+      "base": "0x1002_0000",
+      "size": "0x10000",
+      "block": "pid_cap",
+      "desc": "PID 캡처 제어",
       "regs": [
-        {"off": "0x00",   "name": "CTRL",          "access": "RW",   "desc": "bit0=enable, bit1=clear_pos, bit2=cap_start"},
-        {"off": "0x04",   "name": "TARGET",         "access": "RW",   "desc": "[15:0] 목표 속도 (카운트/창)"},
-        {"off": "0x08",   "name": "KP",             "access": "RW",   "desc": "[15:0] 비례 이득 8.8 고정소수점"},
-        {"off": "0x0C",   "name": "KI",             "access": "RW",   "desc": "[15:0] 적분 이득 8.8 고정소수점"},
-        {"off": "0x10",   "name": "KD",             "access": "RW",   "desc": "[15:0] 미분 이득 8.8 고정소수점"},
-        {"off": "0x14",   "name": "SPEED",          "access": "RO",   "desc": "[15:0] 현재 속도 (카운트/창)"},
-        {"off": "0x18",   "name": "PERIOD",         "access": "RW",   "desc": "[15:0] PWM 주기 (클럭 사이클)"},
-        {"off": "0x1C",   "name": "DUTY",           "access": "RO",   "desc": "[15:0] 현재 PWM 듀티 출력"},
-        {"off": "0x20",   "name": "MIN_DUTY",       "access": "RW",   "desc": "[15:0] 최소 PWM 듀티 (스톨 방지)"},
-        {"off": "0x24",   "name": "CAP_ADDR",       "access": "RW",   "desc": "[4:0] BRAM 읽기 주소 (0~31)"},
-        {"off": "0x28",   "name": "CAP_DATA",       "access": "RO",   "desc": "[15:0] CAP_ADDR 위치의 속도 로그 값"},
-        {"off": "0x2C",   "name": "CAP_STATUS",     "access": "RO",   "desc": "bit0=cap_full, [12:8]=cap_count"},
-        {"off": "0xFFF0", "name": "ID",             "access": "RO",   "desc": "0x50494431 (PID1)"},
-        {"off": "0xFFF4", "name": "VER",            "access": "RO",   "desc": "0x01000001"},
-        {"off": "0xFFF8", "name": "IRQ_STATUS",     "access": "RW1C", "desc": "bit0=speed_ready, bit1=cap_full"},
-        {"off": "0xFFFC", "name": "IRQ_ENABLE",     "access": "RW",   "desc": "bit0=speed_ready IRQ 허용, bit1=cap_full IRQ 허용"}
+        {
+          "off": "0x00",
+          "name": "CTRL",
+          "access": "RW",
+          "desc": "bit0=enable, bit1=clear_pos, bit2=cap_start"
+        },
+        {
+          "off": "0x04",
+          "name": "TARGET",
+          "access": "RW",
+          "desc": "[15:0] 목표 속도 (카운트/창)"
+        },
+        {
+          "off": "0x08",
+          "name": "KP",
+          "access": "RW",
+          "desc": "[15:0] 비례 이득 8.8 고정소수점"
+        },
+        {
+          "off": "0x0C",
+          "name": "KI",
+          "access": "RW",
+          "desc": "[15:0] 적분 이득 8.8 고정소수점"
+        },
+        {
+          "off": "0x10",
+          "name": "KD",
+          "access": "RW",
+          "desc": "[15:0] 미분 이득 8.8 고정소수점"
+        },
+        {
+          "off": "0x14",
+          "name": "SPEED",
+          "access": "RO",
+          "desc": "[15:0] 현재 속도 (카운트/창)"
+        },
+        {
+          "off": "0x18",
+          "name": "PERIOD",
+          "access": "RW",
+          "desc": "[15:0] PWM 주기 (클럭 사이클)"
+        },
+        {
+          "off": "0x1C",
+          "name": "DUTY",
+          "access": "RO",
+          "desc": "[15:0] 현재 PWM 듀티 출력"
+        },
+        {
+          "off": "0x20",
+          "name": "MIN_DUTY",
+          "access": "RW",
+          "desc": "[15:0] 최소 PWM 듀티 (스톨 방지)"
+        },
+        {
+          "off": "0x24",
+          "name": "CAP_ADDR",
+          "access": "RW",
+          "desc": "[4:0] BRAM 읽기 주소 (0~31)"
+        },
+        {
+          "off": "0x28",
+          "name": "CAP_DATA",
+          "access": "RO",
+          "desc": "[15:0] CAP_ADDR 위치의 속도 로그 값"
+        },
+        {
+          "off": "0x2C",
+          "name": "CAP_STATUS",
+          "access": "RO",
+          "desc": "bit0=cap_full, [12:8]=cap_count"
+        },
+        {
+          "off": "0xFFF0",
+          "name": "ID",
+          "access": "RO",
+          "desc": "0x50494431 (PID1)"
+        },
+        {
+          "off": "0xFFF4",
+          "name": "VER",
+          "access": "RO",
+          "desc": "0x01000001"
+        },
+        {
+          "off": "0xFFF8",
+          "name": "IRQ_STATUS",
+          "access": "RW1C",
+          "desc": "bit0=speed_ready, bit1=cap_full"
+        },
+        {
+          "off": "0xFFFC",
+          "name": "IRQ_ENABLE",
+          "access": "RW",
+          "desc": "bit0=speed_ready IRQ 허용, bit1=cap_full IRQ 허용"
+        }
       ]
     }
   ],
   "roadmap": [
-    {"stage": "T1", "state": "done",    "title": "mmio-uart-gpio-skeleton",   "refs": ["digilent-basys-3-getting-started-microblaze"]},
-    {"stage": "T2", "state": "done",    "title": "mmio-pwm-qenc-checker",     "refs": ["element14-eoi-blog3-custom-ip-pwm", "suoglu-axi-lite-slave"]},
-    {"stage": "T3", "state": "done",    "title": "mmio-speed-pi-checker",     "refs": ["columbia-4840-dc-motor-controller", "waveshare-esp32-tb6612-encoder-speed-pid", "1988kramer-motor-control"]},
-    {"stage": "T4", "state": "current", "title": "mmio-pid-step-capture (이 패키지)", "refs": ["hakan-demirli-pid-fpga", "microchip-an532-dc-servo-pid", "1runxu-520-pid-fpga", "deepc94-pid-fpga-vhdl"]},
-    {"stage": "T4", "state": "planned", "title": "mmio-multiaxis-pid-checker (다음 단계, I-015)", "refs": []}
+    {
+      "stage": "T1",
+      "state": "done",
+      "title": "mmio-uart-gpio-skeleton",
+      "refs": [
+        "digilent-basys-3-getting-started-microblaze"
+      ]
+    },
+    {
+      "stage": "T2",
+      "state": "done",
+      "title": "mmio-pwm-qenc-checker",
+      "refs": [
+        "element14-eoi-blog3-custom-ip-pwm",
+        "suoglu-axi-lite-slave"
+      ]
+    },
+    {
+      "stage": "T3",
+      "state": "done",
+      "title": "mmio-speed-pi-checker",
+      "refs": [
+        "columbia-4840-dc-motor-controller",
+        "waveshare-esp32-tb6612-encoder-speed-pid",
+        "1988kramer-motor-control"
+      ]
+    },
+    {
+      "stage": "T4",
+      "state": "current",
+      "title": "mmio-pid-step-capture (이 패키지)",
+      "refs": [
+        "hakan-demirli-pid-fpga",
+        "microchip-an532-dc-servo-pid",
+        "1runxu-520-pid-fpga",
+        "deepc94-pid-fpga-vhdl"
+      ]
+    },
+    {
+      "stage": "T4",
+      "state": "planned",
+      "title": "mmio-multiaxis-pid-checker (다음 단계, I-015)",
+      "refs": []
+    }
   ],
   "references": [
-    {"card": "hakan-demirli-pid-fpga",          "why": "FPGA PID 고정소수점 구현, 적분 와인드업 클램프 패턴 참고"},
-    {"card": "microchip-an532-dc-servo-pid",     "why": "DC 서보 PID 이산화(오일러)와 D항 필터 설계 근거"},
-    {"card": "1runxu-520-pid-fpga",              "why": "FPGA PID FSM 상태 전이와 레지스터 배치 참고"},
-    {"card": "deepc94-pid-fpga-vhdl",            "why": "BRAM 기반 계단 응답 로거 구조 참고"},
-    {"card": "columbia-4840-dc-motor-controller", "why": "창 계수 속도 측정 한계와 하드웨어 PID 처리 근거 (T3 계승)"},
-    {"card": "1988kramer-motor-control",          "why": "PID 이산화와 적분 와인드업 클램프 설계 패턴 (T3 계승)"}
+    {
+      "card": "hakan-demirli-pid-fpga",
+      "why": "FPGA PID 고정소수점 구현, 적분 와인드업 클램프 패턴 참고"
+    },
+    {
+      "card": "microchip-an532-dc-servo-pid",
+      "why": "DC 서보 PID 이산화(오일러)와 D항 필터 설계 근거"
+    },
+    {
+      "card": "1runxu-520-pid-fpga",
+      "why": "FPGA PID FSM 상태 전이와 레지스터 배치 참고"
+    },
+    {
+      "card": "deepc94-pid-fpga-vhdl",
+      "why": "BRAM 기반 계단 응답 로거 구조 참고"
+    },
+    {
+      "card": "columbia-4840-dc-motor-controller",
+      "why": "창 계수 속도 측정 한계와 하드웨어 PID 처리 근거 (T3 계승)"
+    },
+    {
+      "card": "1988kramer-motor-control",
+      "why": "PID 이산화와 적분 와인드업 클램프 설계 패턴 (T3 계승)"
+    }
   ],
   "sources": {
     "rtl": [
@@ -209,9 +451,15 @@
       "rtl/pid_cap_ip.v",
       "rtl/demo_master.v"
     ],
-    "tb": ["tb/tb_pid_cap.v"],
-    "constraints": ["constr/basys3.xdc"],
-    "build": ["Makefile"]
+    "tb": [
+      "tb/tb_pid_cap.v"
+    ],
+    "constraints": [
+      "constr/basys3.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
   },
   "howto": [
     {
