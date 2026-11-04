@@ -1,0 +1,282 @@
+{
+  "slug": "mmio-lqr-ctrl-ip",
+  "title": "LQR 상태 되먹임 제어기 IP: Q8.8 MAC + AXI4-Lite (Basys3)",
+  "summary": "u = K[0]*x + K[1]*dx + K[2]*θ + K[3]*dθ 를 Q8.8 고정소수점 MAC FSM으로 계산하는 AXI4-Lite 슬레이브 IP. 이득 K[0..3]과 상태 x, dx, θ, dθ를 레지스터로 받고, 1회 계산 후 u_out(포화 처리)을 반환한다. 카트-폴 도립진자 LQR 제어기의 하드웨어 가속기 프로토타입.",
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 원본이며 외부 코드를 포함하지 않는다. 시뮬레이션·합성 결과는 CI가 기록한다.",
+  "board": "Digilent Basys3 (XC7A35T)",
+  "stage": "T4",
+  "goals": [
+    "K[0..3] 이득과 상태 x,dx,θ,dθ 를 AXI4-Lite 레지스터로 설정한다.",
+    "start 펄스 후 7클럭 이내에 u = K·x (Q8.8 내적)를 계산하고 done 펄스를 출력한다.",
+    "계산 결과 u_out 을 Q8.8 포화([-128,127.996]) 처리 후 AXI4-Lite 읽기로 반환한다.",
+    "카트-폴 선형화 모델 기반 테스트벤치로 TC1~TC5를 PASS한다."
+  ],
+  "non_goals": [
+    "실시간 엔코더·IMU 연결 (입력은 소프트웨어가 준비)",
+    "플랜트 모델 내장 (u 계산만; 플랜트는 외부)",
+    "리케이트이션·뱅뱅 제어, 플로팅포인트 연산",
+    "실제 모터 출력 드라이버 (다음 단계에서 mmio-stepper-ramp-ip 연결)"
+  ],
+  "architecture": {
+    "clock": "100 MHz 단일 클럭 (clk, W5), 동기 리셋 (btnC, T17)",
+    "blocks": [
+      {
+        "id": "clk",
+        "name": "clk 100MHz",
+        "kind": "clock",
+        "module": "-",
+        "desc": "보드 클럭 입력 (W5)"
+      },
+      {
+        "id": "x_btn",
+        "name": "btnC",
+        "kind": "external",
+        "module": "-",
+        "desc": "동기 리셋 (T17)",
+        "side": "in"
+      },
+      {
+        "id": "basys3_top",
+        "name": "basys3_lqr_top",
+        "kind": "top",
+        "module": "basys3_lqr_top",
+        "file": "rtl/basys3_lqr_top.v",
+        "desc": "보드 래퍼. AXI4-Lite 슬레이브 포트를 외부 노출 (MicroBlaze V 연결용). LED 디버그.",
+        "short": "보드 래퍼, AXI4-Lite 외부 노출"
+      },
+      {
+        "id": "axil_wrap",
+        "name": "axil_lqr",
+        "kind": "peripheral",
+        "module": "axil_lqr",
+        "file": "rtl/axil_lqr.v",
+        "desc": "AXI4-Lite 슬레이브. K[0..3], 상태 4개, CTRL, STATUS, U_OUT, IRQ 레지스터.",
+        "short": "AXI4-Lite 레지스터 맵"
+      },
+      {
+        "id": "lqr_ip",
+        "name": "lqr_ip",
+        "kind": "ip",
+        "module": "lqr_ip",
+        "file": "rtl/lqr_ip.v",
+        "desc": "Q8.8 MAC FSM: 7클럭에 u = K[0]*x + K[1]*dx + K[2]*θ + K[3]*dθ 계산. 포화 처리 포함.",
+        "short": "Q8.8 MAC FSM (LQR 내적)"
+      },
+      {
+        "id": "x_led",
+        "name": "LED[15:0]",
+        "kind": "external",
+        "module": "-",
+        "desc": "디버그: LED[15]=done, LED[14]=busy, LED[13:0]=u_out[14:1] (부호·정수부)",
+        "side": "out"
+      },
+      {
+        "id": "x_axil",
+        "name": "AXI4-Lite 버스 (CPU 측)",
+        "kind": "external",
+        "module": "-",
+        "desc": "MicroBlaze V M_AXI_DP 포트 (IP Integrator에서 연결)",
+        "side": "in"
+      }
+    ],
+    "links": [
+      { "from": "x_btn",   "to": "basys3_top", "label": "btnC(rst)" },
+      { "from": "x_axil",  "to": "basys3_top", "label": "s_axil_*" },
+      { "from": "basys3_top", "to": "axil_wrap", "label": "AXI4-Lite" },
+      { "from": "axil_wrap",  "to": "lqr_ip",   "label": "K,state,start" },
+      { "from": "lqr_ip",     "to": "axil_wrap", "label": "done,busy,u_out" },
+      { "from": "basys3_top", "to": "x_led",     "label": "led[15:0]" }
+    ]
+  },
+  "bus_protocol": {
+    "name": "AXI4-Lite",
+    "addr_width": 32,
+    "data_width": 32,
+    "signals": [
+      { "name": "s_axil_awaddr",  "dir": "in",  "width": 8,  "desc": "쓰기 주소 (오프셋)" },
+      { "name": "s_axil_awvalid", "dir": "in",  "width": 1,  "desc": "쓰기 주소 유효" },
+      { "name": "s_axil_awready", "dir": "out", "width": 1,  "desc": "쓰기 주소 준비" },
+      { "name": "s_axil_wdata",   "dir": "in",  "width": 32, "desc": "쓰기 데이터" },
+      { "name": "s_axil_wstrb",   "dir": "in",  "width": 4,  "desc": "쓰기 스트로브" },
+      { "name": "s_axil_wvalid",  "dir": "in",  "width": 1,  "desc": "쓰기 데이터 유효" },
+      { "name": "s_axil_wready",  "dir": "out", "width": 1,  "desc": "쓰기 데이터 준비" },
+      { "name": "s_axil_bresp",   "dir": "out", "width": 2,  "desc": "쓰기 응답 (00=OKAY)" },
+      { "name": "s_axil_bvalid",  "dir": "out", "width": 1,  "desc": "쓰기 응답 유효" },
+      { "name": "s_axil_bready",  "dir": "in",  "width": 1,  "desc": "쓰기 응답 준비" },
+      { "name": "s_axil_araddr",  "dir": "in",  "width": 8,  "desc": "읽기 주소 (오프셋)" },
+      { "name": "s_axil_arvalid", "dir": "in",  "width": 1,  "desc": "읽기 주소 유효" },
+      { "name": "s_axil_arready", "dir": "out", "width": 1,  "desc": "읽기 주소 준비" },
+      { "name": "s_axil_rdata",   "dir": "out", "width": 32, "desc": "읽기 데이터" },
+      { "name": "s_axil_rresp",   "dir": "out", "width": 2,  "desc": "읽기 응답" },
+      { "name": "s_axil_rvalid",  "dir": "out", "width": 1,  "desc": "읽기 데이터 유효" },
+      { "name": "s_axil_rready",  "dir": "in",  "width": 1,  "desc": "읽기 데이터 준비" }
+    ],
+    "note": "단일 슬레이브. BREADY/RREADY 항상 1 가정. 주소 폭은 8비트 (256바이트 오프셋 공간)."
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "custom",
+    "compat": "incompatible",
+    "target_map": "mbv-frozen-v2",
+    "plan": "0x401C_0000에 슬롯 [1C] 배정 제안. 슬롯 [16]~[1B]는 기존 capstone에서 사용. 사용자 동결 후 address_map→mbv-frozen-v2, compat→compatible 으로 갱신 가능. intc_free에서 IRQ 1개 배정 필요.",
+    "frozen_mapping": [
+      {
+        "block": "axil_wrap",
+        "region": "[1C] free_slot_proposal: 0x401C_0000, size 0x10000"
+      }
+    ]
+  },
+  "external_parts": [
+    {
+      "id": "p_btn",
+      "name": "Basys3 푸시버튼 (btnC)",
+      "block": "x_btn",
+      "interface": "GPIO 입력",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": true,
+      "arduino_compatible": false,
+      "notes": "btnC=리셋 (T17)"
+    },
+    {
+      "id": "p_led",
+      "name": "Basys3 LED 16",
+      "block": "x_led",
+      "interface": "GPIO 출력",
+      "io_voltage": 3.3,
+      "qty": 16,
+      "board_resident": true,
+      "arduino_compatible": false,
+      "notes": "디버그: done/busy/u_out 상위비트"
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "이 IP는 디지털 연산 블록이다. 외부 아날로그 부품 없음. 보드 내장 버튼과 LED만 사용하므로 별도 회로도 불필요."
+  },
+  "hierarchy": {
+    "module": "basys3_lqr_top",
+    "file": "rtl/basys3_lqr_top.v",
+    "children": [
+      {
+        "module": "axil_lqr",
+        "file": "rtl/axil_lqr.v",
+        "children": [
+          {
+            "module": "lqr_ip",
+            "file": "rtl/lqr_ip.v"
+          }
+        ]
+      }
+    ]
+  },
+  "memory_map": [
+    {
+      "base": "0x401C_0000",
+      "size": "0x10000",
+      "block": "axil_wrap",
+      "desc": "LQR 제어기 IP 레지스터 맵 (제안: free_slots 슬롯 [1C])",
+      "regs": [
+        { "off": "0x00", "name": "CTRL",    "access": "WO", "desc": "bit0=start (1클럭 자동 클리어)" },
+        { "off": "0x04", "name": "STATUS",  "access": "RO", "desc": "bit0=done, bit1=busy" },
+        { "off": "0x08", "name": "K0",      "access": "RW", "desc": "이득 K[0] (Q8.8 부호, cart position)" },
+        { "off": "0x0C", "name": "K1",      "access": "RW", "desc": "이득 K[1] (Q8.8 부호, cart velocity)" },
+        { "off": "0x10", "name": "K2",      "access": "RW", "desc": "이득 K[2] (Q8.8 부호, pole angle θ)" },
+        { "off": "0x14", "name": "K3",      "access": "RW", "desc": "이득 K[3] (Q8.8 부호, pole rate dθ)" },
+        { "off": "0x18", "name": "X_STATE", "access": "WO", "desc": "상태 x (cart position, Q8.8 부호)" },
+        { "off": "0x1C", "name": "DX_STATE","access": "WO", "desc": "상태 dx (cart velocity, Q8.8 부호)" },
+        { "off": "0x20", "name": "THETA",   "access": "WO", "desc": "상태 θ (pole angle, Q8.8 부호)" },
+        { "off": "0x24", "name": "DTHETA",  "access": "WO", "desc": "상태 dθ (pole rate, Q8.8 부호)" },
+        { "off": "0x28", "name": "U_OUT",   "access": "RO", "desc": "제어 출력 u (Q8.8 부호, 포화 처리됨)" },
+        { "off": "0x2C", "name": "IRQ_STATUS","access":"RW1C","desc":"bit0=done_irq (쓰기1 클리어)" },
+        { "off": "0x30", "name": "IRQ_ENABLE","access":"RW",  "desc":"bit0=done_irq_en" }
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T4",
+      "state": "current",
+      "title": "LQR 상태 되먹임 IP — Q8.8 MAC FSM + AXI4-Lite",
+      "refs": []
+    },
+    {
+      "stage": "T4",
+      "state": "planned",
+      "title": "mmio-stepper-ramp-ip 와 연결: u_out → 가감속 프로파일 → 스텝 모터",
+      "refs": ["comillas-tfg-2026-lqr-cartpole-basys3"]
+    },
+    {
+      "stage": "T5",
+      "state": "planned",
+      "title": "PicoRV32 또는 MicroBlaze V 소프트웨어 LQR 루프: 센서 읽기 → IP 쓰기 → u 읽기 → 모터 출력",
+      "refs": ["polito-upm-2023-cartpole-fpga-lqr-pid-rl"]
+    }
+  ],
+  "references": [
+    {
+      "card": "comillas-tfg-2026-lqr-cartpole-basys3",
+      "why": "Basys3 카트-폴 LQR 직접 구현 사례, 이득 K 행렬 참고"
+    },
+    {
+      "card": "polito-upm-2023-cartpole-fpga-lqr-pid-rl",
+      "why": "FPGA 카트-폴 LQR/PID/RL 비교, Q8.8 고정소수점 근거"
+    },
+    {
+      "card": "andreicito2-inverted-pendulum",
+      "why": "도립진자 FSM 제어기 Basys3 구현 패턴"
+    },
+    {
+      "card": "jie-2011-fpga-inverted-pendulum-robot",
+      "why": "FPGA 도립진자 고정소수점 MAC 연산 선례"
+    }
+  ],
+  "sources": {
+    "rtl": [
+      "rtl/lqr_ip.v",
+      "rtl/axil_lqr.v",
+      "rtl/basys3_lqr_top.v"
+    ],
+    "tb": [
+      "tb/tb_lqr_ctrl.v"
+    ],
+    "constraints": [
+      "constr/basys3_lqr.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
+  },
+  "howto": [
+    {
+      "title": "시뮬레이션",
+      "steps": [
+        "iverilog, verilator, yosys 설치",
+        "make -C capstones/mmio-lqr-ctrl-ip lint sim synth"
+      ]
+    },
+    {
+      "title": "Vivado IP Integrator 연결",
+      "steps": [
+        "새 RTL 프로젝트, 파트 xc7a35tcpg236-1",
+        "rtl/*.v 추가 (tb 제외), constr/basys3_lqr.xdc 추가, 최상위 basys3_lqr_top",
+        "IP Integrator에서 MicroBlaze V M_AXI_DP → basys3_lqr_top s_axil_* 포트 연결",
+        "Generate Bitstream 후 Program Device",
+        "Vitis에서 K 이득 쓰기 → 상태 쓰기 → CTRL.start=1 → STATUS.done 폴링 → U_OUT 읽기"
+      ]
+    }
+  ],
+  "verification": {
+    "lint": "not-run",
+    "sim": "not-run",
+    "synth": "not-run",
+    "board": "not-run",
+    "notes": "시뮬레이션·합성은 CI가 실행하면 자동으로 채워진다. 보드 동작은 수동 확인 후 board 값을 pass로 바꾼다."
+  },
+  "risks": [
+    "Q8.8 × Q8.8 곱이 Q16.16 (32비트)이므로 40비트 누산기를 사용. 오버플로 조건을 TB TC5로 검증.",
+    "BREADY/RREADY 항상 1 가정 — 버스 프로토콜 완전 준수 아님.",
+    "이득 K 범위가 클 경우 포화 처리로 인해 의도된 제어 이득이 손실될 수 있음.",
+    "xdc 핀 배치는 Digilent 마스터 XDC(Basys3-Master.xdc)와 대조 필요."
+  ]
+}
