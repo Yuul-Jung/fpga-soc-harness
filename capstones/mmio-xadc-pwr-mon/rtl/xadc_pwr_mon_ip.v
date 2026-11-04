@@ -115,6 +115,7 @@ module xadc_pwr_mon_ip #(
     // 자동 스캔 카운터 (1024 클럭마다 한 사이클)
     reg [9:0] auto_cnt;
     reg       scan_trig;
+    reg       prev_en;    // ctrl_en 상승에지 감지용 (non-auto one-shot)
 
     // -----------------------------------------------------------------------
     // AXI4-Lite 쓰기 래치
@@ -143,9 +144,11 @@ module xadc_pwr_mon_ip #(
             drp_daddr <= 7'h0;
             scan_trig <= 1'b0;
             auto_cnt  <= 10'd0;
+            prev_en   <= 1'b0;
         end else begin
             drp_den   <= 1'b0;  // 기본값 (1사이클 펄스)
             scan_trig <= 1'b0;
+            prev_en   <= ctrl_en;  // 상승에지 감지를 위해 이전 값 저장
 
             // 자동 스캔 트리거
             if (ctrl_auto && ctrl_en) begin
@@ -159,7 +162,8 @@ module xadc_pwr_mon_ip #(
 
             case (fsm)
                 F_IDLE: begin
-                    if (scan_trig || (!ctrl_auto && ctrl_en))
+                    // non-auto 모드: ctrl_en 상승에지에서만 1회 트리거
+                    if (scan_trig || (!ctrl_auto && ctrl_en && !prev_en))
                         fsm <= F_REQ1;
                 end
                 F_REQ1: begin
