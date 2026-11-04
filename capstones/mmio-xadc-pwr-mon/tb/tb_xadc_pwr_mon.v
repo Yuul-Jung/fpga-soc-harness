@@ -127,13 +127,14 @@ module tb_xadc_pwr_mon;
             @(posedge clk); #1;
             awaddr = addr; awvalid = 1'b1;
             wdata  = data; wstrb = 4'hF; wvalid = 1'b1;
-            // AW 핸드셰이크
+            // AW+W 동시 핸드셰이크 (RTL이 같은 클럭에 awready/wready를 펄스함)
+            // NBA 타이밍: posedge 직후 활성 영역에서는 아직 NBA 미반영.
+            // 한 클럭 더 기다리면 두 신호 모두 visible. 분리 루프는 W를 놓침.
             @(posedge clk);
-            while (!awready) @(posedge clk);
-            #1; awvalid = 1'b0;
-            // W 핸드셰이크
-            while (!wready) @(posedge clk);
-            #1; wvalid = 1'b0;
+            while (!awready || !wready) @(posedge clk);
+            #1;
+            awvalid = 1'b0;
+            wvalid  = 1'b0;
             // B 핸드셰이크
             bready = 1'b1;
             while (!bvalid) @(posedge clk);
