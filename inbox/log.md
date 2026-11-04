@@ -132,3 +132,4 @@
 2026-11-04 20:15 | capstone-ci | mmio-pid-step-capture | 등급 S2 달성 (CI run 41819125654, SHA a290acd) | lint=pass sim=pass(PASS·5항목) synth=pass(LUT 290·FF 332·yosys 추정) | fix1: TB ±5·70창 / fix2: hierarchy(soc_top→demo_master+mmio_bus→gpio/uart_tx/pid_cap_ip)
 2026-11-04 20:21 | collect | 안전 기능(MISRA C·워치독·스택 카나리·CRC·FMEA) · S7 난이도 사다리+S1 인접 도메인 이식 | 카드 +3 | 아이디어 +2 | 큐 잔여 8 | blocked 0
 2026-11-04 20:39 | verify | 재열람 0(차단: WebFetch PROVENANCE_REQUIRED 전면 차단) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +2(I-067·I-060, 차단조건재심사: 9점·8점) | raw→vetted +2(I-070 7점·I-071 5점) | atlas 신설(functional-safety.md, 카드 3건) | soc-map 갱신(185건·기능안전 도메인 추가)
+2026-11-04 21:01 | capstone-ci | mmio-imu-cf-ip | 등급 S2 달성 (CI run 41825251807, SHA 348a4e8c) | lint=pass sim=pass(TC1~TC5 PASS, CORDIC atan2 ±2° 오차 내) synth=pass(LUT 904·FF 448·yosys 추정) | fix1: 36비트 블렌드 곱셈(18비트 컨텍스트 오버플로 수정) / fix2: TC5 초기화 스텝(prev_roll=0 가정 보정)
