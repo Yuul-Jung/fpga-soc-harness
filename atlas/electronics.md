@@ -1,6 +1,6 @@
-# 전자기술 도메인 종합 (전력전자·인버터·게이트 드라이버·XADC 아날로그 프런트엔드)
+# 전자기술 도메인 종합 (전력전자·인버터·게이트 드라이버·XADC 아날로그 프런트엔드·PCB 설계)
 
-갱신: 2026-11-05 (/verify 10차). 카드 14건 기준. 전력전자·SPWM 인버터·게이트 드라이버·전원 설계·XADC 아날로그 프런트엔드 신호 처리.
+갱신: 2026-11-05 (/verify 12차). 카드 17건 기준. 전력전자·SPWM 인버터·게이트 드라이버·전원 설계·XADC 아날로그 프런트엔드 신호 처리·PCB 설계·신호 무결성.
 
 ---
 
@@ -54,7 +54,23 @@
 
 ---
 
-## 5. 비교표
+## 5. PCB 설계 · 신호 무결성
+
+| 항목 | 카드 | 비고 |
+|---|---|---|
+| FPGA PCB 설계 종합 가이드 | ema-eda-fpga-pcb-design-guide | 3W 규칙·차동 쌍·via-in-pad·종단 체크리스트; Pmod/SPI 트레이스에 직접 적용 가능 |
+| PCB 분할 GND 플레인·EMI | rfessentials-split-ground-plane-emi | 단일 통합 GND 권장, 모터 드라이버-FPGA 경계 스타 접지; 스티칭 커패시터 10 nF |
+| 디커플링 커패시터 가이드 | jlcpcb-decoupling-capacitor-guide | 100 nF/1 µF/10 µF 계층 구조; 각 IC 로컬 배치; GND via 최단 경로 |
+
+**패턴:** Basys3 Pmod 주변장치 보드 설계 체크리스트 (내 판단):
+1. 각 IC 전원 핀에 100 nF + 1 µF 계층 디커플링 (jlcpcb-decoupling-capacitor-guide).
+2. Pmod SPI/UART 트레이스 중심 간격 ≥ 트레이스 폭 × 3 (3W 규칙, ema-eda-fpga-pcb-design-guide).
+3. 모터 H-브리지 GND와 FPGA 신호 GND를 스타 접지 한 점으로 연결, 연결 브리지 ≥ 2 mm 폭 (rfessentials-split-ground-plane-emi).
+4. 클럭 신호에만 직렬 종단, 가급적 불필요한 via 최소화.
+
+---
+
+## 6. 비교표
 
 | 카드 | 도메인 | 종류 | Basys3 적합성 | 개조 대상 |
 |---|---|---|---|---|
@@ -72,19 +88,23 @@
 | applied-ee-analog-front-end | electronics | 신호 처리 가이드 | yes | 분압기·버퍼·RC 설계 공식 |
 | epdtonthenet-xadc-digitally-enhanced-analogue | electronics | XADC 보정 RTL | yes | 오프셋·게인 보정, 이동 평균 필터 |
 | sparkfun-acs712-current-sensor | electronics | 전류 센서 | needs-port | 분압·RC 조건화 후 XADC 연결 |
+| ema-eda-fpga-pcb-design-guide | electronics | PCB 설계 종합 가이드 | needs-port | 3W 규칙·종단·via-in-pad·차동 쌍; Pmod 확장 보드 체크리스트 |
+| rfessentials-split-ground-plane-emi | electronics | GND 플레인 EMI 가이드 | needs-port | 단일 통합 GND 권장, 모터 경계 스타 접지 |
+| jlcpcb-decoupling-capacitor-guide | electronics | 디커플링 가이드 | needs-port | 100 nF/1 µF/10 µF 계층, 각 IC 로컬 via 최단 경로 |
 
 ---
 
-## 6. 교훈
+## 7. 교훈
 
 - **데드타임은 RTL에서**: 소프트웨어 타이밍 보정만으로는 슈트스루 방지 불충분. FPGA RTL에서 클럭 단위로 삽입 필요 (내 판단).
 - **XADC 입력 범위 엄수**: 0–1V 초과 시 소자 손상. 분압기 설계 전 ACS712 최대 출력 전압을 반드시 계산 (sparkfun-acs712-current-sensor, amd-ug480-xadc-external-inputs).
 - **전원 분리 필수**: 모터 전류 귀로가 Basys3 GND로 흘러들면 MCU 오동작. GND 공통선 한 가닥만 연결, 고주파 귀로는 커패시터 (§17.2).
 - **이동 평균 필터**: 아날로그 RC만으로 부족한 경우 Verilog 이동 평균(N = 2의 거듭제곱, 나눗셈 → 비트 선택)으로 추가 노이즈 제거 (epdtonthenet-xadc-digitally-enhanced-analogue, I-080).
+- **PCB 하드웨어 단에서 SI 먼저**: RTL 디지털 필터(이동 평균·IIR)는 PCB 레이아웃이 보장한 신호 품질을 보완하는 2차 수단이다. 3W 규칙·디커플링·GND 분리를 먼저 확보하고 RTL 필터를 더한다 (내 판단, ema-eda-fpga-pcb-design-guide·rfessentials-split-ground-plane-emi).
 
 ---
 
-## 7. 아이디어 연결
+## 8. 아이디어 연결
 
 | 아이디어 | 상태 | 근거 카드 |
 |---|---|---|
@@ -92,6 +112,9 @@
 | I-076 외부 보조 전원 보드 가이드 | ready | vishay-fpga-power-supply-consideration, wevolver-buck-converter-design-guide, altium-ldo-vs-switching-regulator |
 | I-077 단상 풀브리지 SPWM AXI4-Lite IP | vetted(7점) | element14-cumps-deadtime-vhdl-pynqz2, industrialmonitordirect-irs2110-half-bridge, industrialmonitordirect-igbt-shootthrough |
 | I-078 슈트스루 감지 테스트베드 | vetted(5점) | industrialmonitordirect-irs2110-half-bridge, industrialmonitordirect-igbt-shootthrough, element14-cumps-deadtime-vhdl-pynqz2 |
-| I-079 SPWM+XADC 폐루프 변조지수 제어 | vetted(7점) | arxiv-1002340-spartan3e-spwm-inverter, element14-cumps-deadtime-vhdl-pynqz2, industrialmonitordirect-igbt-shootthrough |
-| I-080 범용 디지털 LPF 라이브러리 블록 | vetted(7점) | amd-ug480-xadc-external-inputs, applied-ee-analog-front-end |
-| I-081 XADC + ACS712 전류 측정 AXI IP | vetted(7점) | sparkfun-acs712-current-sensor, xilinx-xapp795-driving-xadc, applied-ee-analog-front-end |
+| I-079 SPWM+XADC 폐루프 변조지수 제어 | ready | arxiv-1002340-spartan3e-spwm-inverter, element14-cumps-deadtime-vhdl-pynqz2, industrialmonitordirect-igbt-shootthrough |
+| I-080 범용 디지털 LPF 라이브러리 블록 | ready | amd-ug480-xadc-external-inputs, applied-ee-analog-front-end |
+| I-081 XADC + ACS712 전류 측정 AXI IP | ready | sparkfun-acs712-current-sensor, xilinx-xapp795-driving-xadc, applied-ee-analog-front-end |
+| I-082 MicroBlaze V AXI4-Lite SPI Pmod PCB 확장 보드 | vetted(차단조건재심사 8점, 다음 사이클 1순위) | jlcpcb-decoupling-capacitor-guide, rfessentials-split-ground-plane-emi, ema-eda-fpga-pcb-design-guide |
+| I-083 모터 드라이버 보드 GND 분리 + 스타 접지 실습 | vetted(차단조건재심사 8점, 다음 사이클 2순위) | rfessentials-split-ground-plane-emi, jlcpcb-decoupling-capacitor-guide, industrialmonitordirect-irs2110-half-bridge |
+| I-084 FPGA SoC PCB 전원 무결성 검증 가이드 | vetted(차단조건재심사 8점, 다음 사이클 3순위) | jlcpcb-decoupling-capacitor-guide, ema-eda-fpga-pcb-design-guide, vishay-fpga-power-supply-consideration |

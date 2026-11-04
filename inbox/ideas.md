@@ -1057,9 +1057,10 @@
 - 새로움의 근거: 카탈로그 내 XADC + 홀 전류 센서 조합 카드 없음. 기존 XADC 아이디어(I-079)는 SPWM 출력 전압 감시 목적, 이 아이디어는 입력 전류 측정 AXI IP
 - Basys3 적합성의 근거: Basys3 XADC 내장(XC7A35T), JXADC 헤더 4채널 사용. R1·R2(4kΩ/1kΩ)로 ACS712 출력(단방향 0–5A: 2.5–3.425V)을 0–0.5V로 스케일. RC 필터(150Ω, 1nF). 오프셋 보정은 소프트웨어.
 - 내 판단: ACS712 출력 2.5V 중심이므로 분압 후 최대 0.5V·최소 0V 범위가 됨 — ±5A 범위를 절반만 측정하거나 오프셋을 소프트웨어로 보정해야 함. 단방향 전류(0~5A)면 0~0.5V 범위로 간단하게 가능. 변경: digilent-basys3-xadc-analog-input (존재하지 않는 카드)를 xilinx-xapp795-driving-xadc·amd-ug480-xadc-external-inputs로 교체.
-- 난이도: 3 / 단계: T2 / 상태: vetted
+- 난이도: 3 / 단계: T2 / 상태: ready
 - 심사: 2026-11-05 /verify(10차), 첫 raw→vetted 심사(차단조건재심사 불적용). ID 충돌 수정: 이전 I-079(YAML 형식, 중복) → I-081(마크다운 형식)으로 재번호. 근거 카드 오류(digilent-basys3-xadc-analog-input 존재하지 않음) → xilinx-xapp795-driving-xadc로 수정. 근거 0(sparkfun-acs712-current-sensor·xilinx-xapp795-driving-xadc·applied-ee-analog-front-end 모두 rechecked_at 없음) + 새로움 2(XADC + 홀 전류 센서 AXI IP 조합 카탈로그 없음; 기존 XADC 아이디어와 측정 목적 다름) + 적합성 3(XADC 내장, JXADC 헤더 4채널 가용, 분압기 R1/R2로 0–0.5V 스케일 가능, RC 필터 설계 명확) + 완결성 2(AXI4-Lite+이동평균+XADC RTL 범위 명확, 오프셋 보정 로직 TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득, ACS712 버전(05B/20A/30A) 선택 명세화.
 - 차단조건재심사: 2026-11-05 /verify(11차), 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(sparkfun-acs712-current-sensor, xilinx-xapp795-driving-xadc, applied-ee-analog-front-end, rechecked_at 불문) → 근거 3 + 새로움 2(XADC + 홀 전류 센서 AXI IP 조합 카탈로그 없음) + 적합성 3(XADC 내장, JXADC 헤더 4채널, 분압기 R1/R2로 0–0.5V 스케일 가능) + 완결성 2(AXI4-Lite+이동평균+XADC RTL 범위 명확, TB 작성 가능) = 10점 ≥ 7, 사이클당 최대 2건 상한(I-077·I-079 선 승격) → 보류. 다음 사이클 1순위.
+- 차단조건재심사: 2026-11-05 /verify(12차), 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(sparkfun-acs712-current-sensor, xilinx-xapp795-driving-xadc, applied-ee-analog-front-end, rechecked_at 불문) → 근거 3 + 새로움 2 + 적합성 3 + 완결성 2 = 10점 ≥ 7, 1순위 → ready 승격.
 
 ## I-080 FPGA Verilog 범용 디지털 LPF 라이브러리 블록 (이동 평균 CIC 형식) — T1
 
@@ -1070,9 +1071,10 @@
 - 새로움의 근거: 현재 library/rtl/에 디지털 필터 모듈 없음. CIC 이동 평균은 곱셈기 불필요, LUT 소모 최소 → Basys3 자원 여유 충분
 - Basys3 적합성의 근거: 순수 Verilog-2001, 파라미터 N(2의 거듭제곱) → 나눗셈이 비트 선택으로 대체됨. LUT/FF 사용량 O(log N). AllAboutCircuits 공식 Fco = 0.442947/√(N²−1) 참조.
 - 내 판단: N이 2의 거듭제곱이 아닌 경우 나눗셈 비용 발생 — N을 항상 2의 거듭제곱으로 제한하거나 별도 처리 필요.
-- 난이도: 2 / 단계: T1 / 상태: vetted
+- 난이도: 2 / 단계: T1 / 상태: ready
 - 심사: 2026-11-05 /verify(10차), 첫 raw→vetted 심사(차단조건재심사 불적용). 형식 변환: YAML 형식 → 마크다운 형식. 근거 카드 수정: digilent-basys3-xadc-analog-input(존재하지 않음) → amd-ug480-xadc-external-inputs. 근거 0(근거 카드 모두 rechecked_at 없음) + 새로움 2(library/rtl/ 디지털 필터 모듈 없음; CIC 이동 평균은 카탈로그 내 RTL 없음) + 적합성 3(순수 Verilog-2001, 2의 거듭제곱 N으로 나눗셈→비트 선택, LUT/FF 사용량 O(log N)) + 완결성 2(library/rtl/ 위치 명확, 파라미터 TB 작성 가능, Fco 공식으로 필터 특성 검증 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득, N 비2의거듭제곱 처리 방안 결정.
 - 차단조건재심사: 2026-11-05 /verify(11차), 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 2건(amd-ug480-xadc-external-inputs, applied-ee-analog-front-end, rechecked_at 불문) → 근거 2 + 새로움 2(library/rtl/ 디지털 필터 모듈 없음; CIC 이동 평균 RTL 카탈로그 없음) + 적합성 3(순수 Verilog-2001, 2의 거듭제곱 N으로 나눗셈→비트 선택, LUT/FF 사용량 O(log N)) + 완결성 2(library/rtl/ 위치 명확, 파라미터 TB 작성 가능) = 9점 ≥ 7, 사이클당 최대 2건 상한(I-077·I-079 선 승격) → 보류. 다음 사이클 2순위.
+- 차단조건재심사: 2026-11-05 /verify(12차), 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 2건(amd-ug480-xadc-external-inputs, applied-ee-analog-front-end, rechecked_at 불문) → 근거 2 + 새로움 2 + 적합성 3 + 완결성 2 = 9점 ≥ 7, 2순위 → ready 승격.
 
 ## I-082 MicroBlaze V AXI4-Lite SPI Pmod PCB 확장 보드 — PCB 설계 체크리스트 실습 (T2)
 
@@ -1085,6 +1087,7 @@
 - 내 판단: S7 난이도 사다리의 최종 응용 단계. 디커플링(T0) → GND 분리(T1) → SI·FPGA 체크리스트(T2)를 Pmod PCB 설계에 통합 적용하는 캡스톤형 실습.
 - 난이도: 3 / 단계: T2 / 상태: vetted
 - 심사: 2026-11-05 /verify(11차), 첫 raw→vetted 심사. 근거 0(jlcpcb-decoupling-capacitor-guide·rfessentials-split-ground-plane-emi·ema-eda-fpga-pcb-design-guide 모두 rechecked_at 없음) + 새로움 2(Pmod 확장 PCB 설계 체크리스트 형태 아이디어 카탈로그에 없음; 디커플링·GND 플레인·3W·직렬 종단 통합 가이드 없음) + 적합성 2(Basys3 Pmod 3.3V 커넥터 직접 해당, MicroBlaze V AXI Quad SPI IP 활용 가능; PCB 설계 가이드라서 RTL 없음 → 적합성은 보드 수준에서 충분하나 RTL-TB 연결 간접적) + 완결성 1(PCB 체크리스트 문서 주이므로 TB 없음; AXI4-Lite SPI IP 연동 RTL 범위 미명세화) = 5점 → vetted. 보강: 근거 카드 rechecked_at 취득, AXI4-Lite SPI IP 연동 RTL 범위 명세화.
+- 차단조건재심사: 2026-11-05 /verify(12차), 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(jlcpcb-decoupling-capacitor-guide, rfessentials-split-ground-plane-emi, ema-eda-fpga-pcb-design-guide, rechecked_at 불문) → 근거 3 + 새로움 2(Pmod 확장 PCB 체크리스트 없음) + 적합성 2(Basys3 Pmod 3.3V 직결 가능, RTL-TB 연결 간접적) + 완결성 1(PCB 체크리스트 주, TB 없음) = 8점 ≥ 7, 사이클당 최대 2건 상한(I-081·I-080 선 승격) → 보류. 다음 사이클 1순위.
 
 ## I-083 모터 드라이버 보드 GND 분리 + 스타 접지 실습 PCB 체크리스트 — MicroBlaze V PWM·H-브리지 경계 (T2)
 
@@ -1097,6 +1100,7 @@
 - 내 판단: 모터 제어 사다리(엔코더→PID→모터 드라이버)에서 PCB 하드웨어 단 보완 사례로 적합. 기존 아이디어와 겹치지 않음.
 - 난이도: 3 / 단계: T2 / 상태: vetted
 - 심사: 2026-11-05 /verify(11차), 첫 raw→vetted 심사. 근거 0(rfessentials-split-ground-plane-emi·jlcpcb-decoupling-capacitor-guide·industrialmonitordirect-irs2110-half-bridge 모두 rechecked_at 없음) + 새로움 2(MicroBlaze V PWM ↔ H-브리지 GND 분리 체크리스트 아이디어 카탈로그에 없음; 기존 H-브리지 카드는 GND 분리·스타 접지 조합 없음) + 적합성 2(Basys3 Pmod/GPIO 3.3V ↔ 12V 모터 전원 분리 가능; H-브리지 외부 보드 필요; PCB 설계 가이드라서 RTL 불필요하나 외부 PCB 보드 필요) + 완결성 1(PCB 설계 가이드+스타 접지 체크리스트 문서 주이므로 TB 없음; MicroBlaze V PWM RTL 연동 범위 미명세화) = 5점 → vetted. 보강: 근거 카드 rechecked_at 취득, MicroBlaze V PWM RTL 범위(레지스터·TB) 명세화.
+- 차단조건재심사: 2026-11-05 /verify(12차), 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(rfessentials-split-ground-plane-emi, jlcpcb-decoupling-capacitor-guide, industrialmonitordirect-irs2110-half-bridge, rechecked_at 불문) → 근거 3 + 새로움 2(MicroBlaze V PWM ↔ H-브리지 GND 분리 체크리스트 없음) + 적합성 2(Basys3 Pmod/GPIO 3.3V ↔ 12V 분리 가능, 외부 PCB 필요) + 완결성 1(PCB 설계 가이드 주, TB 없음) = 8점 ≥ 7, 사이클당 최대 2건 상한(I-081·I-080 선 승격) → 보류. 다음 사이클 2순위.
 
 ## I-084 FPGA SoC PCB 전원 무결성 검증 가이드 — VCCINT·VCCO·VCCAUX 디커플링 계층 체크 (T1)
 
@@ -1109,6 +1113,7 @@
 - 내 판단: S7 사다리의 T1 위치(입문 디커플링 개념 습득 후, 고급 SI 규칙 적용 전). 비교적 좁은 범위이지만 MicroBlaze V SoC 주변장치 PCB 설계 시 필수 체크 항목.
 - 난이도: 2 / 단계: T1 / 상태: vetted
 - 심사: 2026-11-05 /verify(11차), 첫 raw→vetted 심사. 근거 0(jlcpcb-decoupling-capacitor-guide·ema-eda-fpga-pcb-design-guide·vishay-fpga-power-supply-consideration 모두 rechecked_at 없음) + 새로움 2(XC7A35T 전원 레일별 디커플링 체크리스트 아이디어 카탈로그에 없음; vishay 가이드는 범용, XC7A35T 레일별 적용 조합 없음) + 적합성 2(XC7A35T 전원 핀 직접 해당; 확장 보드 설계 대상이지만 RTL 불필요 → T1 위치 적합성 충분하나 RTL-TB 연결 없음) + 완결성 1(VCCINT·VCCO·VCCAUX 체크리스트 문서 완결 가능하나 MicroBlaze V SoC PDN 추정 방법 범위 넓어 TB 없음) = 5점 → vetted. 보강: 근거 카드 rechecked_at 취득, PDN 임피던스 추정 방법 범위 세분화.
+- 차단조건재심사: 2026-11-05 /verify(12차), 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(jlcpcb-decoupling-capacitor-guide, ema-eda-fpga-pcb-design-guide, vishay-fpga-power-supply-consideration, rechecked_at 불문) → 근거 3 + 새로움 2(XC7A35T 전원 레일별 디커플링 체크리스트 없음) + 적합성 2(XC7A35T 전원 핀 직접 해당, RTL-TB 연결 없음) + 완결성 1(VCCINT·VCCO·VCCAUX 체크리스트 문서, TB 없음) = 8점 ≥ 7, 사이클당 최대 2건 상한(I-081·I-080 선 승격) → 보류. 다음 사이클 3순위.
 
 ## I-085 RPi4 Python spidev + airhdl SPI-to-AXI4-Lite → Basys3 AXI 주변장치 자동 테스트 하네스 (T2)
 
@@ -1119,7 +1124,8 @@
 - 새로움의 근거: 카탈로그에 RPi4 spidev로 Basys3 AXI 주변장치를 자동화 테스트하는 아이디어 없음. michalstc-rpi-zero-fpga-spi-wishbone은 Wishbone 기반으로 AXI4-Lite 버스 직접 타깃 아님.
 - Basys3 적합성의 근거: Basys3 Pmod 3.3V ↔ RPi GPIO 3.3V 레벨 변환 불필요. airhdl IP 단일 파일(sv 또는 vhd), Basys3 XC7A35T에 fit_basys3=yes. 11바이트 SPI 거래로 32비트 AXI4-Lite R/W 가능. RPi Python spidev 패키지가 CI에서 pytest로 자동화 가능.
 - 내 판단: SoC 개발에서 MicroBlaze V 없이 주변장치 IP만 단독 검증하는 "headless AXI 테스트" 패턴. Basys3 Pmod에 RPi를 꽂고 pytest로 레지스터 R/W를 자동화하면 IP 개발 주기가 단축됨.
-- 난이도: 3 / 단계: T2 / 상태: raw
+- 난이도: 3 / 단계: T2 / 상태: vetted
+- 심사: 2026-11-05 /verify(12차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(airhdl-spi-to-axi-bridge·ananthu-islam-ahb-apb-bridge-rpi-artix7 모두 rechecked_at 없음) + 새로움 2(RPi4 spidev로 Basys3 AXI 주변장치 자동화 테스트 카탈로그 없음; michalstc-rpi-zero-fpga-spi-wishbone은 Wishbone 기반으로 AXI4-Lite 타깃 아님) + 적합성 3(Basys3 Pmod 3.3V ↔ RPi GPIO 3.3V 직결 가능, airhdl IP fit_basys3=yes, 11바이트 SPI 거래로 32비트 AXI R/W 가능, pytest 자동화 가능) + 완결성 1(단독 테스트 패턴 범위 명확하나 AXI 슬레이브 IP 종류 미정, TB 세부 미명세) = 6점 → vetted. 보강: 근거 카드 rechecked_at 취득, 대상 AXI 슬레이브 IP 종류 선택, pytest TB 범위 명세화.
 
 ## I-086 spibone_gen.py AXI-Lite 출력 + Basys3 Pmod → RP2040(Pico) SPIBone으로 AXI-Lite IP 단독 검증 패턴 (T2-T3)
 
@@ -1130,4 +1136,5 @@
 - 새로움의 근거: 카탈로그에 RP2040 Pico를 Basys3 Pmod 호스트로 쓰는 AXI-Lite 단독 검증 아이디어 없음. 기존 아이디어(I-085)는 RPi4 Linux spidev 사용으로 경량 Pico 패턴과 구분.
 - Basys3 적합성의 근거: Basys3 Pmod 3.3V ↔ Pico GPIO 3.3V 직결 가능. spibone_gen.py --mode hybrid-axi-lite 출력은 LiteX 없이 순수 Verilog. SPIBone 9바이트 프레임은 단순해 Pico MicroPython에서 machine.SPI로 직접 구현 가능.
 - 내 판단: LiteX/iCEBreaker 환경을 Basys3+MicroBlaze V 환경으로 옮기는 개조 경로가 명확. Pico 대신 RPi4를 쓸 때는 spidev로 같은 9바이트 프레임 전송 가능(I-085와 상호 보완).
-- 난이도: 3 / 단계: T2-T3 / 상태: raw
+- 난이도: 3 / 단계: T2-T3 / 상태: vetted
+- 심사: 2026-11-05 /verify(12차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(enjoy-digital-litex-rp2040-pmod-test·airhdl-spi-to-axi-bridge 모두 rechecked_at 없음) + 새로움 2(RP2040 Pico를 Basys3 Pmod 호스트로 쓰는 AXI-Lite 단독 검증 카탈로그 없음; I-085와 호스트 MCU 다름) + 적합성 3(Basys3 Pmod 3.3V ↔ Pico GPIO 3.3V 직결 가능, spibone_gen.py --mode hybrid-axi-lite 순수 Verilog 출력, SPIBone 9바이트 프레임 단순·Pico MicroPython machine.SPI 직접 구현 가능) + 완결성 2(spibone_gen.py 출력→Basys3 배정→Pico MicroPython test 경로 명확, 개조 단계 세부화 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득, spibone_gen.py --mode hybrid-axi-lite Verilog AXI-Lite 호환성 검증, 대상 free_slot 선택.
