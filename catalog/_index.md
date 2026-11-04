@@ -190,3 +190,6 @@
 | [industrialmonitordirect-irs2110-half-bridge](electronics/industrialmonitordirect-irs2110-half-bridge.md) | L3 | T2 | 없음 (회로 가이드) | 2026-11-04 |
 | [zbotic-backem-flyback-protection](electronics/zbotic-backem-flyback-protection.md) | L3 | T2 | 없음 (회로 가이드) | 2026-11-04 |
 | [lcsc-mosfet-selection-motor-control](electronics/lcsc-mosfet-selection-motor-control.md) | L3 | T2 | 없음 (회로 가이드) | 2026-11-04 |
+| [altium-ldo-vs-switching-regulator](electronics/altium-ldo-vs-switching-regulator.md) | L3 | T0 | 없음 (기사) | 2026-11-04 |
+| [wevolver-buck-converter-design-guide](electronics/wevolver-buck-converter-design-guide.md) | L3 | T0 | 없음 (기사) | 2026-11-04 |
+| [vishay-fpga-power-supply-consideration](electronics/vishay-fpga-power-supply-consideration.md) | L3 | T0 | 없음 (애플리케이션 노트) | 2026-11-04 |

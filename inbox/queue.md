@@ -435,3 +435,10 @@
 - https://ww1.microchip.com/downloads/en/AppNotes/01346B.pdf | Microchip AN1346 H-브리지 모터 제어 앱노트 | 검색어: H-bridge motor control application note microcontroller
 - https://www.st.com/en/motor-drivers/l6391.html | ST L6391 게이트 드라이버 IC (600V 하프브리지, IRS2110 대안) | 검색어: half bridge gate driver IC MOSFET 600V motor
 - https://github.com/WestfW/H-bridge | WestfW H-bridge Verilog FPGA 구현 (GitHub) | 검색어: H-bridge Verilog FPGA gate driver deadtime implementation
+- https://hackaday.io/page/399993-ldo-power-module-vs-dcdc-converter-differences-advantages-and-when-to-use-each | LDO vs DC-DC 하이브리드 전원 설계 실용 비교(PCBMaster, 2026-07) — 열람 L3, 카드 근거용 | LDO DC-DC converter comparison embedded power supply
+- https://ti.com/document-viewer/lit/html/SSZT239 | TI SSZT239 "저잡음 벅 컨버터로 LDO 대체" 기술 기고문(2023-06) — 열람 L2(목차만), 저잡음 벅 FPGA/ADC 적용 | TI low-noise buck converter LDO replace FPGA ADC
+- https://www.ti.com/document-viewer/lit/html/SSZTD54 | TI SSZTD54 TPS62912/TPS62913 저잡음 벅 애플리케이션 노트(2024-09) — 미열람(L1), 초저잡음 벅 IC 최신 사례 | TI TPS62912 low-noise buck converter ADC FPGA 2024
+- https://www.monolithicpower.com/en/learning/resources/passive-filter-design-concept-of-buck-regulators-for-ultra-low-noise-applications | MPS 패시브 필터 설계: 초저잡음 벅 레귤레이터 출력 필터 — 미열람(L1) | buck converter passive filter low noise application note
+- https://www.inflearn.com/community/questions/1741734/벅컨버터-입력-출력-커패시터-선정-과정-질문 | 인프런 커뮤니티: 벅컨버터 입출력 커패시터 선정 과정 Q&A(2026-01, 한국어) — 열람 L3, 카드 대기 | 벅컨버터 커패시터 선정 임베디드 한국어
+- https://recom-power.com/ko/rec-n-an-introduction-to-buck,-boost,-and-buck-boost-converters-131.html | RECOM Power 한국어 벅/부스트/벅-부스트 컨버터 입문(제품 가이드, 효율 96%) — 열람 L2 | DC-DC buck boost converter 벅 컨버터 설계 한국어
+- https://www.digikey.at/en/articles/how-to-use-small-modular-small-dc-dc-converters-to-minimize-power-rail-noise | DigiKey: 소형 모듈 DC-DC 컨버터로 전원 레일 노이즈 최소화 — 미열람(L1) | DC-DC converter minimize power rail noise embedded FPGA

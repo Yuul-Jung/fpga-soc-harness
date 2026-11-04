@@ -984,3 +984,21 @@
 - Basys3 적합성의 근거: Pmod 출력 전류 제한(< 24 mA per pin 확인 필요) → 소신호 MOSFET(e.g. 2N7002) 게이트 전류 감당 가능 여부 확인 필요; 대전류 모터에는 부적합
 - 난이도: 1 / 단계: T1
 - 심사: 2026-11-04 /verify(7차), 근거 0(lcsc-mosfet-selection-motor-control·zbotic-backem-flyback-protection 모두 rechecked_at 없음; 근거 카드 2건만) + 새로움 2(Pmod 직접 구동 최소 구성 테스트베드 카드 없음; 기존 카드는 모두 별도 드라이버 IC 사용) + 적합성 1(Pmod 3.3V 출력 가능하나 출력 전류 제한 < 24 mA per pin 미확인; 2N7002 게이트 전류 감당 가능성 미확인; 소전류 모터 직구동 가능성 불확실) + 완결성 2(T1 단계 단순 Verilog PWM+H-브리지 출력, 범위 최소, RTL+외부 BOM 작성 가능) = 5점 → vetted. 보강: Pmod 출력 전류 제한 공식 확인, 근거 카드 rechecked_at 취득, 근거 카드 1건 추가. ※ 첫 raw→vetted 심사이므로 차단조건재심사 불적용(§14.2).
+
+## I-075 Basys3 XADC 전원 모니터 AXI-Lite IP — 코어·보조 전압 감시 T2
+- 상태: raw
+- 요약: 내 판단: Artix-7 내장 XADC를 이용해 Vccint(1.0V), Vccaux(1.8V), Vccbram 세 레일을 주기적으로 샘플링하고, 임계값 초과 시 MicroBlaze V 인터럽트를 발생시키는 AXI4-Lite 슬레이브 IP. 외부 하드웨어 불필요.
+- 조합: [Basys3 XADC 내부 채널, AXI4-Lite 슬레이브 레지스터, MicroBlaze V 인터럽트 컨트롤러, Vishay 전원 순서화 개념]
+- 근거: [vishay-fpga-power-supply-consideration, altium-ldo-vs-switching-regulator]
+- 새로움의 근거: 카탈로그 내 XADC를 전원 모니터로 쓰는 AXI-Lite IP 아이디어 없음. 기존 XADC 아이디어는 외부 센서(온도, 전류 샘플) 위주
+- Basys3 적합성의 근거: Artix-7 XC7A35T에 XADC 하드 블록 내장. Vccint·Vccaux·Vccbram은 별도 외부 핀 불필요. XADC IP 코어는 Vivado에서 무료 사용 가능
+- 난이도: 2 / 단계: T2
+
+## I-076 외부 보조 전원 보드 설계 가이드: 12V→5V+3.3V 이중 레일 for Basys3 확장 T0
+- 상태: raw
+- 요약: 내 판단: 모터·서보·센서 확장 모듈을 Basys3에 연결할 때 쓰는 외부 이중 레일 전원 보드. 12V→DC-DC 벅→5V/3A, 5V→LDO→3.3V/1A, GND 공통, USB 5V 격리 설계 가이드.
+- 조합: [12V 입력, 벅 컨버터(MP1584·XL4016 등), LDO(AMS1117-3.3), 커플링 커패시터, 패러사이틱 인덕턴스 차단]
+- 근거: [vishay-fpga-power-supply-consideration, wevolver-buck-converter-design-guide, altium-ldo-vs-switching-regulator]
+- 새로움의 근거: 카탈로그 내 Basys3 모터 확장용 외부 전원 보드 설계 가이드 없음. 전원 순서화·GND 분리·USB 격리를 하나의 설계 가이드로 묶은 아이디어 없음
+- Basys3 적합성의 근거: Basys3 외부 전원은 별도 보드로 공급(USB+배럴잭 모두 5V 한계). 모터·서보는 별도 전원 필수(전기 규칙 §17.2). 가이드 문서 형태이므로 RTL 불필요, 범위 T0
+- 난이도: 1 / 단계: T0
