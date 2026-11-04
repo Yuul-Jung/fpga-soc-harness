@@ -1,0 +1,193 @@
+{
+  "slug": "mmio-wdt-tier1",
+  "title": "AXI4-Lite 워치독 타이머 IP — T1 기본 카운터",
+  "summary": "MMIO 맵 가능한 32비트 카운트다운 워치독 타이머. AXI4-Lite 슬레이브 인터페이스, 타임아웃 리셋 펄스(wdt_rst), 옵션 IRQ 출력(wdt_irq). I-070 아이디어 T1 패키지.",
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 Verilog-2001 원본이며 외부 코드를 포함하지 않는다. 아이디어 I-070 기반(ready 상태). AXI4-Lite 슬레이브. 동결 맵 free_slots[1B]=0x401B_0000 배정 제안(미동결). 시뮬레이션·합성 결과는 CI에서 검증한다.",
+  "board": "Basys3 (XC7A35T)",
+  "stage": "T1",
+  "goals": [
+    "AXI4-Lite MMIO로 제어 가능한 카운트다운 워치독 타이머 IP 구현",
+    "KICK(소프트웨어 갱신)으로 타임아웃 방지, 미갱신 시 wdt_rst 펄스 출력",
+    "IRQ_EN/IRQ_PEND 레지스터로 인터럽트 지원 (IEC 61508 아님, T3에서 확장)",
+    "iverilog 시뮬레이션 통과, yosys 합성 가능 RTL"
+  ],
+  "non_goals": [
+    "창 워치독(MIN/MAX 경계): T2에서 추가",
+    "비밀번호 잠금, 에러 카운터, NMI: T3에서 추가",
+    "보드에서의 동작 확인(S3): 사용자 직접 수행",
+    "Vivado IP-XACT 패키지화",
+    "소프트웨어 드라이버(C) 포함"
+  ],
+  "architecture": {
+    "clock": "aclk 100MHz (Basys3 W5), aresetn active-low",
+    "blocks": [
+      {
+        "id": "axil_wrap",
+        "name": "axil_wdt_wrap",
+        "kind": "rtl",
+        "module": "axil_wdt_wrap",
+        "file": "rtl/axil_wdt_wrap.v",
+        "desc": "AXI4-Lite 슬레이브 래퍼. 레지스터 맵 디코드, IRQ 로직, wdt_core 인스턴스",
+        "short": "AXI래퍼",
+        "side": "left"
+      },
+      {
+        "id": "wdt_core",
+        "name": "wdt_core",
+        "kind": "rtl",
+        "module": "wdt_core",
+        "file": "rtl/wdt_core.v",
+        "desc": "32비트 카운트다운 FSM (IDLE/RUNNING/TIMEOUT). kick/srst/enable 제어",
+        "short": "WDT코어",
+        "side": "right"
+      }
+    ],
+    "links": [
+      {"from": "axil_wrap", "to": "wdt_core", "label": "enable/kick/srst/load_val"},
+      {"from": "wdt_core", "to": "axil_wrap", "label": "count_out/timeout/timeout_lat/running"}
+    ]
+  },
+  "bus_protocol": {
+    "name": "AXI4-Lite",
+    "signals": [
+      {"name": "s_awaddr",  "width": 16, "dir": "in",  "desc": "쓰기 주소 [15:0]"},
+      {"name": "s_awvalid", "width": 1,  "dir": "in",  "desc": "쓰기 주소 유효"},
+      {"name": "s_awready", "width": 1,  "dir": "out", "desc": "쓰기 주소 수락"},
+      {"name": "s_wdata",   "width": 32, "dir": "in",  "desc": "쓰기 데이터"},
+      {"name": "s_wstrb",   "width": 4,  "dir": "in",  "desc": "바이트 스트로브 (전달만, 바이트 선택 미구현)"},
+      {"name": "s_wvalid",  "width": 1,  "dir": "in",  "desc": "쓰기 데이터 유효"},
+      {"name": "s_wready",  "width": 1,  "dir": "out", "desc": "쓰기 데이터 수락"},
+      {"name": "s_bresp",   "width": 2,  "dir": "out", "desc": "쓰기 응답 (항상 OKAY)"},
+      {"name": "s_bvalid",  "width": 1,  "dir": "out", "desc": "쓰기 응답 유효"},
+      {"name": "s_bready",  "width": 1,  "dir": "in",  "desc": "쓰기 응답 수락"},
+      {"name": "s_araddr",  "width": 16, "dir": "in",  "desc": "읽기 주소 [15:0]"},
+      {"name": "s_arvalid", "width": 1,  "dir": "in",  "desc": "읽기 주소 유효"},
+      {"name": "s_arready", "width": 1,  "dir": "out", "desc": "읽기 주소 수락"},
+      {"name": "s_rdata",   "width": 32, "dir": "out", "desc": "읽기 데이터"},
+      {"name": "s_rresp",   "width": 2,  "dir": "out", "desc": "읽기 응답 (항상 OKAY)"},
+      {"name": "s_rvalid",  "width": 1,  "dir": "out", "desc": "읽기 데이터 유효"},
+      {"name": "s_rready",  "width": 1,  "dir": "in",  "desc": "읽기 데이터 수락"}
+    ],
+    "note": "단일 outstanding 트랜잭션. WSTRB 무시(전체 32비트 쓰기). ARUSER/AWUSER 없음. burst 없음."
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "custom",
+    "compat": "partial",
+    "plan": "동결 맵의 free_slots[1B](0x401B_0000, 64KB)에 배치 제안. intc 인터럽트 13번 제안. 사용자 동결 후 integration.compat을 compatible로 변경 가능.",
+    "frozen_mapping": null,
+    "proposed_slot": {
+      "index": "1B",
+      "base": "0x401B0000",
+      "size": "0x10000",
+      "intc": 13,
+      "note": "사용자 동결 대기. 현재 custom 주소맵."
+    }
+  },
+  "external_parts": [],
+  "schematic": {
+    "state": "not-written",
+    "note": "디지털 계통도만 존재. 외부 부품 없음(보드 내장 클럭·리셋만 사용)."
+  },
+  "hierarchy": {
+    "module": "axil_wdt_wrap",
+    "file": "rtl/axil_wdt_wrap.v",
+    "children": [
+      {"module": "wdt_core", "file": "rtl/wdt_core.v", "children": []}
+    ]
+  },
+  "memory_map": [
+    {
+      "region": "wdt_regs",
+      "base": "0x401B_0000",
+      "size": "0x10000",
+      "block": "axil_wrap",
+      "note": "제안값. 동결 맵 free_slots[1B] 배정 대기.",
+      "regs": [
+        {"off": "0x0000", "name": "CTRL",     "access": "RW", "desc": "bit0=ENABLE, bit1=SRST(자동클리어)"},
+        {"off": "0x0004", "name": "LOAD",     "access": "RW", "desc": "[31:0] 카운트다운 초기값"},
+        {"off": "0x0008", "name": "STATUS",   "access": "RO", "desc": "bit0=TIMEOUT_LAT, bit1=RUNNING"},
+        {"off": "0x000C", "name": "KICK",     "access": "WO", "desc": "아무 값 쓰면 카운터를 LOAD로 재적재, TIMEOUT_LAT 클리어"},
+        {"off": "0x0010", "name": "COUNT",    "access": "RO", "desc": "현재 카운터 값"},
+        {"off": "0xFFF0", "name": "ID_REG",   "access": "RO", "desc": "0x57445431 (ASCII WDT1)"},
+        {"off": "0xFFF4", "name": "VER_REG",  "access": "RO", "desc": "0x00010000 (v1.0.0)"},
+        {"off": "0xFFF8", "name": "IRQ_EN",   "access": "RW", "desc": "bit0=인터럽트 활성"},
+        {"off": "0xFFFC", "name": "IRQ_PEND", "access": "RW", "desc": "bit0=인터럽트 대기(W1C)"}
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T1",
+      "state": "current",
+      "title": "기본 카운트다운 WDT (mmio-wdt-tier1)",
+      "refs": ["rtime-cvut-openmsp430-watchdog"]
+    },
+    {
+      "stage": "T2",
+      "state": "planned",
+      "title": "창 WDT — MIN/MAX 경계, early-kick 감지",
+      "refs": ["rtime-cvut-openmsp430-watchdog", "heia-fr-ma-embreal-zephyr-stack-protection"]
+    },
+    {
+      "stage": "T3",
+      "state": "planned",
+      "title": "IEC 61508 Class B — 비밀번호 잠금, 에러 카운터, NMI",
+      "refs": ["tum-industrial-es-2015-functional-safety"]
+    }
+  ],
+  "references": [
+    {
+      "card": "rtime-cvut-openmsp430-watchdog",
+      "why": "기본 카운터 WDT 구조, 타임아웃/KICK 동작 근거"
+    },
+    {
+      "card": "heia-fr-ma-embreal-zephyr-stack-protection",
+      "why": "RTOS 환경에서 WDT 활용 패턴 근거 (T2 창 WDT)"
+    },
+    {
+      "card": "tum-industrial-es-2015-functional-safety",
+      "why": "기능안전 등급 WDT 아키텍처 근거 (T3 IEC 61508)"
+    }
+  ],
+  "sources": {
+    "rtl": ["rtl/wdt_core.v", "rtl/axil_wdt_wrap.v"],
+    "tb": ["tb/tb_axil_wdt_wrap.v"],
+    "constraints": ["constr/basys3_wdt.xdc"],
+    "build": ["Makefile"]
+  },
+  "howto": [
+    {
+      "title": "시뮬레이션 (iverilog)",
+      "steps": [
+        "make lint  — RTL 문법 검사 (iverilog -Wall -g2001 -tnull)",
+        "make sim   — iverilog+vvp로 tb_axil_wdt_wrap 실행. PASS all 11 checks 가 나오면 통과."
+      ]
+    },
+    {
+      "title": "합성 추정 (yosys)",
+      "steps": [
+        "make synth  — yosys synth_xilinx. 자원 추정(LUT/FF). Vivado 수치와 다름."
+      ]
+    },
+    {
+      "title": "Vivado 합성",
+      "steps": [
+        "New Project → Basys3(xc7a35tcpg236-1), rtl/*.v + constr/basys3_wdt.xdc 추가.",
+        "Simulation: tb/tb_axil_wdt_wrap.v 추가, Behavioral Simulation 실행.",
+        "IP는 단독 Top 불가 — SoC 톱 레벨에서 axil_wdt_wrap 인스턴스화 후 합성."
+      ]
+    }
+  ],
+  "verification": {
+    "board": "not-verified",
+    "notes": "S3는 사람이 직접 Basys3에서 확인 후 갱신. CI 통과 시 S1(린트+시뮬) 또는 S2(합성 포함)."
+  },
+  "risks": [
+    "LOAD=0 설정 시 ENABLE 직후 즉시 타임아웃 (의도된 동작이나 혼동 가능)",
+    "타임아웃 중 ENABLE=0→1 재적재 시 카운터가 LOAD 값으로 돌아옴 — TIMEOUT_LAT는 kick/srst 없이는 클리어 안 됨",
+    "wdt_rst는 1사이클 펄스 — SoC 리셋 도메인에 맞게 연장 필요 시 외부 로직 추가",
+    "IRQ_PEND는 소프트웨어 클리어 전에 인터럽트 핸들러가 wdt_rst를 처리해야 경쟁 없음",
+    "WSTRB 무시: 바이트 쓰기 불가 (AXI4-Lite 단순화)"
+  ]
+}

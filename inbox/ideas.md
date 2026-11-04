@@ -931,9 +931,11 @@
 - Basys3 적합성 근거: 순수 FSM+카운터이므로 BRAM·LUT 소모 최소(< 100 LUT 추정). AXI4-Lite 슬레이브 래퍼는 `library/rtl/axil_regs.v` 참고 가능. `free_slots` 중 하나에 64KB 배정 가능.
 - 난이도: 2 (1단계), 3 (2단계), 4 (3단계)
 - 단계: T1 → T2 → T3
-- 상태: ready
+- 상태: used
+- 패키지 slug: mmio-wdt-tier1
 - 심사: 2026-11-04 /verify(6차), WebFetch 전면 차단으로 근거 카드 rechecked_at 없음. 근거 0(rtime-cvut-openmsp430-watchdog·heia-fr-ma-embreal-zephyr-stack-protection·tum-industrial-es-2015-functional-safety 모두 rechecked_at 없음) + 새로움 2(AXI4-Lite 워치독 IP 카드 없음; 단계적 WDT 구현 없음) + 적합성 3(순수 FSM+카운터 LUT 최소, free_slots 가용, axil_regs.v 참고) + 완결성 2(3단계 체인 범위 명확, RTL+TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득 필요.
 - 차단조건재심사: 2026-11-04 /verify(7차), 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(rtime-cvut-openmsp430-watchdog, heia-fr-ma-embreal-zephyr-stack-protection, tum-industrial-es-2015-functional-safety, rechecked_at 불문) → 근거 3 + 새로움 2(AXI4-Lite 워치독 IP 카드 없음; 단계적 WDT 없음) + 적합성 3(순수 FSM+카운터 LUT 최소, free_slots 가용, axil_regs.v 참고) + 완결성 2(3단계 체인 T1→T2→T3 범위 명확, RTL+TB 작성 가능) = 10점 ≥ 7 → ready 승격. 2건 상한 내 2번째 승격.
+- 과제화: 2026-11-04 /capstone, mmio-wdt-tier1 패키지 생성(T1 기본 카운터 WDT, AXI4-Lite, wdt_core+axil_wdt_wrap, 테스트벤치 11개 체크, CI 검증 대기)
 
 ---
 
