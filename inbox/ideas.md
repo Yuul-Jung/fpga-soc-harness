@@ -1114,10 +1114,11 @@
 - 새로움의 근거: 카탈로그에 XC7A35T 전원 레일별 디커플링 계층 체크리스트 아이디어 없음. vishay-fpga-power-supply-consideration(기존 T0)은 범용 가이드이며 XC7A35T 레일별 적용 조합 없음
 - Basys3 적합성의 근거: XC7A35T 전원 핀 직접 해당. via-in-pad는 2층 기판 외 옵션, 4층 기판 권장 시 근접 GND 플레인 활용. Basys3 확장 보드 설계 시 적용 가능.
 - 내 판단: S7 사다리의 T1 위치(입문 디커플링 개념 습득 후, 고급 SI 규칙 적용 전). 비교적 좁은 범위이지만 MicroBlaze V SoC 주변장치 PCB 설계 시 필수 체크 항목.
-- 난이도: 2 / 단계: T1 / 상태: vetted
+- 난이도: 2 / 단계: T1 / 상태: ready
 - 심사: 2026-11-05 /verify(11차), 첫 raw→vetted 심사. 근거 0(jlcpcb-decoupling-capacitor-guide·ema-eda-fpga-pcb-design-guide·vishay-fpga-power-supply-consideration 모두 rechecked_at 없음) + 새로움 2(XC7A35T 전원 레일별 디커플링 체크리스트 아이디어 카탈로그에 없음; vishay 가이드는 범용, XC7A35T 레일별 적용 조합 없음) + 적합성 2(XC7A35T 전원 핀 직접 해당; 확장 보드 설계 대상이지만 RTL 불필요 → T1 위치 적합성 충분하나 RTL-TB 연결 없음) + 완결성 1(VCCINT·VCCO·VCCAUX 체크리스트 문서 완결 가능하나 MicroBlaze V SoC PDN 추정 방법 범위 넓어 TB 없음) = 5점 → vetted. 보강: 근거 카드 rechecked_at 취득, PDN 임피던스 추정 방법 범위 세분화.
 - 차단조건재심사: 2026-11-05 /verify(12차), 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(jlcpcb-decoupling-capacitor-guide, ema-eda-fpga-pcb-design-guide, vishay-fpga-power-supply-consideration, rechecked_at 불문) → 근거 3 + 새로움 2(XC7A35T 전원 레일별 디커플링 체크리스트 없음) + 적합성 2(XC7A35T 전원 핀 직접 해당, RTL-TB 연결 없음) + 완결성 1(VCCINT·VCCO·VCCAUX 체크리스트 문서, TB 없음) = 8점 ≥ 7, 사이클당 최대 2건 상한(I-081·I-080 선 승격) → 보류. 다음 사이클 3순위.
 - 차단조건재심사: 2026-11-05 /verify(13차), 모든 WebFetch PROVENANCE_REQUIRED 차단(13차 연속). 근거 카드 총 3건(jlcpcb-decoupling-capacitor-guide, ema-eda-fpga-pcb-design-guide, vishay-fpga-power-supply-consideration, rechecked_at 불문) → 근거 3 + 새로움 2(XC7A35T VCCINT·VCCO·VCCAUX 레일별 디커플링 체크리스트 카탈로그 없음) + 적합성 2(XC7A35T 전원 핀 직접 해당, 확장 보드 설계 대상; RTL-TB 연결 없음) + 완결성 1(VCCINT·VCCO·VCCAUX 체크리스트 문서 완결 가능, TB 없음) = 8점 ≥ 7, 13차 2건 상한 초과로 보류 → vetted 유지. 다음 사이클 1순위.
+- 차단조건재심사: 2026-11-05 /verify(14차), 모든 WebFetch PROVENANCE_REQUIRED 차단(14차 연속). 근거 카드 총 3건(jlcpcb-decoupling-capacitor-guide, ema-eda-fpga-pcb-design-guide, vishay-fpga-power-supply-consideration, rechecked_at 불문) → 근거 3 + 새로움 2(XC7A35T VCCINT·VCCO·VCCAUX 레일별 디커플링 체크리스트 카탈로그 없음) + 적합성 2(XC7A35T 전원 핀 직접 해당, 확장 보드 설계 대상; RTL-TB 연결 없음) + 완결성 1(VCCINT·VCCO·VCCAUX 체크리스트 문서 완결 가능, TB 없음) = 8점 ≥ 7, 14차 1순위 → ready 승격. 14차 1번째. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-085 RPi4 Python spidev + airhdl SPI-to-AXI4-Lite → Basys3 AXI 주변장치 자동 테스트 하네스 (T2)
 
@@ -1128,9 +1129,10 @@
 - 새로움의 근거: 카탈로그에 RPi4 spidev로 Basys3 AXI 주변장치를 자동화 테스트하는 아이디어 없음. michalstc-rpi-zero-fpga-spi-wishbone은 Wishbone 기반으로 AXI4-Lite 버스 직접 타깃 아님.
 - Basys3 적합성의 근거: Basys3 Pmod 3.3V ↔ RPi GPIO 3.3V 레벨 변환 불필요. airhdl IP 단일 파일(sv 또는 vhd), Basys3 XC7A35T에 fit_basys3=yes. 11바이트 SPI 거래로 32비트 AXI4-Lite R/W 가능. RPi Python spidev 패키지가 CI에서 pytest로 자동화 가능.
 - 내 판단: SoC 개발에서 MicroBlaze V 없이 주변장치 IP만 단독 검증하는 "headless AXI 테스트" 패턴. Basys3 Pmod에 RPi를 꽂고 pytest로 레지스터 R/W를 자동화하면 IP 개발 주기가 단축됨.
-- 난이도: 3 / 단계: T2 / 상태: vetted
+- 난이도: 3 / 단계: T2 / 상태: ready
 - 심사: 2026-11-05 /verify(12차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(airhdl-spi-to-axi-bridge·ananthu-islam-ahb-apb-bridge-rpi-artix7 모두 rechecked_at 없음) + 새로움 2(RPi4 spidev로 Basys3 AXI 주변장치 자동화 테스트 카탈로그 없음; michalstc-rpi-zero-fpga-spi-wishbone은 Wishbone 기반으로 AXI4-Lite 타깃 아님) + 적합성 3(Basys3 Pmod 3.3V ↔ RPi GPIO 3.3V 직결 가능, airhdl IP fit_basys3=yes, 11바이트 SPI 거래로 32비트 AXI R/W 가능, pytest 자동화 가능) + 완결성 1(단독 테스트 패턴 범위 명확하나 AXI 슬레이브 IP 종류 미정, TB 세부 미명세) = 6점 → vetted. 보강: 근거 카드 rechecked_at 취득, 대상 AXI 슬레이브 IP 종류 선택, pytest TB 범위 명세화.
 - 차단조건재심사: 2026-11-05 /verify(13차), 모든 WebFetch PROVENANCE_REQUIRED 차단(13차 연속). 근거 카드 총 2건(airhdl-spi-to-axi-bridge, ananthu-islam-ahb-apb-bridge-rpi-artix7, rechecked_at 불문) → 근거 2 + 새로움 2(RPi4 spidev로 Basys3 AXI 주변장치 자동화 테스트 카탈로그 없음; michalstc-rpi-zero-fpga-spi-wishbone은 Wishbone 기반으로 AXI4-Lite 직접 타깃 아님) + 적합성 3(Basys3 Pmod 3.3V ↔ RPi GPIO 3.3V 직결 가능, airhdl IP fit_basys3=yes, 11바이트 SPI 거래로 32비트 AXI R/W 가능) + 완결성 1(AXI 슬레이브 IP 종류 미정, TB 세부 미명세) = 8점 ≥ 7, 13차 2건 상한 초과로 보류 → vetted 유지. 다음 사이클 2순위.
+- 차단조건재심사: 2026-11-05 /verify(14차), 모든 WebFetch PROVENANCE_REQUIRED 차단(14차 연속). 근거 카드 총 2건(airhdl-spi-to-axi-bridge, ananthu-islam-ahb-apb-bridge-rpi-artix7, rechecked_at 불문) → 근거 2 + 새로움 2(RPi4 spidev로 Basys3 AXI 주변장치 자동화 테스트 카탈로그 없음; michalstc-rpi-zero-fpga-spi-wishbone은 Wishbone 기반으로 AXI4-Lite 직접 타깃 아님) + 적합성 3(Basys3 Pmod 3.3V ↔ RPi GPIO 3.3V 직결 가능, airhdl IP fit_basys3=yes, 11바이트 SPI 거래로 32비트 AXI R/W 가능) + 완결성 1(AXI 슬레이브 IP 종류 미정, TB 세부 미명세) = 8점 ≥ 7, 14차 2순위 → ready 승격. 14차 2번째(사이클 상한 채움). WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-086 spibone_gen.py AXI-Lite 출력 + Basys3 Pmod → RP2040(Pico) SPIBone으로 AXI-Lite IP 단독 검증 패턴 (T2-T3)
 
@@ -1144,6 +1146,7 @@
 - 난이도: 3 / 단계: T2-T3 / 상태: vetted
 - 심사: 2026-11-05 /verify(12차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(enjoy-digital-litex-rp2040-pmod-test·airhdl-spi-to-axi-bridge 모두 rechecked_at 없음) + 새로움 2(RP2040 Pico를 Basys3 Pmod 호스트로 쓰는 AXI-Lite 단독 검증 카탈로그 없음; I-085와 호스트 MCU 다름) + 적합성 3(Basys3 Pmod 3.3V ↔ Pico GPIO 3.3V 직결 가능, spibone_gen.py --mode hybrid-axi-lite 순수 Verilog 출력, SPIBone 9바이트 프레임 단순·Pico MicroPython machine.SPI 직접 구현 가능) + 완결성 2(spibone_gen.py 출력→Basys3 배정→Pico MicroPython test 경로 명확, 개조 단계 세부화 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득, spibone_gen.py --mode hybrid-axi-lite Verilog AXI-Lite 호환성 검증, 대상 free_slot 선택.
 - 차단조건재심사: 2026-11-05 /verify(13차), 모든 WebFetch PROVENANCE_REQUIRED 차단(13차 연속). 근거 카드 총 2건(enjoy-digital-litex-rp2040-pmod-test, airhdl-spi-to-axi-bridge, rechecked_at 불문) → 근거 2 + 새로움 2(RP2040 Pico를 Basys3 Pmod 호스트로 쓰는 AXI-Lite 단독 검증 카탈로그 없음; I-085와 호스트 MCU 다름) + 적합성 3(Basys3 Pmod 3.3V ↔ Pico GPIO 3.3V 직결 가능, spibone_gen.py --mode hybrid-axi-lite 순수 Verilog 출력, SPIBone 9바이트 프레임 단순) + 완결성 2(spibone_gen.py 출력→Basys3 배정→Pico MicroPython test 경로 명확) = 9점 ≥ 7, 13차 2건 상한 초과로 보류 → vetted 유지. 다음 사이클 3순위.
+- 차단조건재심사: 2026-11-05 /verify(14차), 모든 WebFetch PROVENANCE_REQUIRED 차단(14차 연속). 근거 카드 총 2건(enjoy-digital-litex-rp2040-pmod-test, airhdl-spi-to-axi-bridge, rechecked_at 불문) → 근거 2 + 새로움 2 + 적합성 3 + 완결성 2 = 9점 ≥ 7, 14차 2건 상한 초과(I-084·I-085 선 승격) → vetted 유지. 다음 사이클 1순위.
 
 ---
 
@@ -1164,6 +1167,7 @@
 - 내 판단: 두 카드의 아이디어를 조합하면 MicroBlaze V 소프트웨어에서 단순 레지스터 쓰기만으로 7세그 고급 제어가 가능한 IP 완성. T1→T2 전환점의 대표 예제로 적합.
 - 난이도: 2 / 단계: T1-T2 / 상태: vetted
 - 심사: 2026-11-05 /verify(13차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(byu-ecen320-seven-segment4·element14-arty-s7-7seg-brightness 모두 rechecked_at 없음) + 새로움 2(카탈로그에 blank·dp·PWM 밝기를 AXI4-Lite 레지스터로 통합한 Basys3 IP 없음; 기존 7세그 카드들은 개별 기능만 다룸) + 적합성 3(Basys3 4자리 공통 애노드 7세그 직접 지원, REFRESH_RATE=200 → 100MHz 분주 충분, PWM 밝기 duty cycle 카운터 LUT 최소 소모) + 완결성 2(DIGIT_DATA+BRIGHTNESS 레지스터 2개 구조 제안, 범위 명확, RTL+TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득 후 ready 재심사.
+- 차단조건재심사: 2026-11-05 /verify(14차), 모든 WebFetch PROVENANCE_REQUIRED 차단(14차 연속). 근거 카드 총 2건(byu-ecen320-seven-segment4, element14-arty-s7-7seg-brightness, rechecked_at 불문) → 근거 2 + 새로움 2(카탈로그에 blank·dp·PWM 밝기를 AXI4-Lite 레지스터로 통합한 Basys3 IP 없음) + 적합성 3(Basys3 4자리 공통 애노드 7세그 직접 지원, REFRESH_RATE=200 → 100MHz 분주 충분, PWM 밝기 duty cycle 카운터 LUT 최소 소모) + 완결성 2(DIGIT_DATA+BRIGHTNESS 레지스터 2개 구조 제안, 범위 명확, RTL+TB 작성 가능) = 9점 ≥ 7, 14차 2건 상한 초과(I-084·I-085 선 승격) → vetted 유지. 다음 사이클 2순위.
 
 ## I-087 AXI4-Lite 멀티 버튼 IP — 디바운스+긴 누름+원샷 에지 검출 통합, 소프트웨어 가변 임계값 (T2)
 
@@ -1174,7 +1178,8 @@
 - 새로움의 근거: 카탈로그에 5버튼 all-in-one AXI4-Lite IP 아이디어 없음. 기존 카드들은 개별 버튼 디바운스만 다루며 MicroBlaze V 가변 임계값 조합 없음.
 - Basys3 적합성의 근거: Basys3 5개 버튼 직접 지원. 디바운스 카운터(20비트 × 5) + 긴 누름 카운터(27비트 × 5) = ~235 FF, XC7A35T에 여유. AXI4-Lite 슬레이브 추가 LUT ~100개 추정(내 판단). free_slots 한 칸 배정 가능.
 - 내 판단: S4 제약 역전 + S2 조합 — FPGA 병렬 카운터 5개를 동시에 독립 증가시키는 구조는 MCU로 불가. MicroBlaze V 인터럽트 패턴 연습과 AXI4-Lite 슬레이브 IP 설계 연습을 동시에 커버하는 T2 대표 과제.
-- 난이도: 2 / 단계: T2 / 상태: raw
+- 난이도: 2 / 단계: T2 / 상태: vetted
+- 심사: 2026-11-05 /verify(14차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(byu-ecen220-lab08-debounce-basys3·doyk0215-2d-labyrinth-on-fpga·nandland-project4-debounce-switch 모두 rechecked_at 없음) + 새로움 2(5버튼 all-in-one AXI4-Lite IP + MicroBlaze V 가변 임계값 조합 카탈로그 없음; 기존 카드들은 개별 버튼 디바운스만 다룸) + 적합성 3(Basys3 5개 버튼 직접 지원, 디바운스 카운터 20비트×5+긴누름 카운터 27비트×5=~235 FF XC7A35T 여유, free_slots 한 칸 배정 가능) + 완결성 2(DEBOUNCE_MS·LONGPRESS_MS·STATUS·IRQ 레지스터 구조 제안, 범위 명확, RTL+TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득.
 
 ## I-088 Basys3 더블 클릭·긴 누름 패턴 감지 FSM — 타이머 2개 계층 구조 (T1-T2)
 
@@ -1185,7 +1190,8 @@
 - 새로움의 근거: 카탈로그에 더블 클릭 감지 FSM 아이디어 없음. doyk0215는 긴 누름만, byu-ecen220은 단순 디바운스만 다루며 멀티 클릭 분류 조합 없음.
 - Basys3 적합성의 근거: Basys3 버튼 1개(예: BTNC)로 충분. 2단계 FSM 각 ~5상태, 타이머 2개(10ms 디바운스용, 500ms 더블클릭 창용). XC7A35T LUT/FF 여유. 7세그에 클릭 종류 표시하면 보드 없이도 시뮬레이션으로 검증 가능.
 - 내 판단: S7 난이도 사다리 — T0 단순 디바운스(byu-ecen220) → T1 에지 검출 → T2 패턴 분류 세 단계로 이어지는 학습 체인의 중간 계단. 더블 클릭 창 타이머와 짧은 클릭 타이머를 FSM 안에서 어떻게 공유·분리하는지를 가르치는 대표 예제(내 판단).
-- 난이도: 3 / 단계: T1-T2 / 상태: raw
+- 난이도: 3 / 단계: T1-T2 / 상태: vetted
+- 심사: 2026-11-05 /verify(14차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(byu-ecen220-lab08-debounce-basys3·doyk0215-2d-labyrinth-on-fpga 모두 rechecked_at 없음) + 새로움 2(더블 클릭 감지 FSM 아이디어 카탈로그 없음; doyk0215는 긴 누름만, byu-ecen220은 단순 디바운스만, 멀티 클릭 분류 조합 없음) + 적합성 3(Basys3 버튼 1개로 충분, 2단계 FSM ~5상태×2, 타이머 2개(10ms·500ms) XC7A35T FF 여유, 7세그 연동으로 보드 없이 시뮬레이션 검증 가능) + 완결성 2(o_single·o_double·o_long 1클럭 펄스 출력 범위 명확, 2단계 FSM TB 작성 가능, 클릭 창 타이머 공유 설계 근거 제시 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득.
 
 ## I-089 FPGA 버튼 디바운스 비교 테스트벤치 — 카운터·FSM·SR래치 3방식 타이밍 비교 (T0-T1)
 
@@ -1196,4 +1202,5 @@
 - 새로움의 근거: 카탈로그에 디바운스 3방식을 같은 테스트벤치로 비교하는 아이디어 없음. 기존 카드들은 각자 단일 방식을 다루며 비교 연구 조합 없음.
 - Basys3 적합성의 근거: 순수 Verilog 시뮬레이션으로 보드 없이 검증 가능(iverilog/verilator). RTL 약 200줄 이내. 비교 출력을 7세그에 연결하면 T1 보드 실험도 가능.
 - 내 판단: S4 제약 역전 사례 — FPGA는 세 모듈이 동일 클럭에서 병렬 동작하므로 비교 테스트벤치 작성이 MCU에서보다 훨씬 간단. 디바운스 방식 선택의 근거를 실측 사이클 수로 보여주는 교육 가치가 높음(내 판단). 하네스 CI의 iverilog에서 바로 실행 가능.
-- 난이도: 2 / 단계: T0-T1 / 상태: raw
+- 난이도: 2 / 단계: T0-T1 / 상태: vetted
+- 심사: 2026-11-05 /verify(14차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(nandland-project4-debounce-switch·byu-ecen220-lab08-debounce-basys3 모두 rechecked_at 없음) + 새로움 2(디바운스 3방식을 같은 테스트벤치로 비교하는 아이디어 카탈로그 없음; 기존 카드들은 각자 단일 방식만 다룸) + 적합성 3(순수 Verilog 시뮬레이션으로 보드 없이 iverilog/verilator 검증 가능, RTL ~200줄 이내, 하네스 CI 직접 실행 가능) + 완결성 2(3방식 모듈 + 단일 테스트벤치 범위 명확, 10ms 채터→15ms 안정→1ms 추가 채터 패턴 명세, $display 사이클 수 비교 출력 TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득, SR래치 방식 RTL 상세 명세화.

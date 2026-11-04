@@ -164,3 +164,5 @@
 2026-11-05 03:49 | verify | 재열람 0 (WebFetch PROVENANCE_REQUIRED 전면 차단 13차 연속) | 수정 3 (감사 경고 라이선스 주석 추가: arxiv-1002340-spartan3e-spwm-inverter·elngar-telkomnika-7seg-artix7·element14-arty-s7-7seg-brightness) | 불일치 0 | 승격 L2→L3 0 | ready +2 (I-082·I-083 차단조건재심사 8점)
 2026-11-05 04:28 | capstone | mmio-i2c-nmea-sensor-hub | I-036 | S0 | 카드 +2(debounce FSM) | 큐 잔여 469 | I-036 → used
 2026-11-05 04:45 | collect | Basys3 버튼 디바운스 FSM+긴 누름+멀티 클릭 · S4 제약 역전(주)+S7 난이도 사다리(보조) | 카드 +3 (doyk0215 Basys3 2D 미로 긴 누름, byu-ecen220 FSM+원샷 에지, nandland iCE40 카운터) | 아이디어 +3 (I-087 AXI 멀티버튼IP, I-088 더블클릭·긴누름FSM, I-089 디바운스 비교TB) | 큐 잔여 ~479 | blocked 0
+
+2026-11-05 05:08 | verify | 재열람 0 (WebFetch PROVENANCE_REQUIRED 전면 차단 14차 연속) | 수정 5 (CI RTL 수정: xadc-hub-checker Verilog-2001 호환·xadc-pwr-mon reg→wire·axil_stepper IRQ 다중드라이버 rising-edge검출·tb_sccb_tx 타임아웃 50K) | 불일치 5 | 승격 L2→L3 0 | ready +2 (I-084·I-085 차단조건재심사 14차 8점) | vetted +3 (I-087·I-088·I-089 첫 raw→vetted 7점) | I-086 다음사이클 1순위·I-072 다음사이클 2순위 (상한 초과 vetted 유지)
