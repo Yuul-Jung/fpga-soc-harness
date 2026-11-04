@@ -802,3 +802,51 @@
 - 단계: T2
 - 상태: dropped
 - 심사: 2026-11-04 /verify 3차, 근거 0(ezurio 1건, rechecked_at 없음) + 새로움 2(ThreadX 카드 없음) + 적합성 1(Vitis BSP ThreadX 지원 여부 미확인; 미포함 시 Basys3 직접 적용 불가) + 완결성 1(조사 필요 항목 존재, 범위 미확정) = 4점 → dropped. 사유: 근거 카드 1건 불충분, Vitis BSP ThreadX 지원 여부 미확인, 완결성 미달. 카드 작성 후 BSP 지원 조사 완료 시 재심사 가능.
+
+---
+
+## I-064 CAN FD 프레임 파서/필터 IP (S5 비정형 출처 → CAN FD 기사 활용)
+
+내 판단: CSS Electronics CAN FD 기사에서 추출한 프레임 구조(FDF·BRS·ESI·SBC·17/21비트 CRC·DLC 테이블)를 기반으로 Basys3 Verilog CAN FD 수신 FSM을 구현하는 T2급 캡스톤. 기존 CAN 2.0 카드(`wangxuan95-fpga-can`, `dpiegdon-verilog-can`)와의 차이점(FDF 비트·이중 비트율·21비트 CRC)을 명시하고 AXI4-Lite 슬레이브 래퍼 추가.
+
+- id: I-064
+- 조합: [CAN FD FSM(프레임 파서), AXI4-Lite 슬레이브(IP 래퍼), Basys3 Pmod 버스(물리층)]
+- 근거 카드: [[csselectronics-can-fd-frame-guide]], [[wangxuan95-fpga-can]], [[dpiegdon-verilog-can]]
+- 근거 URL: https://www.csselectronics.com/pages/can-fd-flexible-data-rate-intro
+- 새로움 근거: 카탈로그에 CAN FD(FD 모드) 직접 Verilog 구현 카드 없음. 기존 CAN 2.0 카드에서 FDF·BRS 처리 추가한 조합.
+- Basys3 적합성 근거: 100 MHz 클럭으로 5 Mbit/s 오버샘플(20 클럭/비트) 가능. CAN 트랜시버(TJA1050 등)를 Pmod에 연결. BRAM 소모 적음(프레임 버퍼 2~3개).
+- 난이도: 3
+- 단계: T2
+- 상태: raw
+
+---
+
+## I-065 MODBUS RTU AXI4-Lite 슬레이브 IP (S7 난이도 사다리 — T1→T2)
+
+내 판단: `isluckyhui-fpga-modbus-rtu`(T1 순수 RTL)를 AXI4-Lite 래퍼로 감싸 MicroBlaze V SoC에 연결하는 T2급 캡스톤. FC 0x03 읽기 + FC 0x06 단일 쓰기 + CRC 검증 + DE/RE RS485 방향 제어를 추가해 산업 센서 허브 역할 완성.
+
+- id: I-065
+- 조합: [MODBUS RTU 슬레이브 FSM(comm-uart), RS485 방향 제어(DE/RE), AXI4-Lite 래퍼(IP), Basys3 Pmod(물리층)]
+- 근거 카드: [[isluckyhui-fpga-modbus-rtu]], [[digilent-forum-pmodamp3-basys3-i2s]]
+- 근거 URL: https://github.com/IsLuckyHui/FPGA_Modbus_RTU-MasterAndSlave-
+- 새로움 근거: MODBUS RTU AXI4-Lite IP 카드 없음. RS485 방향 제어 + CRC 검증 추가로 T1→T2 사다리 완성.
+- Basys3 적합성 근거: Artix-7 RTL, XC7A35T 이식 용이. RS485 모듈은 디바이스마트·아두이노 호환 Pmod 연결 가능.
+- 난이도: 3
+- 단계: T2
+- 상태: raw
+
+---
+
+## I-066 EtherCAT 소프트 슬레이브 on MicroBlaze V (S2 조합 탐색 — W5500+SOES+MicroBlaze)
+
+내 판단: `egerobotics-esp32s3-ethercat-soes`의 소프트웨어 ESC 아이디어(W5500 SPI + SOES)를 MicroBlaze V + Basys3 Pmod SPI로 포팅하는 T3급 캡스톤 아이디어. 기존 `wiznet-makers-gavinchang-w5500-udp-loopback` W5500 카드 + SOES 포팅 조합. 가장 복잡한 산업 프로토콜 캡스톤 후보.
+
+- id: I-066
+- 조합: [MicroBlaze V(CPU), W5500 Pmod SPI(이더넷), SOES 포팅(EtherCAT 스택), AXI SPI 마스터(IP), FreeRTOS(OS)]
+- 근거 카드: [[egerobotics-esp32s3-ethercat-soes]], [[wiznet-makers-gavinchang-w5500-udp-loopback]]
+- 근거 URL: https://hackaday.io/project/205376-esp32s3-w5500-ethercat-soes
+- 새로움 근거: EtherCAT 슬레이브 카드 없음. W5500 EtherCAT 소프트 ESC + MicroBlaze 조합은 Hackaday 프로젝트가 유일 선례.
+- Basys3 적합성 근거: Pmod SPI로 W5500 연결 가능(기존 W5500 카드 근거). MicroBlaze V FreeRTOS + SOES C 포팅 필요. 사이클 타임(100 μs) 충족 여부는 FreeRTOS 태스크 레이턴시 측정 필요 — 불확실.
+- 난이도: 5
+- 단계: T3
+- 상태: raw

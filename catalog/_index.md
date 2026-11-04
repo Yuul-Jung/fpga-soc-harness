@@ -175,3 +175,6 @@
 | [ezurio-rtos-freertos-zephyr-comparison](embedded/ezurio-rtos-freertos-zephyr-comparison.md) | L3 | T0 | 없음(MCU 임베디드) | 2026-11-04 |
 | [iiot-world-freertos-threadx-zephyr-open-source](embedded/iiot-world-freertos-threadx-zephyr-open-source.md) | L3 | T0 | 없음(MCU 임베디드) | 2026-11-04 |
 | [promwad-rtos-freertos-zephyr-threadx-comparison](embedded/promwad-rtos-freertos-zephyr-threadx-comparison.md) | L3 | T0 | 없음(MCU 임베디드) | 2026-11-04 |
+| [csselectronics-can-fd-frame-guide](papers/csselectronics-can-fd-frame-guide.md) | L3 | T2 | 없음 (기사) | 2026-11-04 |
+| [isluckyhui-fpga-modbus-rtu](embedded/isluckyhui-fpga-modbus-rtu.md) | L3 | T1 | 미명시 (Basys3 needs-port) | 2026-11-04 |
+| [egerobotics-esp32s3-ethercat-soes](esp32/egerobotics-esp32s3-ethercat-soes.md) | L2 | T3 | ESP32-S3 (Basys3 needs-port) | 2026-11-04 |

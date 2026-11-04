@@ -387,3 +387,14 @@
 - https://iiot-world.com/industrial-iot/connected-industry/freertos-vs-threadx-vs-zephyr-the-fight-for-true-open-source-rtos | FreeRTOS·ThreadX·Zephyr 오픈소스 거버넌스 비교 — L2 부분 열람 | FreeRTOS ThreadX Zephyr open source RTOS comparison
 - https://www.boston-engineering.com/wp-content/uploads/2023/07/Porting-from-FreeRTOS-to-Zephyr_Boston-Engineering.pdf | Boston Engineering: FreeRTOS→Zephyr 포팅 가이드 — 미열람(L1), 포팅 단계·코드 패턴 포함 가능 | porting FreeRTOS to Zephyr guide
 - https://learn.microsoft.com/en-us/answers/questions/757118/build-azrtos-with-cmsis-rtos-v2-or-use-threadx-cal | Microsoft: Azure RTOS ThreadX CMSIS-RTOS v2 호환성 — 미열람(L1), ThreadX STM32 포팅 관련 | ThreadX STM32 CMSIS RTOS porting
+
+## 2026-11-04 17:18 — 프로토콜 심화(CAN FD·MODBUS·EtherCAT) S5+S7 추가 후보
+
+- https://github.com/BCadet/modbus-slave-controller | MODBUS 슬레이브 Verilog/SystemVerilog 컨트롤러 (검색 1·4 발견)
+- https://github.com/norgor/ModbusRTU | MODBUS RTU Verilog (검색 4 발견)
+- https://github.com/YChuan1115/ModbusRTU | MODBUS RTU 구현 (검색 4 발견)
+- blocked: https://github.com/hbdeng/FreeModbus_Verilog | FreeModbus Verilog — ASCII 모드만 구현, RTU 미완성 (검색 1 발견, 카드 작성 불가)
+- https://hackaday.io/project/28341-diebieslave-an-universal-ethercat-slave | DIeBIeSlave 범용 EtherCAT 슬레이브 MCU/FPGA (검색 3 발견)
+- https://github.com/egerobotics/ESP32S3_W5500_SOES | ESP32S3 EtherCAT SOES 소스 코드 (hackaday 프로젝트 페이지에서 발견, L2 열람 필요 → L3 승격)
+- https://www.csselectronics.com/pages/modbus-protocol-explained | CSS Electronics Modbus 프로토콜 가이드
+- https://www.csselectronics.com/pages/ethercat-protocol-explained | CSS Electronics EtherCAT 프로토콜 가이드
