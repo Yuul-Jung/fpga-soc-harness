@@ -304,7 +304,12 @@
   ],
   "verification": {
     "board": "not-tested",
-    "notes": "시뮬레이션: 가짜 W5500 SPI 슬레이브로 SEND 커맨드 → SENDOK 폴링 → IRQ 동작까지 검증. S3(보드 동작)는 미수행."
+    "grade": "S2",
+    "ci_date": "2026-11-05",
+    "lint": "pass (경고 0건)",
+    "sim": "pass (PASS: W5500 UDP TX 11단계 검증 — IP_ID, TX_LEN/DATA/PTR, init_done, go, err==0, IRQ_STATUS, irq선, W1C)",
+    "synth": "pass (합성 성공, stat 파싱 실패로 LUT/FF 미기록)",
+    "notes": "시뮬레이션: 가짜 W5500 SPI 슬레이브로 SEND 커맨드 → SENDOK 폴링 → IRQ 동작까지 검증. CTRL 비트 폭 버그(8'd0→10'd0) 수정 후 CI 2회차 통과. S3(보드 동작)는 미수행."
   },
   "risks": [
     "mmio-lite 단일 사이클 응답: 긴 SPI 전송 중 BUSY=1이므로 CPU가 폴링 필요",
