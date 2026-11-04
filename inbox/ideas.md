@@ -1006,3 +1006,33 @@
 - 새로움의 근거: 카탈로그 내 Basys3 모터 확장용 외부 전원 보드 설계 가이드 없음. 전원 순서화·GND 분리·USB 격리를 하나의 설계 가이드로 묶은 아이디어 없음
 - Basys3 적합성의 근거: Basys3 외부 전원은 별도 보드로 공급(USB+배럴잭 모두 5V 한계). 모터·서보는 별도 전원 필수(전기 규칙 §17.2). 가이드 문서 형태이므로 RTL 불필요, 범위 T0
 - 난이도: 1 / 단계: T0
+
+## I-077 단상 풀브리지 SPWM 생성기 AXI4-Lite IP — 데드타임 레지스터 포함 T2
+
+- 내 판단: 삼각파-기준파 비교 방식 SPWM 발생기와 보완 출력 + 데드타임 삽입 FSM을 MicroBlaze V SoC의 AXI4-Lite IP로 구현한다. 소프트웨어에서 PWM 주기·데드타임·변조 지수를 레지스터로 제어.
+- 조합: [spwm-generator-rtl, deadtime-fsm, axi4-lite-slave, complementary-pwm-output]
+- 근거 카드: [element14-cumps-deadtime-vhdl-pynqz2, industrialmonitordirect-irs2110-half-bridge, industrialmonitordirect-igbt-shootthrough]
+- 근거 URL: [https://community.element14.com/technologies/fpga-group/b/blog/posts/vhdl-pwm-generator-with-dead-time-the-design, https://industrialmonitordirect.com/blogs/knowledgebase/igbt-h-bridge-shoot-through-fixing-pwm-timing-driver-issues]
+- 새로움의 근거: 카탈로그 내 SPWM 전용 AXI4-Lite IP 없음; IRS2110 카드는 드라이버 IC 설계에 집중하고 RTL FSM 미포함
+- Basys3 적합성의 근거: 100MHz 클럭 기준 500ns 데드타임 = 50 클럭 틱, 6비트 카운터 충분. Pmod 출력으로 HIN/LIN 쌍 직접 연결. 동결 맵 free_slots 1 블록(64KB) 배정
+- 난이도: 2 / 단계: T2 / 상태: raw
+
+## I-078 Basys3 FPGA + IRS2110 + 소신호 H-브리지 슛스루 감지 테스트베드 T2
+
+- 내 판단: Basys3 Pmod → IRS2110 → 소전력(5V, 1A 이하) MOSFET H-브리지 연결, FPGA 로직으로 HIN/LIN 보완 쌍을 생성하되 의도적으로 데드타임=0으로 설정해 슛스루 전류 파형을 오실로스코프로 확인하는 실험 보드. 슛스루 감지 assertion을 RTL에 내장해 CI에서도 검출.
+- 조합: [basys3-pmod, irs2110-gate-driver, h-bridge-mosfet, deadtime-rtl, 슛스루-감지-assertion]
+- 근거 카드: [industrialmonitordirect-irs2110-half-bridge, industrialmonitordirect-igbt-shootthrough, element14-cumps-deadtime-vhdl-pynqz2]
+- 근거 URL: [https://industrialmonitordirect.com/blogs/knowledgebase/igbt-h-bridge-shoot-through-fixing-pwm-timing-driver-issues]
+- 새로움의 근거: S6(실패 사례) 전략 — 슛스루를 의도적으로 재현해 데드타임 효과를 측정하는 교육용 테스트베드는 카탈로그에 없음
+- Basys3 적합성의 근거: Pmod 3.3V 출력으로 IRS2110 HIN/LIN 구동(버퍼 추가), 소전력 테스트이므로 외부 전원 5V 1A 충분. 전기 규칙(§17.2): 모터 전원 보드 분리·GND만 공통 적용
+- 난이도: 3 / 단계: T2 / 상태: raw
+
+## I-079 SPWM + XADC 조합: 출력 전압 피드백으로 변조 지수 자동 조정 T3
+
+- 내 판단: FPGA SPWM 발생기의 변조 지수(M)를 XADC로 측정한 출력 전압 피드백으로 자동 조정하는 폐루프 제어. 단상 인버터 출력을 분압해 XADC에 입력, 소프트웨어(MicroBlaze V) 또는 RTL PI 제어기로 M 조정.
+- 조합: [spwm-rtl, xadc-axi, pi-controller, axi4-lite-slave, feedback-loop]
+- 근거 카드: [arxiv-1002340-spartan3e-spwm-inverter, element14-cumps-deadtime-vhdl-pynqz2, industrialmonitordirect-igbt-shootthrough]
+- 근거 URL: [https://arxiv.org/abs/1002.3340, https://community.element14.com/technologies/fpga-group/b/blog/posts/vhdl-pwm-generator-with-dead-time-the-design]
+- 새로움의 근거: 카탈로그 내 SPWM + XADC 폐루프 조합 없음. XADC는 Basys3 내장 IP이므로 외부 ADC 불필요
+- Basys3 적합성의 근거: Basys3 XC7A35T에 XADC 블록 내장(12비트 1MSPS). 분압 저항으로 출력 전압 0–1V로 스케일해 XADC VAUXP/VAUXN에 연결(Pmod JA). I-077의 SPWM IP와 연동
+- 난이도: 4 / 단계: T3 / 상태: raw

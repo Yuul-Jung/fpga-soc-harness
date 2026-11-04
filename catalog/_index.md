@@ -193,3 +193,6 @@
 | [altium-ldo-vs-switching-regulator](electronics/altium-ldo-vs-switching-regulator.md) | L3 | T0 | 없음 (기사) | 2026-11-04 |
 | [wevolver-buck-converter-design-guide](electronics/wevolver-buck-converter-design-guide.md) | L3 | T0 | 없음 (기사) | 2026-11-04 |
 | [vishay-fpga-power-supply-consideration](electronics/vishay-fpga-power-supply-consideration.md) | L3 | T0 | 없음 (애플리케이션 노트) | 2026-11-04 |
+| [element14-cumps-deadtime-vhdl-pynqz2](electronics/element14-cumps-deadtime-vhdl-pynqz2.md) | L3 | T2 | Pynq-Z2 (Basys3 needs-port) | 2026-11-04 |
+| [arxiv-1002340-spartan3e-spwm-inverter](electronics/arxiv-1002340-spartan3e-spwm-inverter.md) | L3 | T2 | Spartan-3E (Basys3 needs-port) | 2026-11-04 |
+| [industrialmonitordirect-igbt-shootthrough](electronics/industrialmonitordirect-igbt-shootthrough.md) | L3 | T2 | 없음 (회로 가이드) | 2026-11-04 |

@@ -445,3 +445,13 @@
 - https://jtec.utem.edu.my/jtec/article/view/3581 | Lam & Ehkan(JTEC 2018): Altera DE2 기반 FPGA 사다리꼴 프로파일 스텝모터 컨트롤러, FSM, 15.88 µm 해상도, 로직 1% | 검색어: stepper motor trapezoidal velocity profile FPGA Verilog accumulator 2024
 - https://hackaday.com/2015/09/21/fpga-cnc | Hackaday FPGA CNC: FPGA로 CNC 스텝 펄스 직접 생성 사례 (DDA 알고리즘, Verilog) | 검색어: stepper motor FPGA CNC step generation hardware
 - https://thesis.unipd.it/bitstream/20.500.12608/93395/1/Ragazzo_Alberto.pdf | Ragazzo(UniPD): FPGA 다축 스텝모터 가감속 프로파일 구현 논문 — 미열람(L1) | stepper motor trapezoidal velocity profile FPGA multi-axis
+- https://atlantis-press.com/proceedings/is3c-15/17382 | Atlantis Press IS3C 2015: SPWM 단상 인버터 FPGA 구현 프로시딩 — 미열람(L1) | SPWM single phase inverter FPGA 2015 conference
+- https://core.ac.uk/download/12005714.pdf | core.ac.uk SPWM FPGA 풀브리지 인버터 논문 — 미열람(L1) | SPWM FPGA full bridge inverter paper core.ac.uk
+- https://dspace.univ-boumerdes.dz/items/cd746133-4a27-44fc-88bb-e9181419e81b | Univ Boumerdes DZ: FPGA 기반 전력 인버터 설계·구현 논문 — 미열람(L1) | FPGA power inverter design implementation Algeria
+- https://repository.umy.ac.id/handle/123456789/27329 | 인도네시아 UMY: SPWM 단상 인버터 FPGA 구현(IMPLEMENTASI METODE SPWM) — 미열람(L1) | SPWM satu fasa inverter FPGA Indonesia university
+- https://etj.uotechnology.edu.iq/journal/vol40/iss2/11 | Engineering and Technology Journal Vol40 Iss2: SPWM 관련 논문(이라크 공과대학) — 미열람(L1) | SPWM inverter FPGA Engineering Technology Journal 2022
+- https://koreascience.kr/article/JAKO202010548329372.pdf | 한국과학기술정보연구원: 게이트 드라이버 데드타임 관련 한국어 논문(2020) — 미열람(L1) | 게이트 드라이버 데드타임 인버터 한국어 논문
+- https://wujns.edpsciences.org/articles/wujns/abs/2023/03/wujns-1007-1202-2023-03-0271-06/wujns-1007-1202-2023-03-0271-06.html | Wuhan University WUJNS 2023: SPWM 관련 중국 학술지 — 미열람(L1) | SPWM inverter Chinese journal 2023
+- https://sites.google.com/view/besongjohn/portfolio/high-fidelity-gate-driver | John Besong 개인 포트폴리오: High-Fidelity 게이트 드라이버 프로젝트 — 미열람(L1) | high fidelity gate driver project portfolio FPGA
+- https://industrialmonitordirect.com/blogs/knowledgebase/configuring-nmos-and-pmos-for-bipolar-10v-switching-with-fpga | industrialmonitordirect: FPGA로 ±10V 바이폴라 스위칭(NMOS/PMOS) 설정 — 미열람(L1) | FPGA NMOS PMOS bipolar switching 10V gate drive
+- https://doaj.org/article/3a932b8bb3fc404f972ea9fd162deca4 | DOAJ: Engineering and Technology Journal SPWM 단상 인버터 FPGA 2022 — 미열람(L1) | SPWM single phase inverter FPGA Engineering Technology Journal DOAJ
