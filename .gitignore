@@ -1,3 +1,22 @@
-docs/
+site/
 capstones/*/build/
 __pycache__/
+build/
+
+# build.py 생성물 — docs/index.md(홈)만 추적하고, 나머지 HTML·SVG·ZIP은 추적하지 않는다
+# (pages.yml 이 매 배포마다 mkdocs build --strict 로 새로 만든다)
+docs/index.html
+docs/hub.html
+docs/harness.html
+docs/catalog/
+docs/atlas/
+docs/soc-map/
+docs/inbox/
+docs/mmio-*/
+docs/*/index.html
+docs/*/diagram.svg
+docs/*/connections.json
+docs/*/bom.csv
+docs/*/source_manifest.json
+docs/*/verification.json
+docs/*.zip

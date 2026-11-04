@@ -5,8 +5,8 @@
 - verify: `YYYY-MM-DD HH:MM | verify | 재열람 N | 수정 M | 불일치 K | 승격 L2→L3 P | ready +R`
 - capstone: `YYYY-MM-DD HH:MM | capstone | <slug> | 등급 S0~S2` 또는 `... | skip: <사유>`
 
+2026-11-04 22:21 | capstone | mmio-wdt-tier1 (I-070) | 등급 S0 (로컬 도구 없음; CI에서 S1/S2 결정 예정) | 아이디어 선택: ready(10점, AXI4-Lite 워치독 IP T1 기본 카운터) | 큐 잔여 418
 2026-11-04 22:09 | capstone | mmio-sla-bram-capture (I-067) | 등급 S2 (CI 통과: lint pass, sim PASS 7/7, synth success; 1회차 CI 실패→trig_req 래치 추가로 수정) | 큐 잔여 418
-2026-11-04 21:18 | capstone | mmio-sla-bram-capture (I-067) | 등급 S0 (로컬 도구 없음; CI에서 S1/S2 결정 예정) | 큐 잔여 418
 2026-11-04 20:27 | capstone | mmio-imu-cf-ip (I-019) | 등급 S0 (로컬 도구 없음; CI에서 S1/S2 결정 예정) | 큐 잔여 418
 2026-11-04 11:36 | collect | RPi GPIO: pigpio/gpiozero/spidev/smbus2 · S7 난이도 사다리(주)+S5 비정형 출처(보조) | 카드 +3 | 아이디어 +3 | 큐 잔여 317 | blocked 4(pigpio 공식·gpiozero GitHub·gpiozero readthedocs·PyPI PROVENANCE_REQUIRED)
 2026-11-02 11:12 | collect | Basys3 오디오·I2S · S7 난이도 사다리(주)+S6 실패 사례(보조) | 카드 +3 | 아이디어 +2 | 큐 잔여 8 | blocked 1
@@ -137,4 +137,3 @@
 2026-11-04 21:01 | capstone-ci | mmio-imu-cf-ip | 등급 S2 달성 (CI run 41825251807, SHA 348a4e8c) | lint=pass sim=pass(TC1~TC5 PASS, CORDIC atan2 ±2° 오차 내) synth=pass(LUT 904·FF 448·yosys 추정) | fix1: 36비트 블렌드 곱셈(18비트 컨텍스트 오버플로 수정) / fix2: TC5 초기화 스텝(prev_roll=0 가정 보정)
 2026-11-04 21:23 | collect | 모터 드라이버 회로(H-브리지 MOSFET·게이트 드라이버·데드타임·역기전력 보호) · S2 조합 탐색(주: IRS2110+플라이백+MOSFET 선택 완전 회로 조합)+S5 비정형 출처(보조: 제조사 블로그·부품 가이드) | 카드 +3 | 아이디어 +3 (I-072~I-074) | 큐 잔여 8 | blocked 0 | catalog/electronics/ 신설
 2026-11-04 21:47 | verify | 재열람 0(차단: WebFetch PROVENANCE_REQUIRED 전면 차단 7차 연속) | 수정 1(capstone.json 구조 8항목: memory_map·references·hierarchy·bus_protocol.signals·howto·note·verification.board·author_note) | 불일치 1(capstone.json) | 승격 L2→L3 0 | ready +2(I-068·I-070, 차단조건재심사 7차: 8점·10점) | raw→vetted +3(I-072 5점·I-073 5점·I-074 5점, 첫 심사) | I-071 차단조건재심사 8점 보류(2건 상한, 다음 사이클 1순위)
-2026-11-04 22:19 | collect | 전력 공급: DC-DC 벅/부스트·LDO vs 스위칭 레귤레이터 · S4+S5 | 카드 +3 | 아이디어 +2 | 큐 잔여 46 | blocked 0

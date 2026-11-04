@@ -931,9 +931,11 @@
 - Basys3 적합성 근거: 순수 FSM+카운터이므로 BRAM·LUT 소모 최소(< 100 LUT 추정). AXI4-Lite 슬레이브 래퍼는 `library/rtl/axil_regs.v` 참고 가능. `free_slots` 중 하나에 64KB 배정 가능.
 - 난이도: 2 (1단계), 3 (2단계), 4 (3단계)
 - 단계: T1 → T2 → T3
-- 상태: ready
+- 상태: used
+- 패키지 slug: mmio-wdt-tier1
 - 심사: 2026-11-04 /verify(6차), WebFetch 전면 차단으로 근거 카드 rechecked_at 없음. 근거 0(rtime-cvut-openmsp430-watchdog·heia-fr-ma-embreal-zephyr-stack-protection·tum-industrial-es-2015-functional-safety 모두 rechecked_at 없음) + 새로움 2(AXI4-Lite 워치독 IP 카드 없음; 단계적 WDT 구현 없음) + 적합성 3(순수 FSM+카운터 LUT 최소, free_slots 가용, axil_regs.v 참고) + 완결성 2(3단계 체인 범위 명확, RTL+TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득 필요.
 - 차단조건재심사: 2026-11-04 /verify(7차), 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(rtime-cvut-openmsp430-watchdog, heia-fr-ma-embreal-zephyr-stack-protection, tum-industrial-es-2015-functional-safety, rechecked_at 불문) → 근거 3 + 새로움 2(AXI4-Lite 워치독 IP 카드 없음; 단계적 WDT 없음) + 적합성 3(순수 FSM+카운터 LUT 최소, free_slots 가용, axil_regs.v 참고) + 완결성 2(3단계 체인 T1→T2→T3 범위 명확, RTL+TB 작성 가능) = 10점 ≥ 7 → ready 승격. 2건 상한 내 2번째 승격.
+- 과제화: 2026-11-04 /capstone, mmio-wdt-tier1 패키지 생성(T1 기본 카운터 WDT, AXI4-Lite, wdt_core+axil_wdt_wrap, 테스트벤치 11개 체크, CI 검증 대기)
 
 ---
 
@@ -982,28 +984,3 @@
 - Basys3 적합성의 근거: Pmod 출력 전류 제한(< 24 mA per pin 확인 필요) → 소신호 MOSFET(e.g. 2N7002) 게이트 전류 감당 가능 여부 확인 필요; 대전류 모터에는 부적합
 - 난이도: 1 / 단계: T1
 - 심사: 2026-11-04 /verify(7차), 근거 0(lcsc-mosfet-selection-motor-control·zbotic-backem-flyback-protection 모두 rechecked_at 없음; 근거 카드 2건만) + 새로움 2(Pmod 직접 구동 최소 구성 테스트베드 카드 없음; 기존 카드는 모두 별도 드라이버 IC 사용) + 적합성 1(Pmod 3.3V 출력 가능하나 출력 전류 제한 < 24 mA per pin 미확인; 2N7002 게이트 전류 감당 가능성 미확인; 소전류 모터 직구동 가능성 불확실) + 완결성 2(T1 단계 단순 Verilog PWM+H-브리지 출력, 범위 최소, RTL+외부 BOM 작성 가능) = 5점 → vetted. 보강: Pmod 출력 전류 제한 공식 확인, 근거 카드 rechecked_at 취득, 근거 카드 1건 추가. ※ 첫 raw→vetted 심사이므로 차단조건재심사 불적용(§14.2).
-
-## I-075 Basys3 XADC 전원 모니터 AXI-Lite IP — 코어·보조 전압 감시 T2
-
-내 판단: Basys3 내장 XADC(12비트, 1MSPS)로 Vccint(1.0V), Vccaux(1.8V), Vccbram(1.0V)을 주기적으로 읽어 임계값 이탈 시 MicroBlaze V 인터럽트를 발생시키는 AXI4-Lite IP. 전원 고장 조기 경보 및 열 감시(온도 채널 병행 가능)를 SoC에 통합하는 T2급 아이디어.
-
-- id: I-075
-- 조합 주변장치: XADC(내장), AXI4-Lite 슬레이브, 인터럽트 컨트롤러
-- 근거 카드: [vishay-fpga-power-supply-consideration, altium-ldo-vs-switching-regulator]
-- 근거 URL: https://www.xilinx.com/support/documentation/ip_documentation/xadc_wiz/v3_3/pg091-xadc-wiz.pdf (미열람 L1)
-- 새로움의 근거: 카탈로그에 XADC 전원 모니터 IP 없음; Basys3 XADC는 보통 외부 아날로그 센서용, 내부 전원 감시 IP는 미발견
-- Basys3 적합성의 근거: XADC는 Artix-7 내장 IP, Basys3 Pmod XADC 커넥터(JA 상단 2핀) 또는 내부 전원 채널 직접 사용. LUT 사용 최소.
-- 난이도: 2 / 단계: T2
-- 상태: raw
-
-## I-076 외부 보조 전원 보드 설계 가이드: 12V→5V+3.3V 이중 레일 for Basys3 확장 T0
-
-내 판단: 모터·카메라·센서 모듈을 Basys3에 연결할 때 필요한 외부 보조 전원 보드 설계 가이드 캡스톤 아이디어. 12V 어댑터 입력 → DC-DC(SiC403A 등가 IC)로 5V/3A → LDO로 3.3V/1A, GND 공유, Basys3 USB 5V와 절연 처리. 전원 보드 BOM + 회로도 초안까지 문서로 작성.
-
-- id: I-076
-- 조합 주변장치: DC-DC(벅), LDO, 안전 커넥터(퓨즈, 역극성 보호)
-- 근거 카드: [vishay-fpga-power-supply-consideration, wevolver-buck-converter-design-guide, altium-ldo-vs-switching-regulator]
-- 새로움의 근거: 카탈로그에 "Basys3 외부 전원 보드" 개념의 카드/캡스톤 없음; 모터 드라이버 카드들은 전원 분리를 가정하지만 실제 보드 설계 가이드 없음
-- Basys3 적합성의 근거: Pmod 커넥터(3.3V) + 외부 전원 헤더로 연결. 보드 I/O 3.3V 규칙 준수(레벨 변환 불필요).
-- 난이도: 2 / 단계: T0
-- 상태: raw
