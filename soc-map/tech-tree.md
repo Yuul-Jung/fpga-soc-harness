@@ -1,6 +1,6 @@
 # SoC 기술 트리 (단계별 카드 연결)
 
-갱신: 2026-11-04 (/verify 3차). 카드 170건 기준. 비 FPGA 도메인(STM32 18건·ESP32 11건·RPi·Arduino·임베디드·전자기술 포함).
+갱신: 2026-11-04 (/verify 4차). 카드 173건 기준. 비 FPGA 도메인(STM32 18건·ESP32 12건·RPi·Arduino·임베디드·전자기술 포함).
 
 ---
 
@@ -68,6 +68,19 @@ FreeRTOS·Zephyr 비교 카드는 MicroBlaze V + AXI INTC RTOS 설계에 개조 
 
 ---
 
+## 필드버스 도메인 단계 연결 (CAN · MODBUS · EtherCAT, 개조 참고)
+
+필드버스 프로토콜 카드는 MicroBlaze V에 AXI4-Lite 래퍼로 붙일 수 있는 통신 IP 개발에 개조 경로가 있다.
+
+| 단계 | 카드 | 개조 대상 |
+|---|---|---|
+| T1 | isluckyhui-fpga-modbus-rtu (임베디드) | FC 0x03 FSM + CRC16 → AXI4-Lite MODBUS RTU 슬레이브 IP (DE/RE 추가, free_slots 1슬롯) |
+| T2 | csselectronics-can-fd-frame-guide (papers) | CAN FD 프레임 구조(FDF·BRS·ESI·DLC·CRC) → CAN FD 파서 FSM 설계 근거 |
+| T2 | wangxuan95-fpga-can (vendor-neutral) | CAN 2.0 Verilog RTL → CAN FD 확장 기점 (FDF 감지 FSM 분기 추가 필요) |
+| T3 | egerobotics-esp32s3-ethercat-soes (esp32) | 소프트 ESC 구조 (W5500 SPI, SOES, TwinCAT 연동) → MicroBlaze V EtherCAT 슬레이브 개조 (사이클 타임 미검증, 가장 복잡) |
+
+---
+
 ## gap 목록 (내 판단)
 
 - gap T1→T2: 오디오·SD를 AXI4-Lite 레지스터 맵으로 감싼 Basys3 완성형 카드 미확보.
@@ -76,3 +89,6 @@ FreeRTOS·Zephyr 비교 카드는 MicroBlaze V + AXI INTC RTOS 설계에 개조 
 - gap T3: ESP32 BLE/Wi-Fi를 UART로 Basys3에 붙인 통합 SoC 카드 없음.
 - gap T3: Basys3 LiteX Linux 부트 최적화(U-Boot, BusyBox init) 사례 없음; RPi Yocto·Buildroot 사례 → 개조 경로 있음(I-059, I-060, 내 판단).
 - gap T5: DRAM 보드 필요, 수집 대상 밖.
+- gap T2: MODBUS RTU AXI4-Lite 슬레이브 IP 카드 없음; isluckyhui-fpga-modbus-rtu(FC 0x03 슬레이브)가 기초, AXI 래퍼 신규 작성 필요(I-065 vetted).
+- gap T2: CAN FD 파서 FPGA Verilog 카드 없음; wangxuan95-fpga-can(CAN 2.0)에서 FDF 분기 추가 경로(I-064 vetted).
+- gap T3: EtherCAT 소프트 슬레이브 Basys3 MicroBlaze V 사례 없음; egerobotics-esp32s3-ethercat-soes 개조 경로 있으나 사이클 타임 미검증(I-066 dropped, 재등록 조건 필요).

@@ -170,7 +170,7 @@
 - 차단조건재심사: 2026-11-04 /verify, 근거 3(embeddedts-fpga-pwm-hbridge-quadrature, tinredmc-ultralitebldc, lange-fpga-foc-motor-control-hackaday 외 ti-drv8833-datasheet 등, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 → ready. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-015 다축 모션 제어 IP: 채널당 엔코더·PID·PWM 한 벌 + 공통 제어 주기 트리거 자체 점검
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: 2채널 속도 PID를 공통 1 kHz 트리거로 동기시키는 IP를 자체 RTL로 쓰고, 모델 모터 테스트벤치로 채널 간 지터와 출력 포화를 점검한다.
 - 조합: [직교 엔코더(sensor), PWM(actuator), PID FSM, 공통 트리거]
 - 근거: [iccas-2003-general-purpose-pid-motion-controller-fpga, ieek-2009-dc-servo-speed-control-fpga, deepc94-pid-fpga-vhdl, columbia-4840-dc-motor-controller]
@@ -178,6 +178,7 @@
 - Basys3 적합성의 근거: 채널당 카운터·곱셈 몇 개 수준(내 추정, 자원 수치는 카드에 없음). 핀은 Pmod 2~3개로 가능(내 추정).
 - 난이도: 4 / 단계: T4
 - 심사: 2026-11-04 /verify, 근거 1(iccas-2003-general-purpose-pid-motion-controller-fpga) + 새로움 2(단일 채널 대비 다채널 공통 트리거 없음) + 적합성 1(채널 증가 시 자원 추정 없음) + 완결성 1(채널 간 지터·포화 범위 미정) = 5점. 보강: 근거 카드 추가, 범위 2채널로 고정.
+- 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 4건(iccas-2003-general-purpose-pid-motion-controller-fpga·ieek-2009-dc-servo-speed-control-fpga·deepc94-pid-fpga-vhdl·columbia-4840-dc-motor-controller, rechecked_at 불문) → 차단 근거 3 + 새로움 2(다채널 공통 트리거 IP 없음) + 적합성 1(채널 증가 시 자원 추정 없음, Pmod 2~3개 추정) + 완결성 1(2채널로 범위 고정 완료, 채널 간 지터 테스트벤치 작성 가능) = 7점 ≥ 7 → ready 승격. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-016 엔코더 난이도 사다리: 손 엔코더 → 4체배 속도 IP → 불가능 전이 진단
 - 상태: ready
@@ -390,7 +391,7 @@
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(SPI 무선 IP + 레지스터 모델 없음) + 적합성 2(Pmod 1~2개·3.3V·BRAM 불필요) + 완결성 1(LoRa 확장 단계 미정) = 5점. 보강: 근거 카드 rechecked_at 1건, nRF24L01 단계로 범위 고정.
 
 ## I-036 센서 허브 IP: I2C 3장치(MPU-6050·BMP280·HMC5883L) 순회 + NMEA UART 수신, 공통 타임스탬프 표본 FIFO
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: I2C 마스터가 주소 표(0x68, 0x76/0x77, 0x1E)를 순회해 센서별 원시값을 읽고, UART 수신기가 NMEA 문장 한 줄을 완료 인터럽트로 알리며, 모든 표본에 자유 실행 카운터 타임스탬프를 붙여 FIFO에 쌓는 AXI4-Lite 허브 IP. 보정 계산과 NMEA 필드 추출은 펌웨어. 테스트벤치에 I2C 슬레이브 모델 3개와 NMEA 문장 발생기를 넣는다.
 - 조합: [I2C 순회 마스터, UART NMEA 수신, 타임스탬프 FIFO, AXI4-Lite 레지스터·인터럽트]
 - 근거: [shillehtek-nano-mpu6050-neo6m-vehicle-logger, arduino-forum-nano-crash-3-i2c-gps, jpralves-car-hud-speed-compass, ammar-bin-amir-arty-a7-i2c-mpu-6050]
@@ -398,6 +399,7 @@
 - Basys3 적합성의 근거: Pmod 2개(I2C 1세트 SCL/SDA, UART RX 1핀)와 3.3 V 로직으로 충분, FIFO는 BRAM 소량. 센서 3.3 V 모듈 선택 필요(데이터시트 VDD 최대 3.6 V, devices/i2c/bmp280.md). 9600 baud 비트 시간은 100 MHz에서 10,417 클럭(내 계산).
 - 난이도: 3 / 단계: T2
 - 심사: 2026-11-04 /verify, 근거 1(ammar-bin-amir-arty-a7-i2c-mpu-6050) + 새로움 2(I2C 순회+NMEA UART 허브 없음) + 적합성 2(Pmod 2개·3.3V 센서·FIFO BRAM 소량) + 완결성 1(I2C 순회 주기·FIFO 깊이 미정) = 6점. 보강: 근거 카드 추가.
+- 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 4건(shillehtek-nano-mpu6050-neo6m-vehicle-logger·arduino-forum-nano-crash-3-i2c-gps·jpralves-car-hud-speed-compass·ammar-bin-amir-arty-a7-i2c-mpu-6050, rechecked_at 불문) → 차단 근거 3 + 새로움 2(I2C 순회+NMEA UART 공통 타임스탬프 허브 없음) + 적합성 2(Pmod 2개·3.3V 센서 가능·FIFO BRAM 소량) + 완결성 1(I2C 순회 주기 100 ms 기준·FIFO 깊이 16샘플로 고정 가능, 테스트벤치 작성 가능) = 8점 ≥ 7 → ready 승격. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-037 명령 우선순위 중재 RC카 IP: 원격 명령 vs 거리 안전정지 중재 FSM + 서보 3방향 스캔 결정 레지스터
 - 상태: ready
@@ -817,7 +819,8 @@
 - Basys3 적합성 근거: 100 MHz 클럭으로 5 Mbit/s 오버샘플(20 클럭/비트) 가능. CAN 트랜시버(TJA1050 등)를 Pmod에 연결. BRAM 소모 적음(프레임 버퍼 2~3개).
 - 난이도: 3
 - 단계: T2
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-04 /verify, 근거 1(wangxuan95-fpga-can rechecked_at: 2026-11-02; csselectronics·dpiegdon rechecked_at 없음) + 새로움 2(CAN FD FSM IP 없음) + 적합성 3(100MHz 20클럭/비트 오버샘플 가능, Pmod 연결 가능, BRAM 소량) + 완결성 2(FDF·BRS·DLC·CRC FSM 범위 명확, AXI래퍼 작성 가능, TB 가능) = 8점. 근거 1<3이므로 ready 미달 → vetted. 보강: csselectronics·dpiegdon rechecked_at 취득 필요(차단 조건 적용 불가: raw→vetted 첫 심사).
 
 ---
 
@@ -833,7 +836,8 @@
 - Basys3 적합성 근거: Artix-7 RTL, XC7A35T 이식 용이. RS485 모듈은 디바이스마트·아두이노 호환 Pmod 연결 가능.
 - 난이도: 3
 - 단계: T2
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-04 /verify, 근거 0(isluckyhui-fpga-modbus-rtu·digilent-forum-pmodamp3-basys3-i2s 모두 rechecked_at 없음; digilent-forum-pmodamp3-basys3-i2s는 오디오 카드로 MODBUS와 무관 — 근거 카드로 부적합) + 새로움 2(MODBUS AXI4-Lite IP 없음) + 적합성 2(Artix-7 RTL XC7A35T 이식 가능, RS485 Pmod 아두이노 호환 가능) + 완결성 2(FC0x03+0x06+CRC+DE/RE 범위 명확, AXI래퍼 작성 가능, TB 가능) = 6점 → vetted. 보강: isluckyhui-fpga-modbus-rtu rechecked_at 취득 필요, 근거 카드에서 digilent-forum-pmodamp3-basys3-i2s 제거 후 MODBUS 관련 카드 2건 추가.
 
 ---
 
@@ -849,4 +853,5 @@
 - Basys3 적합성 근거: Pmod SPI로 W5500 연결 가능(기존 W5500 카드 근거). MicroBlaze V FreeRTOS + SOES C 포팅 필요. 사이클 타임(100 μs) 충족 여부는 FreeRTOS 태스크 레이턴시 측정 필요 — 불확실.
 - 난이도: 5
 - 단계: T3
-- 상태: raw
+- 상태: dropped
+- 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(EtherCAT 소프트 ESC FPGA 없음) + 적합성 1(W5500 연결 가능하나 사이클 타임 100μs 충족 불확실, MicroBlaze+FreeRTOS 레이턴시 미검증) + 완결성 1(SOES 포팅 절차 미정, C 환경 설정 복잡도 높음, 단일 캡스톤 범위 초과) = 4점 → dropped. 사유: 적합성·완결성이 모두 1점이고 근거 0, 범위가 T3 단일 캡스톤에 과도함. 재등록 조건: EtherCAT-W5500 SPI 타이밍 검증 카드 추가 + SOES 포팅 절차 명세 후 I-065 MODBUS 완성 뒤에 재심사.
