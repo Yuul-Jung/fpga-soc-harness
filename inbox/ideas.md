@@ -160,7 +160,7 @@
 - 변경: 2026-11-04 /verify — 패키지 생성(mmio-speed-pi-checker) 후 상태 미갱신 불일치 수정 (ready → used)
 
 ## I-014 모터 안전 래퍼 IP: 과전류 입력·데드타임·활성화 게이트를 PWM 출력 앞에 두는 보호 블록 자체 점검
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: PWM 출력 앞단에서 H-브리지 상보 신호에 데드타임을 넣고, 외부 과전류 입력이 걸리면 활성화를 끄고 래치된 상태 비트로 남기는 IP. 테스트벤치는 상·하 스위치가 동시에 켜지지 않는지(슛스루 없음)와 과전류 시 출력 차단을 PASS/FAIL로 검사하는 T2
 - 조합: [PWM(actuator), 과전류 센서 입력(sensor), 데드타임 FSM]
 - 근거: [embeddedts-fpga-pwm-hbridge-quadrature, tinredmc-ultralitebldc, lange-fpga-foc-motor-control-hackaday, ti-drv8833-datasheet, toshiba-tb6612fng-datasheet, markdannemiller-ttu-lab1-bc5-hardware-guide]
@@ -168,6 +168,7 @@
 - Basys3 적합성의 근거: 카운터·비교기 수준이라 소량 LUT(embeddedts 133 LUT 코어가 참고, 내 추정), 핀은 Pmod로 충분. 모터 전원 분리 규칙과 직결.
 - 난이도: 2 / 단계: T2
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(안전 블록 단독 패키지 없음) + 적합성 2(카운터·비교기 소량 LUT, Pmod 범위) + 완결성 2(슛스루 없음·과전류 차단 시험 가능) = 6점. 보강: 근거 카드 rechecked_at 1건 추가.
+- 차단조건재심사: 2026-11-04 /verify, 근거 3(embeddedts-fpga-pwm-hbridge-quadrature, tinredmc-ultralitebldc, lange-fpga-foc-motor-control-hackaday 외 ti-drv8833-datasheet 등, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 → ready. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-015 다축 모션 제어 IP: 채널당 엔코더·PID·PWM 한 벌 + 공통 제어 주기 트리거 자체 점검
 - 상태: vetted
@@ -201,7 +202,7 @@
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(응답 캡처 IP 없음) + 적합성 2(BRAM 소량·Pmod 2개 범위) + 완결성 2(KP/KI/KD 런타임·BRAM 캡처·와인드업 범위 명확) = 6점. 보강: 근거 카드 rechecked_at 1건 추가.
 
 ## I-018 스텝모터 가감속 IP: 단위시간당 스텝 누산기 FSM + 스텝 손실 시험 시나리오
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: 이동 스텝 수, 최대 속도, 가속도를 AXI4-Lite 레지스터로 받아 사다리꼴 프로파일 스텝 펄스를 만드는 IP. 덧셈과 비교만 쓰고, 테스트벤치는 가속/등속/감속 구간 스텝 수 합과 짧은 이동(삼각형 프로파일)을 비교한다. 28BYJ-48 풀/하프스텝 패턴과 STEP/DIR 출력 모드를 레지스터로 고른다.
 - 조합: [스텝 펄스 FSM(actuator-servo), 4선 시퀀서(ULN2003), STEP/DIR 출력(A4988), 상태 레지스터]
 - 근거: [stepmotion-vp-steps-per-time, eeict-2011-xpisid00-stepper-linear-speed-controller, opencores-roboarm-stepper], https://www.machinedesign.com/archive/avoiding-step-loss
@@ -209,6 +210,7 @@
 - Basys3 적합성의 근거: 누산기 32비트와 덧셈 2개 규모라 LUT 소량, BRAM 불필요(내 추정, 소스에 자원 수치 없음). 핀은 Pmod 1개(4선 또는 STEP/DIR/EN), 5V 모듈은 레벨 변환·모터 전원 분리 필요.
 - 난이도: 2 / 단계: T2
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(곱셈 없는 사다리꼴 프로파일 하드웨어 없음) + 적합성 2(덧셈·비교기 LUT 소량, Pmod 1개) + 완결성 2(가속·등속·감속 구간 스텝 수·삼각형 프로파일 범위 명확) = 6점. 보강: 근거 카드 rechecked_at 1건 추가.
+- 차단조건재심사: 2026-11-04 /verify, 근거 3(stepmotion-vp-steps-per-time, eeict-2011-xpisid00-stepper-linear-speed-controller, opencores-roboarm-stepper, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 → ready. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-019 IMU 자세 추정 사다리: I2C 읽기 → 상보 필터 IP → (선택) 칼만 비교, 합성 센서 모델 테스트벤치
 - 상태: vetted
@@ -458,7 +460,8 @@
 - Basys3 적합성 근거: Basys3 USB-UART 사용, MicroBlaze V가 AXI-UARTLITE로 수신; QQVGA(160×120) JPEG는 ~3KB로 921600bps UART에서 약 30ms 전송(내 계산). BRAM 용량 한계로 320×240 이상은 어려움.
 - 난이도: 4
 - 단계: T3
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(ESP32-CAM+Basys3 UART+VGA 조합 없음) + 적합성 2(Basys3 USB-UART, MicroBlaze V AXI-UARTLITE, QQVGA BRAM 범위) + 완결성 1(SW JPEG 디코더 범위 미정) = 5점. 보강: 근거 카드 rechecked_at 추가, SW JPEG 디코더 범위 명시.
 
 ## I-043 INMP441 I2S 마이크 → Basys3 AXI I2S RX IP + LED 볼륨 미터
 
@@ -472,7 +475,8 @@
 - Basys3 적합성 근거: INMP441은 3.3V 직접 연결(레벨 변환 불필요), 신호 3개는 Pmod 범위. 16kHz 샘플에서 BCLK=512kHz(내 계산: 16000×32), Basys3 100MHz 분주 가능. BRAM 불필요(스트리밍 처리). 실측 없음.
 - 난이도: 3
 - 단계: T2
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(INMP441 I2S RX AXI IP 없음) + 적합성 2(INMP441 3.3V 직결, 신호 3개 Pmod 범위, BRAM 불필요) + 완결성 2(I2S 마스터 클럭 발생기 모델 테스트벤치 범위 명확) = 6점. 보강: 근거 카드 rechecked_at 추가.
 
 ## I-044 OV2640 직접 SCCB 초기화 + QQVGA AXI-Stream 캡처 IP (ESP32 드라이버 레지스터 테이블 참고)
 
@@ -486,7 +490,8 @@
 - Basys3 적합성 근거: OV2640 3.3V 동작 가능(데이터시트 미열람, 추정). SCCB는 I2C 호환 2선. 병렬 픽셀버스 D[7:0]+3제어는 Pmod 2개(11핀). QQVGA 160×120이면 BRAM 1개(2KB/라인버퍼) 가능. 실측 없음.
 - 난이도: 4
 - 단계: T2-T3
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-04 /verify, 근거 1(columbia-4840-cameracontrol rechecked_at 보유) + 새로움 2(OV2640 BROM 초기화 IP 없음) + 적합성 1(OV2640 3.3V 미확인, 추정만; Pmod 2개 11핀) + 완결성 1(RAW vs JPEG 모드 선택 범위 미확정) = 5점. 보강: OV2640 3.3V 확인, JPEG 모드 제외 명시.
 
 ---
 
@@ -500,7 +505,8 @@
 - Basys3 적합성 근거: Basys3 Pmod에 UART 포트 1개, 서보 PWM 출력 Pmod 1~2개 가능. MicroBlaze V AXI-UART Lite 수신 + 커스텀 PWM IP(free_slots 1개). IMU 처리는 ESP32 외부, FPGA 자원 여유.
 - 난이도: 3
 - 단계: T2
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(ESP32+TFLite→Basys3 서보 조합 없음) + 적합성 2(Basys3 UART Pmod, AXI-UART Lite, 서보 PWM free_slot) + 완결성 2(UART 1바이트 명령→서보 PWM 경로 명확) = 6점. 보강: 근거 카드 rechecked_at 추가.
 
 ---
 
@@ -514,7 +520,8 @@
 - Basys3 적합성 근거: Basys3 UART 1개, AXI-UART Lite 수신 인터럽트. 오디오 처리는 ESP32-C6 외부. FPGA 자원 거의 추가 사용 없음(명령 디코더 FSM만). randomnerdtutorials I2S 카드가 마이크 연결 패턴 근거.
 - 난이도: 3
 - 단계: T2
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(오디오 ML 판정→Basys3 FSM 조합 없음) + 적합성 2(Basys3 UART 1개, 명령 디코더 FSM만, FPGA 자원 거의 추가 없음) + 완결성 1(출력 대상 미정 - LED·모터·디스플레이 중 선택) = 5점. 보강: 근거 카드 추가, 출력 FSM 범위 축소.
 
 ---
 
@@ -528,4 +535,5 @@
 - Basys3 적합성 근거: 1D CNN(200×3→3), float32 → int8 양자화 시 가중치 소규모(수 KB). Conv1D는 MAC 연산이라 DSP48 활용 가능. XC7A35T DSP48 90개, BRAM 50개. 가중치 한 세트를 BRAM 1~2개에 적재 가능. 추론 창 200타임스텝은 FIFO로 관리. 현실적이나 Vivado HLS 지식 필요.
 - 난이도: 5
 - 단계: T4
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(soc-map T4 ML 추론 가속기 빈틈) + 적합성 2(DSP48 90개, BRAM 50개, 가중치 소규모 int8 양자화 시 수 KB) + 완결성 1(HLS vs RTL 선택 미정, 비교 지표 미확정) = 5점. 보강: 근거 카드 rechecked_at 추가, HLS vs RTL 선택 명시.

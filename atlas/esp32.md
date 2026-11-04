@@ -1,7 +1,7 @@
 # ESP32 사례 종합 (atlas/esp32.md)
 
 갱신일: 2026-11-04
-카드 수: 11 (`catalog/esp32/`)
+카드 수: 14 (`catalog/esp32/`)
 목적: ESP32 Wi-Fi·BLE·FreeRTOS 사례에서 Basys3 SoC 주변장치 IP로 옮길 수 있는 구조와 패턴을 추출한다.
 
 ---
@@ -13,8 +13,8 @@
 | T0   | 0 | — |
 | T1   | 3 | FreeRTOS 멀티태스킹, DHT+딥슬립, Watchdog 타이머 |
 | T2   | 5 | MQTT FAQ, GATT 서버, SPI 슬레이브, FreeRTOS SMP, Ring Buffer IPC |
-| T3   | 2 | BLE Mesh, OTA 업데이트 |
-| T4   | 0 | — |
+| T3   | 3 | BLE Mesh, OTA 업데이트, ESP32-C6 키워드 스팟팅 |
+| T4   | 2 | ESP32-C5 TFLite 제스처 인식, ESP32 BLE HID 제스처 매크로 |
 | T5   | 0 | — |
 | (T2) | 1 | BLE 패시브 스캔→MQTT (rcaelers, archived 2025) |
 
@@ -48,6 +48,14 @@
 | espressif-idf-ringbuf-ipc | ESP32 (듀얼코어) | T2 | Ring Buffer(FIFO), IPC | No-Split/Allow-Split/Byte Buffer 타입 선택 기준 → AXI4-Stream FIFO 모드 선택 근거; IPC 패턴 → MicroBlaze V 소프트 인터럽트(SWI) 대응 |
 | espressif-idf-watchdog-timers | ESP32 | T1 | Watchdog(TWDT, IWDT) | WDT 등록→리셋→타임아웃 패닉 흐름 → AXI4-Lite WDT IP(WDT_EN, WDT_TIMEOUT, WDT_RESET 레지스터) 설계 근거; S6 실패 사례 포함 |
 
+### 2.4 ML 추론 (TFLite Micro, Edge Impulse)
+
+| 카드 | CPU | 단계 | 주변장치 | 한계/재사용 포인트 |
+|------|-----|------|----------|--------------------|
+| espressif-esp-sensairshuttle-gesture-tflite | ESP32-C5 | T4 | BMI270 IMU(자이로), TFLite Micro 1D CNN | 97% 정확도, 3클래스, CC0-1.0. 1D CNN(Conv1D×2+GAP+Dense) 훈련→C 배포 전 과정 공개. 개조: ESP32가 추론, MicroBlaze V가 UART로 판정 명령 수신(I-045) |
+| jakkra-gesture-detecting-macro-keyboard | ESP32 | T4 | Bela Trill 정전식 터치패드, BLE HID | 7클래스 제스처→BLE 단축키. 28×28 행렬 2D 제스처 추론 흐름 완전 공개. 개조: 제스처 판정 후 UART 명령 전송(ESP32) + MicroBlaze V UART 수신 FSM(Basys3) |
+| sl45sms-esp32c6-keyword-spotting | ESP32-C6 | T3 | I2S MEMS 마이크(MSM261S4030H0R), Edge Impulse SDK | I2S 마이크→ESP32→Edge Impulse 추론→LED 트리거 파이프라인. Apache-2.0. 개조: 오디오 ML 판정 결과를 UART로 Basys3에 전달(I-046) |
+
 ---
 
 ## 3. 주변장치 태그 집계
@@ -60,6 +68,8 @@
 | comm-spi | 1 |
 | comm-uart(FreeRTOS SMP/IPC) | 2 |
 | debug(OTA/WDT) | 2 |
+| sensor(IMU/마이크) | 3 |
+| ML-inference(TFLite/Edge Impulse) | 3 |
 
 ---
 
@@ -79,6 +89,7 @@
 ### 4.3 내 판단
 - 내 판단: ESP32 카드 11건 중 8건이 T1~T2로 단순 인터페이스가 중심이다. FPGA 관점의 활용 가치는 "ESP32를 보조 무선 MCU로 붙이는 조합"에 있고, rcaelers BLE 스캐너(UART 패킷 형식)와 modestos 딥슬립(1회 측정 사이클)이 가장 직접적인 참고가 된다.
 - 내 판단: OTA 카드와 BLE Mesh 카드는 T3 수준이지만 FPGA 주변장치 IP 설계에 직접 쓰기 어렵다. ICAP 비교 참고용으로 아카이브한다.
+- 내 판단: T4 ML 추론 카드 2건(espressif-esp-sensairshuttle-gesture-tflite, jakkra-gesture-detecting-macro-keyboard)은 "ESP32가 ML 추론, FPGA가 액추에이터 제어"라는 역할 분담 패턴을 보여준다. UART 1바이트 명령(제스처 클래스 번호) → MicroBlaze V 수신 → AXI GPIO/PWM으로 출력하는 흐름이 가장 직접적인 적용 경로다(I-045). sl45sms 키워드 스팟팅 카드는 같은 패턴의 오디오 도메인 버전이다(I-046).
 - 내 판단: freertos-smp-multicore와 ringbuf-ipc 카드는 MicroBlaze V AXI4-Stream·DMA·소프트 인터럽트 IP 설계에 구체적인 패턴 근거를 제공한다. watchdog-timers 카드의 "등록→리셋→패닉" 흐름은 AXI4-Lite WDT IP 레지스터 설계에 직접 대응된다.
 
 ---
@@ -88,6 +99,9 @@
 | 아이디어 | 근거 카드 |
 |----------|-----------|
 | I-009 센서 허브 IP | modestos-esp32-dht-mqtt-deepsleep, rcaelers-esp32-beacon-scanner |
+| I-045 ESP32 TFLite 제스처→UART→Basys3 서보 PWM | espressif-esp-sensairshuttle-gesture-tflite, jakkra-gesture-detecting-macro-keyboard |
+| I-046 ESP32-C6 키워드 스팟팅→UART→MicroBlaze V FSM | sl45sms-esp32c6-keyword-spotting, randomnerdtutorials-esp32-inmp441-i2s |
+| I-047 TFLite 1D CNN → Basys3 HLS/RTL 가속기 비교 | espressif-esp-sensairshuttle-gesture-tflite, jakkra-gesture-detecting-macro-keyboard |
 
 ---
 

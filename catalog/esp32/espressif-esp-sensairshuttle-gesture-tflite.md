@@ -17,6 +17,7 @@ doc_language: en
 verification: L3
 checked_at: 2026-11-04
 source_rev:
+status: 재검증 차단 (WebFetch PROVENANCE_REQUIRED, 2026-11-04 /verify)
 sources: [https://developer.espressif.com/blog/2026/04/gesture-recognition-based-on-tflite/]
 ---
 
