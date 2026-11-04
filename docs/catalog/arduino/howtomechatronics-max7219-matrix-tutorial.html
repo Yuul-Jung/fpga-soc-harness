@@ -1,0 +1,46 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>howtomechatronics-max7219-matrix-tutorial</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../../hub.html">FPGA SoC 하네스</a><a href="../../hub.html">메인</a><a href="../../hub.html#capstones">캡스톤</a><a href="../../soc-map/tech-tree.html">기술 트리</a><a href="../../catalog/index.html">카탈로그</a><a href="../../inbox/ideas.html">아이디어</a><a href="../../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/catalog/arduino/howtomechatronics-max7219-matrix-tutorial.md">GitHub 원본: catalog/arduino/howtomechatronics-max7219-matrix-tutorial.md</a></p><h1>howtomechatronics-max7219-matrix-tutorial</h1><div class="panel fm"><table><tr><td>name</td><td><a href="howtomechatronics-max7219-matrix-tutorial.html">howtomechatronics-max7219-matrix-tutorial</a></td></tr><tr><td>url</td><td>https://howtomechatronics.com/tutorials/arduino/8x8-led-matrix-max7219-tutorial-scrolling-text-android-control-via-bluetooth/</td></tr><tr><td>source_type</td><td>article</td></tr><tr><td>vendor</td><td>neutral</td></tr><tr><td>board</td><td>[Arduino Uno/Nano 계열]</td></tr><tr><td>fit_basys3</td><td>needs-port</td></tr><tr><td>cpu</td><td>none(MCU 펌웨어)</td></tr><tr><td>language</td><td>C++ (Arduino 스케치)</td></tr><tr><td>tools</td><td>[Arduino IDE, MaxMatrix 라이브러리]</td></tr><tr><td>bus</td><td>none (3선 직렬: DIN/CLK/CS)</td></tr><tr><td>peripherals</td><td>[display, comm-bt]</td></tr><tr><td>stage</td><td>T1</td></tr><tr><td>license</td><td>unknown (페이지 저작권 표기, 라이브러리 라이선스 미기재 → 코드 반입 금지)</td></tr><tr><td>stats</td><td>{last_update: &quot;unverified: 날짜 확인 못 함&quot;}</td></tr><tr><td>doc_language</td><td>en</td></tr><tr><td>verification</td><td>L3</td></tr><tr><td>checked_at</td><td>2026-11-03</td></tr><tr><td>sources</td><td>[https://howtomechatronics.com/tutorials/arduino/8x8-led-matrix-max7219-tutorial-scrolling-text-android-control-via-bluetooth/, https://github.com/tardate/LittleArduinoProjects/blob/master/playground/LED8x8/MaxRawDemo]</td></tr></table></div><h2>요약</h2>
+<p>MAX7219 8x8 모듈을 Arduino에서 구동하고 글자를 흘려 보내며, HC-05로 안드로이드에서 문구를 바꾸는 튜토리얼이다. 프레임 형식은 설명하지 않고 라이브러리 함수로 감싼다. 보조로 본 tardate의 MaxRawDemo 페이지가 &quot;16비트 한 프레임 = 레지스터 주소 8비트 + 데이터 8비트, CS 상승 에지에서 래치&quot;라고 밝힌다.</p>
+<h2>구조</h2>
+<ul><li style="margin-left:0.0em">핀: VCC, GND, DIN, CLK, CS, 체인용 DOUT. 예제는 DIN·CLK·CS를 임의 디지털 핀(7, 6, 5)에 연결.</li><li style="margin-left:0.0em">체인: 앞 보드 DOUT → 다음 보드 DIN, 나머지 선은 공유. 라이브러리의 모듈 수가 실제와 같아야 함. 저자 권장 최대 8개.</li><li style="margin-left:0.0em">라이브러리 함수(글 서술): 초기화, 밝기(0~15), 점 찍기, 지우기, 스프라이트 쓰기, 좌측 이동, 열 쓰기. 폰트는 PROGMEM에 둠.</li><li style="margin-left:0.0em">다중화 동작: 칩이 동시에 최대 8개 LED만 켜고 빠르게 훑어 정지 영상처럼 보이게 한다.</li></ul>
+<h2>검증·재현성</h2>
+<ul><li style="margin-left:0.0em">레지스터 맵(디코드·밝기·스캔 한계·종료·시험)은 이 두 페이지에 없음 → unverified: 데이터시트 열람 필요(큐).</li></ul>
+<h2>한계·위험</h2>
+<ul><li style="margin-left:0.0em">댓글 보고: FC-16 보드는 소프트웨어로 회전 보정이 필요한 경우가 있음, 모듈을 많이 연결하고 밝게 하면 Arduino 5V 핀이 과부하일 수 있어 외부 5V 권장, Pro Mini에서 불안정 보고.</li><li style="margin-left:0.0em">핀 충돌: 블루투스 SoftwareSerial 핀이 DIN과 겹쳐 저자가 핀을 고쳤고, HC-05 기본 속도가 9600인 경우 예제의 38400과 맞지 않을 수 있다는 보고.</li><li style="margin-left:0.0em">전기: 모듈은 5V 구동. Basys3 Pmod는 3.3V이므로 DIN/CLK/CS 입력 문턱과 전원 방식은 데이터시트 확인 필요(unverified), 5V는 보드와 분리해 GND만 공통(전기 규칙).</li><li style="margin-left:0.0em">페이지는 저작권 표기가 있고 라이브러리 라이선스를 명시하지 않아 코드·이미지는 가져오지 않았다.</li></ul>
+<h2>재사용 메모</h2>
+<ul><li style="margin-left:0.0em">내 판단: MAX7219는 CS 상승에서 래치하는 16비트 프레임이라 SPI 마스터 FSM이 작다. 8x8 모듈을 4개 체인하면 한 갱신에 프레임 4개를 연속 전송(내 계산: 행 8줄 × 4모듈 × 16비트 = 512비트)하면 된다.</li><li style="margin-left:0.0em">개조: 옮길 부분은 라이브러리 함수 구분(초기화/밝기/한 줄 쓰기/이동)을 AXI4-Lite 레지스터(프레임 버퍼 창 + 밝기 + 갱신 비트)로 나누는 구조. 못 옮길 부분은 AVR 전용 PROGMEM·SoftwareSerial.</li></ul></main></body></html>

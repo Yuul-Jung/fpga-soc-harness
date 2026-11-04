@@ -1,0 +1,455 @@
+{
+  "slug": "mmio-pwm-tune-vga-bars",
+  "title": "PWM 음계 재생 + VGA 막대 표시 SoC: DDS 톤·음량 PWM·프레임 버퍼 없는 VGA (Basys3)",
+  "summary": "skeleton(T1)의 MMIO 버스에 톤 생성기(DDS 위상 누산기 + 8비트 PWM 음량)와 VGA 막대 표시기를 더한 T2 패키지. 데모 FSM이 도레미파솔라시도 8음을 재생하면서 음마다 VGA 막대를 하나씩 늘린다. 테스트벤치가 톤 주파수, PWM 듀티, VGA 동기 타이밍, 켜진 화소 수를 PASS/FAIL로 점검한다.",
+  "board": "Digilent Basys3 (XC7A35T)",
+  "stage": "T2",
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 원본이며 외부 코드를 포함하지 않는다(gpio.v는 이 저장소의 mmio-uart-gpio-skeleton 자체 원본 복사). 사용자 지시('무조건 실행', 2026-11-02)로 §13.7 게이트 3(ready 아이디어, 근거 카드 rechecked_at)을 건너뛰고 vetted 아이디어 I-001로 만들었다. 근거 카드의 재열람이 끝나지 않았으므로 카드 내용은 구조 착안으로만 쓰였고 수치는 인용하지 않았다.",
+  "goals": [
+    "32비트 위상 누산기로 INC 값에 비례하는 주파수의 사각파를 만들고, 8비트 PWM으로 음량을 조절한다.",
+    "도 4(261.63Hz)부터 도 5(523.25Hz)까지 8음의 INC를 100MHz 기준으로 계산해 재생한다.",
+    "프레임 버퍼 없이 카운터에서 바로 색을 정해 640x480@60Hz VGA에 막대 1~8개를 표시한다.",
+    "테스트벤치로 톤 주파수, PWM 듀티 25%, 끄기 동작, hsync/vsync 주기·폭, 켜진 화소 수(153600), 프레임 카운터를 점검한다."
+  ],
+  "non_goals": [
+    "사인표/BRAM 곡 재생(I-001 사다리의 뒤 단계)",
+    "I2S/Pmod I2S2 같은 디지털 오디오 출력",
+    "VGA 문자·이미지 표시, 프레임 버퍼",
+    "CPU 구현, 인터럽트, DMA"
+  ],
+  "architecture": {
+    "clock": "100 MHz 단일 클럭 (clk, W5), 동기 리셋 (btnC, 2단 동기화). VGA 화소 enable은 이 클럭의 4분주(25 MHz 상당)",
+    "blocks": [
+      {
+        "id": "clk",
+        "name": "clk 100MHz",
+        "kind": "clock",
+        "module": "-",
+        "desc": "보드 클럭 입력",
+        "short": "보드 클럭 입력"
+      },
+      {
+        "id": "x_btn",
+        "name": "btnU / btnC",
+        "kind": "external",
+        "module": "-",
+        "desc": "버튼 (재생 시작, 리셋)",
+        "short": "재생 시작, 리셋",
+        "side": "in"
+      },
+      {
+        "id": "master",
+        "name": "demo_master",
+        "kind": "cpu",
+        "module": "demo_master",
+        "desc": "CPU 슬롯. 9상태 FSM: SW 읽기→음량·INC·NOTE·LED·EN 기록→대기",
+        "short": "CPU 슬롯 (9상태 FSM)",
+        "file": "rtl/demo_master.v"
+      },
+      {
+        "id": "bus",
+        "name": "mmio_bus",
+        "kind": "bus",
+        "module": "mmio_bus",
+        "desc": "주소 [31:12] 디코드(3영역), 읽기 데이터 mux",
+        "short": "주소 디코드·읽기 mux",
+        "file": "rtl/mmio_bus.v"
+      },
+      {
+        "id": "gpio",
+        "name": "gpio",
+        "kind": "periph",
+        "module": "gpio",
+        "desc": "LED 16, SW 16",
+        "short": "LED 16, SW 16",
+        "file": "rtl/gpio.v"
+      },
+      {
+        "id": "pwm",
+        "name": "pwm_tone",
+        "kind": "periph",
+        "module": "pwm_tone",
+        "desc": "DDS 위상 누산기 + 8비트 PWM 음량",
+        "short": "DDS 톤 + PWM 음량",
+        "file": "rtl/pwm_tone.v"
+      },
+      {
+        "id": "vga",
+        "name": "vga_bars",
+        "kind": "periph",
+        "module": "vga_bars",
+        "desc": "640x480@60Hz 타이밍, 막대 8개, 프레임 카운터",
+        "short": "VGA 타이밍·막대",
+        "file": "rtl/vga_bars.v"
+      },
+      {
+        "id": "x_sw",
+        "name": "SW / LED",
+        "kind": "external",
+        "module": "-",
+        "desc": "슬라이드 스위치(음량)와 LED(음 표시)",
+        "short": "스위치와 LED"
+      },
+      {
+        "id": "x_amp",
+        "name": "Pmod AMP2 (JA)",
+        "kind": "external",
+        "module": "-",
+        "desc": "오디오 증폭기, 3.3V 로직, PWM/GAIN/SHUTDOWN",
+        "short": "AIN, GAIN, SD"
+      },
+      {
+        "id": "x_vga",
+        "name": "VGA 커넥터",
+        "kind": "external",
+        "module": "-",
+        "desc": "보드 내장 4비트 저항 DAC",
+        "short": "R4 G4 B4 Hs Vs"
+      }
+    ],
+    "links": [
+      {
+        "from": "x_btn",
+        "to": "master",
+        "label": "btnU"
+      },
+      {
+        "from": "master",
+        "to": "bus",
+        "label": "mmio-lite"
+      },
+      {
+        "from": "bus",
+        "to": "gpio",
+        "label": "sel/rdata"
+      },
+      {
+        "from": "bus",
+        "to": "pwm",
+        "label": "sel/rdata"
+      },
+      {
+        "from": "bus",
+        "to": "vga",
+        "label": "sel/rdata"
+      },
+      {
+        "from": "gpio",
+        "to": "x_sw",
+        "label": "sw, led"
+      },
+      {
+        "from": "pwm",
+        "to": "x_amp",
+        "label": "pwm, sd_n"
+      },
+      {
+        "from": "vga",
+        "to": "x_vga",
+        "label": "rgb, hs, vs"
+      }
+    ]
+  },
+  "bus_protocol": {
+    "name": "mmio-lite",
+    "signals": [
+      {
+        "name": "m_valid",
+        "dir": "master→slave",
+        "desc": "요청 유효"
+      },
+      {
+        "name": "m_we",
+        "dir": "master→slave",
+        "desc": "1이면 쓰기"
+      },
+      {
+        "name": "m_addr[31:0]",
+        "dir": "master→slave",
+        "desc": "바이트 주소, 4바이트 정렬"
+      },
+      {
+        "name": "m_wdata[31:0]",
+        "dir": "master→slave",
+        "desc": "쓰기 데이터"
+      },
+      {
+        "name": "m_rdata[31:0]",
+        "dir": "slave→master",
+        "desc": "읽기 데이터 (조합 경로)"
+      },
+      {
+        "name": "m_ready",
+        "dir": "slave→master",
+        "desc": "항상 1: 모든 접근은 1사이클"
+      }
+    ],
+    "note": "미매핑 주소 읽기는 0을 돌려주고 오류를 알리지 않는다. 대기 상태·오류 응답이 필요한 CPU로 바꿀 때 확장한다."
+  },
+  "hierarchy": {
+    "module": "basys3_top",
+    "file": "rtl/basys3_top.v",
+    "children": [
+      {
+        "module": "demo_master",
+        "file": "rtl/demo_master.v"
+      },
+      {
+        "module": "soc_top",
+        "file": "rtl/soc_top.v",
+        "children": [
+          {
+            "module": "mmio_bus",
+            "file": "rtl/mmio_bus.v"
+          },
+          {
+            "module": "gpio",
+            "file": "rtl/gpio.v"
+          },
+          {
+            "module": "pwm_tone",
+            "file": "rtl/pwm_tone.v"
+          },
+          {
+            "module": "vga_bars",
+            "file": "rtl/vga_bars.v"
+          }
+        ]
+      }
+    ]
+  },
+  "memory_map": [
+    {
+      "base": "0x1000_0000",
+      "size": "0x1000",
+      "block": "gpio",
+      "regs": [
+        {
+          "off": "0x00",
+          "name": "LED",
+          "access": "RW",
+          "desc": "하위 16비트가 LED 핀"
+        },
+        {
+          "off": "0x04",
+          "name": "SW",
+          "access": "RO",
+          "desc": "하위 16비트, 2단 동기화된 스위치"
+        }
+      ]
+    },
+    {
+      "base": "0x1000_3000",
+      "size": "0x1000",
+      "block": "pwm",
+      "regs": [
+        {
+          "off": "0x00",
+          "name": "INC",
+          "access": "RW",
+          "desc": "위상 증가량. 주파수 = INC × 100MHz / 2^32 (440Hz ≈ 18898)"
+        },
+        {
+          "off": "0x04",
+          "name": "CTRL",
+          "access": "RW",
+          "desc": "bit0=enable. 0이면 위상 0으로 고정, PWM 0, SHUTDOWN_N 0"
+        },
+        {
+          "off": "0x08",
+          "name": "VOL",
+          "access": "RW",
+          "desc": "하위 8비트. 256 클럭 캐리어 중 high 개수(0~255)"
+        },
+        {
+          "off": "0x0C",
+          "name": "STATUS",
+          "access": "RO",
+          "desc": "bit0=현재 톤 비트(위상 최상위 비트)"
+        }
+      ]
+    },
+    {
+      "base": "0x1000_4000",
+      "size": "0x1000",
+      "block": "vga",
+      "regs": [
+        {
+          "off": "0x00",
+          "name": "NOTE",
+          "access": "RW",
+          "desc": "하위 3비트. 막대 0..NOTE번이 켜짐(80화소 폭)"
+        },
+        {
+          "off": "0x04",
+          "name": "COLOR",
+          "access": "RW",
+          "desc": "하위 12비트 {R,G,B}, 리셋값 0x0F0"
+        },
+        {
+          "off": "0x08",
+          "name": "FRAME",
+          "access": "RO",
+          "desc": "vsync 프레임마다 +1 (16비트)"
+        }
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T1",
+      "state": "done",
+      "title": "MMIO 버스 + GPIO + UART, 마스터는 FSM (mmio-uart-gpio-skeleton)",
+      "refs": []
+    },
+    {
+      "stage": "T2",
+      "state": "current",
+      "title": "DDS 톤 + PWM 음량 + 프레임 버퍼 없는 VGA 막대 (I-001 1~2단계)",
+      "refs": [
+        "zipcpu-pmodamp2-project-ladder",
+        "columbia-4840-audio-visualizer"
+      ]
+    },
+    {
+      "stage": "T2",
+      "state": "planned",
+      "title": "사인표(BRAM)와 곡 데이터 재생, 음높이별 막대 높이 (I-001 3~9단계)",
+      "refs": [
+        "zipcpu-pmodamp2-project-ladder"
+      ]
+    },
+    {
+      "stage": "T2",
+      "state": "planned",
+      "title": "마스터를 PicoRV32로 교체해 C로 음계 제어",
+      "refs": [
+        "tmahlburg-picosoc-basys3"
+      ]
+    }
+  ],
+  "references": [
+    {
+      "card": "zipcpu-pmodamp2-project-ladder",
+      "why": "Pmod AMP2를 PWM 사각파→사인표→곡으로 올리는 사다리 구조 착안(코드 미사용, 재열람 전이라 수치 인용 안 함)"
+    },
+    {
+      "card": "columbia-4840-audio-visualizer",
+      "why": "오디오와 VGA를 한 SoC에서 함께 쓰는 구성 착안(재열람 전)"
+    }
+  ],
+  "sources": {
+    "rtl": [
+      "rtl/gpio.v",
+      "rtl/mmio_bus.v",
+      "rtl/pwm_tone.v",
+      "rtl/vga_bars.v",
+      "rtl/soc_top.v",
+      "rtl/demo_master.v",
+      "rtl/basys3_top.v"
+    ],
+    "tb": [
+      "tb/tb_dev.v",
+      "tb/tb_demo.v"
+    ],
+    "constraints": [
+      "constr/basys3.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
+  },
+  "howto": [
+    {
+      "title": "시뮬레이션",
+      "steps": [
+        "iverilog, verilator, yosys 설치",
+        "make -C capstones/mmio-pwm-tune-vga-bars lint sim synth",
+        "sim은 tb_dev(장치 수준, 약 3.4M 클럭)와 tb_demo(8음 재생)를 차례로 실행하며 둘 다 PASS 줄을 내야 통과한다"
+      ]
+    },
+    {
+      "title": "Vivado 빌드 (Basys3)",
+      "steps": [
+        "새 RTL 프로젝트, 파트 xc7a35tcpg236-1",
+        "rtl/*.v 추가 (tb 제외), constr/basys3.xdc 추가, 최상위 basys3_top",
+        "Pmod AMP2를 JA 포트 위쪽 줄에 꽂고 스피커/헤드폰을 연결, VGA 모니터를 연결",
+        "Generate Bitstream 후 Program Device, SW[7:0]으로 음량을 정하고 btnU를 누른다",
+        "도레미파솔라시도가 나오고 막대가 한 개씩 늘며 LED가 한 칸씩 움직이면 성공. 소리가 너무 크면 SW 값을 낮춘다"
+      ]
+    }
+  ],
+  "verification": {
+    "lint": "not-run",
+    "sim": "not-run",
+    "synth": "not-run",
+    "board": "not-run",
+    "notes": "시뮬레이션·합성은 CI가 실행하면 자동으로 채워진다. 이 환경에는 시뮬레이터가 없어(apt 패키지 없음) 작성 시점에는 S0이다. 보드 동작은 사람이 확인한 뒤 board 값을 pass로 바꾸고 날짜를 notes에 적는다."
+  },
+  "risks": [
+    "이 패키지는 사용자 지시로 §13.7 게이트 3을 건너뛰고 만들었다. 근거 카드 2건의 재열람(rechecked_at)이 없다.",
+    "xdc의 VGA 핀(R: G19 H19 J19 N19, G: J17 H17 G17 D17, B: N18 L18 K18 J18, Hs P19, Vs R19)과 JA 핀(J1 L2 J2)은 Digilent 마스터 XDC와 대조하지 않았다.",
+    "음정은 사각파 + 저주파 PWM 캐리어(약 390kHz)이며 사인표가 아니다. 음색은 거칠고 PWM 캐리어가 Pmod AMP2 입력의 저역 필터를 통과하는지 확인하지 못했다.",
+    "VGA 출력은 조합 논리로 카운터에서 바로 나간다. 25MHz 화소 enable이라 타이밍은 여유 있지만 Vivado WNS는 확인하지 않았다. 화소 enable 방식이라 정확한 25.175MHz가 아니라 25MHz다(모니터 호환은 보드에서 확인 필요).",
+    "합성 자원은 CI의 yosys 추정만 기록되며 Vivado와 다를 수 있다.",
+    "RTL 합계가 약 364줄(gpio 34줄은 skeleton 재사용)로 400줄 기준 안이다."
+  ],
+  "integration": {
+    "bus": "mmio-lite",
+    "address_map": "custom",
+    "compat": "incompatible",
+    "target_map": "mbv-frozen-v2",
+    "plan": "CPU 없이 시뮬레이션하려고 자체 버스 mmio-lite(0x1000_xxxx)를 쓴 파일럿이다. 동결 맵(mbv-frozen-v2)에는 pwm [07]과 vga [0A]가 구형 영역으로 이미 있으나 레지스터 배치가 달라 이 모듈을 그대로 꽂을 수 없다. 이식 때는 (1) 레지스터를 IP 표준(64KB 창, 0xFFF0 ID·VER·IRQ_STATUS·IRQ_ENABLE)에 맞춰 감싸고 (2) 구형 [07]·[0A]를 대체할지 빈 슬롯 [16]부터 새로 배정할지 사용자가 결정해야 한다(제안, 동결 아님). (3) mmio-lite→AXI4-Lite 마스터 다리는 아직 없다(gap). 오디오 PWM 쪽의 INC·VOL 레지스터와 VGA 타이밍 FSM은 CPU와 무관해 그대로 옮길 수 있다."
+  },
+  "external_parts": [
+    {
+      "id": "p_btn",
+      "name": "Basys3 푸시버튼 (btnU, btnC)",
+      "block": "x_btn",
+      "interface": "GPIO 입력",
+      "io_voltage": 3.3,
+      "qty": 2,
+      "board_resident": true,
+      "arduino_compatible": false,
+      "notes": "btnU=재생 시작, btnC=리셋"
+    },
+    {
+      "id": "p_swled",
+      "name": "Basys3 슬라이드 스위치 16 / LED 16",
+      "block": "x_sw",
+      "interface": "GPIO 입출력",
+      "io_voltage": 3.3,
+      "qty": 32,
+      "board_resident": true,
+      "arduino_compatible": false,
+      "notes": "SW[7:0]=음량, LED=재생 중인 음(원-핫)"
+    },
+    {
+      "id": "p_amp",
+      "name": "Pmod AMP2 (Digilent) 오디오 증폭기",
+      "block": "x_amp",
+      "interface": "PWM 1비트 + GAIN + SHUTDOWN_N",
+      "io_voltage": 3.3,
+      "supply_voltage": 3.3,
+      "qty": 1,
+      "board_resident": false,
+      "arduino_compatible": false,
+      "notes": "Pmod 전원은 3.3V. 출력은 스피커/헤드폰이며 디지털 신호가 아니다. 음량이 클 수 있으니 SW 값을 낮게 시작한다"
+    },
+    {
+      "id": "p_vga",
+      "name": "Basys3 VGA 커넥터 (4비트 저항 DAC)",
+      "block": "x_vga",
+      "interface": "VGA 아날로그 RGB + Hsync/Vsync",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": true,
+      "arduino_compatible": false,
+      "notes": "보드 내장. 모니터 케이블만 연결"
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "외부 부품의 전기 회로도는 작성하지 않았다. 외부 모듈은 Basys3 내장 장치와 Pmod AMP2뿐이라 핀 배정은 constr/basys3.xdc를 따른다."
+  }
+}

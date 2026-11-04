@@ -1,0 +1,452 @@
+{
+  "slug": "mmio-uart-axilite-bridge",
+  "title": "UART→AXI4-Lite 메모리 브리지",
+  "summary": "PC UART 명령(쓰기/읽기)을 AXI4-Lite 마스터 트랜잭션으로 변환하는 FSM IP. CPU 없이도 호스트가 AXI4-Lite 슬레이브 레지스터를 직접 읽고 쓸 수 있다. 테스트벤치에서 UART 바이트열을 주입해 슬레이브 레지스터 값이 맞는지 PASS/FAIL로 검사한다.",
+  "board": "Digilent Basys3 (XC7A35T)",
+  "stage": "T2",
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 원본이며 외부 코드를 포함하지 않는다. 아이디어 I-012 기반. 외부 부품 없음(USB-UART 내장).",
+  "goals": [
+    "9바이트 쓰기 프레임(0x57+ADDR 4B+DATA 4B) 및 5바이트 읽기 프레임(0x52+ADDR 4B)을 AXI4-Lite 마스터 트랜잭션으로 변환",
+    "CPU 없이 호스트 PC에서 Basys3 위 AXI4-Lite 슬레이브 레지스터를 읽고 쓰기",
+    "iverilog 시뮬레이션으로 프로토콜 디코더와 AXI4-Lite 마스터 FSM을 PASS/FAIL 검증"
+  ],
+  "non_goals": [
+    "MicroBlaze V CPU 연동(다음 단계 과제)",
+    "다중 슬레이브 주소 디코더",
+    "DMA·버스트 전송",
+    "타임아웃 복구 메커니즘",
+    "보드 동작 검증(S3는 사용자 확인)"
+  ],
+  "architecture": {
+    "clock": "100 MHz (W5), 비동기 리셋 btnC 액티브 하이",
+    "blocks": [
+      {
+        "id": "clk",
+        "name": "CLK_100",
+        "kind": "clock",
+        "desc": "100 MHz 보드 클럭 (W5)",
+        "short": "100MHz",
+        "side": "in"
+      },
+      {
+        "id": "xrst",
+        "name": "BTNC 리셋",
+        "kind": "external",
+        "desc": "센터 버튼 액티브 하이 리셋 (U18)",
+        "short": "리셋",
+        "side": "in"
+      },
+      {
+        "id": "xrx",
+        "name": "UART_RXD (PC→FPGA)",
+        "kind": "external",
+        "desc": "USB-UART RXD 입력 핀 (D4)",
+        "short": "RXD",
+        "side": "in"
+      },
+      {
+        "id": "xtx",
+        "name": "UART_TXD (FPGA→PC)",
+        "kind": "external",
+        "desc": "USB-UART TXD 출력 핀 (C4)",
+        "short": "TXD",
+        "side": "out"
+      },
+      {
+        "id": "xled",
+        "name": "LED[15:0]",
+        "kind": "external",
+        "desc": "LED[0]=busy, LED[1]=err (에러 코드 표시)",
+        "short": "LED",
+        "side": "out"
+      },
+      {
+        "id": "xsw",
+        "name": "SW[15:0]",
+        "kind": "external",
+        "desc": "데모 GPIO 슬레이브 읽기 소스",
+        "short": "SW",
+        "side": "in"
+      },
+      {
+        "id": "urx",
+        "name": "uart_rx",
+        "kind": "RTL",
+        "module": "uart_rx",
+        "file": "rtl/uart_rx.v",
+        "desc": "115200 8N1 수신기; 1-사이클 valid+data 출력",
+        "short": "UART RX"
+      },
+      {
+        "id": "utx",
+        "name": "uart_tx",
+        "kind": "RTL",
+        "module": "uart_tx",
+        "file": "rtl/uart_tx.v",
+        "desc": "115200 8N1 송신기; ready/valid 핸드셰이크",
+        "short": "UART TX"
+      },
+      {
+        "id": "brg",
+        "name": "uart_axilite_bridge",
+        "kind": "RTL",
+        "module": "uart_axilite_bridge",
+        "file": "rtl/uart_axilite_bridge.v",
+        "desc": "UART 바이트 프로토콜 디코더 + AXI4-Lite 마스터 FSM",
+        "short": "Bridge FSM"
+      },
+      {
+        "id": "gpio",
+        "name": "demo_gpio_slave",
+        "kind": "RTL",
+        "module": "demo_gpio_slave",
+        "file": "rtl/basys3_top.v",
+        "desc": "LED·SW 레지스터 AXI4-Lite 슬레이브(데모 전용)",
+        "short": "GPIO Demo"
+      },
+      {
+        "id": "top",
+        "name": "basys3_top",
+        "kind": "RTL",
+        "module": "basys3_top",
+        "file": "rtl/basys3_top.v",
+        "desc": "최상위 래퍼; 핀 배선",
+        "short": "Top"
+      }
+    ],
+    "links": [
+      {
+        "from": "clk",
+        "to": "brg",
+        "label": "clk"
+      },
+      {
+        "from": "xrst",
+        "to": "brg",
+        "label": "rst"
+      },
+      {
+        "from": "xrx",
+        "to": "urx",
+        "label": "uart_rx_pin"
+      },
+      {
+        "from": "urx",
+        "to": "brg",
+        "label": "rx_data+rx_valid"
+      },
+      {
+        "from": "brg",
+        "to": "utx",
+        "label": "tx_data+tx_valid"
+      },
+      {
+        "from": "utx",
+        "to": "xtx",
+        "label": "uart_tx_pin"
+      },
+      {
+        "from": "brg",
+        "to": "gpio",
+        "label": "AXI4-Lite M"
+      },
+      {
+        "from": "xsw",
+        "to": "gpio",
+        "label": "sw[15:0]"
+      },
+      {
+        "from": "gpio",
+        "to": "xled",
+        "label": "led[15:0]"
+      }
+    ]
+  },
+  "bus_protocol": {
+    "name": "UART→AXI4-Lite",
+    "signals": [
+      {
+        "name": "uart_rx_pin",
+        "dir": "외부→브리지",
+        "desc": "PC에서 들어오는 UART RXD (8N1 115200)"
+      },
+      {
+        "name": "uart_tx_pin",
+        "dir": "브리지→외부",
+        "desc": "PC로 나가는 UART TXD (응답 바이트)"
+      },
+      {
+        "name": "m_awaddr",
+        "dir": "브리지→슬레이브",
+        "desc": "AXI4-Lite 쓰기 주소 (32비트)"
+      },
+      {
+        "name": "m_awvalid",
+        "dir": "브리지→슬레이브",
+        "desc": "AW 채널 유효"
+      },
+      {
+        "name": "m_awready",
+        "dir": "슬레이브→브리지",
+        "desc": "AW 채널 준비"
+      },
+      {
+        "name": "m_wdata",
+        "dir": "브리지→슬레이브",
+        "desc": "AXI4-Lite 쓰기 데이터 (32비트)"
+      },
+      {
+        "name": "m_wstrb",
+        "dir": "브리지→슬레이브",
+        "desc": "바이트 스트로브 (항상 4'hF)"
+      },
+      {
+        "name": "m_wvalid",
+        "dir": "브리지→슬레이브",
+        "desc": "W 채널 유효"
+      },
+      {
+        "name": "m_wready",
+        "dir": "슬레이브→브리지",
+        "desc": "W 채널 준비"
+      },
+      {
+        "name": "m_bresp",
+        "dir": "슬레이브→브리지",
+        "desc": "쓰기 응답 (00=OKAY)"
+      },
+      {
+        "name": "m_bvalid",
+        "dir": "슬레이브→브리지",
+        "desc": "B 채널 유효"
+      },
+      {
+        "name": "m_bready",
+        "dir": "브리지→슬레이브",
+        "desc": "B 채널 준비"
+      },
+      {
+        "name": "m_araddr",
+        "dir": "브리지→슬레이브",
+        "desc": "AXI4-Lite 읽기 주소 (32비트)"
+      },
+      {
+        "name": "m_arvalid",
+        "dir": "브리지→슬레이브",
+        "desc": "AR 채널 유효"
+      },
+      {
+        "name": "m_arready",
+        "dir": "슬레이브→브리지",
+        "desc": "AR 채널 준비"
+      },
+      {
+        "name": "m_rdata",
+        "dir": "슬레이브→브리지",
+        "desc": "AXI4-Lite 읽기 데이터 (32비트)"
+      },
+      {
+        "name": "m_rresp",
+        "dir": "슬레이브→브리지",
+        "desc": "읽기 응답 (00=OKAY)"
+      },
+      {
+        "name": "m_rvalid",
+        "dir": "슬레이브→브리지",
+        "desc": "R 채널 유효"
+      },
+      {
+        "name": "m_rready",
+        "dir": "브리지→슬레이브",
+        "desc": "R 채널 준비"
+      }
+    ],
+    "note": "UART 프레임: 쓰기 9바이트(0x57+ADDR 4B BE+DATA 4B BE)→ACK 0x06. 읽기 5바이트(0x52+ADDR 4B BE)→0x05+DATA 4B BE. 모든 주소는 32비트 정렬."
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "custom",
+    "compat": "partial",
+    "target_map": "mbv-frozen-v2",
+    "plan": "현재는 CPU 없는 독립 데모. MicroBlaze V 연동 시: (1) 슬롯 [16] 0x4016_0000에 브리지 상태 레지스터 AXI4-Lite 슬레이브 추가, (2) intc_free[13]을 완료 인터럽트로 배선. 사용자 확인 후 동결.",
+    "frozen_mapping": [
+      {
+        "block": "brg",
+        "region": "[16] uart_bridge 0x4016_0000, intc=13 (제안, 미동결)"
+      }
+    ]
+  },
+  "external_parts": [
+    {
+      "id": "p_uart",
+      "name": "Basys3 USB-UART (내장)",
+      "block": "xrx",
+      "interface": "UART 115200 8N1",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": true,
+      "arduino_compatible": false,
+      "notes": "FPGA RXD=D4, TXD=C4. 별도 부품 불필요."
+    },
+    {
+      "id": "p_led",
+      "name": "Basys3 LED 16개",
+      "block": "xled",
+      "interface": "GPIO 출력",
+      "io_voltage": 3.3,
+      "qty": 16,
+      "board_resident": true,
+      "arduino_compatible": false,
+      "notes": "LED[0]=busy, LED[1]=err_flag, LED[15:2]=gpio_data[15:2]"
+    },
+    {
+      "id": "p_sw",
+      "name": "Basys3 슬라이드 스위치 16개",
+      "block": "xsw",
+      "interface": "GPIO 입력",
+      "io_voltage": 3.3,
+      "qty": 16,
+      "board_resident": true,
+      "arduino_compatible": false,
+      "notes": "데모 GPIO 슬레이브 읽기 소스"
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "디지털 모듈만; 외부 추가 부품 없음(USB-UART·LED·SW 모두 내장)."
+  },
+  "hierarchy": {
+    "module": "basys3_top",
+    "file": "rtl/basys3_top.v",
+    "children": [
+      {
+        "module": "uart_axilite_bridge",
+        "file": "rtl/uart_axilite_bridge.v",
+        "children": [
+          {
+            "module": "uart_rx",
+            "file": "rtl/uart_rx.v"
+          },
+          {
+            "module": "uart_tx",
+            "file": "rtl/uart_tx.v"
+          }
+        ]
+      },
+      {
+        "module": "demo_gpio_slave",
+        "file": "rtl/basys3_top.v"
+      }
+    ]
+  },
+  "memory_map": [
+    {
+      "base": "0x0000_0000",
+      "size": "0x10000",
+      "block": "gpio",
+      "note": "데모 GPIO 슬레이브 로컬 주소 (테스트벤치 기본). 동결 맵 이식 시 슬롯 주소로 변경.",
+      "regs": [
+        {
+          "off": "0x0000",
+          "name": "GPIO_DATA",
+          "access": "RW",
+          "desc": "쓰기→LED[15:0], 읽기→SW[15:0]"
+        },
+        {
+          "off": "0x0004",
+          "name": "GPIO_DIR",
+          "access": "RO",
+          "desc": "항상 0xFFFF0000 (상위=출력, 하위=입력)"
+        }
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T1",
+      "state": "done",
+      "title": "MMIO 뼈대 (GPIO + UART)",
+      "refs": [
+        "mmio-uart-gpio-skeleton"
+      ]
+    },
+    {
+      "stage": "T2",
+      "state": "current",
+      "title": "UART→AXI4-Lite 브리지 FSM (CPU-less 독립 데모)",
+      "refs": []
+    },
+    {
+      "stage": "T3",
+      "state": "planned",
+      "title": "MicroBlaze V 연동: 슬롯 [16]에 브리지 상태 레지스터, intc=13 인터럽트",
+      "refs": []
+    }
+  ],
+  "references": [
+    {
+      "card": "symbiflow-arch-defs-picosoc-basys3",
+      "why": "Basys3 PicoSoC 래퍼 — UART 기반 메모리 액세스 패턴 참고"
+    },
+    {
+      "card": "yosyshq-picorv32-picosoc",
+      "why": "PicoSoC UART 디버그 접근 방식 착안"
+    },
+    {
+      "card": "morsucci-wireless-fpga-debugger",
+      "why": "CPU-less FPGA 레지스터 접근 아이디어 근거"
+    }
+  ],
+  "sources": {
+    "rtl": [
+      "rtl/uart_rx.v",
+      "rtl/uart_tx.v",
+      "rtl/uart_axilite_bridge.v",
+      "rtl/basys3_top.v"
+    ],
+    "tb": [
+      "tb/tb_uart_axilite_bridge.v"
+    ],
+    "constraints": [
+      "constr/basys3_top.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
+  },
+  "howto": [
+    {
+      "title": "시뮬레이션",
+      "steps": [
+        "iverilog, verilator, yosys 설치",
+        "make -C capstones/mmio-uart-axilite-bridge lint sim synth",
+        "build/sim.log 에서 'PASS' 확인"
+      ]
+    },
+    {
+      "title": "Vivado 합성 (보드)",
+      "steps": [
+        "Vivado 2024.2 에서 새 프로젝트 생성 (xc7a35tcpg236-1)",
+        "rtl/*.v, constr/basys3_top.xdc 추가",
+        "상위 모듈 basys3_top 선택 후 Generate Bitstream",
+        "Programming 후 minicom 115200 8N1 접속하여 쓰기/읽기 명령 테스트"
+      ]
+    }
+  ],
+  "verification": {
+    "lint": "verilator --lint-only -Wall -Wno-fatal --top-module basys3_top rtl/uart_rx.v rtl/uart_tx.v rtl/uart_axilite_bridge.v rtl/basys3_top.v",
+    "sim": "iverilog -g2005 -o build/sim.vvp tb/tb_uart_axilite_bridge.v rtl/uart_rx.v rtl/uart_tx.v rtl/uart_axilite_bridge.v && vvp build/sim.vvp | grep -E 'PASS|FAIL'",
+    "synth": "yosys -p 'read_verilog rtl/uart_rx.v rtl/uart_tx.v rtl/uart_axilite_bridge.v rtl/basys3_top.v; synth_xilinx -top basys3_top -family xc7; stat'",
+    "board": "pending",
+    "notes": "board 검증은 사용자 담당(S3). CI run 4 (SHA 4b8fb00): S2 달성.",
+    "grade": "S2",
+    "ci_sha": "4b8fb00",
+    "ci_result": "lint=pass sim=pass synth=pass (yosys: LUT~191 FF~315)"
+  },
+  "risks": [
+    "BAUD_DIV=868: 100 MHz 클럭 기준. 실제 클럭이 다르면 파라미터 조정 필요.",
+    "AXI4-Lite 슬레이브가 없는 주소에 접근하면 마스터가 무기한 대기함(타임아웃 없음).",
+    "9바이트/5바이트 프레임 중간에 UART 에러 발생 시 FSM이 혼합 상태로 빠짐. 리셋 명령(0xFF) 미구현.",
+    "BVALID 없는 슬레이브와의 연결 시 쓰기 FSM이 멈춤."
+  ]
+}

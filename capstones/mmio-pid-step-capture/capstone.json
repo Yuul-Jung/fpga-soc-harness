@@ -1,0 +1,494 @@
+{
+  "slug": "mmio-pid-step-capture",
+  "title": "PID 계단 응답 캡처·이득 조정 IP",
+  "summary": "MMIO-lite 버스에 KP/KI/KD 가변 PID FSM·BRAM 32엔트리 계단 응답 로거·PWM 출력을 단일 IP(pid_cap_ip)로 묶고, 1차 지연 모델 모터 테스트벤치로 계단 지령 추종 및 BRAM 로그 비어있지 않음을 PASS/FAIL 자체 점검한다. IP 표준 Rev.1 관리 레지스터 포함. 아이디어 I-017 (차단조건재심사 9점)으로 생성됨 (2026-11-04).",
+  "board": "Basys3",
+  "stage": "T4",
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 Verilog-2001 원본이며 외부 코드를 포함하지 않는다. 시뮬레이션·합성 결과는 CI가 기록한다.",
+  "goals": [
+    "IP 표준 Rev.1(관리 레지스터 0xFFF0~FFFC)을 따르는 pid_cap_ip 단일 IP 설계: 4× 직교 엔코더 동기화, 창 계수 속도 측정, 8.8 고정소수점 PID FSM(D항 포함), PWM 출력",
+    "BRAM 32엔트리 계단 응답 로거: CAPTURE_CTRL 레지스터로 캡처 시작, CAPTURE_ADDR/DATA로 호스트 읽기",
+    "MMIO-lite 버스 주소 디코더로 GPIO/UART/PID_CAP 3개 슬레이브 연결",
+    "1차 지연 모델 모터 테스트벤치로 계단 지령 ±5 오차 이내 수렴(8.8 고정소수 양자화 고려) 및 BRAM 로그 비어있지 않음을 PASS/FAIL 자체 점검",
+    "yosys 합성 성공, iverilog 시뮬레이션 PASS 확인(S2)"
+  ],
+  "non_goals": [
+    "실제 모터·엔코더 하드웨어 연결(S3는 사람이 한다)",
+    "AXI4-Lite 완전 핸드셰이크(이 패키지는 mmio-lite 사용)",
+    "다채널 PID(이 패키지는 단일 채널)",
+    "속도 적분 위치 제어(이 패키지는 속도 루프만)",
+    "실시간 튜닝 UI(다음 단계 T5로 연기)"
+  ],
+  "architecture": {
+    "clock": "100 MHz (시뮬레이션에서는 10 ns 클럭)",
+    "reset": "rst, active high, 동기",
+    "blocks": [
+      {
+        "id": "top",
+        "name": "basys3_top",
+        "kind": "board-wrapper",
+        "module": "basys3_top",
+        "file": "rtl/basys3_top.v",
+        "desc": "Basys3 보드 최상위 래퍼. 클럭 버퍼, 리셋 버튼(btnC), LED/SW/BTN, 엔코더 핀, PWM 출력 핀",
+        "short": "Board wrapper",
+        "side": "top"
+      },
+      {
+        "id": "soc",
+        "name": "soc_top",
+        "kind": "soc-core",
+        "module": "soc_top",
+        "file": "rtl/soc_top.v",
+        "desc": "SoC 코어. MMIO 버스와 슬레이브 3개를 연결. 마스터 포트 노출(CPU 교체 지점)",
+        "short": "SoC core",
+        "side": "core"
+      },
+      {
+        "id": "bus",
+        "name": "mmio_bus",
+        "kind": "bus-decoder",
+        "module": "mmio_bus",
+        "file": "rtl/mmio_bus.v",
+        "desc": "addr[31:16] 기준 3개 슬레이브 선택. ready=1 사이클 고정",
+        "short": "MMIO decoder",
+        "side": "core"
+      },
+      {
+        "id": "gpio",
+        "name": "gpio",
+        "kind": "peripheral",
+        "module": "gpio",
+        "file": "rtl/gpio.v",
+        "desc": "16-bit LED(RW, off=0x00), 16-bit SW(RO, 2단 동기화, off=0x04)",
+        "short": "GPIO LED/SW",
+        "side": "peripheral"
+      },
+      {
+        "id": "uart",
+        "name": "uart_tx",
+        "kind": "peripheral",
+        "module": "uart_tx",
+        "file": "rtl/uart_tx.v",
+        "desc": "UART 8N1 송신 전용. 0x00 DATA(WO), 0x04 STATUS(RO, bit0=busy)",
+        "short": "UART TX",
+        "side": "peripheral"
+      },
+      {
+        "id": "pid_cap",
+        "name": "pid_cap_ip",
+        "kind": "peripheral",
+        "module": "pid_cap_ip",
+        "file": "rtl/pid_cap_ip.v",
+        "desc": "PID 캡처 IP. 4× 직교 엔코더 동기화, 창 계수 속도 측정, 8.8 고정소수점 PID FSM, PWM 출력, BRAM 32엔트리 계단 응답 로거. IP 표준 관리 레지스터 포함",
+        "short": "PID Cap",
+        "side": "peripheral"
+      },
+      {
+        "id": "master",
+        "name": "demo_master",
+        "kind": "sim-master",
+        "module": "demo_master",
+        "file": "rtl/demo_master.v",
+        "desc": "합성용 데모 마스터 FSM. MMIO 버스에 초기화 시퀀스를 발행하고 속도 목표와 캡처 명령을 설정",
+        "short": "Demo master",
+        "side": "sim"
+      }
+    ],
+    "links": [
+      {
+        "from": "top",
+        "to": "soc",
+        "label": "clk/rst/io"
+      },
+      {
+        "from": "soc",
+        "to": "bus",
+        "label": "mmio-lite"
+      },
+      {
+        "from": "bus",
+        "to": "gpio",
+        "label": "sel_gpio"
+      },
+      {
+        "from": "bus",
+        "to": "uart",
+        "label": "sel_uart"
+      },
+      {
+        "from": "bus",
+        "to": "pid_cap",
+        "label": "sel_pid_cap"
+      },
+      {
+        "from": "master",
+        "to": "bus",
+        "label": "sim drive (tb only)"
+      }
+    ]
+  },
+  "bus_protocol": {
+    "name": "mmio-lite",
+    "signals": [
+      {
+        "name": "valid",
+        "dir": "M→S",
+        "width": 1,
+        "desc": "트랜잭션 유효"
+      },
+      {
+        "name": "we",
+        "dir": "M→S",
+        "width": 1,
+        "desc": "쓰기=1, 읽기=0"
+      },
+      {
+        "name": "addr",
+        "dir": "M→S",
+        "width": 32,
+        "desc": "바이트 주소"
+      },
+      {
+        "name": "wdata",
+        "dir": "M→S",
+        "width": 32,
+        "desc": "쓰기 데이터"
+      },
+      {
+        "name": "rdata",
+        "dir": "S→M",
+        "width": 32,
+        "desc": "읽기 데이터 (버스 MUX 출력)"
+      },
+      {
+        "name": "ready",
+        "dir": "S→M",
+        "width": 1,
+        "desc": "항상 1 (1사이클 응답)"
+      }
+    ],
+    "note": "back-pressure 없음. valid 사이클에 always 응답. AXI4-Lite 비호환"
+  },
+  "integration": {
+    "bus": "mmio-lite",
+    "address_map": "custom",
+    "compat": "incompatible",
+    "target_map": "mbv-frozen-v2",
+    "plan": "mbv-frozen-v2 맵으로 이전 시 pid_cap=[16]=0x4016_0000 슬롯 사용(free_slots 첫 빈 칸). INTC 13 사용(free_intc 첫 빈 번호). 이 패키지는 시뮬레이션 전용 주소(0x1000~0x1002 세그먼트)를 사용하므로 compat=incompatible.",
+    "frozen_mapping": [
+      {
+        "block": "pid_cap",
+        "region": "pid_cap_ip",
+        "base": "0x4016_0000",
+        "intc": 13
+      }
+    ]
+  },
+  "external_parts": [],
+  "schematic": {
+    "state": "not-written",
+    "note": "이 패키지는 시뮬레이션 전용이며 외부 부품이 없어 회로도 미작성"
+  },
+  "hierarchy": {
+    "module": "basys3_top",
+    "file": "rtl/basys3_top.v",
+    "children": [
+      {
+        "module": "soc_top",
+        "file": "rtl/soc_top.v",
+        "children": [
+          {
+            "module": "demo_master",
+            "file": "rtl/demo_master.v"
+          },
+          {
+            "module": "mmio_bus",
+            "file": "rtl/mmio_bus.v",
+            "children": [
+              {
+                "module": "gpio",
+                "file": "rtl/gpio.v"
+              },
+              {
+                "module": "uart_tx",
+                "file": "rtl/uart_tx.v"
+              },
+              {
+                "module": "pid_cap_ip",
+                "file": "rtl/pid_cap_ip.v"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "memory_map": [
+    {
+      "base": "0x1000_0000",
+      "size": "0x10000",
+      "block": "gpio",
+      "desc": "GPIO LED/SW",
+      "regs": [
+        {
+          "off": "0x00",
+          "name": "LED",
+          "access": "RW",
+          "desc": "LED[15:0]"
+        },
+        {
+          "off": "0x04",
+          "name": "SW",
+          "access": "RO",
+          "desc": "SW[15:0] (2단 동기화)"
+        }
+      ]
+    },
+    {
+      "base": "0x1001_0000",
+      "size": "0x10000",
+      "block": "uart",
+      "desc": "UART TX",
+      "regs": [
+        {
+          "off": "0x00",
+          "name": "DATA",
+          "access": "WO",
+          "desc": "송신 바이트 [7:0]"
+        },
+        {
+          "off": "0x04",
+          "name": "STATUS",
+          "access": "RO",
+          "desc": "bit0=busy"
+        }
+      ]
+    },
+    {
+      "base": "0x1002_0000",
+      "size": "0x10000",
+      "block": "pid_cap",
+      "desc": "PID 캡처 제어",
+      "regs": [
+        {
+          "off": "0x00",
+          "name": "CTRL",
+          "access": "RW",
+          "desc": "bit0=enable, bit1=clear_pos, bit2=cap_start"
+        },
+        {
+          "off": "0x04",
+          "name": "TARGET",
+          "access": "RW",
+          "desc": "[15:0] 목표 속도 (카운트/창)"
+        },
+        {
+          "off": "0x08",
+          "name": "KP",
+          "access": "RW",
+          "desc": "[15:0] 비례 이득 8.8 고정소수점"
+        },
+        {
+          "off": "0x0C",
+          "name": "KI",
+          "access": "RW",
+          "desc": "[15:0] 적분 이득 8.8 고정소수점"
+        },
+        {
+          "off": "0x10",
+          "name": "KD",
+          "access": "RW",
+          "desc": "[15:0] 미분 이득 8.8 고정소수점"
+        },
+        {
+          "off": "0x14",
+          "name": "SPEED",
+          "access": "RO",
+          "desc": "[15:0] 현재 속도 (카운트/창)"
+        },
+        {
+          "off": "0x18",
+          "name": "PERIOD",
+          "access": "RW",
+          "desc": "[15:0] PWM 주기 (클럭 사이클)"
+        },
+        {
+          "off": "0x1C",
+          "name": "DUTY",
+          "access": "RO",
+          "desc": "[15:0] 현재 PWM 듀티 출력"
+        },
+        {
+          "off": "0x20",
+          "name": "MIN_DUTY",
+          "access": "RW",
+          "desc": "[15:0] 최소 PWM 듀티 (스톨 방지)"
+        },
+        {
+          "off": "0x24",
+          "name": "CAP_ADDR",
+          "access": "RW",
+          "desc": "[4:0] BRAM 읽기 주소 (0~31)"
+        },
+        {
+          "off": "0x28",
+          "name": "CAP_DATA",
+          "access": "RO",
+          "desc": "[15:0] CAP_ADDR 위치의 속도 로그 값"
+        },
+        {
+          "off": "0x2C",
+          "name": "CAP_STATUS",
+          "access": "RO",
+          "desc": "bit0=cap_full, [12:8]=cap_count"
+        },
+        {
+          "off": "0xFFF0",
+          "name": "ID",
+          "access": "RO",
+          "desc": "0x50494431 (PID1)"
+        },
+        {
+          "off": "0xFFF4",
+          "name": "VER",
+          "access": "RO",
+          "desc": "0x01000001"
+        },
+        {
+          "off": "0xFFF8",
+          "name": "IRQ_STATUS",
+          "access": "RW1C",
+          "desc": "bit0=speed_ready, bit1=cap_full"
+        },
+        {
+          "off": "0xFFFC",
+          "name": "IRQ_ENABLE",
+          "access": "RW",
+          "desc": "bit0=speed_ready IRQ 허용, bit1=cap_full IRQ 허용"
+        }
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T1",
+      "state": "done",
+      "title": "mmio-uart-gpio-skeleton",
+      "refs": [
+        "digilent-basys-3-getting-started-microblaze"
+      ]
+    },
+    {
+      "stage": "T2",
+      "state": "done",
+      "title": "mmio-pwm-qenc-checker",
+      "refs": [
+        "element14-eoi-blog3-custom-ip-pwm",
+        "suoglu-axi-lite-slave"
+      ]
+    },
+    {
+      "stage": "T3",
+      "state": "done",
+      "title": "mmio-speed-pi-checker",
+      "refs": [
+        "columbia-4840-dc-motor-controller",
+        "waveshare-esp32-tb6612-encoder-speed-pid",
+        "1988kramer-motor-control"
+      ]
+    },
+    {
+      "stage": "T4",
+      "state": "current",
+      "title": "mmio-pid-step-capture (이 패키지)",
+      "refs": [
+        "hakan-demirli-pid-fpga",
+        "microchip-an532-dc-servo-pid",
+        "1runxu-520-pid-fpga",
+        "deepc94-pid-fpga-vhdl"
+      ]
+    },
+    {
+      "stage": "T4",
+      "state": "planned",
+      "title": "mmio-multiaxis-pid-checker (다음 단계, I-015)",
+      "refs": []
+    }
+  ],
+  "references": [
+    {
+      "card": "hakan-demirli-pid-fpga",
+      "why": "FPGA PID 고정소수점 구현, 적분 와인드업 클램프 패턴 참고"
+    },
+    {
+      "card": "microchip-an532-dc-servo-pid",
+      "why": "DC 서보 PID 이산화(오일러)와 D항 필터 설계 근거"
+    },
+    {
+      "card": "1runxu-520-pid-fpga",
+      "why": "FPGA PID FSM 상태 전이와 레지스터 배치 참고"
+    },
+    {
+      "card": "deepc94-pid-fpga-vhdl",
+      "why": "BRAM 기반 계단 응답 로거 구조 참고"
+    },
+    {
+      "card": "columbia-4840-dc-motor-controller",
+      "why": "창 계수 속도 측정 한계와 하드웨어 PID 처리 근거 (T3 계승)"
+    },
+    {
+      "card": "1988kramer-motor-control",
+      "why": "PID 이산화와 적분 와인드업 클램프 설계 패턴 (T3 계승)"
+    }
+  ],
+  "sources": {
+    "rtl": [
+      "rtl/basys3_top.v",
+      "rtl/soc_top.v",
+      "rtl/mmio_bus.v",
+      "rtl/gpio.v",
+      "rtl/uart_tx.v",
+      "rtl/pid_cap_ip.v",
+      "rtl/demo_master.v"
+    ],
+    "tb": [
+      "tb/tb_pid_cap.v"
+    ],
+    "constraints": [
+      "constr/basys3.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
+  },
+  "howto": [
+    {
+      "title": "시뮬레이션",
+      "steps": [
+        "iverilog, verilator, yosys 설치",
+        "make -C capstones/mmio-pid-step-capture lint sim synth",
+        "build/sim.log에서 PASS 확인"
+      ]
+    },
+    {
+      "title": "Vivado 빌드 (Basys3)",
+      "steps": [
+        "새 RTL 프로젝트, 파트 xc7a35tcpg236-1",
+        "rtl/*.v 추가 (tb/, demo_master.v 제외), constr/basys3.xdc 추가, 최상위 basys3_top",
+        "Generate Bitstream 후 Program Device",
+        "UART 터미널(115200 8N1) 열어 PID 동작 확인"
+      ]
+    }
+  ],
+  "verification": {
+    "board": "not-tested",
+    "notes": "S3는 사람이 Basys3에서 직접 확인해야 한다. CI가 S1(린트+시뮬)과 S2(합성)를 기록한다."
+  },
+  "risks": [
+    "WINDOW_CYCLES=1000(시뮬) vs 1_000_000(합성) — 합성 빌드 시 pid_cap_ip.v 파라미터 확인 필수",
+    "KD항 미분 노이즈 — 실제 엔코더 신호에 적용 시 D항 필터 추가 필요. 테스트벤치는 노이즈 없는 모델 사용",
+    "BRAM 추론: yosys가 BRAM으로 추론하지 않을 수 있음. Vivado는 별도 확인",
+    "적분기 클램프(-32768~32767)로 와인드업 방지하나, KI가 너무 크면 오버슈트 발생 가능",
+    "최소 PWM(MIN_DUTY)이 0이면 저속 구간에서 모터 스톨 가능"
+  ]
+}

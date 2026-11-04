@@ -1,0 +1,636 @@
+{
+  "slug": "mmio-sensor-hub-checker",
+  "title": "센서 허브 IP 자체 점검: HC-SR04 초음파 + DHT11 온습도 + I2C(MPU-6050) 모델 테스트벤치",
+  "summary": "세 종류 센서 프로토콜(HC-SR04 에코 타이밍, DHT11 단선 40비트, I2C 레지스터 읽기)을 하나의 MMIO 창에 묶은 센서 허브 IP. 초음파·온습도·가속도계 모델 테스트벤치가 각 센서의 프로토콜을 흉내 내어 허브 레지스터 값을 PASS/FAIL로 검사한다. 하드웨어 없이 시뮬레이션만으로 세 FSM의 타이밍 정확성을 확인하는 T2 패키지.",
+  "board": "Digilent Basys3 (XC7A35T)",
+  "stage": "T2",
+  "goals": [
+    "HC-SR04 초음파 거리 측정 FSM(트리거 10 μs, 에코 타임 → 거리 cm)",
+    "DHT11 단선 프로토콜 FSM(시작 신호 18 ms, 40비트 수신, 체크섬 검증)",
+    "I2C 마스터 FSM으로 MPU-6050 단일 레지스터 읽기",
+    "세 센서를 단일 MMIO 창(0x1002_0000)에 통합하고 레지스터로 제어·조회",
+    "각 프로토콜 모델 테스트벤치로 PASS/FAIL 자체 점검"
+  ],
+  "non_goals": [
+    "실제 하드웨어 센서 구동(S3 보드 검증은 사용자가 수행)",
+    "다중 I2C 슬레이브 중재",
+    "DHT22 호환성",
+    "DMA 또는 인터럽트 기반 판독"
+  ],
+  "architecture": {
+    "clock": "100 MHz (Basys3 W5)",
+    "blocks": [
+      {
+        "id": "clk",
+        "name": "CLK_100 100MHz",
+        "kind": "clock",
+        "file": "",
+        "desc": "Basys3 메인 클럭",
+        "short": "CLK",
+        "side": "left"
+      },
+      {
+        "id": "x_trig",
+        "name": "HC-SR04 TRIG(Pmod)",
+        "kind": "external",
+        "file": "",
+        "desc": "10 μs 트리거 펄스 출력",
+        "short": "TRIG",
+        "side": "right"
+      },
+      {
+        "id": "x_echo",
+        "name": "HC-SR04 ECHO(Pmod)",
+        "kind": "external",
+        "file": "",
+        "desc": "에코 펄스 입력(레벨 변환 필요: 5V→3.3V)",
+        "short": "ECHO",
+        "side": "right"
+      },
+      {
+        "id": "x_dht",
+        "name": "DHT11 DATA(Pmod)",
+        "kind": "external",
+        "file": "",
+        "desc": "단선 양방향(풀업 4.7 kΩ 필요)",
+        "short": "DHT",
+        "side": "right"
+      },
+      {
+        "id": "x_sda",
+        "name": "I2C SDA(Pmod)",
+        "kind": "external",
+        "file": "",
+        "desc": "오픈 드레인, 풀업 4.7 kΩ 필요",
+        "short": "SDA",
+        "side": "right"
+      },
+      {
+        "id": "x_scl",
+        "name": "I2C SCL(Pmod)",
+        "kind": "external",
+        "file": "",
+        "desc": "오픈 드레인, 풀업 4.7 kΩ 필요",
+        "short": "SCL",
+        "side": "right"
+      },
+      {
+        "id": "x_swled",
+        "name": "SW / LED",
+        "kind": "external",
+        "file": "",
+        "desc": "스위치 16개 / LED 16개",
+        "short": "SW/LED",
+        "side": "left"
+      },
+      {
+        "id": "x_uart",
+        "name": "RsTx (USB-UART)",
+        "kind": "external",
+        "file": "",
+        "desc": "PC 직렬 출력",
+        "short": "RsTx",
+        "side": "left"
+      },
+      {
+        "id": "hcsr04",
+        "name": "hcsr04_ctrl",
+        "kind": "periph",
+        "file": "rtl/hcsr04_ctrl.v",
+        "desc": "HC-SR04 FSM: IDLE→TRIGGER→WAIT→MEASURE→DONE. 거리(cm) = echo_cycles / 5800.",
+        "short": "HCSR04",
+        "side": "right"
+      },
+      {
+        "id": "dht11",
+        "name": "dht11_ctrl",
+        "kind": "periph",
+        "file": "rtl/dht11_ctrl.v",
+        "desc": "DHT11 단선 FSM: 시작(18 ms low)→응답→40비트 수신→체크섬 확인.",
+        "short": "DHT11",
+        "side": "right"
+      },
+      {
+        "id": "i2cm",
+        "name": "i2c_master",
+        "kind": "periph",
+        "file": "rtl/i2c_master.v",
+        "desc": "I2C 마스터 FSM: 400 kHz SCL(100 MHz / 250), 7비트 주소+8비트 레지스터+1바이트 읽기.",
+        "short": "I2CM",
+        "side": "right"
+      },
+      {
+        "id": "sensor_hub",
+        "name": "sensor_hub_top",
+        "kind": "periph",
+        "file": "rtl/sensor_hub_top.v",
+        "desc": "세 센서 IP를 하나의 MMIO 창으로 묶는 최상위. 주소 디코더 + 레지스터 맵.",
+        "short": "HUB",
+        "side": "top"
+      },
+      {
+        "id": "gpio",
+        "name": "gpio",
+        "kind": "periph",
+        "file": "rtl/gpio.v",
+        "desc": "LED[15:0] RW, SW[15:0] RO, 2단 동기화",
+        "short": "GPIO",
+        "side": "left"
+      },
+      {
+        "id": "uart",
+        "name": "uart_tx",
+        "kind": "periph",
+        "file": "rtl/uart_tx.v",
+        "desc": "115200 baud 송신 전용, FIFO 없음",
+        "short": "UART",
+        "side": "left"
+      },
+      {
+        "id": "bus",
+        "name": "mmio_bus",
+        "kind": "bus",
+        "file": "rtl/mmio_bus.v",
+        "desc": "32비트 주소, 세그먼트 선택: 0x1000_0000 GPIO, 0x1001_0000 UART, 0x1002_0000 Sensor Hub",
+        "short": "BUS",
+        "side": "top"
+      },
+      {
+        "id": "master",
+        "name": "demo_master",
+        "kind": "cpu",
+        "file": "rtl/demo_master.v",
+        "desc": "사이클 카운터로 각 센서 트리거 → LED 결과 표시 + UART 출력. CPU 없이 시퀀서 역할.",
+        "short": "MASTER",
+        "side": "top"
+      },
+      {
+        "id": "soc",
+        "name": "soc_top",
+        "kind": "periph",
+        "file": "rtl/soc_top.v",
+        "desc": "demo_master + mmio_bus + 모든 IP 연결",
+        "short": "SOC",
+        "side": "top"
+      },
+      {
+        "id": "top",
+        "name": "basys3_top",
+        "kind": "periph",
+        "file": "rtl/basys3_top.v",
+        "desc": "MMCM 없이 100 MHz 직결, 핀 매핑",
+        "short": "TOP",
+        "side": "top"
+      }
+    ],
+    "links": [
+      {
+        "from": "clk",
+        "to": "top",
+        "label": "clk"
+      },
+      {
+        "from": "top",
+        "to": "soc",
+        "label": "clk/rst_n"
+      },
+      {
+        "from": "soc",
+        "to": "master",
+        "label": "mmio"
+      },
+      {
+        "from": "master",
+        "to": "bus",
+        "label": "addr/wdata/we/rdata"
+      },
+      {
+        "from": "bus",
+        "to": "gpio",
+        "label": "sel_gpio"
+      },
+      {
+        "from": "bus",
+        "to": "uart",
+        "label": "sel_uart"
+      },
+      {
+        "from": "bus",
+        "to": "sensor_hub",
+        "label": "sel_hub"
+      },
+      {
+        "from": "sensor_hub",
+        "to": "hcsr04",
+        "label": "ctrl/status"
+      },
+      {
+        "from": "sensor_hub",
+        "to": "dht11",
+        "label": "ctrl/status"
+      },
+      {
+        "from": "sensor_hub",
+        "to": "i2cm",
+        "label": "cmd/data/status"
+      },
+      {
+        "from": "hcsr04",
+        "to": "x_trig",
+        "label": "trig_o"
+      },
+      {
+        "from": "x_echo",
+        "to": "hcsr04",
+        "label": "echo_i"
+      },
+      {
+        "from": "dht11",
+        "to": "x_dht",
+        "label": "dht_io(tri)"
+      },
+      {
+        "from": "i2cm",
+        "to": "x_sda",
+        "label": "sda_io(tri)"
+      },
+      {
+        "from": "i2cm",
+        "to": "x_scl",
+        "label": "scl_o"
+      },
+      {
+        "from": "gpio",
+        "to": "x_swled",
+        "label": "led/sw"
+      },
+      {
+        "from": "uart",
+        "to": "x_uart",
+        "label": "RsTx"
+      }
+    ]
+  },
+  "bus_protocol": {
+    "name": "mmio-lite",
+    "signals": [
+      {
+        "name": "addr[31:0]",
+        "dir": "master→slave",
+        "desc": "바이트 주소, 4바이트 정렬"
+      },
+      {
+        "name": "wdata[31:0]",
+        "dir": "master→slave",
+        "desc": "쓰기 데이터"
+      },
+      {
+        "name": "we",
+        "dir": "master→slave",
+        "desc": "1이면 쓰기"
+      },
+      {
+        "name": "sel",
+        "dir": "master→slave",
+        "desc": "1이면 이 사이클에 접근"
+      },
+      {
+        "name": "rdata[31:0]",
+        "dir": "slave→master",
+        "desc": "읽기 데이터 (조합 경로)"
+      }
+    ],
+    "note": "단순 단일 사이클 버스. 실제 AXI4-Lite로 교체 시 integration.plan 참조."
+  },
+  "integration": {
+    "bus": "mmio-lite (자체, 단독 실행용)",
+    "address_map": "custom",
+    "compat": "incompatible",
+    "target_map": "mbv-frozen-v2",
+    "plan": "이 패키지는 단독 시뮬레이션·보드 확인용으로 자체 mmio-lite 버스(0x1000_xxxx~0x1002_xxxx)를 쓴다. 동결 맵(mbv-frozen-v2) 이식 계획: (1) GPIO·UART는 동결 맵 [00]/[02] AMD IP를 그대로 쓰고 드라이버를 맞춘다. (2) sensor_hub는 동결 맵 [16](0x4016_0000)에 IP 표준(64KB 창, 0xFFF0 ID/VER)으로 감싸서 AXI4-Lite 슬레이브로 등록한다. (3) demo_master 대신 MicroBlaze V + 폴링 드라이버(C) 또는 인터럽트(irq→INTC)로 교체한다. HC-SR04 ECHO 5V→3.3V 레벨 변환 필수. DHT11·SDA·SCL 풀업 4.7 kΩ 필요.",
+    "frozen_mapping": [
+      {
+        "block": "gpio",
+        "region": "[00] gpio_led_sw 0x4000_0000"
+      },
+      {
+        "block": "uart",
+        "region": "[02] uart_lite   0x4002_0000"
+      },
+      {
+        "block": "sensor_hub",
+        "region": "[16] sensor_hub  0x4016_0000"
+      }
+    ]
+  },
+  "external_parts": [
+    {
+      "id": "hcsr04_part",
+      "name": "HC-SR04 초음파 거리 센서",
+      "block": "x_echo",
+      "interface": "TRIG(out) + ECHO(in)",
+      "io_voltage": "5V",
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": "5V (모터 전원과 공유 가능, GND 공통)",
+      "level_shift": "필요 (저항 분압 1kΩ/2kΩ 또는 레벨 시프터)",
+      "power_note": "ECHO 핀은 5V 출력이므로 Basys3 Pmod 3.3V I/O와 직결 금지. 저항 분압(1 kΩ / 2 kΩ) 또는 레벨 시프터 사용.",
+      "arduino_compatible": true,
+      "notes": "측정 범위 2~400 cm, 최소 측정 간격 60 ms. 연속 트리거 시 간섭 위험."
+    },
+    {
+      "id": "dht11_part",
+      "name": "DHT11 온습도 센서",
+      "block": "x_dht",
+      "interface": "단선 양방향(DATA)",
+      "io_voltage": "3.3V",
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": "3.3V (Pmod VCC)",
+      "level_shift": "",
+      "power_note": "3.3V 동작 가능. 데이터 핀 풀업 4.7 kΩ to 3.3V 필수.",
+      "arduino_compatible": true,
+      "notes": "측정 간격 최소 1초. 체크섬(하위 8비트 합)으로 오류 감지."
+    },
+    {
+      "id": "mpu6050_part",
+      "name": "MPU-6050 6축 IMU (I2C)",
+      "block": "x_sda",
+      "interface": "I2C (SDA + SCL)",
+      "io_voltage": "3.3V",
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": "3.3V",
+      "level_shift": "",
+      "power_note": "GY-521 모듈의 경우 온보드 3.3V 레귤레이터가 있어 5V 공급 가능. SDA/SCL 풀업 4.7 kΩ 필요(모듈 내장인 경우 확인).",
+      "arduino_compatible": true,
+      "notes": "I2C 주소 0x68 (AD0=GND) 또는 0x69 (AD0=3.3V). 이 패키지는 0x68 고정."
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "레벨 변환 회로(HC-SR04 ECHO 5V→3.3V), 풀업 저항(DHT11 Data, I2C SDA/SCL) 회로도 미작성. 외부 부품 절에 텍스트로 명시."
+  },
+  "hierarchy": {
+    "module": "basys3_top",
+    "file": "rtl/basys3_top.v",
+    "children": [
+      {
+        "module": "soc_top",
+        "file": "rtl/soc_top.v",
+        "children": [
+          {
+            "module": "demo_master",
+            "file": "rtl/demo_master.v"
+          },
+          {
+            "module": "mmio_bus",
+            "file": "rtl/mmio_bus.v"
+          },
+          {
+            "module": "gpio",
+            "file": "rtl/gpio.v"
+          },
+          {
+            "module": "uart_tx",
+            "file": "rtl/uart_tx.v"
+          },
+          {
+            "module": "sensor_hub_top",
+            "file": "rtl/sensor_hub_top.v",
+            "children": [
+              {
+                "module": "hcsr04_ctrl",
+                "file": "rtl/hcsr04_ctrl.v"
+              },
+              {
+                "module": "dht11_ctrl",
+                "file": "rtl/dht11_ctrl.v"
+              },
+              {
+                "module": "i2c_master",
+                "file": "rtl/i2c_master.v"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "memory_map": [
+    {
+      "base": "0x1000_0000",
+      "size": "0x10000",
+      "block": "gpio",
+      "desc": "GPIO LED/SW",
+      "regs": [
+        {
+          "off": "0x00",
+          "name": "LED",
+          "access": "RW",
+          "desc": "하위 16비트 LED"
+        },
+        {
+          "off": "0x04",
+          "name": "SW",
+          "access": "RO",
+          "desc": "하위 16비트 스위치 (2단 동기화)"
+        }
+      ]
+    },
+    {
+      "base": "0x1001_0000",
+      "size": "0x10000",
+      "block": "uart",
+      "desc": "UART TX 전용",
+      "regs": [
+        {
+          "off": "0x00",
+          "name": "DATA",
+          "access": "WO",
+          "desc": "송신 바이트 [7:0]"
+        },
+        {
+          "off": "0x04",
+          "name": "STATUS",
+          "access": "RO",
+          "desc": "bit0=busy"
+        }
+      ]
+    },
+    {
+      "base": "0x1002_0000",
+      "size": "0x10000",
+      "block": "sensor_hub",
+      "desc": "센서 허브: HC-SR04 + DHT11 + I2C 마스터",
+      "regs": [
+        {
+          "off": "0x00",
+          "name": "HCSR04_CTRL",
+          "access": "WO",
+          "desc": "bit0=start (1 클럭 쓰면 트리거 발생)"
+        },
+        {
+          "off": "0x04",
+          "name": "HCSR04_STATUS",
+          "access": "RO",
+          "desc": "bit0=busy, bit1=done, bit2=timeout"
+        },
+        {
+          "off": "0x08",
+          "name": "HCSR04_DIST",
+          "access": "RO",
+          "desc": "측정 거리 cm [15:0] (최대 400)"
+        },
+        {
+          "off": "0x10",
+          "name": "DHT11_CTRL",
+          "access": "WO",
+          "desc": "bit0=start"
+        },
+        {
+          "off": "0x14",
+          "name": "DHT11_STATUS",
+          "access": "RO",
+          "desc": "bit0=busy, bit1=done, bit2=checksum_ok"
+        },
+        {
+          "off": "0x18",
+          "name": "DHT11_HUMID",
+          "access": "RO",
+          "desc": "습도 정수부 [7:0]"
+        },
+        {
+          "off": "0x1C",
+          "name": "DHT11_TEMP",
+          "access": "RO",
+          "desc": "온도 정수부 [7:0]"
+        },
+        {
+          "off": "0x20",
+          "name": "I2C_CMD",
+          "access": "WO",
+          "desc": "bit0=start, bit[7:1]=dev_addr[6:0], bit[15:8]=reg_addr[7:0]"
+        },
+        {
+          "off": "0x24",
+          "name": "I2C_STATUS",
+          "access": "RO",
+          "desc": "bit0=busy, bit1=done, bit2=error (NACK)"
+        },
+        {
+          "off": "0x28",
+          "name": "I2C_RDATA",
+          "access": "RO",
+          "desc": "읽은 바이트 [7:0]"
+        }
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T1",
+      "state": "done",
+      "title": "UART + GPIO 스켈레톤",
+      "refs": [
+        "mmio-uart-gpio-skeleton"
+      ]
+    },
+    {
+      "stage": "T2",
+      "state": "current",
+      "title": "센서 허브 IP (HC-SR04+DHT11+I2C)",
+      "refs": []
+    },
+    {
+      "stage": "T3",
+      "state": "planned",
+      "title": "MicroBlaze V + FreeRTOS 드라이버로 센서 주기 폴링",
+      "refs": []
+    }
+  ],
+  "references": [
+    {
+      "card": "lauriela8-fpga-multi-module-system",
+      "why": "HC-SR04·DHT11·I2C 복합 허브의 근거 카드. 다중 모듈 FSM 조합 패턴 참조."
+    },
+    {
+      "card": "hackster-basys3-hcsr04-distance",
+      "why": "Basys3에서 HC-SR04 100 MHz 카운터로 거리 측정하는 근거. 타이밍 상수(5800 사이클/cm) 참조."
+    },
+    {
+      "card": "ammar-bin-amir-arty-a7-i2c-mpu-6050",
+      "why": "FPGA에서 I2C 마스터 FSM으로 MPU-6050 레지스터를 읽는 근거. I2C 타이밍(400 kHz) 참조."
+    }
+  ],
+  "sources": {
+    "rtl": [
+      "rtl/hcsr04_ctrl.v",
+      "rtl/dht11_ctrl.v",
+      "rtl/i2c_master.v",
+      "rtl/sensor_hub_top.v",
+      "rtl/gpio.v",
+      "rtl/uart_tx.v",
+      "rtl/mmio_bus.v",
+      "rtl/demo_master.v",
+      "rtl/soc_top.v",
+      "rtl/basys3_top.v"
+    ],
+    "tb": [
+      "tb/tb_hcsr04.v",
+      "tb/tb_dht11.v",
+      "tb/tb_i2c_master.v",
+      "tb/tb_sensor_hub.v"
+    ],
+    "constraints": [
+      "constr/basys3.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
+  },
+  "howto": [
+    {
+      "title": "시뮬레이션 (각 IP 단위 검증)",
+      "steps": [
+        "make -C capstones/mmio-sensor-hub-checker lint sim",
+        "build/tb_hcsr04.log: PASS 확인 (HC-SR04 거리 계산)",
+        "build/tb_dht11.log: PASS 확인 (DHT11 체크섬 포함)",
+        "build/tb_i2c.log: PASS 확인 (I2C ACK/NACK 모두)",
+        "build/tb_sensor_hub.log: PASS 확인 (통합 MMIO)"
+      ]
+    },
+    {
+      "title": "합성 추정 (yosys)",
+      "steps": [
+        "make -C capstones/mmio-sensor-hub-checker synth",
+        "build/synth.log에서 셀 수와 LUT 추정 확인",
+        "주의: yosys 추정이므로 Vivado 실제 자원과 차이 있음"
+      ]
+    },
+    {
+      "title": "Vivado 빌드 (Basys3)",
+      "steps": [
+        "새 RTL 프로젝트, 파트 xc7a35tcpg236-1",
+        "rtl/*.v 추가 (tb/ 제외), constr/basys3.xdc 추가, 최상위 basys3_top",
+        "Generate Bitstream 후 Program Device",
+        "Pmod JA: HC-SR04 (TRIG=JA1, ECHO=JA2, 5V→3.3V 레벨 변환 필수)",
+        "Pmod JB: DHT11 (DATA 단선, 풀업 4.7kΩ to 3.3V)",
+        "Pmod JC: MPU-6050 I2C (SDA=JC2, SCL=JC1, 풀업 4.7kΩ)",
+        "RsTx(A18)를 PC 터미널 115200 8N1으로 연결",
+        "LED[0]: HC-SR04 완료, LED[2]: DHT11 완료, LED[4]: I2C 완료"
+      ]
+    }
+  ],
+  "verification": {
+    "board": "not-tested",
+    "notes": "tb_hcsr04: 에코 1750 μs → 30 cm, 타임아웃(에코 없음). tb_dht11: 정상 40비트(25°C, 60%), 체크섬 오류. tb_i2c_master: ACK 정상 1바이트 읽기, NACK 오류. tb_sensor_hub: 세 센서 순차 트리거 → 레지스터 값 확인."
+  },
+  "risks": [
+    "HC-SR04 ECHO는 5V 출력이므로 레벨 변환 없이 Basys3 Pmod에 직결 시 FPGA I/O 손상 위험",
+    "DHT11 타이밍(18 ms 시작, 40 μs 비트)은 클럭 도메인 주의. 100 MHz에서 카운터 비트 수 충분(24비트 = 167 ms 최대)",
+    "I2C 오픈 드레인: Verilog tri-state(sda_oe, sda_in 분리)로 모델링. 실보드에서 양방향 Pmod 배선 필요",
+    "DHT11 측정 최소 간격 1초. demo_master가 너무 빠르게 재트리거하면 비트 오류 발생"
+  ],
+  "author_note": "I-009 아이디어(2026-11-04 /verify ready 승격). 선택 경로: §13.6 (ready 직접)."
+}

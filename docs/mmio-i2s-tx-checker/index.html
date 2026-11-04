@@ -1,0 +1,1071 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MMIO I2S 클럭 체크 하네스 (Basys3 Pmod I2S2)</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+
+.colhead{font:600 11px sans-serif;fill:var(--muted)}
+.link{fill:none;stroke:var(--line);stroke-width:1.5}.arrow{fill:var(--line)}
+.lbl{font:11px sans-serif;fill:var(--muted)}
+.bname{font:600 13px sans-serif;fill:var(--text)}.bdesc{font:11px sans-serif;fill:var(--muted)}
+.k-cpu rect{fill:var(--c-cpu);stroke:var(--c-cpu-s)}.k-bus rect{fill:var(--c-bus);stroke:var(--c-bus-s)}
+.k-periph rect,.k-memory rect{fill:var(--c-per);stroke:var(--c-per-s)}
+.k-external rect{fill:var(--c-ext);stroke:var(--c-ext-s);stroke-dasharray:4 3}
+.k-clock rect{fill:var(--c-clk);stroke:var(--c-clk-s)}
+</style></head><body><header class="top"><a class="brand" href="../hub.html">FPGA SoC 하네스</a><a href="../hub.html">메인</a><a href="../hub.html#capstones">캡스톤</a><a href="../soc-map/tech-tree.html">기술 트리</a><a href="../catalog/index.html">카탈로그</a><a href="../inbox/ideas.html">아이디어</a><a href="../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main>
+<p class="muted">캡스톤 패키지 · Digilent Basys3 (XC7A35T) · 단계 T2</p>
+<h1>MMIO I2S 클럭 체크 하네스 (Basys3 Pmod I2S2)</h1><p>100 MHz 시스템 클럭에서 I2S 클럭 계층(MCLK 12.5 MHz → BCLK 3.125 MHz → LRCLK 97.656 kHz)을 정수 분주로 생성하고, 비율과 비트 순서를 시뮬레이션에서 자동 검증한다. Pmod JA에 Pmod I2S2를 꽂으면 보드에서 직접 오디오 출력을 확인할 수 있다.</p>
+<div class="badges"><span class="badge b-not-run">린트: 미실행</span><span class="badge b-not-run">시뮬레이션: 미실행</span><span class="badge b-not-run">합성: 미실행</span><span class="badge b-not-run">보드: 미실행</span></div>
+<p class="muted">검증 상태는 실행 기록이 있을 때만 표시한다. 기록이 없으면 '미실행'이다.</p>
+<nav><a href="#goal">목표</a><a href="#arch">계통도</a><a href="#hier">모듈 계층</a><a href="#map">메모리맵</a><a href="#ext">외부 부품·전기</a><a href="#road">기술 트리</a><a href="#src">실행 소스</a><a href="#verify">검증</a><a href="#ref">참고·위험</a></nav>
+<h2 id="goal">1. 목표와 범위</h2><h3>목표</h3><ul><li>정수 분주기로 MCLK(12.5 MHz), BCLK(3.125 MHz), LRCLK(97.656 kHz)를 생성한다.</li><li>16비트 스테레오 I2S 송신기를 MMIO 레지스터로 제어한다.</li><li>테스트벤치에서 클럭 비율(BCLK:MCLK=4, BCLK/LRCLK=32)과 MSB 우선 비트 순서를 PASS/FAIL로 검증한다.</li><li>마스터 포트를 분리해 CPU로 교체할 수 있게 한다.</li></ul><h3>범위 밖</h3><ul><li>표준 44.1/48 kHz 샘플레이트 (100 MHz에서 정수 분주로는 불가)</li><li>MMCM/PLL 사용 (도구 없이 시뮬레이션 가능하도록 순수 RTL 분주기 사용)</li><li>I2S 수신(Pmod I2S2의 ADC), DMA, FIFO</li><li>CPU 구현 (다음 단계)</li></ul><p class="muted">이 패키지의 소스는 하네스가 직접 작성한 원본이며 외부 코드를 포함하지 않는다. 아이디어 I-002에서 생성됨(2026-11-04). 시뮬레이션·합성 결과는 CI가 기록한다.</p>
+<h2 id="arch">2. 계통도</h2><p>클럭: 100 MHz 단일 클럭 (clk, W5), 동기 리셋 (btnC, 2단 동기화). I2S 클럭(MCLK/BCLK/LRCLK)은 정수 분주기가 sys_clk에서 생성한다.</p><div class="panel"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 974 372" role="img" aria-label="블록 다이어그램">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arrow"/></marker></defs>
+<text x="24" y="16" class="colhead">클럭·입력·마스터</text>
+<text x="274" y="16" class="colhead">버스</text>
+<text x="524" y="16" class="colhead">주변장치</text>
+<text x="774" y="16" class="colhead">외부</text>
+<path d="M200,63.0 C362.0,63.0 362.0,63.0 524,63.0" class="link" marker-end="url(#ar)"/>
+<text x="362.0" y="56.0" class="lbl" text-anchor="middle">100 MHz</text>
+<path d="M612.0,92 L612.0,280" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="186.0" class="lbl" text-anchor="middle">MCLK/BCLK/LRCLK</text>
+<path d="M200,227.0 C237.0,227.0 237.0,63.0 274,63.0" class="link" marker-end="url(#ar)"/>
+<text x="237.0" y="138.0" class="lbl" text-anchor="middle">mmio-lite</text>
+<path d="M450,63.0 C487.0,63.0 487.0,145.0 524,145.0" class="link" marker-end="url(#ar)"/>
+<text x="487.0" y="97.0" class="lbl" text-anchor="middle">sel/rdata</text>
+<path d="M450,63.0 C487.0,63.0 487.0,227.0 524,227.0" class="link" marker-end="url(#ar)"/>
+<text x="487.0" y="138.0" class="lbl" text-anchor="middle">sel/rdata</text>
+<path d="M450,63.0 C487.0,63.0 487.0,309.0 524,309.0" class="link" marker-end="url(#ar)"/>
+<text x="487.0" y="179.0" class="lbl" text-anchor="middle">sel/rdata</text>
+<path d="M700,145.0 C737.0,145.0 737.0,63.0 774,63.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="97.0" class="lbl" text-anchor="middle">sw, led</text>
+<path d="M700,227.0 C737.0,227.0 737.0,145.0 774,145.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="179.0" class="lbl" text-anchor="middle">txd</text>
+<path d="M700,309.0 C737.0,309.0 737.0,227.0 774,227.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="261.0" class="lbl" text-anchor="middle">MCLK/BCLK/LRCLK/SDIN</text>
+<path d="M524,309.0 C464,172 260,172 200,227.0" class="link" marker-end="url(#ar)"/>
+<text x="362.0" y="180" class="lbl" text-anchor="middle">irq</text>
+<g class="k-clock"><rect x="24" y="34" width="176" height="58" rx="8"/><text x="112.0" y="58" text-anchor="middle" class="bname">clk 100 MHz</text><text x="112.0" y="76" text-anchor="middle" class="bdesc">보드 클럭 입력</text></g>
+<g class="k-external"><rect x="24" y="116" width="176" height="58" rx="8"/><text x="112.0" y="140" text-anchor="middle" class="bname">btnC</text><text x="112.0" y="158" text-anchor="middle" class="bdesc">리셋</text></g>
+<g class="k-periph"><rect x="524" y="34" width="176" height="58" rx="8"/><text x="612.0" y="58" text-anchor="middle" class="bname">i2s_clk_gen</text><text x="612.0" y="76" text-anchor="middle" class="bdesc">I2S 클럭 분주기</text></g>
+<g class="k-cpu"><rect x="24" y="198" width="176" height="58" rx="8"/><text x="112.0" y="222" text-anchor="middle" class="bname">demo_master</text><text x="112.0" y="240" text-anchor="middle" class="bdesc">CPU 슬롯 (초기화 FSM)</text></g>
+<g class="k-bus"><rect x="274" y="34" width="176" height="58" rx="8"/><text x="362.0" y="58" text-anchor="middle" class="bname">mmio_bus</text><text x="362.0" y="76" text-anchor="middle" class="bdesc">주소 디코드·읽기 mux</text></g>
+<g class="k-periph"><rect x="524" y="116" width="176" height="58" rx="8"/><text x="612.0" y="140" text-anchor="middle" class="bname">gpio</text><text x="612.0" y="158" text-anchor="middle" class="bdesc">LED 16, SW 16</text></g>
+<g class="k-periph"><rect x="524" y="198" width="176" height="58" rx="8"/><text x="612.0" y="222" text-anchor="middle" class="bname">uart_tx</text><text x="612.0" y="240" text-anchor="middle" class="bdesc">115200 8N1 송신</text></g>
+<g class="k-periph"><rect x="524" y="280" width="176" height="58" rx="8"/><text x="612.0" y="304" text-anchor="middle" class="bname">i2s_tx</text><text x="612.0" y="322" text-anchor="middle" class="bdesc">I2S TX + MMIO</text></g>
+<g class="k-external"><rect x="774" y="34" width="176" height="58" rx="8"/><text x="862.0" y="58" text-anchor="middle" class="bname">SW / LED</text><text x="862.0" y="76" text-anchor="middle" class="bdesc">스위치와 LED</text></g>
+<g class="k-external"><rect x="774" y="116" width="176" height="58" rx="8"/><text x="862.0" y="140" text-anchor="middle" class="bname">RsTx (USB-UART)</text><text x="862.0" y="158" text-anchor="middle" class="bdesc">PC 터미널</text></g>
+<g class="k-external"><rect x="774" y="198" width="176" height="58" rx="8"/><text x="862.0" y="222" text-anchor="middle" class="bname">Pmod I2S2 (JA)</text><text x="862.0" y="240" text-anchor="middle" class="bdesc">Pmod I2S2</text></g>
+</svg></div>
+<p class="muted"><a href="diagram.svg">diagram.svg</a>로 따로 받을 수 있다.</p>
+<h3>버스 규약: mmio-lite</h3><div class="panel"><table><tr><th>신호</th><th>방향</th><th>설명</th></tr><tr><td><code>m_valid</code></td><td>master→slave</td><td>요청 유효</td></tr><tr><td><code>m_we</code></td><td>master→slave</td><td>1이면 쓰기</td></tr><tr><td><code>m_addr[31:0]</code></td><td>master→slave</td><td>바이트 주소, 4바이트 정렬</td></tr><tr><td><code>m_wdata[31:0]</code></td><td>master→slave</td><td>쓰기 데이터</td></tr><tr><td><code>m_rdata[31:0]</code></td><td>slave→master</td><td>읽기 데이터 (조합 경로)</td></tr><tr><td><code>m_ready</code></td><td>slave→master</td><td>항상 1: 모든 접근은 1사이클</td></tr></table></div><p>주소 [31:16]으로 슬레이브 선택, [15:0]이 슬레이브 내 오프셋. i2s_tx는 0xFFF0~FFFC(mgmt 레지스터)에 접근하므로 16비트 오프셋이 필요하다.</p>
+<h3>통합 선언 (SoC 적합성)</h3><p class="badge b-fail">이 패키지는 MicroBlaze V 동결 주소맵과 호환되지 않는다 (파일럿). 아래 이식 계획을 따라야 SoC에 합칠 수 있다.</p><div class="panel"><table><tr><th style="white-space:nowrap">버스</th><td><code>mmio-lite</code></td></tr><tr><th style="white-space:nowrap">주소맵</th><td><code>custom</code> → 동결 맵 <code>mbv-frozen-v2</code> 적합 여부: <b>적합하지 않음</b></td></tr><tr><th style="white-space:nowrap">이식 계획</th><td>이 패키지는 CPU 없이 시뮬레이션하려고 자체 버스(0x1002_xxxx)를 쓴다. 동결 맵(mbv-frozen-v2)에는 i2s_tx 슬롯 [14] 0x4014_0000 (intc 11)이 미리 배정되어 있다. 이식 경로: (1) 주소를 0x1002_0000 → 0x4014_0000으로 교체하고 mmio-lite → AXI4-Lite 래퍼를 붙인다. (2) IRQ를 intc 11에 연결한다. (3) MMIO 레지스터 배치(CTRL/STATUS/L_DATA/R_DATA/mgmt)는 ip_standard.json을 따르므로 AXI4-Lite 래퍼를 쓰면 드라이버 변경 없이 MicroBlaze V에서 동작한다.</td></tr></table></div>
+<h2 id="hier">3. 모듈 계층</h2><div class="panel"><ul class="tree"><li><code>basys3_top</code> <span class="muted">(rtl/basys3_top.v)</span><ul><li><code>i2s_clk_gen</code> <span class="muted">(rtl/i2s_clk_gen.v)</span></li><li><code>soc_top</code> <span class="muted">(rtl/soc_top.v)</span><ul><li><code>demo_master</code> <span class="muted">(rtl/demo_master.v)</span></li><li><code>mmio_bus</code> <span class="muted">(rtl/mmio_bus.v)</span></li><li><code>gpio</code> <span class="muted">(rtl/gpio.v)</span></li><li><code>uart_tx</code> <span class="muted">(rtl/uart_tx.v)</span></li><li><code>i2s_tx</code> <span class="muted">(rtl/i2s_tx.v)</span></li></ul></li></ul></li></ul></div>
+<h2 id="map">4. 메모리맵</h2><h3>gpio <code>0x1000_0000</code> <span class="muted">크기 0x10000</span></h3><div class="panel"><table><tr><th>오프셋</th><th>이름</th><th>접근</th><th>설명</th></tr><tr><td><code>0x00</code></td><td>LED</td><td>RW</td><td>하위 16비트가 LED 핀</td></tr><tr><td><code>0x04</code></td><td>SW</td><td>RO</td><td>하위 16비트, 2단 동기화된 스위치</td></tr></table></div><h3>uart_tx <code>0x1001_0000</code> <span class="muted">크기 0x10000</span></h3><div class="panel"><table><tr><th>오프셋</th><th>이름</th><th>접근</th><th>설명</th></tr><tr><td><code>0x00</code></td><td>DATA</td><td>WO</td><td>하위 8비트 송신 시작. busy 중 무시</td></tr><tr><td><code>0x04</code></td><td>STATUS</td><td>RO</td><td>bit0 = busy</td></tr></table></div><h3>i2s_tx <code>0x1002_0000</code> <span class="muted">크기 0x10000</span></h3><div class="panel"><table><tr><th>오프셋</th><th>이름</th><th>접근</th><th>설명</th></tr><tr><td><code>0x0000</code></td><td>CTRL</td><td>RW</td><td>bit[0]=TX_EN. 1이면 연속 송신 활성화</td></tr><tr><td><code>0x0004</code></td><td>STATUS</td><td>RO</td><td>bit[0]=active(TX_EN과 동일)</td></tr><tr><td><code>0x0008</code></td><td>L_DATA</td><td>WO</td><td>다음 프레임에 사용할 왼쪽 채널 16비트 샘플 [15:0]</td></tr><tr><td><code>0x000C</code></td><td>R_DATA</td><td>WO</td><td>다음 프레임에 사용할 오른쪽 채널 16비트 샘플 [15:0]</td></tr><tr><td><code>0xFFF0</code></td><td>ID</td><td>RO</td><td>0x49325354 (&#x27;I2ST&#x27;)</td></tr><tr><td><code>0xFFF4</code></td><td>VER</td><td>RO</td><td>0x01000001: std_rev=1, major=0, minor=1</td></tr><tr><td><code>0xFFF8</code></td><td>IRQ_STATUS</td><td>W1C</td><td>bit[0]=frame_done. 1쓰면 클리어(W1C)</td></tr><tr><td><code>0xFFFC</code></td><td>IRQ_ENABLE</td><td>RW</td><td>bit[0]=frame_done 인터럽트 활성화</td></tr></table></div>
+<h2 id="ext">5. 외부 부품과 전기 회로도</h2><p class="muted">2절의 계통도는 <b>디지털 모듈 연결도</b>다. 전압, 풀업, 커넥터 배선 같은 전기 사항은 이 절에서 따로 다룬다. 기계가 읽는 사본: <a href="bom.csv">bom.csv</a> · <a href="connections.json">connections.json</a></p><p class="badge b-skipped">전기 회로도: 미작성</p><p class="muted">Pmod I2S2는 3.3V 단전원이며 레벨 변환이 필요 없다. Basys3 JA와 직결한다. 전기 회로도는 미작성이며 Digilent Pmod I2S2 Reference Manual(digilent.com)을 참조한다.</p><div class="panel"><table><tr><th>id</th><th>부품</th><th>인터페이스</th><th>신호 전압</th><th>구분</th><th>레벨 변환</th><th>비고</th></tr><tr><td><code>p_i2s2</code></td><td>Digilent Pmod I2S2 (Cirrus Logic CS4344 DAC)</td><td>I2S / Left-Justified (MCLK + BCLK + LRCLK + SDIN)</td><td style="white-space:nowrap">3.3 V</td><td style="white-space:nowrap">외부 모듈</td><td>불필요 (3.3V)</td><td>Pmod JA 포트 연결. JA1=LRCLK, JA2=SDIN, JA4=MCLK, JA7=BCLK. 3.3V 단일 전원. VDD=3.3V는 Pmod VCC에서 공급.</td></tr><tr><td><code>p_btn</code></td><td>Basys3 푸시버튼 (btnC)</td><td>GPIO 입력</td><td style="white-space:nowrap">3.3 V</td><td style="white-space:nowrap">보드 내장</td><td>불필요 (3.3V)</td><td>btnC=리셋</td></tr><tr><td><code>p_swled</code></td><td>Basys3 슬라이드 스위치 16 / LED 16</td><td>GPIO 입출력</td><td style="white-space:nowrap">3.3 V</td><td style="white-space:nowrap">보드 내장</td><td>불필요 (3.3V)</td><td>보드 내장</td></tr><tr><td><code>p_uart</code></td><td>Basys3 USB-UART (FTDI)</td><td>UART TX 115200 8N1</td><td style="white-space:nowrap">3.3 V</td><td style="white-space:nowrap">보드 내장</td><td>불필요 (3.3V)</td><td>보드 내장, PC 터미널 연결</td></tr></table></div><p class="muted">Basys3 FPGA 핀은 3.3V 신호만 직접 받는다. 5V·12V·모터·릴레이는 직결하지 않는다.</p>
+<h2 id="road">6. 기술 트리 (이 캡스톤의 확장 경로)</h2><div class="panel"><ul style="list-style:none;padding:0"><li class="step"><span class="tag s-done">T1</span><span>MMIO 버스 + GPIO + UART, 마스터는 FSM <span class='muted'>참고: <code>mmio-uart-gpio-skeleton</code></span></span></li><li class="step"><span class="tag s-current">T2</span><span>I2S 클럭 생성·검증, Pmod I2S2 오디오 출력 <span class='muted'>참고: <a href="../catalog/amd/digilent-forum-pmodamp3-basys3-i2s.html"><code>digilent-forum-pmodamp3-basys3-i2s</code></a>, <a href="../catalog/intel/columbia-4840-audio-visualizer.html"><code>columbia-4840-audio-visualizer</code></a></span></span></li><li class="step"><span class="tag s-planned">T2</span><span>마스터를 PicoRV32로 교체, I2S TX를 C 드라이버로 제어 <span class='muted'>참고: <code>fanguoc2len-risc-v-computer</code></span></span></li><li class="step"><span class="tag s-planned">T3</span><span>오디오 톤 생성기 또는 BRAM 오디오 플레이어 펌웨어 <span class='muted'>참고: <a href="../catalog/intel/columbia-4840-audio-visualizer.html"><code>columbia-4840-audio-visualizer</code></a></span></span></li></ul></div>
+<h2 id="src">7. 실행 소스</h2><p>저장소의 <code>capstones/mmio-i2s-tx-checker/</code>에 있는 파일 그대로다. 이 문서는 파일에서 읽어 넣은 것이므로 항상 일치한다. <a href="mmio-i2s-tx-checker.zip">소스 전체 내려받기 (.zip)</a> · <a href="https://github.com/Yuul-Jung/fpga-soc-harness/tree/main/capstones/mmio-i2s-tx-checker">GitHub에서 보기</a></p><details><summary><code>rtl/i2s_clk_gen.v</code> <span class="muted">64줄</span></summary><pre>// i2s_clk_gen.v — I2S 클럭 계층 생성기 (순수 정수 분주기, sys_clk 동기)
+// 입력: 100 MHz sys_clk
+// 출력: MCLK 12.5 MHz (÷8), BCLK 3.125 MHz (÷32), LRCLK 97.656 kHz (÷1024)
+// 클럭 비율: BCLK:MCLK = 1:4, BCLK/LRCLK = 32 (16비트 스테레오 LJ 포맷)
+// 주의: Vivado에서 BCLK/MCLK/LRCLK를 generated clock으로 선언해야 타이밍 분석이 정확하다.
+`timescale 1ns/1ps
+module i2s_clk_gen (
+    input  wire clk,    // 100 MHz 시스템 클럭
+    input  wire rst,    // 동기 리셋 (active high)
+    output wire mclk,   // 12.5 MHz = 100 MHz / 8
+    output wire bclk,   // 3.125 MHz = 100 MHz / 32
+    output wire lrclk   // 97.656 kHz = 100 MHz / 1024
+);
+
+    // --- MCLK: 토글 주기 4 sys_clk → 12.5 MHz ---
+    reg [2:0] mclk_cnt;
+    reg       mclk_r;
+    always @(posedge clk) begin
+        if (rst) begin
+            mclk_cnt &lt;= 3&#x27;d0;
+            mclk_r   &lt;= 1&#x27;b0;
+        end else if (mclk_cnt == 3&#x27;d3) begin
+            mclk_cnt &lt;= 3&#x27;d0;
+            mclk_r   &lt;= ~mclk_r;
+        end else begin
+            mclk_cnt &lt;= mclk_cnt + 3&#x27;d1;
+        end
+    end
+    assign mclk = mclk_r;
+
+    // --- BCLK: 토글 주기 16 sys_clk → 3.125 MHz ---
+    reg [4:0] bclk_cnt;
+    reg       bclk_r;
+    always @(posedge clk) begin
+        if (rst) begin
+            bclk_cnt &lt;= 5&#x27;d0;
+            bclk_r   &lt;= 1&#x27;b0;
+        end else if (bclk_cnt == 5&#x27;d15) begin
+            bclk_cnt &lt;= 5&#x27;d0;
+            bclk_r   &lt;= ~bclk_r;
+        end else begin
+            bclk_cnt &lt;= bclk_cnt + 5&#x27;d1;
+        end
+    end
+    assign bclk = bclk_r;
+
+    // --- LRCLK: 토글 주기 512 sys_clk → 97.656 kHz ---
+    // 1 LRCLK 주기 = 1024 sys_clk = 32 BCLK 주기 = 16비트 × 2채널
+    reg [9:0] lr_cnt;
+    reg       lrclk_r;
+    always @(posedge clk) begin
+        if (rst) begin
+            lr_cnt  &lt;= 10&#x27;d0;
+            lrclk_r &lt;= 1&#x27;b0;
+        end else if (lr_cnt == 10&#x27;d511) begin
+            lr_cnt  &lt;= 10&#x27;d0;
+            lrclk_r &lt;= ~lrclk_r;
+        end else begin
+            lr_cnt  &lt;= lr_cnt + 10&#x27;d1;
+        end
+    end
+    assign lrclk = lrclk_r;
+
+endmodule
+</pre></details><details><summary><code>rtl/i2s_tx.v</code> <span class="muted">162줄</span></summary><pre>// i2s_tx.v — I2S 송신기 + MMIO 레지스터 (ip_standard rev 1 준수)
+// Left-Justified 포맷: LRCLK 변환 직후 첫 번째 BCLK 하강 에지에서 MSB 출력
+// MMIO 오프셋 맵 (64KB 창, 0x1002_0000 기준):
+//   0x0000 CTRL      RW  bit[0]=TX_EN
+//   0x0004 STATUS    RO  bit[0]=active(=TX_EN)
+//   0x0008 L_DATA    WO  [15:0] 왼쪽 채널 샘플 (다음 LRCLK 하강부터 반영)
+//   0x000C R_DATA    WO  [15:0] 오른쪽 채널 샘플
+//   0xFFF0 ID        RO  0x49325354 (&#x27;I2ST&#x27;)
+//   0xFFF4 VER       RO  0x01000001
+//   0xFFF8 IRQ_STATUS W1C bit[0]=frame_done
+//   0xFFFC IRQ_ENABLE RW  bit[0]=frame_done 인터럽트 활성화
+`timescale 1ns/1ps
+module i2s_tx (
+    input  wire        clk,
+    input  wire        rst,
+    // mmio-lite 슬레이브 포트
+    input  wire        sel,
+    input  wire        we,
+    input  wire [15:0] off,     // 창 내 바이트 오프셋 (addr[15:0])
+    input  wire [31:0] wdata,
+    output reg  [31:0] rdata,
+    // I2S 클럭 (i2s_clk_gen에서 공급, sys_clk 동기)
+    input  wire        mclk,
+    input  wire        bclk,
+    input  wire        lrclk,
+    // I2S 출력
+    output wire        sdin,   // 직렬 데이터 (Pmod I2S2 SDIN 핀)
+    // 인터럽트
+    output wire        irq
+);
+    // -------------------------------------------------------
+    // MMIO 레지스터
+    // -------------------------------------------------------
+    reg        tx_en;
+    reg [15:0] l_reg, r_reg;      // 호스트가 쓴 샘플 버퍼
+    reg        irq_status;        // frame_done 래치
+    reg        irq_enable;
+
+    // 쓰기
+    always @(posedge clk) begin
+        if (rst) begin
+            tx_en      &lt;= 1&#x27;b0;
+            l_reg      &lt;= 16&#x27;h0000;
+            r_reg      &lt;= 16&#x27;h0000;
+            irq_enable &lt;= 1&#x27;b0;
+        end else if (sel &amp;&amp; we) begin
+            case (off)
+                16&#x27;h0000: tx_en      &lt;= wdata[0];
+                16&#x27;h0008: l_reg      &lt;= wdata[15:0];
+                16&#x27;h000C: r_reg      &lt;= wdata[15:0];
+                16&#x27;hFFFC: irq_enable &lt;= wdata[0];
+                default: ;
+            endcase
+        end
+    end
+
+    // IRQ_STATUS: W1C
+    always @(posedge clk) begin
+        if (rst) begin
+            irq_status &lt;= 1&#x27;b0;
+        end else begin
+            if (frame_done_pulse)                 irq_status &lt;= 1&#x27;b1;
+            if (sel &amp;&amp; we &amp;&amp; off == 16&#x27;hFFF8)     irq_status &lt;= irq_status &amp; ~wdata[0];
+        end
+    end
+
+    // 읽기 (조합)
+    always @* begin
+        case (off)
+            16&#x27;h0000: rdata = {31&#x27;d0, tx_en};
+            16&#x27;h0004: rdata = {31&#x27;d0, tx_en};
+            16&#x27;hFFF0: rdata = 32&#x27;h4932_5354; // &#x27;I2ST&#x27;
+            16&#x27;hFFF4: rdata = 32&#x27;h0100_0001; // std_rev=1, minor=1
+            16&#x27;hFFF8: rdata = {31&#x27;d0, irq_status};
+            16&#x27;hFFFC: rdata = {31&#x27;d0, irq_enable};
+            default:  rdata = 32&#x27;h0000_0000;
+        endcase
+    end
+
+    assign irq = irq_status &amp; irq_enable;
+
+    // -------------------------------------------------------
+    // 에지 검출 (1사이클 지연, sys_clk 동기)
+    // -------------------------------------------------------
+    reg bclk_d, lrclk_d;
+    wire bclk_fall   = !bclk   &amp;&amp; bclk_d;
+    wire lrclk_fall  = !lrclk  &amp;&amp; lrclk_d;
+    wire lrclk_rise  =  lrclk  &amp;&amp; !lrclk_d;
+
+    always @(posedge clk) begin
+        if (rst) begin
+            bclk_d  &lt;= 1&#x27;b0;
+            lrclk_d &lt;= 1&#x27;b0;
+        end else begin
+            bclk_d  &lt;= bclk;
+            lrclk_d &lt;= lrclk;
+        end
+    end
+
+    // -------------------------------------------------------
+    // I2S 직렬화 (Left-Justified 포맷)
+    // - LRCLK 하강: L 채널 샘플 로드, 비트 카운터 초기화
+    // - LRCLK 상승: R 채널 샘플 로드, 비트 카운터 초기화
+    // - BCLK 하강: 현재 채널의 다음 비트를 SDIN에 출력 (MSB 우선)
+    // -------------------------------------------------------
+    reg [15:0] l_shift, r_shift;  // 현재 프레임 직렬화 버퍼
+    reg [4:0]  bit_cnt;           // 0..15: 유효 비트, 16+: 패딩 0
+    reg        sdin_r;
+    reg        frame_done_r;
+
+    wire frame_done_pulse = frame_done_r;
+
+    always @(posedge clk) begin
+        if (rst) begin
+            l_shift      &lt;= 16&#x27;h0000;
+            r_shift      &lt;= 16&#x27;h0000;
+            bit_cnt      &lt;= 5&#x27;d0;
+            sdin_r       &lt;= 1&#x27;b0;
+            frame_done_r &lt;= 1&#x27;b0;
+        end else begin
+            frame_done_r &lt;= 1&#x27;b0; // 1사이클 펄스
+
+            if (lrclk_fall) begin
+                // L 채널 시작: l_reg 래치, MSB 즉시 출력 (LJ: lrclk 하강과 동시에 bit15 세팅)
+                // lrclk_fall 과 bclk_fall 이 같은 사이클에 겹치므로 여기서 미리 출력한다.
+                l_shift &lt;= {l_reg[14:0], 1&#x27;b0};          // bit15 소비, 나머지 준비
+                bit_cnt &lt;= 5&#x27;d1;                          // bit15 이미 출력 처리
+                sdin_r  &lt;= tx_en ? l_reg[15] : 1&#x27;b0;
+            end else if (lrclk_rise) begin
+                // R 채널 시작: r_reg 래치, MSB 즉시 출력, frame_done 펄스
+                r_shift      &lt;= {r_reg[14:0], 1&#x27;b0};
+                bit_cnt      &lt;= 5&#x27;d1;
+                sdin_r       &lt;= tx_en ? r_reg[15] : 1&#x27;b0;
+                frame_done_r &lt;= 1&#x27;b1; // 한 프레임 완료 (L+R 한 쌍)
+            end else if (bclk_fall &amp;&amp; tx_en) begin
+                if (bit_cnt &lt;= 5&#x27;d15) begin
+                    // MSB 우선 출력 후 왼쪽 시프트
+                    if (!lrclk) begin
+                        sdin_r  &lt;= l_shift[15];
+                        l_shift &lt;= {l_shift[14:0], 1&#x27;b0};
+                    end else begin
+                        sdin_r  &lt;= r_shift[15];
+                        r_shift &lt;= {r_shift[14:0], 1&#x27;b0};
+                    end
+                    bit_cnt &lt;= bit_cnt + 5&#x27;d1;
+                end else begin
+                    sdin_r &lt;= 1&#x27;b0; // 비트 16 이후: 패딩 0
+                end
+            end else if (!tx_en) begin
+                sdin_r &lt;= 1&#x27;b0;
+            end
+        end
+    end
+
+    assign sdin = sdin_r;
+
+    // mclk는 basys3_top에서 Pmod JA4로 직접 연결한다 (여기서는 무시)
+    // verilator lint_off UNUSED
+    wire _unused_mclk = mclk;
+    // verilator lint_on UNUSED
+
+endmodule
+</pre></details><details><summary><code>rtl/mmio_bus.v</code> <span class="muted">34줄</span></summary><pre>// mmio_bus.v — MMIO 주소 디코더 (64KB 창, addr[31:16] 기준)
+// 창 크기를 64KB로 키워 i2s_tx의 0xFFF0~FFFC(mgmt 레지스터)에 접근 가능하게 한다.
+// sel_X: addr[31:16]으로 슬레이브 선택
+// addr[15:0]: 슬레이브 내 오프셋으로 그대로 전달
+`timescale 1ns/1ps
+module mmio_bus (
+    input  wire        valid,
+    input  wire        we,
+    input  wire [31:0] addr,
+    input  wire [31:0] wdata,
+    // 슬레이브 선택
+    output wire        sel_gpio,
+    output wire        sel_uart,
+    output wire        sel_i2s,
+    // 슬레이브 읽기 데이터
+    input  wire [31:0] rdata_gpio,
+    input  wire [31:0] rdata_uart,
+    input  wire [31:0] rdata_i2s,
+    // 마스터 읽기 데이터
+    output reg  [31:0] rdata,
+    output wire        ready
+);
+    assign sel_gpio = valid &amp;&amp; (addr[31:16] == 16&#x27;h1000);
+    assign sel_uart = valid &amp;&amp; (addr[31:16] == 16&#x27;h1001);
+    assign sel_i2s  = valid &amp;&amp; (addr[31:16] == 16&#x27;h1002);
+    assign ready    = 1&#x27;b1; // 모든 접근은 1사이클
+
+    always @* begin
+        if      (sel_gpio) rdata = rdata_gpio;
+        else if (sel_uart) rdata = rdata_uart;
+        else if (sel_i2s)  rdata = rdata_i2s;
+        else               rdata = 32&#x27;h0000_0000;
+    end
+endmodule
+</pre></details><details><summary><code>rtl/gpio.v</code> <span class="muted">33줄</span></summary><pre>// GPIO: 0x00 LED(RW, 16bit), 0x04 SW(RO, 2단 동기화된 스위치 16bit)
+module gpio (
+    input  wire        clk,
+    input  wire        rst,
+    input  wire        sel,
+    input  wire        we,
+    input  wire [7:0]  off,
+    input  wire [31:0] wdata,
+    output reg  [31:0] rdata,
+    input  wire [15:0] sw,
+    output wire [15:0] led
+);
+    reg [15:0] led_r;
+    reg [15:0] sw_s1, sw_s2;
+    assign led = led_r;
+
+    always @(posedge clk) begin
+        sw_s1 &lt;= sw;
+        sw_s2 &lt;= sw_s1;
+        if (rst)
+            led_r &lt;= 16&#x27;h0000;
+        else if (sel &amp;&amp; we &amp;&amp; off == 8&#x27;h00)
+            led_r &lt;= wdata[15:0];
+    end
+
+    always @* begin
+        case (off)
+            8&#x27;h00:   rdata = {16&#x27;h0000, led_r};
+            8&#x27;h04:   rdata = {16&#x27;h0000, sw_s2};
+            default: rdata = 32&#x27;h0000_0000;
+        endcase
+    end
+endmodule
+</pre></details><details><summary><code>rtl/uart_tx.v</code> <span class="muted">64줄</span></summary><pre>// UART 송신(8N1): 0x00 DATA(WO, busy일 때 쓰기는 무시), 0x04 STATUS(RO, bit0=busy)
+module uart_tx #(
+    parameter CLK_HZ = 100_000_000,
+    parameter BAUD   = 115200
+) (
+    input  wire        clk,
+    input  wire        rst,
+    input  wire        sel,
+    input  wire        we,
+    input  wire [7:0]  off,
+    input  wire [31:0] wdata,
+    output reg  [31:0] rdata,
+    output wire        txd
+);
+    localparam DIV = CLK_HZ / BAUD;
+
+    reg [9:0]  sh;
+    reg [3:0]  nbit;
+    reg [15:0] cnt;
+    reg        busy;
+    reg        tx;
+    assign txd = tx;
+
+    wire wr_data = sel &amp;&amp; we &amp;&amp; (off == 8&#x27;h00);
+
+    always @(posedge clk) begin
+        if (rst) begin
+            busy &lt;= 1&#x27;b0;
+            tx   &lt;= 1&#x27;b1;
+            cnt  &lt;= 16&#x27;d0;
+            nbit &lt;= 4&#x27;d0;
+            sh   &lt;= 10&#x27;h3FF;
+        end else if (!busy) begin
+            tx &lt;= 1&#x27;b1;
+            if (wr_data) begin
+                sh   &lt;= {1&#x27;b1, wdata[7:0], 1&#x27;b0};
+                busy &lt;= 1&#x27;b1;
+                cnt  &lt;= DIV - 1;
+                nbit &lt;= 4&#x27;d0;
+                tx   &lt;= 1&#x27;b0;
+            end
+        end else begin
+            if (cnt == 16&#x27;d0) begin
+                cnt &lt;= DIV - 1;
+                if (nbit == 4&#x27;d9) begin
+                    busy &lt;= 1&#x27;b0;
+                    tx   &lt;= 1&#x27;b1;
+                end else begin
+                    nbit &lt;= nbit + 4&#x27;d1;
+                    tx   &lt;= sh[nbit + 4&#x27;d1];
+                end
+            end else begin
+                cnt &lt;= cnt - 16&#x27;d1;
+            end
+        end
+    end
+
+    always @* begin
+        case (off)
+            8&#x27;h04:   rdata = {31&#x27;d0, busy};
+            default: rdata = 32&#x27;h0000_0000;
+        endcase
+    end
+endmodule
+</pre></details><details><summary><code>rtl/demo_master.v</code> <span class="muted">118줄</span></summary><pre>// demo_master.v — I2S TX MMIO 체커 FSM (7상태)
+// I2S 초기화 → IRQ 폴링 → frame_done 카운터 → LED 갱신
+// 버스 주소맵 (64KB 창, addr[31:16] 기준):
+//   GPIO  0x1000_xxxx: LED=0x00, SW=0x04
+//   UART  0x1001_xxxx: DATA=0x00, STATUS=0x04  (미사용)
+//   I2S   0x1002_xxxx: CTRL=0x0000, STATUS=0x0004,
+//                      L_DATA=0x0008, R_DATA=0x000C,
+//                      IRQ_STATUS=0xFFF8, IRQ_ENABLE=0xFFFC
+`timescale 1ns/1ps
+module demo_master (
+    input  wire        clk,
+    input  wire        rst,
+    // mmio-lite 마스터 포트
+    output reg         m_valid,
+    output reg         m_we,
+    output reg  [31:0] m_addr,
+    output reg  [31:0] m_wdata,
+    input  wire [31:0] m_rdata,
+    input  wire        m_ready
+);
+    // 상태 인코딩
+    localparam S_WR_L    = 3&#x27;d0; // L_DATA = 0xA5A5
+    localparam S_WR_R    = 3&#x27;d1; // R_DATA = 0x5A5A
+    localparam S_EN_TX   = 3&#x27;d2; // CTRL   = 1 (TX_EN)
+    localparam S_EN_IRQ  = 3&#x27;d3; // IRQ_ENABLE = 1
+    localparam S_RD_IRQ  = 3&#x27;d4; // IRQ_STATUS 읽기; bit[0]=1이면 → S_CL_IRQ
+    localparam S_CL_IRQ  = 3&#x27;d5; // IRQ_STATUS W1C (bit[0]=1 써서 클리어)
+    localparam S_WR_LED  = 3&#x27;d6; // GPIO LED에 frame_done 카운터 출력
+
+    reg [2:0]  state;
+    reg [15:0] frame_cnt; // frame_done 발생 횟수 카운터
+
+    // 상태 전이 (버스 핸드셰이크: m_valid &amp; m_ready → 완료)
+    always @(posedge clk) begin
+        if (rst) begin
+            state     &lt;= S_WR_L;
+            frame_cnt &lt;= 16&#x27;d0;
+            m_valid   &lt;= 1&#x27;b0;
+            m_we      &lt;= 1&#x27;b0;
+            m_addr    &lt;= 32&#x27;d0;
+            m_wdata   &lt;= 32&#x27;d0;
+        end else begin
+            if (m_valid &amp;&amp; m_ready) begin
+                // 현재 트랜잭션 완료
+                m_valid &lt;= 1&#x27;b0;
+                case (state)
+                    S_WR_L:   state &lt;= S_WR_R;
+                    S_WR_R:   state &lt;= S_EN_TX;
+                    S_EN_TX:  state &lt;= S_EN_IRQ;
+                    S_EN_IRQ: state &lt;= S_RD_IRQ;
+                    S_RD_IRQ: begin
+                        // 읽기 완료 — rdata를 평가한다
+                        if (m_rdata[0]) begin
+                            frame_cnt &lt;= frame_cnt + 16&#x27;d1;
+                            state     &lt;= S_CL_IRQ;
+                        end
+                        // bit[0]=0이면 같은 상태를 반복 (다음 사이클에 valid 다시 설정됨)
+                    end
+                    S_CL_IRQ: state &lt;= S_WR_LED;
+                    S_WR_LED: state &lt;= S_RD_IRQ; // 계속 폴링
+                    default:  state &lt;= S_RD_IRQ;
+                endcase
+            end
+        end
+    end
+
+    // 출력 조합 블록 (m_valid가 0일 때 다음 트랜잭션을 즉시 발행)
+    always @(posedge clk) begin
+        if (rst) begin
+            // 리셋 직후 초기 트랜잭션 준비는 아래 else 블록이 처리
+        end else if (!m_valid) begin
+            m_valid &lt;= 1&#x27;b1;
+            case (state)
+                S_WR_L: begin
+                    m_we    &lt;= 1&#x27;b1;
+                    m_addr  &lt;= 32&#x27;h1002_0008; // I2S L_DATA
+                    m_wdata &lt;= 32&#x27;h0000_A5A5;
+                end
+                S_WR_R: begin
+                    m_we    &lt;= 1&#x27;b1;
+                    m_addr  &lt;= 32&#x27;h1002_000C; // I2S R_DATA
+                    m_wdata &lt;= 32&#x27;h0000_5A5A;
+                end
+                S_EN_TX: begin
+                    m_we    &lt;= 1&#x27;b1;
+                    m_addr  &lt;= 32&#x27;h1002_0000; // I2S CTRL
+                    m_wdata &lt;= 32&#x27;h0000_0001; // TX_EN=1
+                end
+                S_EN_IRQ: begin
+                    m_we    &lt;= 1&#x27;b1;
+                    m_addr  &lt;= 32&#x27;h1002_FFFC; // I2S IRQ_ENABLE
+                    m_wdata &lt;= 32&#x27;h0000_0001; // frame_done IRQ 활성화
+                end
+                S_RD_IRQ: begin
+                    m_we    &lt;= 1&#x27;b0;
+                    m_addr  &lt;= 32&#x27;h1002_FFF8; // I2S IRQ_STATUS
+                    m_wdata &lt;= 32&#x27;d0;
+                end
+                S_CL_IRQ: begin
+                    m_we    &lt;= 1&#x27;b1;
+                    m_addr  &lt;= 32&#x27;h1002_FFF8; // I2S IRQ_STATUS W1C
+                    m_wdata &lt;= 32&#x27;h0000_0001; // bit[0]=1 → W1C 클리어
+                end
+                S_WR_LED: begin
+                    m_we    &lt;= 1&#x27;b1;
+                    m_addr  &lt;= 32&#x27;h1000_0000; // GPIO LED
+                    m_wdata &lt;= {16&#x27;d0, frame_cnt};
+                end
+                default: begin
+                    m_we    &lt;= 1&#x27;b0;
+                    m_addr  &lt;= 32&#x27;d0;
+                    m_wdata &lt;= 32&#x27;d0;
+                end
+            endcase
+        end
+    end
+
+endmodule
+</pre></details><details><summary><code>rtl/soc_top.v</code> <span class="muted">122줄</span></summary><pre>// soc_top.v — SoC 최상위: demo_master + mmio_bus + gpio + uart_tx + i2s_tx
+// mmio-lite 마스터(demo_master)가 단일 마스터로 세 슬레이브를 구동한다.
+// I2S 클럭(mclk, bclk, lrclk)은 basys3_top의 i2s_clk_gen에서 공급받는다.
+`timescale 1ns/1ps
+module soc_top (
+    input  wire        clk,
+    input  wire        rst,
+    // I2S 클럭 (basys3_top에서 공급)
+    input  wire        mclk,
+    input  wire        bclk,
+    input  wire        lrclk,
+    // GPIO
+    input  wire [15:0] sw,
+    output wire [15:0] led,
+    // UART
+    output wire        txd,
+    // I2S 출력
+    output wire        sdin
+);
+
+    // -------------------------------------------------------
+    // mmio-lite 버스 신호
+    // -------------------------------------------------------
+    wire        m_valid;
+    wire        m_we;
+    wire [31:0] m_addr;
+    wire [31:0] m_wdata;
+    wire [31:0] m_rdata;
+    wire        m_ready;
+
+    // -------------------------------------------------------
+    // 슬레이브 선택 신호
+    // -------------------------------------------------------
+    wire        sel_gpio, sel_uart, sel_i2s;
+
+    // -------------------------------------------------------
+    // 슬레이브 읽기 데이터
+    // -------------------------------------------------------
+    wire [31:0] rdata_gpio, rdata_uart, rdata_i2s;
+
+    // -------------------------------------------------------
+    // IRQ (내부에서만 사용, lint 억제)
+    // -------------------------------------------------------
+    wire        irq_i2s;
+    // verilator lint_off UNUSED
+    wire _unused_irq = irq_i2s;
+    // verilator lint_on UNUSED
+
+    // -------------------------------------------------------
+    // 인스턴스
+    // -------------------------------------------------------
+
+    // 마스터: I2S 초기화 및 IRQ 폴링 FSM
+    demo_master u_master (
+        .clk     (clk),
+        .rst     (rst),
+        .m_valid (m_valid),
+        .m_we    (m_we),
+        .m_addr  (m_addr),
+        .m_wdata (m_wdata),
+        .m_rdata (m_rdata),
+        .m_ready (m_ready)
+    );
+
+    // 주소 디코더: addr[31:16] 기준 64KB 창
+    mmio_bus u_bus (
+        .valid      (m_valid),
+        .we         (m_we),
+        .addr       (m_addr),
+        .wdata      (m_wdata),
+        .sel_gpio   (sel_gpio),
+        .sel_uart   (sel_uart),
+        .sel_i2s    (sel_i2s),
+        .rdata_gpio (rdata_gpio),
+        .rdata_uart (rdata_uart),
+        .rdata_i2s  (rdata_i2s),
+        .rdata      (m_rdata),
+        .ready      (m_ready)
+    );
+
+    // GPIO 슬레이브 (8비트 오프셋)
+    gpio u_gpio (
+        .clk   (clk),
+        .rst   (rst),
+        .sel   (sel_gpio),
+        .we    (m_we),
+        .off   (m_addr[7:0]),
+        .wdata (m_wdata),
+        .rdata (rdata_gpio),
+        .sw    (sw),
+        .led   (led)
+    );
+
+    // UART TX 슬레이브 (8비트 오프셋)
+    uart_tx u_uart (
+        .clk   (clk),
+        .rst   (rst),
+        .sel   (sel_uart),
+        .we    (m_we),
+        .off   (m_addr[7:0]),
+        .wdata (m_wdata),
+        .rdata (rdata_uart),
+        .txd   (txd)
+    );
+
+    // I2S TX 슬레이브 (16비트 오프셋, 0xFFF0~FFFC mgmt 레지스터 접근용)
+    i2s_tx u_i2s (
+        .clk   (clk),
+        .rst   (rst),
+        .sel   (sel_i2s),
+        .we    (m_we),
+        .off   (m_addr[15:0]),
+        .wdata (m_wdata),
+        .rdata (rdata_i2s),
+        .mclk  (mclk),
+        .bclk  (bclk),
+        .lrclk (lrclk),
+        .sdin  (sdin),
+        .irq   (irq_i2s)
+    );
+
+endmodule
+</pre></details><details><summary><code>rtl/basys3_top.v</code> <span class="muted">77줄</span></summary><pre>// basys3_top.v — Basys3 보드 래퍼
+// 2단 리셋 동기화 + i2s_clk_gen 인스턴스 + soc_top 연결
+// Pmod JA 핀 배정 (Digilent 표준):
+//   JA1 (J1)  → i2s_lrclk
+//   JA2 (L2)  → i2s_sdin
+//   JA4 (G2)  → i2s_mclk
+//   JA7 (H1)  → i2s_bclk
+`timescale 1ns/1ps
+module basys3_top (
+    input  wire        clk,        // 100 MHz 온보드 클럭 (W5)
+    input  wire        btnC,       // 리셋 버튼 (U18)
+    input  wire [15:0] sw,         // 슬라이드 스위치
+    output wire [15:0] led,        // LED
+    output wire        RsTx,       // UART TX → USB-UART
+    // Pmod JA — I2S2 모듈
+    output wire        i2s_mclk,   // JA4 (G2)
+    output wire        i2s_bclk,   // JA7 (H1)
+    output wire        i2s_lrclk,  // JA1 (J1)
+    output wire        i2s_sdin    // JA2 (L2)
+);
+
+    // -------------------------------------------------------
+    // 2단 리셋 동기화 (btnC → rst, active high)
+    // -------------------------------------------------------
+    reg rst_s1, rst_s2;
+    wire rst = rst_s2;
+
+    always @(posedge clk) begin
+        rst_s1 &lt;= btnC;
+        rst_s2 &lt;= rst_s1;
+    end
+
+    // -------------------------------------------------------
+    // I2S 클럭 생성기
+    // -------------------------------------------------------
+    wire mclk_w, bclk_w, lrclk_w;
+
+    i2s_clk_gen u_clkgen (
+        .clk   (clk),
+        .rst   (rst),
+        .mclk  (mclk_w),
+        .bclk  (bclk_w),
+        .lrclk (lrclk_w)
+    );
+
+    // -------------------------------------------------------
+    // SoC 코어
+    // -------------------------------------------------------
+    wire sdin_w;
+    wire txd_w;
+
+    soc_top u_soc (
+        .clk   (clk),
+        .rst   (rst),
+        .mclk  (mclk_w),
+        .bclk  (bclk_w),
+        .lrclk (lrclk_w),
+        .sw    (sw),
+        .led   (led),
+        .txd   (txd_w),
+        .sdin  (sdin_w)
+    );
+
+    // -------------------------------------------------------
+    // Pmod JA 출력 연결
+    // -------------------------------------------------------
+    assign i2s_mclk  = mclk_w;
+    assign i2s_bclk  = bclk_w;
+    assign i2s_lrclk = lrclk_w;
+    assign i2s_sdin  = sdin_w;
+
+    // -------------------------------------------------------
+    // UART TX 연결
+    // -------------------------------------------------------
+    assign RsTx = txd_w;
+
+endmodule
+</pre></details><details><summary><code>tb/tb_i2s.v</code> <span class="muted">178줄</span></summary><pre>// tb_i2s.v — I2S TX + 클럭 생성기 통합 검증 테스트벤치
+// 검사 항목:
+//   CHECK 1: BCLK 주기 = 320 ns (100 MHz / 32 × 2 = 3.125 MHz)
+//   CHECK 2: LRCLK 주기 = 10240 ns (100 MHz / 1024 = 97.656 kHz)
+//   CHECK 3: LRCLK 반주기당 BCLK 하강 에지 15~16개 (fork...join + disable)
+//   CHECK 4: L_DATA=0x8001 기록 후 TX_EN 활성화; LRCLK 하강 뒤 첫 번째·두 번째
+//            BCLK 하강 에지에서 SDIN = 1(bit15), 0(bit14)
+// 통과하면 &quot;PASS all checks&quot;, 실패하면 &quot;FAIL: N check(s) failed&quot;로 시작하는 줄 출력
+// 비교는 !==을 사용해 X/Z도 실패로 센다.
+`timescale 1ns/1ps
+module tb_i2s;
+
+    // -------------------------------------------------------
+    // 신호 선언
+    // -------------------------------------------------------
+    reg         clk;
+    reg         rst;
+    reg         sel;
+    reg         we;
+    reg  [15:0] off_r;
+    reg  [31:0] wdata;
+    wire [31:0] rdata;
+    wire        sdin;
+    wire        irq;
+    wire        mclk, bclk, lrclk;
+
+    // 모듈 수준 보조 변수 (iverilog 호환)
+    integer     fail_cnt;
+    time        t0, t1;
+    integer     bclk_half_cnt;
+
+    // -------------------------------------------------------
+    // DUT 인스턴스
+    // -------------------------------------------------------
+    i2s_clk_gen u_clkgen (
+        .clk   (clk),
+        .rst   (rst),
+        .mclk  (mclk),
+        .bclk  (bclk),
+        .lrclk (lrclk)
+    );
+
+    i2s_tx u_dut (
+        .clk   (clk),
+        .rst   (rst),
+        .sel   (sel),
+        .we    (we),
+        .off   (off_r),
+        .wdata (wdata),
+        .rdata (rdata),
+        .mclk  (mclk),
+        .bclk  (bclk),
+        .lrclk (lrclk),
+        .sdin  (sdin),
+        .irq   (irq)
+    );
+
+    // -------------------------------------------------------
+    // 100 MHz 클럭 (10 ns 주기)
+    // -------------------------------------------------------
+    initial clk = 1&#x27;b0;
+    always  #5 clk = ~clk;
+
+    // -------------------------------------------------------
+    // do_write 태스크 — 1사이클 MMIO 쓰기
+    // -------------------------------------------------------
+    task do_write;
+        input [15:0] addr;
+        input [31:0] data;
+        begin
+            @(posedge clk); #1;
+            sel = 1&#x27;b1; we = 1&#x27;b1; off_r = addr; wdata = data;
+            @(posedge clk); #1;
+            sel = 1&#x27;b0; we = 1&#x27;b0;
+        end
+    endtask
+
+    // -------------------------------------------------------
+    // 메인 테스트
+    // -------------------------------------------------------
+    initial begin
+        fail_cnt = 0;
+        sel  = 1&#x27;b0; we   = 1&#x27;b0;
+        off_r  = 16&#x27;h0000; wdata = 32&#x27;h0;
+
+        // 리셋
+        rst = 1&#x27;b1;
+        repeat (4) @(posedge clk);
+        @(posedge clk); #1;
+        rst = 1&#x27;b0;
+
+        // ---- CHECK 1: BCLK 주기 = 320 ns ----
+        @(posedge bclk); t0 = $time;
+        @(posedge bclk); t1 = $time;
+        if ((t1 - t0) !== 64&#x27;d320) begin
+            $display(&quot;FAIL CHECK1: BCLK period expected 320 ns, got %0d ns&quot;, t1-t0);
+            fail_cnt = fail_cnt + 1;
+        end else begin
+            $display(&quot;CHECK 1 PASS: BCLK period = %0d ns&quot;, t1-t0);
+        end
+
+        // ---- CHECK 2: LRCLK 주기 = 10240 ns ----
+        @(posedge lrclk); t0 = $time;
+        @(posedge lrclk); t1 = $time;
+        if ((t1 - t0) !== 64&#x27;d10240) begin
+            $display(&quot;FAIL CHECK2: LRCLK period expected 10240 ns, got %0d ns&quot;, t1-t0);
+            fail_cnt = fail_cnt + 1;
+        end else begin
+            $display(&quot;CHECK 2 PASS: LRCLK period = %0d ns&quot;, t1-t0);
+        end
+
+        // ---- CHECK 3: LRCLK 반주기당 BCLK 하강 에지 15~16개 ----
+        // bclk와 lrclk는 같은 계수기 출발점에서 동기화되어 있어
+        // lrclk 에지와 bclk 에지가 같은 사이클에 겹친다.
+        // @(negedge lrclk) 이후 카운트를 시작하므로 겹친 에지는 제외되고
+        // @(posedge lrclk) 에서 카운터를 멈춘다. 15 또는 16을 허용한다.
+        bclk_half_cnt = 0;
+        @(negedge lrclk);
+        fork
+            begin : cnt_bclk_blk
+                forever @(negedge bclk) bclk_half_cnt = bclk_half_cnt + 1;
+            end
+            begin
+                @(posedge lrclk);
+                disable cnt_bclk_blk;
+            end
+        join
+        if (bclk_half_cnt &lt; 15 || bclk_half_cnt &gt; 16) begin
+            $display(&quot;FAIL CHECK3: BCLK negedges per LRCLK half expected 15-16, got %0d&quot;,
+                     bclk_half_cnt);
+            fail_cnt = fail_cnt + 1;
+        end else begin
+            $display(&quot;CHECK 3 PASS: BCLK negedges per LRCLK half = %0d&quot;, bclk_half_cnt);
+        end
+
+        // ---- CHECK 4: SDIN MSB-우선 직렬화 ----
+        // L_DATA = 0x8001 (bit15=1, bit14=0, ... bit1=1, bit0=0 (미전송))
+        // TX_EN 활성화 → LRCLK 하강 에지 대기 → 첫 BCLK 하강 에지에서 SDIN=1(bit15)
+        //                                      → 두 번째 BCLK 하강 에지에서 SDIN=0(bit14)
+        do_write(16&#x27;h0008, 32&#x27;h00008001);  // L_DATA = 0x8001
+        do_write(16&#x27;h0000, 32&#x27;h00000001);  // CTRL: TX_EN = 1
+
+        @(negedge lrclk);    // lrclk 하강 → l_reg 래치됨 (동시에 bclk도 하강)
+        @(negedge bclk);     // 첫 번째 유효 BCLK 하강 (bit15 출력 사이클)
+        if (sdin !== 1&#x27;b1) begin
+            $display(&quot;FAIL CHECK4a: SDIN[bit15] expected 1, got %b (L_DATA=0x8001)&quot;, sdin);
+            fail_cnt = fail_cnt + 1;
+        end else begin
+            $display(&quot;CHECK 4a PASS: SDIN[bit15]=1&quot;);
+        end
+
+        @(negedge bclk);     // 두 번째 BCLK 하강 (bit14 출력 사이클)
+        if (sdin !== 1&#x27;b0) begin
+            $display(&quot;FAIL CHECK4b: SDIN[bit14] expected 0, got %b (L_DATA=0x8001)&quot;, sdin);
+            fail_cnt = fail_cnt + 1;
+        end else begin
+            $display(&quot;CHECK 4b PASS: SDIN[bit14]=0&quot;);
+        end
+
+        // ---- 최종 결과 출력 ----
+        repeat (10) @(posedge clk);
+        if (fail_cnt === 0)
+            $display(&quot;PASS all checks&quot;);
+        else
+            $display(&quot;FAIL: %0d check(s) failed&quot;, fail_cnt);
+        $finish;
+    end
+
+    // -------------------------------------------------------
+    // 타임아웃: 2 ms
+    // -------------------------------------------------------
+    initial begin
+        #2_000_000;
+        $display(&quot;FAIL: simulation timeout at 2ms&quot;);
+        $finish;
+    end
+
+endmodule
+</pre></details><details><summary><code>constr/basys3.xdc</code> <span class="muted">53줄</span></summary><pre>## Basys3 제약 (XC7A35T-1CPG236C). 핀은 Digilent 마스터 XDC와 대조한 뒤 사용할 것.
+set_property -dict { PACKAGE_PIN W5  IOSTANDARD LVCMOS33 } [get_ports clk]
+create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports clk]
+
+set_property -dict { PACKAGE_PIN V17 IOSTANDARD LVCMOS33 } [get_ports {sw[0]}]
+set_property -dict { PACKAGE_PIN V16 IOSTANDARD LVCMOS33 } [get_ports {sw[1]}]
+set_property -dict { PACKAGE_PIN W16 IOSTANDARD LVCMOS33 } [get_ports {sw[2]}]
+set_property -dict { PACKAGE_PIN W17 IOSTANDARD LVCMOS33 } [get_ports {sw[3]}]
+set_property -dict { PACKAGE_PIN W15 IOSTANDARD LVCMOS33 } [get_ports {sw[4]}]
+set_property -dict { PACKAGE_PIN V15 IOSTANDARD LVCMOS33 } [get_ports {sw[5]}]
+set_property -dict { PACKAGE_PIN W14 IOSTANDARD LVCMOS33 } [get_ports {sw[6]}]
+set_property -dict { PACKAGE_PIN W13 IOSTANDARD LVCMOS33 } [get_ports {sw[7]}]
+set_property -dict { PACKAGE_PIN V2  IOSTANDARD LVCMOS33 } [get_ports {sw[8]}]
+set_property -dict { PACKAGE_PIN T3  IOSTANDARD LVCMOS33 } [get_ports {sw[9]}]
+set_property -dict { PACKAGE_PIN T2  IOSTANDARD LVCMOS33 } [get_ports {sw[10]}]
+set_property -dict { PACKAGE_PIN R3  IOSTANDARD LVCMOS33 } [get_ports {sw[11]}]
+set_property -dict { PACKAGE_PIN W2  IOSTANDARD LVCMOS33 } [get_ports {sw[12]}]
+set_property -dict { PACKAGE_PIN U1  IOSTANDARD LVCMOS33 } [get_ports {sw[13]}]
+set_property -dict { PACKAGE_PIN T1  IOSTANDARD LVCMOS33 } [get_ports {sw[14]}]
+set_property -dict { PACKAGE_PIN R2  IOSTANDARD LVCMOS33 } [get_ports {sw[15]}]
+
+set_property -dict { PACKAGE_PIN U16 IOSTANDARD LVCMOS33 } [get_ports {led[0]}]
+set_property -dict { PACKAGE_PIN E19 IOSTANDARD LVCMOS33 } [get_ports {led[1]}]
+set_property -dict { PACKAGE_PIN U19 IOSTANDARD LVCMOS33 } [get_ports {led[2]}]
+set_property -dict { PACKAGE_PIN V19 IOSTANDARD LVCMOS33 } [get_ports {led[3]}]
+set_property -dict { PACKAGE_PIN W18 IOSTANDARD LVCMOS33 } [get_ports {led[4]}]
+set_property -dict { PACKAGE_PIN U15 IOSTANDARD LVCMOS33 } [get_ports {led[5]}]
+set_property -dict { PACKAGE_PIN U14 IOSTANDARD LVCMOS33 } [get_ports {led[6]}]
+set_property -dict { PACKAGE_PIN V14 IOSTANDARD LVCMOS33 } [get_ports {led[7]}]
+set_property -dict { PACKAGE_PIN V13 IOSTANDARD LVCMOS33 } [get_ports {led[8]}]
+set_property -dict { PACKAGE_PIN V3  IOSTANDARD LVCMOS33 } [get_ports {led[9]}]
+set_property -dict { PACKAGE_PIN W3  IOSTANDARD LVCMOS33 } [get_ports {led[10]}]
+set_property -dict { PACKAGE_PIN U3  IOSTANDARD LVCMOS33 } [get_ports {led[11]}]
+set_property -dict { PACKAGE_PIN P3  IOSTANDARD LVCMOS33 } [get_ports {led[12]}]
+set_property -dict { PACKAGE_PIN N3  IOSTANDARD LVCMOS33 } [get_ports {led[13]}]
+set_property -dict { PACKAGE_PIN P1  IOSTANDARD LVCMOS33 } [get_ports {led[14]}]
+set_property -dict { PACKAGE_PIN L1  IOSTANDARD LVCMOS33 } [get_ports {led[15]}]
+
+set_property -dict { PACKAGE_PIN U18 IOSTANDARD LVCMOS33 } [get_ports btnC]
+set_property -dict { PACKAGE_PIN A18 IOSTANDARD LVCMOS33 } [get_ports RsTx]
+
+## Pmod JA — Digilent Pmod I2S2 연결
+## JA1 = J1  → LRCLK (Word Select)
+## JA2 = L2  → SDIN  (Serial Data to DAC)
+## JA4 = G2  → MCLK  (Master Clock)
+## JA7 = H1  → BCLK  (Bit Clock)
+set_property -dict { PACKAGE_PIN J1  IOSTANDARD LVCMOS33 } [get_ports i2s_lrclk]
+set_property -dict { PACKAGE_PIN L2  IOSTANDARD LVCMOS33 } [get_ports i2s_sdin]
+set_property -dict { PACKAGE_PIN G2  IOSTANDARD LVCMOS33 } [get_ports i2s_mclk]
+set_property -dict { PACKAGE_PIN H1  IOSTANDARD LVCMOS33 } [get_ports i2s_bclk]
+
+set_property CONFIG_VOLTAGE 3.3 [current_design]
+set_property CFGBVS VCCO [current_design]
+</pre></details><details><summary><code>Makefile</code> <span class="muted">61줄</span></summary><pre>## mmio-i2s-tx-checker Makefile
+## 타깃: lint (verilator), sim (iverilog+vvp), synth (yosys)
+## CI는 이 파일을 사용하므로 경로·이름을 바꾸지 않는다.
+
+RTL_DIR  = rtl
+TB_DIR   = tb
+BUILD    = build
+
+## SoC 전체 RTL (합성·린트 대상)
+RTL_ALL  = $(RTL_DIR)/i2s_clk_gen.v \
+           $(RTL_DIR)/i2s_tx.v \
+           $(RTL_DIR)/mmio_bus.v \
+           $(RTL_DIR)/gpio.v \
+           $(RTL_DIR)/uart_tx.v \
+           $(RTL_DIR)/demo_master.v \
+           $(RTL_DIR)/soc_top.v \
+           $(RTL_DIR)/basys3_top.v
+
+## 시뮬레이션에 필요한 RTL (tb가 직접 사용하는 모듈)
+TB_SRC   = $(RTL_DIR)/i2s_clk_gen.v \
+           $(RTL_DIR)/i2s_tx.v
+
+TB_FILE  = $(TB_DIR)/tb_i2s.v
+
+.PHONY: all lint sim synth clean
+
+all: lint sim synth
+
+## ---- 린트 (verilator) ----
+lint:
+	mkdir -p $(BUILD)
+	verilator --lint-only -Wall -Wno-fatal \
+	    --top-module basys3_top \
+	    $(RTL_ALL) \
+	    2&gt;&amp;1 | tee $(BUILD)/lint.log
+	@echo &quot;lint done&quot;
+
+## ---- 시뮬레이션 (iverilog + vvp) ----
+sim:
+	mkdir -p $(BUILD)
+	iverilog -g2005 -Wall \
+	    -o $(BUILD)/sim.vvp \
+	    $(TB_FILE) $(TB_SRC) \
+	    2&gt;&amp;1 | tee $(BUILD)/iverilog.log
+	vvp $(BUILD)/sim.vvp 2&gt;&amp;1 | tee $(BUILD)/sim.log
+	@grep -q &quot;^PASS&quot; $(BUILD)/sim.log || \
+	    (echo &quot;FAIL: simulation did not print PASS&quot;; exit 1)
+	@echo &quot;sim done&quot;
+
+## ---- 합성 (yosys, Xilinx xc7 흐름) ----
+synth:
+	mkdir -p $(BUILD)
+	yosys -q -p &quot; \
+	    read_verilog $(RTL_ALL); \
+	    synth_xilinx -top basys3_top -family xc7; \
+	    stat; \
+	    &quot; 2&gt;&amp;1 | tee $(BUILD)/synth.log
+	@echo &quot;synth done&quot;
+
+clean:
+	rm -rf $(BUILD)
+</pre></details><h3>시뮬레이션 (클럭 비율·비트 순서 검증)</h3><ol><li>make -C capstones/mmio-i2s-tx-checker lint sim synth</li><li>build/sim.log 첫 줄이 PASS면 클럭 비율과 비트 순서 검증 통과</li></ol><h3>Vivado 빌드 (Basys3 + Pmod I2S2)</h3><ol><li>새 RTL 프로젝트, 파트 xc7a35tcpg236-1</li><li>rtl/*.v 추가 (tb 제외), constr/basys3.xdc 추가, 최상위 basys3_top</li><li>Generate Bitstream 후 Program Device</li><li>Pmod I2S2를 JA 포트에 꽂고 헤드폰 연결</li><li>RsTx를 PC 터미널(115200 8N1)에 연결. 초기화 후 LED[0]이 IRQ 신호를 표시</li></ol>
+<h2 id="verify">8. 검증</h2><div class="panel"><table><tr><th>단계</th><th>결과</th><th>내용</th></tr>
+<tr><td>린트(verilator)</td><td>미실행</td><td></td></tr><tr><td>시뮬레이션(iverilog)</td><td>미실행</td><td></td></tr><tr><td>합성 추정(yosys)</td><td>미실행</td><td></td></tr><tr><td>보드 동작</td><td>미실행</td><td></td></tr>
+</table></div><p>시뮬레이션·합성은 CI가 실행하면 자동으로 채워진다. 보드 동작 확인(S3)은 사람이 한다.</p>
+<h2 id="ref">9. 참고 카드와 위험</h2><h3>참고 카드</h3><ul><li><a href="../catalog/amd/digilent-forum-pmodamp3-basys3-i2s.html"><code>digilent-forum-pmodamp3-basys3-i2s</code></a> — MCLK/BCLK/LRCLK 분주기와 Pmod I2S 연결의 직접 근거</li><li><a href="../catalog/intel/columbia-4840-audio-visualizer.html"><code>columbia-4840-audio-visualizer</code></a> — I2S + VGA 조합, 오디오 비주얼라이저 아이디어 근거</li></ul><h3>위험·한계</h3><ul><li>샘플레이트 97.656 kHz는 비표준이다. Pmod I2S2의 CS4344 DAC는 4~200 kHz를 허용하므로 동작은 가능하나 오디오 피치가 2배 이상 높게 들릴 수 있다.</li><li>JA Pmod 핀 배치는 Digilent 마스터 XDC(rev B 이후)와 대조가 필요하다.</li><li>i2s_clk_gen은 sys_clk 도메인 순수 분주기이므로 Vivado 타이밍 분석에서 BCLK·MCLK·LRCLK를 generated clock으로 선언해야 한다(create_generated_clock). XDC에 미작성 상태.</li><li>표준 Philips I2S의 1 BCLK 오프셋 없이 Left-Justified 형식을 사용한다. CS4344는 LJ 모드를 지원하나 주소 세팅(MODE 핀)을 확인해야 한다.</li></ul>
+</main></body></html>

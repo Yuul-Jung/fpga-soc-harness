@@ -1,0 +1,26 @@
+name: audit
+
+# 매시간 저장소 전수 감사. 읽기 전용이다: 커밋하지 않고 푸시하지 않는다.
+# (참고 하네스의 "과거 산출물 전수 재검사"를 가져오되, main 자동 커밋은 가져오지 않았다. reference/gpt-harness-review.md §3-4)
+on:
+  schedule:
+    - cron: "20 * * * *"   # 매시 :20 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 카드 점검
+        run: python3 tools/check.py
+      - name: 전수 감사 (문서도 새로 만들어 대조)
+        run: python3 tools/audit.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: audit-report
+          path: build/audit.json

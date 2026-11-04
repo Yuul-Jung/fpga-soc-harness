@@ -1,0 +1,48 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>jakkra-gesture-detecting-macro-keyboard</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../../hub.html">FPGA SoC 하네스</a><a href="../../hub.html">메인</a><a href="../../hub.html#capstones">캡스톤</a><a href="../../soc-map/tech-tree.html">기술 트리</a><a href="../../catalog/index.html">카탈로그</a><a href="../../inbox/ideas.html">아이디어</a><a href="../../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/catalog/esp32/jakkra-gesture-detecting-macro-keyboard.md">GitHub 원본: catalog/esp32/jakkra-gesture-detecting-macro-keyboard.md</a></p><h1>jakkra-gesture-detecting-macro-keyboard</h1><div class="panel fm"><table><tr><td>name</td><td><a href="jakkra-gesture-detecting-macro-keyboard.html">jakkra-gesture-detecting-macro-keyboard</a></td></tr><tr><td>url</td><td>https://github.com/jakkra/gesture-detecting-macro-keyboard</td></tr><tr><td>source_type</td><td>repo</td></tr><tr><td>vendor</td><td>neutral</td></tr><tr><td>board</td><td>[ESP32 (보드 미지정)]</td></tr><tr><td>fit_basys3</td><td>needs-port</td></tr><tr><td>cpu</td><td>none(MCU 펌웨어)</td></tr><tr><td>language</td><td>C, Python, AutoHotkey</td></tr><tr><td>tools</td><td>[ESP-IDF 4.2, TensorFlow Lite Micro]</td></tr><tr><td>bus</td><td>none</td></tr><tr><td>peripherals</td><td>[capacitive-touch-pad, BLE-HID, OLED, button]</td></tr><tr><td>stage</td><td>T4</td></tr><tr><td>license</td><td>MIT</td></tr><tr><td>stats</td><td>{stars: 96, forks: 9, last_update: unknown}</td></tr><tr><td>doc_language</td><td>en</td></tr><tr><td>verification</td><td>L3</td></tr><tr><td>checked_at</td><td>2026-11-04</td></tr><tr><td>source_rev</td><td></td></tr><tr><td>status</td><td>재검증 차단 (WebFetch PROVENANCE_REQUIRED, 2026-11-04 /verify)</td></tr><tr><td>sources</td><td>[https://github.com/jakkra/gesture-detecting-macro-keyboard, https://hackaday.com/2021/06/13/gesture-detecting-macro-keyboard-knows-what-you-want]</td></tr></table></div><h2>요약 (3줄 이내, 내 표현으로)</h2>
+<p>ESP32와 Bela Trill 정전식 터치패드, TFLite Micro를 결합해 7가지 손 제스처를 BLE HID 단축키로 변환하는 매크로 키보드. 터치패드 좌표를 28×28 픽셀 행렬로 변환 후 TFLite Micro가 추론한다. OLED 디스플레이, 볼륨 슬라이더, 11개 물리 버튼과 AutoHotkey PC 스크립트를 함께 사용한다.</p>
+<h2>구조</h2>
+<ul><li style="margin-left:0.0em">최상위: ESP32 펌웨어(C/ESP-IDF), Python 훈련 스크립트, AutoHotkey PC 스크립트</li><li style="margin-left:0.0em">입력: Bela Trill 정전식 패드 2개(square: 제스처, bar: 볼륨). 패드 좌표 범위 [0, 1792] → 28×28 행렬 정규화</li><li style="margin-left:0.0em">모델: TFLite Micro 추론. 클래스 7종(ARROW_RIGHT/UP/DOWN, C_GESTURE, LINE_DOWN/HORIZONTAL/S_GESTURE)</li><li style="margin-left:0.0em">출력: ESP32 BLE HID 키보드로 PC에 단축키 전송</li><li style="margin-left:0.0em">OLED: 현재 상태 및 제스처 디버그 표시</li><li style="margin-left:0.0em">훈련: 제스처당 약 150건 훈련+45건 테스트 필요, 훈련 후 재플래시</li></ul>
+<h2>검증·재현성</h2>
+<ul><li style="margin-left:0.0em">ESP-IDF 4.2 기준으로 작성. <code>idf.py build flash</code> 절차.</li><li style="margin-left:0.0em">별도 훈련 스크립트 포함(Python). 새 제스처 추가 가능.</li><li style="margin-left:0.0em">Hackaday 기사에서 동작 확인 보고 있음(독립 검증).</li><li style="margin-left:0.0em">CI 없음.</li></ul>
+<h2>한계·위험</h2>
+<ul><li style="margin-left:0.0em">Bela Trill 터치패드가 필요하며 Basys3 Pmod로 직접 대체 불가. SPI/I2C 인터페이스이나 드라이버는 Bela 전용.</li><li style="margin-left:0.0em">ESP-IDF 4.2 기준; 최신 5.x와 호환성 확인 필요.</li><li style="margin-left:0.0em"><code>--center_gesture</code> 옵션 사용 시 좌우 대칭 제스처 혼동 가능성.</li><li style="margin-left:0.0em">AutoHotkey는 Windows 전용.</li><li style="margin-left:0.0em">커밋 날짜 미기재.</li></ul>
+<h2>재사용 메모</h2>
+<ul><li style="margin-left:0.0em">TFLite Micro가 MCU에서 2D 제스처(28×28 행렬 입력)를 추론하는 완전한 흐름을 보여준다. 모델 훈련 → tflite 변환 → 플래시 적재 → 실시간 추론 파이프라인을 직접 참고 가능.</li><li style="margin-left:0.0em">BLE HID 키보드 출력 패턴은 ESP32-BLE 카드(<a href="rcaelers-esp32-beacon-scanner.html">rcaelers-esp32-beacon-scanner</a>)와 연결해 볼 수 있다.</li><li style="margin-left:0.0em">개조: ESP32 측은 MCU 전용이며 Basys3 직접 포팅은 불가. 그러나 ① 제스처 판정 후 UART로 명령 번호를 Basys3 SoC에 전송하는 구조(ESP32 보조 프로세서 + FPGA 본 처리), ② 28×28 입력 행렬 생성 + TFLite 추론 로직을 AXI4-Stream 인터페이스로 구현하는 FPGA가속기 설계의 참조로 사용 가능. MicroBlaze V에서는 UART/SPI 수신 → 명령 디코더 FSM 쪽이 현실적. <code>개조:</code> 제스처 판정 후 UART 명령 전송(ESP32) + MicroBlaze V UART 수신 FSM(Basys3) 조합이 직접적인 적용 경로.</li></ul>
+<hr>
+<p>내 판단: fit_basys3=needs-port. Basys3에서 TFLite Micro를 돌리는 것은 아니지만, ESP32 보조 보드 + UART 명령 전달 패턴으로 협력 구조를 만들 수 있다. stage=T4(사용자 정의 ML 추론 + BLE HID 파이프라인).</p></main></body></html>

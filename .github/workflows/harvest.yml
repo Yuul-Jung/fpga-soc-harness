@@ -1,0 +1,52 @@
+name: Harvest (수집)
+
+on:
+  # 비활성: harness/ 모듈(harvest, capstone)과 capcheck --gate-only가 이 저장소에 없어 실행하면 실패한다.
+  # 같은 일을 Claude 예약 작업이 하고 있다(HARNESS §15). 모듈이 생기면 아래 주석을 풀어 다시 켠다.
+  # schedule:
+  #   - cron: '5 * * * *'    # 매시 :05
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: '수집 주제 (비우면 topics.md 첫 항목)'
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  harvest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install --break-system-packages requests pyyaml
+
+      - name: Git pull rebase
+        run: git pull --rebase
+
+      - name: Run harvest
+        run: python3 -m harness.harvest "${{ github.event.inputs.topic }}"
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      - name: Check
+        run: python3 tools/check.py
+
+      - name: Commit & push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add catalog/ inbox/ atlas/ soc-map/ devices/
+          git diff --staged --quiet || \
+            git commit -m "catalog: harvest $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M')"
+          git push

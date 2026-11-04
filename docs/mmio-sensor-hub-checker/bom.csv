@@ -1,0 +1,4 @@
+id,name,interface,io_voltage_V,supply_V,qty,board_resident,arduino_compatible,level_shift,notes
+hcsr04_part,HC-SR04 초음파 거리 센서,TRIG(out) + ECHO(in),5V,"5V (모터 전원과 공유 가능, GND 공통)",1,false,true,필요 (저항 분압 1kΩ/2kΩ 또는 레벨 시프터),"측정 범위 2~400 cm, 최소 측정 간격 60 ms. 연속 트리거 시 간섭 위험."
+dht11_part,DHT11 온습도 센서,단선 양방향(DATA),3.3V,3.3V (Pmod VCC),1,false,true,,측정 간격 최소 1초. 체크섬(하위 8비트 합)으로 오류 감지.
+mpu6050_part,MPU-6050 6축 IMU (I2C),I2C (SDA + SCL),3.3V,3.3V,1,false,true,,I2C 주소 0x68 (AD0=GND) 또는 0x69 (AD0=3.3V). 이 패키지는 0x68 고정.

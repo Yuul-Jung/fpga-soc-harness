@@ -1,0 +1,40 @@
+{
+  "_comment": "IP 표준 개정 1(C·N 공통). 출처: claude/ntrack/std_section.py, claude/ntrack/src/axil_slave.v. 레지스터 수준 계약만 옮겼고 코드는 가져오지 않았다.",
+  "revision": 1,
+  "window": {
+    "size": "0x10000",
+    "addr_bits": 16,
+    "access": "32비트만"
+  },
+  "function_regs": "0x0000부터 4바이트 간격. 읽기 전용에 쓰면 무시, 없는 주소는 읽으면 0",
+  "mgmt": {
+    "ID": "0xFFF0",
+    "VER": "0xFFF4",
+    "IRQ_STATUS": "0xFFF8 (W1C)",
+    "IRQ_ENABLE": "0xFFFC"
+  },
+  "ver_format": "[31:24] 표준 개정, [15:8] 주 버전, [7:0] 부 버전",
+  "reset": "출력 꺼짐, IRQ_ENABLE=0",
+  "irq": "레벨 하나(irq, 1=요청), 원인은 IRQ_STATUS 비트. 처리 순서: ip_irq_take → INTC_IAR",
+  "naming": {
+    "ip_kind": "ip_<종류>",
+    "instance": "ip<인덱스>_<종류>",
+    "folder": "soc/hw/<종류>_ip",
+    "driver": "<종류>.h/.c, 함수 <종류>_<동작>(base,…)",
+    "soc_map": "SOC_<종류>"
+  },
+  "legacy": "[06]~[0B]는 구형(관리 영역 없음). 고칠 때 관리 영역을 덧붙여 표준으로",
+  "cpu_independent": [
+    "표준 IP RTL",
+    "axil_slave.v",
+    "ip_std.v",
+    "주소·인덱스·INTC 번호",
+    "드라이버",
+    "ipstd",
+    "N 공통 파일"
+  ],
+  "cpu_dependent": [
+    "cpu_irq_mbv.c 하나",
+    "블록 디자인의 CPU 블록과 AXI 마스터 연결"
+  ]
+}

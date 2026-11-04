@@ -1,0 +1,43 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>주변장치 종합: 오디오 (audio-i2s, audio-pwm)</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../hub.html">FPGA SoC 하네스</a><a href="../hub.html">메인</a><a href="../hub.html#capstones">캡스톤</a><a href="../soc-map/tech-tree.html">기술 트리</a><a href="../catalog/index.html">카탈로그</a><a href="../inbox/ideas.html">아이디어</a><a href="../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/atlas/audio.md">GitHub 원본: atlas/audio.md</a></p><h1>주변장치 종합: 오디오 (audio-i2s, audio-pwm)</h1>
+<p>갱신: 2026-11-02 (/verify, 카드 3건 기준. 포럼 카드는 이번 사이클 재대조 실패 → 표에 표시)</p>
+<div class="panel"><table><tr><th>항목</th><th>카드</th><th>보드</th><th>CPU/버스</th><th>주변장치</th><th>한계</th></tr><tr><td>Pmod AMP3 I2S 포럼</td><td><a href="../catalog/amd/digilent-forum-pmodamp3-basys3-i2s.html">digilent-forum-pmodamp3-basys3-i2s</a></td><td>Basys3</td><td>none(FSM) / none</td><td>I2S 송신, MMCM MCLK</td><td>이번 사이클 재열람 실패(status 참조), 코드 저장소 미열람, 라이선스 unknown</td></tr><tr><td>Pmod AMP2 PWM 사다리</td><td><a href="../catalog/vendor-neutral/zipcpu-pmodamp2-project-ladder.html">zipcpu-pmodamp2-project-ladder</a></td><td>iCE40 계열 (Basys3 needs-port)</td><td>none(FSM) → 12단계에서 CPU / none</td><td>1비트 PWM, BRAM 재생</td><td>인라인 코드 오류 다수, 라이선스 unknown</td></tr><tr><td>Columbia 오디오 시각화</td><td><a href="../catalog/intel/columbia-4840-audio-visualizer.html">columbia-4840-audio-visualizer</a></td><td>DE1-SoC</td><td>ARM HPS / Avalon</td><td>WM8731 코덱 I2C+I2S, VGA</td><td>하드웨어 FFT 미완성, 문서 내 수치 불일치</td></tr></table></div>
+<h2>패턴</h2>
+<ul><li style="margin-left:0.0em">사실: PWM 경로는 직렬 버스가 없고(AMP2 카드), I2S 경로는 MCLK/BCLK/LRCLK 비율 제약이 있다(포럼 카드의 스레드 서술).</li><li style="margin-left:0.0em">사실: Columbia 사례는 FPGA가 캡처·필터, CPU가 FFT를 맡는 분할이었고 FFT를 하드웨어로 옮기는 데 실패했다.</li><li style="margin-left:0.0em">내 판단: 난이도 순서는 PWM(클럭 제약 없음) → I2S(클럭 설계 필요) → 샘플 처리/FFT(BRAM과 고정소수점 설계 필요)이다.</li></ul>
+<h2>교훈</h2>
+<ul><li style="margin-left:0.0em">내 판단: I2S는 클럭 비율을 먼저 고르고 시작한다(포럼 카드). 단, 포럼 카드는 이번 사이클 재대조를 못 했으므로 이 교훈의 수치는 L3 확정이 아니라 &quot;수집 세션 기록 기준&quot;이다.</li><li style="margin-left:0.0em">내 판단: Columbia 보고서처럼 문서 안 수치가 어긋날 수 있으므로(5.185 Hz vs 계산값 5.859 Hz) 테스트벤치가 수치를 직접 검사하게 만든다.</li></ul></main></body></html>

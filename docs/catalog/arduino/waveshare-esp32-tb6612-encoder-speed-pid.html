@@ -1,0 +1,46 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>waveshare-esp32-tb6612-encoder-speed-pid</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../../hub.html">FPGA SoC 하네스</a><a href="../../hub.html">메인</a><a href="../../hub.html#capstones">캡스톤</a><a href="../../soc-map/tech-tree.html">기술 트리</a><a href="../../catalog/index.html">카탈로그</a><a href="../../inbox/ideas.html">아이디어</a><a href="../../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/catalog/arduino/waveshare-esp32-tb6612-encoder-speed-pid.md">GitHub 원본: catalog/arduino/waveshare-esp32-tb6612-encoder-speed-pid.md</a></p><h1>waveshare-esp32-tb6612-encoder-speed-pid</h1><div class="panel fm"><table><tr><td>name</td><td><a href="waveshare-esp32-tb6612-encoder-speed-pid.html">waveshare-esp32-tb6612-encoder-speed-pid</a></td></tr><tr><td>url</td><td>https://waveshare.com/wiki/Tutorial_III:_Motor_With_Encoder_Control_Demo_3</td></tr><tr><td>source_type</td><td>article</td></tr><tr><td>vendor</td><td>neutral</td></tr><tr><td>board</td><td>[&quot;ESP32 다기능 드라이버 보드 (Arduino IDE, 보드 상세 unverified: 페이지에 모델명 없음)&quot;]</td></tr><tr><td>fit_basys3</td><td>needs-port</td></tr><tr><td>cpu</td><td>none(MCU 펌웨어, ESP32)</td></tr><tr><td>language</td><td>C++ (Arduino)</td></tr><tr><td>tools</td><td>[Arduino IDE]</td></tr><tr><td>bus</td><td>none</td></tr><tr><td>peripherals</td><td>[actuator-servo, sensor]</td></tr><tr><td>stage</td><td>T2</td></tr><tr><td>license</td><td>페이지에 라이선스 표기 없음 (라이선스 확인 필요, 코드 반입 금지)</td></tr><tr><td>stats</td><td>{}</td></tr><tr><td>doc_language</td><td>en</td></tr><tr><td>verification</td><td>L3</td></tr><tr><td>checked_at</td><td>2026-11-03</td></tr><tr><td>sources</td><td>[https://waveshare.com/wiki/Tutorial_III:_Motor_With_Encoder_Control_Demo_3]</td></tr></table></div><h2>요약</h2>
+<p>TB6612 H-브리지로 구동하는 DC 감속모터 2채널의 속도를 홀 엔코더 되먹임 PID로 맞추는 Waveshare 튜토리얼. 100 ms마다 엔코더 카운트로 RPM을 구하고 PID 출력을 8비트 PWM에 넣는 가장 단순한 형태의 속도 루프다.</p>
+<h2>구조</h2>
+<ul><li style="margin-left:0.0em">모터 DCGM3865(감속비 1:42), 홀 엔코더 모터축 1회전당 11펄스 → 출력축 1회전 462카운트 (페이지 서술).</li><li style="margin-left:0.0em">엔코더: 채널 하나의 상승 에지에서 인터럽트, 다른 채널 값으로 방향(+1/-1) 결정. 1체배(단일 에지)이며 4체배 아님.</li><li style="margin-left:0.0em">PWM 100 kHz, 8비트(0–255). 최소 PWM은 최대의 1/5(51)로 두어 저속 정지(스톨)를 피함.</li><li style="margin-left:0.0em">PID: 주기 100 ms, 속도 = 카운트 ÷ 축 PPR × 60 × (1000/주기) RPM, 매 주기 카운트 초기화. 적분은 오차의 단순 합(시간 스케일·와인드업 방지 없음), 출력 ±255 제한. 변수는 double.</li><li style="margin-left:0.0em">이득 Kp=0.05, Ki=0.05, Kd=0, 목표 100 RPM. 핀 배치는 ESP32 기준(PWMA 25, AIN1 21, AIN2 17 등).</li></ul>
+<h2>검증·재현성</h2>
+<ul><li style="margin-left:0.0em">측정 결과 없음: 페이지는 예상 동작(정방향 3초, 역방향 3초, 정지 3초 반복)만 서술하고 속도·오차 데이터는 없음.</li><li style="margin-left:0.0em">업로드 절차에 &quot;엔코더 없는 모터를 연결&quot;하라는 서술이 있어 엔코더 코드와 모순(페이지 오기로 보임, 내 판단).</li><li style="margin-left:0.0em">테스트벤치·CI 없음. 코드는 rar 첨부(열람하지 않음, unverified).</li></ul>
+<h2>한계·위험</h2>
+<ul><li style="margin-left:0.0em">이득이 왜 그 값인지 근거 없음. 적분 와인드업·샘플 주기 보정 없음 → FPGA 이식 시 그대로 따르면 안 됨(내 판단).</li><li style="margin-left:0.0em">라이선스 미표기. ESP32 전용 핀·LEDC API에 의존.</li></ul>
+<h2>재사용 메모</h2>
+<ul><li style="margin-left:0.0em">내 판단: 모터 사다리(엔코더→PID)의 &quot;펌웨어 쪽 기준선&quot;으로 쓸 만하다. 카운트-RPM 환산식과 최소 PWM(스톨 방지) 개념은 AXI4-Lite 레지스터(카운트, 목표, PWM 최소값)로 옮길 수 있다.</li><li style="margin-left:0.0em">개조: 이 자료는 CPU 비종속 개념(카운터·샘플 타이머·PID)이라 MicroBlaze V 기준에서 엔코더 카운터와 PWM은 RTL 래퍼에, PID 계산은 펌웨어(고정소수점)에 둔다. 옮길 수 없는 부분은 ESP32 인터럽트·LEDC 호출이며 <code>cpu_irq_&lt;cpu&gt;.c</code> 한 파일 격리 원칙에 해당(내 판단). 4체배와 와인드업 방지는 새로 설계.</li></ul></main></body></html>

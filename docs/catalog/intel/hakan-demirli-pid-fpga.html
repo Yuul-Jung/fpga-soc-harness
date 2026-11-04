@@ -1,0 +1,46 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>hakan-demirli-pid-fpga</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../../hub.html">FPGA SoC 하네스</a><a href="../../hub.html">메인</a><a href="../../hub.html#capstones">캡스톤</a><a href="../../soc-map/tech-tree.html">기술 트리</a><a href="../../catalog/index.html">카탈로그</a><a href="../../inbox/ideas.html">아이디어</a><a href="../../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/catalog/intel/hakan-demirli-pid-fpga.md">GitHub 원본: catalog/intel/hakan-demirli-pid-fpga.md</a></p><h1>hakan-demirli-pid-fpga</h1><div class="panel fm"><table><tr><td>name</td><td><a href="hakan-demirli-pid-fpga.html">hakan-demirli-pid-fpga</a></td></tr><tr><td>url</td><td>https://github.com/hakan-demirli/PID-FPGA</td></tr><tr><td>status</td><td>저장소 아카이브됨(소유자, 2025-11-07, 읽기 전용)</td></tr><tr><td>source_type</td><td>repo</td></tr><tr><td>vendor</td><td>intel</td></tr><tr><td>board</td><td>[Altera DE2 (EP2C35F672C6)]</td></tr><tr><td>fit_basys3</td><td>needs-port</td></tr><tr><td>cpu</td><td>none(FSM)</td></tr><tr><td>language</td><td>unknown</td></tr><tr><td>tools</td><td>[Quartus, MATLAB, HTerm]</td></tr><tr><td>bus</td><td>none</td></tr><tr><td>peripherals</td><td>[sensor, actuator, comm-uart, quadrature-encoder, dc-motor]</td></tr><tr><td>stage</td><td>T4</td></tr><tr><td>license</td><td>unknown</td></tr><tr><td>stats</td><td>{}</td></tr><tr><td>doc_language</td><td>en</td></tr><tr><td>verification</td><td>L3</td></tr><tr><td>checked_at</td><td>2026-11-02</td></tr><tr><td>sources</td><td>[https://github.com/hakan-demirli/PID-FPGA/blob/main/README.md]</td></tr><tr><td>unverified</td><td>HDL 언어, 커밋 SHA(source_rev), 라이선스, 자원 사용, 샘플 주기, 모듈 전체 목록(README에 이름만 언급)</td></tr></table></div><h2>요약</h2>
+<p>DE2 보드의 FPGA에서 엔코더 되먹임으로 DC 모터 속도(목표 14 RPS)를 PID 제어한 학생 프로젝트. 이득 KP/KD/KI는 PC에서 UART로 실시간 변경하고 응답은 MATLAB으로 그렸다. 이득 조정을 시리얼 레지스터 쓰기로 분리한 점이 특징이다.</p>
+<h2>구조</h2>
+<ul><li style="margin-left:0.0em">수 형식(README 서술): 36비트 부호 고정소수점, 소수부 9비트(예: 2.5가 0x500). 엔코더 500 PPR를 500 대신 512로 나눠 나눗셈기를 피했고, 측정 속도는 14.15708 RPS(목표 14).</li><li style="margin-left:0.0em">직렬 프로토콜: 115200 8N1, 64비트 프레임을 AA/BB 바이트로 감싼다. 주소 0은 전역 리셋, 1~3은 KP/KD/KI 쓰기.</li><li style="margin-left:0.0em">목표 속도는 스위치로 입력. 모터 드라이버는 자작.</li></ul>
+<h2>검증·재현성</h2>
+<ul><li style="margin-left:0.0em">테스트벤치와 오실로스코프 측정(엔코더 주파수)로 검증했다고 서술. 코드는 열람하지 않았고 실행하지 않았다.</li></ul>
+<h2>한계·위험</h2>
+<ul><li style="margin-left:0.0em">README가 밝힌 한계: 곱셈기 0.8% 오차, 적분 와인드업 보호 없음, 이득이 낮아 정착에 수 초, 축 정렬 불량 시 속도 잡음. 저자가 제어 배경 없이 만들었다고 적음.</li><li style="margin-left:0.0em">라이선스 미확인 → 코드 가져오기 불가, 사양만 사용. 아카이브 저장소.</li></ul>
+<h2>재사용 메모</h2>
+<ul><li style="margin-left:0.0em">내 판단: 이득을 UART/레지스터로 런타임 변경하는 구조는 MicroBlaze V에서 AXI4-Lite 레지스터(KP/KI/KD) 쓰기로 그대로 대응되고, 계단 응답 측정·조정 실습의 기반이 된다.</li><li style="margin-left:0.0em">개조: 고정소수점 Q 형식은 자체 설계로 새로 정하고(와인드업 보호 포함), 직렬 프레임 대신 IP 표준 레지스터 맵으로 옮긴다. 코어 의존이 없어 CPU 중립이다.</li></ul></main></body></html>

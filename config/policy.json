@@ -1,0 +1,26 @@
+{
+  "_comment": "하네스 정책. tools/audit.py, tools/build.py가 읽는다. 값을 바꾸면 HARNESS.md에도 반영한다.",
+  "license": {
+    "permissive_spdx": ["MIT", "BSD-2-Clause", "BSD-3-Clause", "Apache-2.0", "ISC", "CC0-1.0", "Unlicense", "0BSD"],
+    "reference_only_spdx": ["GPL-2.0", "GPL-3.0", "LGPL-2.1", "LGPL-3.0", "AGPL-3.0", "CC-BY-NC-4.0"],
+    "unknown_markers": ["unknown", "none", "", "noassertion"],
+    "rule": "permissive 외에는 코드를 가져오지 않는다. 참고 카드와 링크만 허용. 가져올 때는 사용자 승인과 LICENSE 동봉."
+  },
+  "board": {
+    "name": "Digilent Basys3",
+    "io_voltage": 3.3,
+    "allowed_io_voltages": [3.3],
+    "level_shift_required_above": 3.3,
+    "no_direct": ["5V 신호", "12V", "모터 전원", "릴레이 코일"],
+    "note": "FPGA 핀에는 3.3V 신호만 직접 연결한다. 그 밖의 신호는 external_parts[].level_shift에 변환 방법을 적어야 한다."
+  },
+  "cards": {
+    "recheck_days": 180,
+    "source_rev_pattern": "^[0-9a-f]{7,40}$"
+  },
+  "capstone": {
+    "require_integration": true,
+    "max_rtl_lines": 400,
+    "default_address_map": "mbv-frozen-v2"
+  }
+}

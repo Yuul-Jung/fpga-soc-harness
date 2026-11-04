@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-ps2-kbd-checker",
+  "kind": "digital-block-diagram",
+  "note": "디지털 모듈 연결도다. 외부 부품의 전기 배선(전압, 저항, 커넥터)은 포함하지 않는다.",
+  "bus": "mmio-lite",
+  "blocks": [
+    {
+      "id": "clk",
+      "name": "CLK_100 100MHz",
+      "kind": "clock",
+      "module": "-",
+      "file": null
+    },
+    {
+      "id": "x_btnc",
+      "name": "BTNC",
+      "kind": "external",
+      "module": "-",
+      "file": null
+    },
+    {
+      "id": "x_ps2",
+      "name": "PS/2 키보드",
+      "kind": "external",
+      "module": "-",
+      "file": null
+    },
+    {
+      "id": "ps2rx",
+      "name": "ps2_rx",
+      "kind": "periph",
+      "module": "ps2_rx",
+      "file": "rtl/ps2_rx.v"
+    },
+    {
+      "id": "ps2kbd",
+      "name": "ps2_kbd",
+      "kind": "periph",
+      "module": "ps2_kbd",
+      "file": "rtl/ps2_kbd.v"
+    },
+    {
+      "id": "master",
+      "name": "demo_master",
+      "kind": "cpu",
+      "module": "demo_master",
+      "file": "rtl/demo_master.v"
+    },
+    {
+      "id": "bus",
+      "name": "mmio_bus",
+      "kind": "bus",
+      "module": "mmio_bus",
+      "file": "rtl/mmio_bus.v"
+    },
+    {
+      "id": "gpio",
+      "name": "gpio",
+      "kind": "periph",
+      "module": "gpio",
+      "file": "rtl/gpio.v"
+    },
+    {
+      "id": "uart",
+      "name": "uart_tx",
+      "kind": "periph",
+      "module": "uart_tx",
+      "file": "rtl/uart_tx.v"
+    },
+    {
+      "id": "x_swled",
+      "name": "SW / LED",
+      "kind": "external",
+      "module": "-",
+      "file": null
+    },
+    {
+      "id": "x_uart",
+      "name": "RsTx (USB-UART)",
+      "kind": "external",
+      "module": "-",
+      "file": null
+    }
+  ],
+  "links": [
+    {
+      "from": "x_ps2",
+      "to": "ps2rx",
+      "label": "PS2_CLK / PS2_DATA"
+    },
+    {
+      "from": "ps2rx",
+      "to": "ps2kbd",
+      "label": "rx_data / rx_valid / rx_err"
+    },
+    {
+      "from": "ps2kbd",
+      "to": "bus",
+      "label": "rdata_kbd / sel_kbd"
+    },
+    {
+      "from": "master",
+      "to": "bus",
+      "label": "mmio-lite"
+    },
+    {
+      "from": "bus",
+      "to": "gpio",
+      "label": "sel_gpio / rdata_gpio"
+    },
+    {
+      "from": "bus",
+      "to": "uart",
+      "label": "sel_uart / rdata_uart"
+    },
+    {
+      "from": "bus",
+      "to": "ps2kbd",
+      "label": "sel_kbd / we / off"
+    },
+    {
+      "from": "gpio",
+      "to": "x_swled",
+      "label": "sw / led"
+    },
+    {
+      "from": "uart",
+      "to": "x_uart",
+      "label": "txd"
+    }
+  ]
+}

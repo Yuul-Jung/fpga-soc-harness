@@ -1,0 +1,58 @@
+name: GitHub Pages 배포
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 도구 설치 (시뮬레이터·합성기, MkDocs)
+        run: |
+          pip install --break-system-packages mkdocs-material
+          sudo apt-get update && sudo apt-get install -y iverilog verilator yosys
+
+      # 생성 HTML(캡스톤 허브·문서·계통도)은 커밋된 원본에서 매번 새로 만든다.
+      # 추적 중인 오래된 생성물은 여기서 덮어쓴다. 검증 단계가 실패해도 사이트는 게시하고 상태 배지에 그대로 표시한다.
+      - name: 캡스톤 린트·시뮬레이션·합성 (CI 기록)
+        continue-on-error: true
+        run: python3 tools/run_verify.py
+
+      - name: 문서·계통도 생성
+        run: python3 tools/build.py
+
+      - name: 사이트 빌드
+        run: mkdocs build --strict
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

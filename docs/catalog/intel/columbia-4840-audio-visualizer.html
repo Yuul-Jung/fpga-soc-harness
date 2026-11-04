@@ -1,0 +1,46 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>columbia-4840-audio-visualizer</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../../hub.html">FPGA SoC 하네스</a><a href="../../hub.html">메인</a><a href="../../hub.html#capstones">캡스톤</a><a href="../../soc-map/tech-tree.html">기술 트리</a><a href="../../catalog/index.html">카탈로그</a><a href="../../inbox/ideas.html">아이디어</a><a href="../../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/catalog/intel/columbia-4840-audio-visualizer.md">GitHub 원본: catalog/intel/columbia-4840-audio-visualizer.md</a></p><h1>columbia-4840-audio-visualizer</h1><div class="panel fm"><table><tr><td>name</td><td><a href="columbia-4840-audio-visualizer.html">columbia-4840-audio-visualizer</a></td></tr><tr><td>url</td><td>https://www1.cs.columbia.edu/~sedwards/classes/2024/4840-spring/reports/Audio-Visualizer-report.pdf</td></tr><tr><td>source_type</td><td>report</td></tr><tr><td>vendor</td><td>intel</td></tr><tr><td>board</td><td>[DE1-SoC]</td></tr><tr><td>fit_basys3</td><td>needs-port</td></tr><tr><td>cpu</td><td>ARM HPS (Linux)</td></tr><tr><td>language</td><td>SystemVerilog, C</td></tr><tr><td>tools</td><td>[unverified: 보고서 요약에서 도구 버전 확인 못함]</td></tr><tr><td>bus</td><td>Avalon</td></tr><tr><td>peripherals</td><td>[audio-i2s, video-vga, WM8731-codec, accelerator]</td></tr><tr><td>stage</td><td>T4</td></tr><tr><td>license</td><td>unknown</td></tr><tr><td>stats</td><td>{}</td></tr><tr><td>doc_language</td><td>en</td></tr><tr><td>verification</td><td>L3</td></tr><tr><td>checked_at</td><td>2026-11-02</td></tr><tr><td>rechecked_at</td><td>2026-11-02</td></tr><tr><td>sources</td><td>[https://www1.cs.columbia.edu/~sedwards/classes/2024/4840-spring/reports/Audio-Visualizer-report.pdf]</td></tr></table></div><h2>요약</h2>
+<p>Columbia CSEE 4840(2024 봄) 학생 프로젝트 보고서. DE1-SoC에서 마이크 입력을 WM8731 코덱으로 받아 FPGA가 캡처·필터링하고, ARM(HPS)이 FFT로 음높이를 찾아 VGA 스프라이트 게임 화면으로 보여준다.</p>
+<h2>구조</h2>
+<ul><li style="margin-left:0.0em">코덱: FPGA가 I2C로 레지스터 11개(R0~R9, R15)를 설정. 마스터 모드, 48 kHz, 마이크 입력. AUD_XCK 12.288 MHz 생성. 샘플은 16비트, Avalon 읽기 레지스터로 전달.</li><li style="margin-left:0.0em">FPGA: 코덱 제어, 샘플 캡처, 약 11~4200 Hz 대역통과 필터, VGA 스프라이트 렌더링(ROM에 숫자·문자·음표 블록).</li><li style="margin-left:0.0em">HPS: 인터럽트 기반 샘플 수집, 8192점 FFT(보고서는 빈 간격 5.185 Hz로 적음), 최고점 검출 후 음표 매핑</li><li style="margin-left:1.2em">변경: 이전 카드는 &quot;5.185 Hz = 48000/8192&quot;로 썼으나 산술이 맞지 않음. 48000/8192 ≈ 5.859 Hz(내 계산). 보고서 값 5.185 Hz는 보고서 내 불일치로 취급(2026-11-02 재열람)., 스프라이트 위치 전송.</li><li style="margin-left:0.0em">메모리: 온칩 512 KB 중 약 384 KB로 48 kHz 2초 분량 버퍼. 정식 메모리맵은 없고 Avalon 읽기 0x0000만 서술.</li></ul>
+<h2>검증·재현성</h2>
+<ul><li style="margin-left:0.0em">종단 간(알려진 샘플 → Avalon → 소프트웨어) 데이터 검증이 디버깅에 핵심이었다고 서술.</li><li style="margin-left:0.0em">자원(LUT 등)과 타이밍: unverified: 보고서 요약에 없음.</li></ul>
+<h2>한계·위험</h2>
+<ul><li style="margin-left:0.0em">하드웨어 FFT는 미완성(버터플라이/트위들 주소 지정과 고정소수점 정밀도 문제), 소프트웨어로 후퇴.</li><li style="margin-left:0.0em">문서 내 불일치: 샘플 크기 4바이트 표기 vs 드라이버 16비트 전송, 테스트 코드의 샘플레이트 정의(30000) vs 계산의 48 kHz. 피크 탐색은 앞 700빈만 대상(5.859 Hz/빈이면 약 4.1 kHz, 내 계산; 이전 카드의 &quot;약 3.6 kHz&quot;는 5.185 Hz 기준).</li><li style="margin-left:0.0em">추가 불일치(재열람): 마일스톤은 좌우 채널 혼합, 예산은 모노, 제어 코드는 오른쪽 ADC 채널만 전달. 하드웨어 대역통과 하한 11 Hz가 소프트웨어 피크 탐색에는 적용되지 않음(탐색이 bin 0부터).</li><li style="margin-left:0.0em">라이선스: unknown. 학생 보고서이므로 코드 복사 금지.</li></ul>
+<h2>재사용 메모</h2>
+<ul><li style="margin-left:0.0em">내 판단(S6 실패 사례): Basys3에는 HPS가 없으므로 FFT를 FPGA 안에서 해야 한다. 이 보고서는 &quot;하드웨어 FFT는 메모리 주소와 고정소수점 설계를 먼저 계획해야 한다&quot;는 근거가 된다. 작은 FFT(예: 64~256점)와 BRAM 용량 제약으로 범위를 줄이는 쪽이 현실적이다.</li><li style="margin-left:0.0em">내 판단: Basys3 대응물은 코덱 대신 Pmod I2S2(라인 입력) + VGA 막대 스펙트럼이다(내 판단, 해당 Pmod 사양은 미확인).</li></ul></main></body></html>

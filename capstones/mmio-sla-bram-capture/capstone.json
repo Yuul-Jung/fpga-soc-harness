@@ -1,0 +1,212 @@
+{
+  "slug": "mmio-sla-bram-capture",
+  "title": "소프트 논리 분석기 IP (BRAM 샘플 메모리 + 에지 트리거)",
+  "summary": "16채널 디지털 신호를 BRAM에 캡처하고 AXI4-Lite로 읽어내는 소프트 논리 분석기. 에지 트리거 FSM(상승/하강), 프리트리거 버퍼, 채널 마스크 기능 포함.",
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 Verilog-2001 원본이며 외부 코드를 포함하지 않는다. 아이디어 I-067 기반(ready 상태). AXI4-Lite 슬레이브. 동결 맵 free_slots[16]=0x401A_0000 배정 제안(미동결). 시뮬레이션·합성 결과는 CI에서 검증한다.",
+  "board": "Basys3",
+  "stage": "T2",
+  "goals": [
+    "16채널 디지털 입력을 BRAM에 연속 캡처",
+    "에지 트리거(상승/하강) FSM으로 캡처 시점 제어",
+    "프리트리거 버퍼로 트리거 이전 신호 보존",
+    "AXI4-Lite 슬레이브 인터페이스로 호스트 CPU 접근",
+    "채널 마스크(CH_EN)로 관심 신호 선택",
+    "iverilog/yosys CI 통과 (S1/S2)"
+  ],
+  "non_goals": [
+    "UART .vcd 덤프 (이 패키지는 BRAM 캡처 코어만 구현)",
+    "아날로그 신호 캡처 (디지털 전용)",
+    "보드 동작 확인 (S3, 사람이 수행)",
+    "트리거 체인 / 복합 트리거"
+  ],
+  "architecture": {
+    "clock": "aclk 100 MHz (Basys3 W5)",
+    "blocks": [
+      {
+        "id": "wrap",
+        "name": "axil_sla_wrap",
+        "kind": "rtl",
+        "module": "axil_sla_wrap",
+        "file": "rtl/axil_sla_wrap.v",
+        "desc": "AXI4-Lite 슬레이브 래퍼. 7개 레지스터(CTRL/STATUS/TRIG_CH/PRETRIG/CH_EN/RD_ADDR/RD_DATA), Write/Read FSM",
+        "short": "AXI4-Lite 래퍼",
+        "side": "left"
+      },
+      {
+        "id": "core",
+        "name": "sla_core",
+        "kind": "rtl",
+        "module": "sla_core",
+        "file": "rtl/sla_core.v",
+        "desc": "16채널 2단 메타스테이블 FF, 에지 트리거 FSM(IDLE/ARMED/CAPTURING/FULL), BRAM 샘플 메모리(DEPTH_LOG2 파라미터), 프리트리거 카운터",
+        "short": "SLA 코어",
+        "side": "right"
+      },
+      {
+        "id": "bram_ext",
+        "name": "BRAM (Xilinx Block RAM)",
+        "kind": "external",
+        "desc": "sla_core 내부 추론 BRAM. ram_style=block 어트리뷰트로 Xilinx Block RAM에 매핑",
+        "short": "Block RAM",
+        "side": "right"
+      },
+      {
+        "id": "ch_input",
+        "name": "16ch Digital Input",
+        "kind": "external",
+        "desc": "Basys3 Pmod 또는 내부 신호 16채널. 메타스테이블 방지는 sla_core 2단 FF가 처리",
+        "short": "디지털 입력",
+        "side": "top"
+      }
+    ],
+    "links": [
+      {"from": "wrap", "to": "core", "label": "arm/force/srst/trig_ch/trig_pol/pretrig/ch_en/rd_addr"},
+      {"from": "core", "to": "wrap", "label": "sample_out/armed/capturing/full/trig_found/trig_addr"},
+      {"from": "core", "to": "bram_ext", "label": "inferred BRAM r/w"},
+      {"from": "ch_input", "to": "core", "label": "ch_in[15:0]"}
+    ]
+  },
+  "bus_protocol": {
+    "name": "AXI4-Lite",
+    "signals": [
+      {"name": "s_awaddr", "width": 8, "dir": "in", "desc": "쓰기 주소 (레지스터 오프셋 [7:0])"},
+      {"name": "s_awvalid", "width": 1, "dir": "in", "desc": "쓰기 주소 유효"},
+      {"name": "s_awready", "width": 1, "dir": "out", "desc": "쓰기 주소 수락"},
+      {"name": "s_wdata", "width": 32, "dir": "in", "desc": "쓰기 데이터"},
+      {"name": "s_wstrb", "width": 4, "dir": "in", "desc": "바이트 스트로브 (전달만, 바이트 선택 미구현)"},
+      {"name": "s_wvalid", "width": 1, "dir": "in", "desc": "쓰기 데이터 유효"},
+      {"name": "s_wready", "width": 1, "dir": "out", "desc": "쓰기 데이터 수락"},
+      {"name": "s_bresp", "width": 2, "dir": "out", "desc": "쓰기 응답 (항상 OKAY)"},
+      {"name": "s_bvalid", "width": 1, "dir": "out", "desc": "쓰기 응답 유효"},
+      {"name": "s_bready", "width": 1, "dir": "in", "desc": "쓰기 응답 수락"},
+      {"name": "s_araddr", "width": 8, "dir": "in", "desc": "읽기 주소 [7:0]"},
+      {"name": "s_arvalid", "width": 1, "dir": "in", "desc": "읽기 주소 유효"},
+      {"name": "s_arready", "width": 1, "dir": "out", "desc": "읽기 주소 수락"},
+      {"name": "s_rdata", "width": 32, "dir": "out", "desc": "읽기 데이터"},
+      {"name": "s_rresp", "width": 2, "dir": "out", "desc": "읽기 응답 (항상 OKAY)"},
+      {"name": "s_rvalid", "width": 1, "dir": "out", "desc": "읽기 데이터 유효"},
+      {"name": "s_rready", "width": 1, "dir": "in", "desc": "읽기 데이터 수락"}
+    ],
+    "note": "단일 마스터 가정. WSTRB는 전달만 하고 바이트 선택은 미구현(전체 32비트 쓰기)"
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "custom",
+    "compat": "partial",
+    "plan": "동결 맵 free_slots[16] 기준 0x401A_0000에 배치 제안. 사용자 동결 대기 중.",
+    "frozen_mapping": null
+  },
+  "external_parts": [
+    {
+      "id": "pmod_jb",
+      "name": "Pmod JB (16채널 입력용 2×Pmod)",
+      "block": "ch_input",
+      "interface": "GPIO",
+      "io_voltage": "3.3V",
+      "qty": 2,
+      "board_resident": false,
+      "notes": "채널 0~7: JB 하단, 채널 8~15: JA 등 추가 Pmod. xdc에서 핀 배정 필요"
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "디지털 전용. 외부 전기 회로도 미작성."
+  },
+  "hierarchy": {
+    "module": "axil_sla_wrap",
+    "file": "rtl/axil_sla_wrap.v",
+    "children": [
+      {
+        "module": "sla_core",
+        "file": "rtl/sla_core.v",
+        "children": []
+      }
+    ]
+  },
+  "memory_map": [
+    {
+      "region": "sla_regs",
+      "base": "0x401A_0000",
+      "size": "0x10000",
+      "block": "wrap",
+      "note": "제안값. 동결 맵 free_slots[16] 배정 대기.",
+      "regs": [
+        {"off": "0x00", "name": "CTRL",     "access": "RW", "desc": "bit0=ARM(자동 클리어), bit1=FORCE(자동 클리어), bit2=TRIG_POL, bit3=SRST(자동 클리어)"},
+        {"off": "0x04", "name": "STATUS",   "access": "RO", "desc": "bit0=ARMED, bit1=CAPTURING, bit2=FULL, bit3=TRIG_FOUND, [19:8]=TRIG_ADDR"},
+        {"off": "0x08", "name": "TRIG_CH",  "access": "RW", "desc": "[3:0]=트리거 채널 번호 (0~15)"},
+        {"off": "0x0C", "name": "PRETRIG",  "access": "RW", "desc": "[DEPTH_LOG2-1:0]=프리트리거 샘플 수 (기본 0)"},
+        {"off": "0x10", "name": "CH_EN",    "access": "RW", "desc": "[15:0]=채널 활성 마스크 (기본 0xFFFF)"},
+        {"off": "0x14", "name": "RD_ADDR",  "access": "RW", "desc": "[DEPTH_LOG2-1:0]=BRAM 읽기 주소"},
+        {"off": "0x18", "name": "RD_DATA",  "access": "RO", "desc": "[15:0]=RD_ADDR 위치의 샘플 데이터 (1사이클 BRAM 레이턴시)"}
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T2",
+      "state": "current",
+      "title": "BRAM 캡처 + AXI4-Lite 접근 (이 패키지)",
+      "refs": ["mmio-qenc-diag-checker"]
+    },
+    {
+      "stage": "T2",
+      "state": "planned",
+      "title": "UART .vcd 덤프 추가 (캡처 완료 후 직렬 전송)",
+      "refs": ["mmio-uart-axilite-bridge"]
+    },
+    {
+      "stage": "T3",
+      "state": "planned",
+      "title": "다채널 트리거 체인 / 패턴 트리거",
+      "refs": []
+    }
+  ],
+  "references": [
+    {
+      "card": "mmio-qenc-diag-checker",
+      "why": "AXI4-Lite FSM 패턴, BRAM 추론, 2단 메타스테이블 FF 참고"
+    },
+    {
+      "card": "mmio-uart-axilite-bridge",
+      "why": "UART 덤프 연동 로드맵 참고"
+    }
+  ],
+  "sources": {
+    "rtl": ["rtl/sla_core.v", "rtl/axil_sla_wrap.v"],
+    "tb": ["tb/tb_axil_sla_wrap.v"],
+    "constraints": [],
+    "build": ["Makefile"]
+  },
+  "howto": [
+    {
+      "title": "시뮬레이션 (iverilog)",
+      "steps": [
+        "make lint  — RTL 문법 검사 (iverilog -tnull)",
+        "make sim   — iverilog+vvp로 tb_axil_sla_wrap 실행. PASS/FAIL 출력 확인."
+      ]
+    },
+    {
+      "title": "합성 추정 (yosys)",
+      "steps": [
+        "make synth  — yosys synth_xilinx. 자원 추정(BRAM 타일 1개 이상 예상)."
+      ]
+    },
+    {
+      "title": "Vivado 합성",
+      "steps": [
+        "DEPTH_LOG2=12(기본), aclk=W5(100MHz), ch_in 핀은 xdc에서 Pmod JA/JB에 배정.",
+        "프로젝트에서 axil_sla_wrap을 AXI4-Lite 슬레이브로 추가."
+      ]
+    }
+  ],
+  "verification": {
+    "board": "not-run",
+    "notes": "S3 보드 검증은 사람이 수행. 에이전트는 S0~S2만 기록."
+  },
+  "risks": [
+    "BRAM 1사이클 읽기 레이턴시: RD_ADDR 쓰기 후 1사이클 뒤 RD_DATA가 유효. AXI 읽기는 2사이클 후 rvalid 반환.",
+    "DEPTH_LOG2=12에서 BRAM 타일 소비 증가 (4096×16bit = 8KB). Basys3 50개 BRAM 중 1개 소비.",
+    "pre_done 계산: pretrig=0이면 즉시 pre_done=1. 작은 pretrig 값에서 1사이클 오차 가능.",
+    "STATUS[19:8]은 DEPTH_LOG2=8 테스트벤치에서 하위 8비트만 유효 (상위 4비트 항상 0)."
+  ]
+}

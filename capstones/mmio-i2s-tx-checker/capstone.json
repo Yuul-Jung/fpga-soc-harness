@@ -1,0 +1,343 @@
+{
+  "slug": "mmio-i2s-tx-checker",
+  "title": "MMIO I2S 클럭 체크 하네스 (Basys3 Pmod I2S2)",
+  "summary": "100 MHz 시스템 클럭에서 I2S 클럭 계층(MCLK 12.5 MHz → BCLK 3.125 MHz → LRCLK 97.656 kHz)을 정수 분주로 생성하고, 비율과 비트 순서를 시뮬레이션에서 자동 검증한다. Pmod JA에 Pmod I2S2를 꽂으면 보드에서 직접 오디오 출력을 확인할 수 있다.",
+  "board": "Digilent Basys3 (XC7A35T)",
+  "stage": "T2",
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 원본이며 외부 코드를 포함하지 않는다. 아이디어 I-002에서 생성됨(2026-11-04). 시뮬레이션·합성 결과는 CI가 기록한다.",
+  "goals": [
+    "정수 분주기로 MCLK(12.5 MHz), BCLK(3.125 MHz), LRCLK(97.656 kHz)를 생성한다.",
+    "16비트 스테레오 I2S 송신기를 MMIO 레지스터로 제어한다.",
+    "테스트벤치에서 클럭 비율(BCLK:MCLK=4, BCLK/LRCLK=32)과 MSB 우선 비트 순서를 PASS/FAIL로 검증한다.",
+    "마스터 포트를 분리해 CPU로 교체할 수 있게 한다."
+  ],
+  "non_goals": [
+    "표준 44.1/48 kHz 샘플레이트 (100 MHz에서 정수 분주로는 불가)",
+    "MMCM/PLL 사용 (도구 없이 시뮬레이션 가능하도록 순수 RTL 분주기 사용)",
+    "I2S 수신(Pmod I2S2의 ADC), DMA, FIFO",
+    "CPU 구현 (다음 단계)"
+  ],
+  "architecture": {
+    "clock": "100 MHz 단일 클럭 (clk, W5), 동기 리셋 (btnC, 2단 동기화). I2S 클럭(MCLK/BCLK/LRCLK)은 정수 분주기가 sys_clk에서 생성한다.",
+    "blocks": [
+      {
+        "id": "clk",
+        "name": "clk 100 MHz",
+        "kind": "clock",
+        "module": "-",
+        "desc": "보드 클럭 입력 (W5)",
+        "short": "보드 클럭 입력"
+      },
+      {
+        "id": "x_btn",
+        "name": "btnC",
+        "kind": "external",
+        "module": "-",
+        "desc": "리셋 버튼",
+        "short": "리셋",
+        "side": "in"
+      },
+      {
+        "id": "clkgen",
+        "name": "i2s_clk_gen",
+        "kind": "periph",
+        "module": "i2s_clk_gen",
+        "file": "rtl/i2s_clk_gen.v",
+        "desc": "100 MHz → MCLK 12.5 MHz(/8) · BCLK 3.125 MHz(/32) · LRCLK 97.656 kHz(/1024)",
+        "short": "I2S 클럭 분주기"
+      },
+      {
+        "id": "master",
+        "name": "demo_master",
+        "kind": "cpu",
+        "module": "demo_master",
+        "file": "rtl/demo_master.v",
+        "desc": "CPU 슬롯. L/R 샘플을 쓰고 TX를 활성화하는 초기화 FSM",
+        "short": "CPU 슬롯 (초기화 FSM)"
+      },
+      {
+        "id": "bus",
+        "name": "mmio_bus",
+        "kind": "bus",
+        "module": "mmio_bus",
+        "file": "rtl/mmio_bus.v",
+        "desc": "주소 [31:16] 디코드(64KB 창), 읽기 데이터 mux",
+        "short": "주소 디코드·읽기 mux"
+      },
+      {
+        "id": "gpio",
+        "name": "gpio",
+        "kind": "periph",
+        "module": "gpio",
+        "file": "rtl/gpio.v",
+        "desc": "LED 16, SW 16",
+        "short": "LED 16, SW 16"
+      },
+      {
+        "id": "uart",
+        "name": "uart_tx",
+        "kind": "periph",
+        "module": "uart_tx",
+        "file": "rtl/uart_tx.v",
+        "desc": "115200 8N1 송신",
+        "short": "115200 8N1 송신"
+      },
+      {
+        "id": "i2s",
+        "name": "i2s_tx",
+        "kind": "periph",
+        "module": "i2s_tx",
+        "file": "rtl/i2s_tx.v",
+        "desc": "MMIO + I2S Left-Justified 직렬화. 레지스터: CTRL·STATUS·L_DATA·R_DATA·ID·VER·IRQ_STATUS·IRQ_ENABLE",
+        "short": "I2S TX + MMIO"
+      },
+      {
+        "id": "x_sw",
+        "name": "SW / LED",
+        "kind": "external",
+        "module": "-",
+        "desc": "슬라이드 스위치와 LED",
+        "short": "스위치와 LED"
+      },
+      {
+        "id": "x_uart",
+        "name": "RsTx (USB-UART)",
+        "kind": "external",
+        "module": "-",
+        "desc": "PC 터미널로 연결",
+        "short": "PC 터미널"
+      },
+      {
+        "id": "x_i2s2",
+        "name": "Pmod I2S2 (JA)",
+        "kind": "external",
+        "module": "-",
+        "desc": "Digilent Pmod I2S2 오디오 DAC (Pmod JA 포트)",
+        "short": "Pmod I2S2",
+        "side": "out"
+      }
+    ],
+    "links": [
+      { "from": "clk",    "to": "clkgen", "label": "100 MHz" },
+      { "from": "clkgen", "to": "i2s",    "label": "MCLK/BCLK/LRCLK" },
+      { "from": "master", "to": "bus",    "label": "mmio-lite" },
+      { "from": "bus",    "to": "gpio",   "label": "sel/rdata" },
+      { "from": "bus",    "to": "uart",   "label": "sel/rdata" },
+      { "from": "bus",    "to": "i2s",    "label": "sel/rdata" },
+      { "from": "gpio",   "to": "x_sw",  "label": "sw, led" },
+      { "from": "uart",   "to": "x_uart","label": "txd" },
+      { "from": "i2s",    "to": "x_i2s2","label": "MCLK/BCLK/LRCLK/SDIN" },
+      { "from": "i2s",    "to": "master", "label": "irq" }
+    ]
+  },
+  "bus_protocol": {
+    "name": "mmio-lite",
+    "signals": [
+      { "name": "m_valid",    "dir": "master→slave", "desc": "요청 유효" },
+      { "name": "m_we",       "dir": "master→slave", "desc": "1이면 쓰기" },
+      { "name": "m_addr[31:0]","dir": "master→slave", "desc": "바이트 주소, 4바이트 정렬" },
+      { "name": "m_wdata[31:0]","dir": "master→slave","desc": "쓰기 데이터" },
+      { "name": "m_rdata[31:0]","dir": "slave→master","desc": "읽기 데이터 (조합 경로)" },
+      { "name": "m_ready",    "dir": "slave→master", "desc": "항상 1: 모든 접근은 1사이클" }
+    ],
+    "note": "주소 [31:16]으로 슬레이브 선택, [15:0]이 슬레이브 내 오프셋. i2s_tx는 0xFFF0~FFFC(mgmt 레지스터)에 접근하므로 16비트 오프셋이 필요하다."
+  },
+  "hierarchy": {
+    "module": "basys3_top",
+    "file": "rtl/basys3_top.v",
+    "children": [
+      { "module": "i2s_clk_gen", "file": "rtl/i2s_clk_gen.v" },
+      {
+        "module": "soc_top",
+        "file": "rtl/soc_top.v",
+        "children": [
+          { "module": "demo_master", "file": "rtl/demo_master.v" },
+          { "module": "mmio_bus",   "file": "rtl/mmio_bus.v" },
+          { "module": "gpio",       "file": "rtl/gpio.v" },
+          { "module": "uart_tx",    "file": "rtl/uart_tx.v" },
+          { "module": "i2s_tx",     "file": "rtl/i2s_tx.v" }
+        ]
+      }
+    ]
+  },
+  "memory_map": [
+    {
+      "base": "0x1000_0000",
+      "size": "0x10000",
+      "block": "gpio",
+      "regs": [
+        { "off": "0x00", "name": "LED",  "access": "RW", "desc": "하위 16비트가 LED 핀" },
+        { "off": "0x04", "name": "SW",   "access": "RO", "desc": "하위 16비트, 2단 동기화된 스위치" }
+      ]
+    },
+    {
+      "base": "0x1001_0000",
+      "size": "0x10000",
+      "block": "uart",
+      "regs": [
+        { "off": "0x00", "name": "DATA",   "access": "WO", "desc": "하위 8비트 송신 시작. busy 중 무시" },
+        { "off": "0x04", "name": "STATUS", "access": "RO", "desc": "bit0 = busy" }
+      ]
+    },
+    {
+      "base": "0x1002_0000",
+      "size": "0x10000",
+      "block": "i2s",
+      "regs": [
+        { "off": "0x0000", "name": "CTRL",       "access": "RW", "desc": "bit[0]=TX_EN. 1이면 연속 송신 활성화" },
+        { "off": "0x0004", "name": "STATUS",      "access": "RO", "desc": "bit[0]=active(TX_EN과 동일)" },
+        { "off": "0x0008", "name": "L_DATA",      "access": "WO", "desc": "다음 프레임에 사용할 왼쪽 채널 16비트 샘플 [15:0]" },
+        { "off": "0x000C", "name": "R_DATA",      "access": "WO", "desc": "다음 프레임에 사용할 오른쪽 채널 16비트 샘플 [15:0]" },
+        { "off": "0xFFF0", "name": "ID",          "access": "RO", "desc": "0x49325354 ('I2ST')" },
+        { "off": "0xFFF4", "name": "VER",         "access": "RO", "desc": "0x01000001: std_rev=1, major=0, minor=1" },
+        { "off": "0xFFF8", "name": "IRQ_STATUS",  "access": "W1C","desc": "bit[0]=frame_done. 1쓰면 클리어(W1C)" },
+        { "off": "0xFFFC", "name": "IRQ_ENABLE",  "access": "RW", "desc": "bit[0]=frame_done 인터럽트 활성화" }
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T1",
+      "state": "done",
+      "title": "MMIO 버스 + GPIO + UART, 마스터는 FSM",
+      "refs": ["mmio-uart-gpio-skeleton"]
+    },
+    {
+      "stage": "T2",
+      "state": "current",
+      "title": "I2S 클럭 생성·검증, Pmod I2S2 오디오 출력",
+      "refs": ["digilent-forum-pmodamp3-basys3-i2s", "columbia-4840-audio-visualizer"]
+    },
+    {
+      "stage": "T2",
+      "state": "planned",
+      "title": "마스터를 PicoRV32로 교체, I2S TX를 C 드라이버로 제어",
+      "refs": ["fanguoc2len-risc-v-computer"]
+    },
+    {
+      "stage": "T3",
+      "state": "planned",
+      "title": "오디오 톤 생성기 또는 BRAM 오디오 플레이어 펌웨어",
+      "refs": ["columbia-4840-audio-visualizer"]
+    }
+  ],
+  "references": [
+    { "card": "digilent-forum-pmodamp3-basys3-i2s", "why": "MCLK/BCLK/LRCLK 분주기와 Pmod I2S 연결의 직접 근거" },
+    { "card": "columbia-4840-audio-visualizer",      "why": "I2S + VGA 조합, 오디오 비주얼라이저 아이디어 근거" }
+  ],
+  "sources": {
+    "rtl": [
+      "rtl/i2s_clk_gen.v",
+      "rtl/i2s_tx.v",
+      "rtl/mmio_bus.v",
+      "rtl/gpio.v",
+      "rtl/uart_tx.v",
+      "rtl/demo_master.v",
+      "rtl/soc_top.v",
+      "rtl/basys3_top.v"
+    ],
+    "tb": [
+      "tb/tb_i2s.v"
+    ],
+    "constraints": [
+      "constr/basys3.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
+  },
+  "howto": [
+    {
+      "title": "시뮬레이션 (클럭 비율·비트 순서 검증)",
+      "steps": [
+        "make -C capstones/mmio-i2s-tx-checker lint sim synth",
+        "build/sim.log 첫 줄이 PASS면 클럭 비율과 비트 순서 검증 통과"
+      ]
+    },
+    {
+      "title": "Vivado 빌드 (Basys3 + Pmod I2S2)",
+      "steps": [
+        "새 RTL 프로젝트, 파트 xc7a35tcpg236-1",
+        "rtl/*.v 추가 (tb 제외), constr/basys3.xdc 추가, 최상위 basys3_top",
+        "Generate Bitstream 후 Program Device",
+        "Pmod I2S2를 JA 포트에 꽂고 헤드폰 연결",
+        "RsTx를 PC 터미널(115200 8N1)에 연결. 초기화 후 LED[0]이 IRQ 신호를 표시"
+      ]
+    }
+  ],
+  "verification": {
+    "lint": "not-run",
+    "sim": "not-run",
+    "synth": "not-run",
+    "board": "not-run",
+    "notes": "시뮬레이션·합성은 CI가 실행하면 자동으로 채워진다. 보드 동작 확인(S3)은 사람이 한다."
+  },
+  "risks": [
+    "샘플레이트 97.656 kHz는 비표준이다. Pmod I2S2의 CS4344 DAC는 4~200 kHz를 허용하므로 동작은 가능하나 오디오 피치가 2배 이상 높게 들릴 수 있다.",
+    "JA Pmod 핀 배치는 Digilent 마스터 XDC(rev B 이후)와 대조가 필요하다.",
+    "i2s_clk_gen은 sys_clk 도메인 순수 분주기이므로 Vivado 타이밍 분석에서 BCLK·MCLK·LRCLK를 generated clock으로 선언해야 한다(create_generated_clock). XDC에 미작성 상태.",
+    "표준 Philips I2S의 1 BCLK 오프셋 없이 Left-Justified 형식을 사용한다. CS4344는 LJ 모드를 지원하나 주소 세팅(MODE 핀)을 확인해야 한다."
+  ],
+  "integration": {
+    "bus": "mmio-lite",
+    "address_map": "custom",
+    "compat": "incompatible",
+    "target_map": "mbv-frozen-v2",
+    "plan": "이 패키지는 CPU 없이 시뮬레이션하려고 자체 버스(0x1002_xxxx)를 쓴다. 동결 맵(mbv-frozen-v2)에는 i2s_tx 슬롯 [14] 0x4014_0000 (intc 11)이 미리 배정되어 있다. 이식 경로: (1) 주소를 0x1002_0000 → 0x4014_0000으로 교체하고 mmio-lite → AXI4-Lite 래퍼를 붙인다. (2) IRQ를 intc 11에 연결한다. (3) MMIO 레지스터 배치(CTRL/STATUS/L_DATA/R_DATA/mgmt)는 ip_standard.json을 따르므로 AXI4-Lite 래퍼를 쓰면 드라이버 변경 없이 MicroBlaze V에서 동작한다.",
+    "frozen_mapping": [
+      { "block": "i2s_tx", "region": "i2s_tx", "base": "0x4014_0000", "intc": 11 }
+    ]
+  },
+  "external_parts": [
+    {
+      "id": "p_i2s2",
+      "name": "Digilent Pmod I2S2 (Cirrus Logic CS4344 DAC)",
+      "block": "x_i2s2",
+      "interface": "I2S / Left-Justified (MCLK + BCLK + LRCLK + SDIN)",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": 3.3,
+      "level_shift": false,
+      "arduino_compatible": false,
+      "notes": "Pmod JA 포트 연결. JA1=LRCLK, JA2=SDIN, JA4=MCLK, JA7=BCLK. 3.3V 단일 전원. VDD=3.3V는 Pmod VCC에서 공급."
+    },
+    {
+      "id": "p_btn",
+      "name": "Basys3 푸시버튼 (btnC)",
+      "block": "x_btn",
+      "interface": "GPIO 입력",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": true,
+      "arduino_compatible": false,
+      "notes": "btnC=리셋"
+    },
+    {
+      "id": "p_swled",
+      "name": "Basys3 슬라이드 스위치 16 / LED 16",
+      "block": "x_sw",
+      "interface": "GPIO 입출력",
+      "io_voltage": 3.3,
+      "qty": 32,
+      "board_resident": true,
+      "arduino_compatible": false,
+      "notes": "보드 내장"
+    },
+    {
+      "id": "p_uart",
+      "name": "Basys3 USB-UART (FTDI)",
+      "block": "x_uart",
+      "interface": "UART TX 115200 8N1",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": true,
+      "arduino_compatible": false,
+      "notes": "보드 내장, PC 터미널 연결"
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "Pmod I2S2는 3.3V 단전원이며 레벨 변환이 필요 없다. Basys3 JA와 직결한다. 전기 회로도는 미작성이며 Digilent Pmod I2S2 Reference Manual(digilent.com)을 참조한다."
+  }
+}

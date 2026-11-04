@@ -1,0 +1,46 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wangxuan95-fpga-foc</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../../hub.html">FPGA SoC 하네스</a><a href="../../hub.html">메인</a><a href="../../hub.html#capstones">캡스톤</a><a href="../../soc-map/tech-tree.html">기술 트리</a><a href="../../catalog/index.html">카탈로그</a><a href="../../inbox/ideas.html">아이디어</a><a href="../../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/catalog/vendor-neutral/wangxuan95-fpga-foc.md">GitHub 원본: catalog/vendor-neutral/wangxuan95-fpga-foc.md</a></p><h1>wangxuan95-fpga-foc</h1><div class="panel fm"><table><tr><td>name</td><td><a href="wangxuan95-fpga-foc.html">wangxuan95-fpga-foc</a></td></tr><tr><td>url</td><td>https://github.com/WangXuan95/FpOC</td></tr><tr><td>source_type</td><td>repo</td></tr><tr><td>vendor</td><td>neutral</td></tr><tr><td>board</td><td>[DE10-Nano (예시), Cyclone IV 데모]</td></tr><tr><td>fit_basys3</td><td>needs-port</td></tr><tr><td>cpu</td><td>none(FSM)</td></tr><tr><td>language</td><td>Verilog</td></tr><tr><td>tools</td><td>[iverilog, GTKWave, Quartus(altpll)]</td></tr><tr><td>bus</td><td>none</td></tr><tr><td>peripherals</td><td>[actuator-servo, sensor, comm-i2c, comm-spi, comm-uart]</td></tr><tr><td>stage</td><td>T4</td></tr><tr><td>license</td><td>GPL-3.0</td></tr><tr><td>stats</td><td>{stars: 993, forks: 275, commits: 18}</td></tr><tr><td>doc_language</td><td>en</td></tr><tr><td>verification</td><td>L3</td></tr><tr><td>checked_at</td><td>2026-11-02</td></tr><tr><td>sources</td><td>[https://github.com/WangXuan95/FpOC]</td></tr></table></div><h2>요약</h2>
+<p>BLDC/PMSM용 FOC(자계 지향 제어)를 순수 Verilog로 쓴 저장소. 각도 센서(AS5600, I2C)와 3션트 전류 ADC(AD7928, SPI)로 전류 루프(토크 제어)까지 닫는다. 알고리즘부(<code>foc_top</code>)와 보드 의존부(센서·ADC·PLL)를 분리한 층 구조가 특징이다.</p>
+<h2>구조</h2>
+<ul><li style="margin-left:0.0em">모듈(README 기준): fpga_top, uart_monitor, i2c_register_read(AS5600), adc_ad7928, foc_top, clark_tr, park_tr(sincos 사용), pi_controller, cartesian2polar, svpwm(7구간), hold_detect.</li><li style="margin-left:0.0em">변환 흐름: Clarke → Park 대신 극좌표 입력 SVPWM(각도 뺄셈으로 Park 대체) → 3상 PWM. 내부 연산 16비트 부호 정수, 센서·ADC는 12비트 가정.</li><li style="margin-left:0.0em">클럭: 입력 50MHz, PLL로 36.864MHz → SVPWM 18kHz(clk/2048). 메인 클럭 40MHz 미만 제약은 AD7928 SPI 한계에서 온다.</li><li style="margin-left:0.0em">전류 샘플링: 하단 3암이 모두 켜진 구간에서 ADC 시작(hold_detect, <code>SAMPLE_DELAY</code>로 정착 지연). 시작 시 회전자를 전기각 0으로 정렬(<code>INIT_CYCLES</code>).</li><li style="margin-left:0.0em">파라미터: POLE_PAIR, MAX_AMP, ANGLE_INV, Kp/Ki 31비트 입력.</li><li style="margin-left:0.0em">모니터: 115200 8N1 단방향 UART로 d/q축 실제·목표 전류 출력.</li></ul>
+<h2>검증·재현성</h2>
+<ul><li style="margin-left:0.0em">SIM 폴더: iverilog + GTKWave, 테스트벤치 tb_clark_park_tr, tb_svpwm. 모터 모델이 없어 닫힌 루프 전체는 시뮬레이션하지 않는다(README 기준).</li><li style="margin-left:0.0em">실제 모터(저전력 짐벌 모터)에서 d/q 전류가 계단 목표를 따라간 직렬 플롯이 README에 있다. 드라이버 MP6540, 맞춤 아두이노 형상 보드(Gerber 제공).</li><li style="margin-left:0.0em">자원 사용·타이밍: unverified: README에 없음. 최신 커밋 날짜·SHA: unverified: 페이지에 표시되지 않음.</li></ul>
+<h2>한계·위험</h2>
+<ul><li style="margin-left:0.0em">라이선스 GPL-3.0 → 코드 복사 불가, 포트·레지스터·구조만 참고(§16.3 G0). 코드 주석은 중국어.</li><li style="margin-left:0.0em">데모 PLL이 Altera altpll이라 Xilinx에서는 MMCM으로 교체 필요. 12V급 드라이버 보드와 모터는 별도 전원 필요.</li></ul>
+<h2>재사용 메모</h2>
+<ul><li style="margin-left:0.0em">내 판단: 최상 단계(FOC)의 구조 교과서로 쓸 만하다. 순서(엔코더 → PWM → 샘플링 창 → 변환 → PI)가 모듈로 나뉘어 있어 사다리를 짜기 쉽다. GPL이라 자체 RTL로 다시 쓴다.</li><li style="margin-left:0.0em">개조: 알고리즘부를 AXI4-Lite IP 표준 래퍼(Kp/Ki/목표 전류/POLE_PAIR 레지스터, 측정 d/q 읽기)로 옮길 수 있다. AS5600(I2C)·AD7928(SPI)은 Basys3 Pmod 3.3V로 연결 가능. 모터 전원은 분리하고 GND만 공통. 시험은 모터 모델 포함 테스트벤치를 새로 써야 한다.</li></ul></main></body></html>

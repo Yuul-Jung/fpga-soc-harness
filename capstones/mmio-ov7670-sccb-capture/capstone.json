@@ -1,0 +1,319 @@
+{
+  "slug": "mmio-ov7670-sccb-capture",
+  "title": "OV7670 SCCB 설정 + RGB565 캡처 프런트엔드",
+  "summary": "OV7670 카메라 모듈을 SCCB(I2C 호환 2선 직렬)로 초기화하고, PCLK 도메인에서 RGB565 픽셀을 캡처해 MMIO 슬레이브로 노출하는 T2 SoC 주변장치 패키지.",
+  "board": "Basys3",
+  "stage": "T2",
+  "author_note": "I-006 아이디어(ready 상태, 9점). 선택 경로: §13.7 자동 과제화, ready 직접 선택.",
+
+  "goals": [
+    "SCCB 마스터 FSM으로 OV7670 설정 ROM(10 엔트리) 전송 완료",
+    "OV7670의 VSYNC·HREF·PCLK 타이밍에 맞춰 RGB565 2바이트를 한 픽셀로 결합",
+    "PCLK ↔ 시스템 클럭 도메인 교차(2-FF 토글 동기화기)",
+    "MMIO 슬레이브 레지스터(CTRL/STATUS/PIXEL/FRAME/ID_VER)로 소프트웨어 접근 제공",
+    "iverilog 시뮬레이션 PASS, yosys 합성 성공(S2)"
+  ],
+  "non_goals": [
+    "프레임 버퍼 (Basys3 BRAM 한계, 약 76 KB로 QVGA 한 장 불가)",
+    "VGA 출력 직결 (별도 패키지 T3로 확장 예정)",
+    "자동 노출·화이트밸런스 등 고급 카메라 제어",
+    "JPEG/YUV 출력 (RGB565 고정)",
+    "MicroBlaze V 연결 (이 패키지는 단독 시뮬레이션용 mmio-lite 버스 사용)"
+  ],
+
+  "architecture": {
+    "clock": "100 MHz 시스템 (Basys3 W5) + 24 MHz cam_pclk (OV7670 PCLK, Pmod JA7, 비동기 도메인)",
+    "blocks": [
+      {
+        "id": "top",
+        "name": "basys3_top",
+        "kind": "wrapper",
+        "module": "basys3_top",
+        "file": "rtl/basys3_top.v",
+        "desc": "Basys3 보드 래퍼: IOBUF, 리셋 동기화, 버튼 debounce, Pmod 핀 배정",
+        "short": "보드 래퍼",
+        "side": "left"
+      },
+      {
+        "id": "core",
+        "name": "ov7670_sccb_top",
+        "kind": "mmio_slave",
+        "module": "ov7670_sccb_top",
+        "file": "rtl/ov7670_sccb_top.v",
+        "desc": "SoC 코어: MMIO 슬레이브, 설정 ROM FSM, 도메인 교차 통합",
+        "short": "SoC 코어",
+        "side": "center"
+      },
+      {
+        "id": "sccb",
+        "name": "sccb_tx",
+        "kind": "serial_master",
+        "module": "sccb_tx",
+        "file": "rtl/sccb_tx.v",
+        "desc": "SCCB 마스터 FSM: START, 3×(8비트+NA), STOP, 클럭 분주 HALF_CNT=500",
+        "short": "SCCB TX",
+        "side": "right"
+      },
+      {
+        "id": "capture",
+        "name": "ov7670_capture",
+        "kind": "capture",
+        "module": "ov7670_capture",
+        "file": "rtl/ov7670_capture.v",
+        "desc": "PCLK 도메인 캡처: RGB565 2바이트 결합, VSYNC/HREF 프레임/라인 카운터",
+        "short": "픽셀 캡처",
+        "side": "right"
+      },
+      {
+        "id": "sync_fd",
+        "name": "sync_pulse (frame_done)",
+        "kind": "cdc",
+        "module": "sync_pulse",
+        "file": "rtl/sync_pulse.v",
+        "desc": "PCLK→SYS 2-FF 토글 동기화기: frame_done",
+        "short": "CDC fd",
+        "side": "center"
+      },
+      {
+        "id": "sync_pv",
+        "name": "sync_pulse (pixel_valid)",
+        "kind": "cdc",
+        "module": "sync_pulse",
+        "file": "rtl/sync_pulse.v",
+        "desc": "PCLK→SYS 2-FF 토글 동기화기: pixel_valid",
+        "short": "CDC pv",
+        "side": "center"
+      },
+      {
+        "id": "sync_fs",
+        "name": "sync_pulse (frame_start)",
+        "kind": "cdc",
+        "module": "sync_pulse",
+        "file": "rtl/sync_pulse.v",
+        "desc": "PCLK→SYS 2-FF 토글 동기화기: frame_start",
+        "short": "CDC fs",
+        "side": "center"
+      },
+      {
+        "id": "ov7670",
+        "name": "OV7670",
+        "kind": "external",
+        "desc": "OV7670 카메라 모듈: SCCB(400 kHz max), PCLK/VSYNC/HREF/D[7:0], 3.3V IO (모듈 내 레귤레이터 포함)",
+        "short": "OV7670 카메라",
+        "side": "right"
+      }
+    ],
+    "links": [
+      {"from": "top",     "to": "core",    "label": "mmio_addr/wdata/wen/ren/rdata"},
+      {"from": "core",    "to": "sccb",    "label": "start/done/na_err/reg_addr/reg_data"},
+      {"from": "sccb",    "to": "ov7670",  "label": "SIO_C, SIO_D (오픈 드레인)"},
+      {"from": "ov7670",  "to": "capture", "label": "PCLK/VSYNC/HREF/D[7:0]"},
+      {"from": "capture", "to": "sync_fd", "label": "frame_done (PCLK)"},
+      {"from": "capture", "to": "sync_pv", "label": "pixel_valid + pixel_data (PCLK)"},
+      {"from": "capture", "to": "sync_fs", "label": "frame_start (PCLK)"},
+      {"from": "sync_fd", "to": "core",    "label": "sys_frame_done (SYS CLK)"},
+      {"from": "sync_pv", "to": "core",    "label": "sys_pixel_valid (SYS CLK)"},
+      {"from": "sync_fs", "to": "core",    "label": "sys_frame_start (SYS CLK)"},
+      {"from": "top",     "to": "ov7670",  "label": "IOBUF SIO_D (Pmod JA2)"}
+    ]
+  },
+
+  "bus_protocol": {
+    "name": "mmio-lite (단독 시뮬레이션용)",
+    "signals": [
+      {"name": "addr[31:0]",  "dir": "M→S", "desc": "32비트 절대 주소"},
+      {"name": "wdata[31:0]", "dir": "M→S", "desc": "32비트 쓰기 데이터"},
+      {"name": "wen",         "dir": "M→S", "desc": "쓰기 활성화 (1클럭 펄스)"},
+      {"name": "ren",         "dir": "M→S", "desc": "읽기 활성화 (1클럭 펄스)"},
+      {"name": "rdata[31:0]", "dir": "S→M", "desc": "읽기 데이터 (다음 클럭에 유효)"}
+    ],
+    "note": "AXI4-Lite 비호환. MicroBlaze V 이식 시 AXI4-Lite 래퍼 추가 필요."
+  },
+
+  "integration": {
+    "bus": "mmio-lite (단독 시뮬레이션용, AXI4-Lite 비호환)",
+    "address_map": "custom",
+    "compat": "incompatible",
+    "target_map": "mbv-frozen-v2",
+    "plan": "이 패키지는 mmio-lite(0x1004_0000)로 단독 동작한다. mbv-frozen-v2 이식 계획: (1) ov7670_sccb_top을 IP 표준(64KB 창, 0xFFF0 ID/VER/IRQ)으로 래핑해 AXI4-Lite 슬레이브로 변환한다. (2) 동결 맵 free_slots 중 [17]=0x4017_0000에 배정을 제안한다([16]은 sensor_hub가 사용). (3) SCCB NA_ERR을 INTC 인터럽트(free intc slot)로 연결한다. (4) PCLK 비동기 리셋에 시스템 리셋 2-FF 동기화 추가가 필요하다.",
+    "frozen_mapping": [
+      {"block": "core", "region": "[17] ov7670_sccb  0x4017_0000  (제안, 미동결)"}
+    ]
+  },
+
+  "external_parts": [
+    {
+      "id": "ov7670_module",
+      "name": "OV7670 카메라 모듈 (FIFO 없는 버전)",
+      "block": "ov7670",
+      "interface": "SCCB (SDA/SCL) + 병렬 픽셀 (D[7:0]/PCLK/VSYNC/HREF)",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": 3.3,
+      "level_shift": false,
+      "power_note": "모듈 내 LDO로 2.8V/1.5V 자체 생성. VCC=3.3V 공급, GND 공통.",
+      "arduino_compatible": true,
+      "notes": "IO 전압 3.3V. OV7670은 풀업 4.7 kΩ (SDA/SCL)이 모듈에 포함된 경우가 많으나 없으면 외부 추가. PWDN=0(활성), RESET=1(정상) 고정 또는 GPIO 제어."
+    }
+  ],
+
+  "schematic": {
+    "state": "not-written",
+    "note": "디지털 계통도(diagram.svg)와 별개. 전기 회로도는 미작성. 연결: OV7670 VCC→3.3V, GND 공통, SIO_C→Pmod JA1, SIO_D↔Pmod JA2(IOBUF), PCLK→JA7, VSYNC→JA8, HREF→JA9, D[7:4]→JA10/JB[1:4], D[3:0]→JB[4]/JC[1:3]. 풀업 저항(4.7 kΩ)은 SDA/SCL에 필요 (모듈 미포함 시)."
+  },
+
+  "hierarchy": {
+    "module": "basys3_top",
+    "file": "rtl/basys3_top.v",
+    "children": [
+      {
+        "module": "ov7670_sccb_top",
+        "file": "rtl/ov7670_sccb_top.v",
+        "children": [
+          {"module": "sccb_tx",       "file": "rtl/sccb_tx.v"},
+          {"module": "ov7670_capture","file": "rtl/ov7670_capture.v"},
+          {"module": "sync_pulse",    "file": "rtl/sync_pulse.v"}
+        ]
+      }
+    ]
+  },
+
+  "memory_map": [
+    {
+      "base": "0x1004_0000",
+      "size": "0x100",
+      "block": "core",
+      "desc": "OV7670 SCCB 캡처 코어 (mmio-lite 단독용. mbv-frozen-v2 이식 시 0x4017_0000 제안)",
+      "regs": [
+        {
+          "off": "0x00",
+          "name": "CTRL",
+          "access": "WO",
+          "desc": "bit0=START_CFG (1클럭 펄스, SCCB ROM 전송 시작), bit1=CAP_EN (캡처 활성), bit15=RESET (상태 비트 클리어)"
+        },
+        {
+          "off": "0x04",
+          "name": "STATUS",
+          "access": "RO",
+          "desc": "bit0=CFG_DONE, bit1=FRAME_DONE_LAT (RC), bit2=SCCB_BUSY, bit3=NA_ERR_LAT, bit4=FRAME_START_LAT (RC)"
+        },
+        {
+          "off": "0x08",
+          "name": "PIXEL",
+          "access": "RO",
+          "desc": "[15:0] 마지막 유효 픽셀 RGB565. sys_pixel_valid 때 갱신"
+        },
+        {
+          "off": "0x0C",
+          "name": "FRAME",
+          "access": "RO",
+          "desc": "[31:16]=완료 라인 수 (line_cnt), [15:0]=프레임 카운터 (frame_cnt)"
+        },
+        {
+          "off": "0xFC",
+          "name": "ID_VER",
+          "access": "RO",
+          "desc": "0x0006_0100 (ID=0x06, VER=0x01, REV=0x00)"
+        }
+      ]
+    }
+  ],
+
+  "roadmap": [
+    {
+      "stage": "T1",
+      "state": "done",
+      "title": "mmio-uart-gpio-skeleton (기반 단계)",
+      "refs": ["mmio-uart-gpio-skeleton"]
+    },
+    {
+      "stage": "T2",
+      "state": "current",
+      "title": "mmio-ov7670-sccb-capture (이 패키지)",
+      "refs": ["kwondo99-fpga-vga-photobooth-project", "pkt-gif-custom-vending-machine"]
+    },
+    {
+      "stage": "T3",
+      "state": "planned",
+      "title": "mmio-ov7670-vga-out: 캡처 픽셀을 VGA 스캔아웃 (라인 버퍼 스트리밍, Pmod VGA)",
+      "refs": ["kwondo99-fpga-vga-photobooth-project"]
+    }
+  ],
+
+  "references": [
+    {
+      "card": "kwondo99-fpga-vga-photobooth-project",
+      "why": "OV7670→VGA 파이프라인 구조 참고 (SCCB 초기화, PCLK 캡처, Basys3 Pmod VGA 연결)"
+    },
+    {
+      "card": "pkt-gif-custom-vending-machine",
+      "why": "mmio-lite 버스 패턴, MMIO 슬레이브 레지스터 설계 참고"
+    }
+  ],
+
+  "sources": {
+    "rtl": [
+      "rtl/sccb_tx.v",
+      "rtl/ov7670_capture.v",
+      "rtl/sync_pulse.v",
+      "rtl/ov7670_sccb_top.v",
+      "rtl/basys3_top.v"
+    ],
+    "tb": [
+      "tb/tb_sccb_tx.v",
+      "tb/tb_ov7670_capture.v"
+    ],
+    "constraints": [
+      "constr/basys3.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
+  },
+
+  "howto": [
+    {
+      "title": "시뮬레이션 (iverilog)",
+      "steps": [
+        "make -C capstones/mmio-ov7670-sccb-capture lint",
+        "make -C capstones/mmio-ov7670-sccb-capture sim_sccb   # 기대: PASS: sccb_tx — 4회 전송 완료",
+        "make -C capstones/mmio-ov7670-sccb-capture sim_capture # 기대: PASS: ov7670_capture — 픽셀 8개",
+        "make -C capstones/mmio-ov7670-sccb-capture sim         # 전체 시뮬레이션"
+      ]
+    },
+    {
+      "title": "합성 추정 (yosys)",
+      "steps": [
+        "make -C capstones/mmio-ov7670-sccb-capture synth",
+        "build/synth.log에서 셀 수와 LUT 추정 확인",
+        "주의: yosys 추정이므로 Vivado 실제 자원과 차이 있음"
+      ]
+    },
+    {
+      "title": "Vivado 빌드 (Basys3)",
+      "steps": [
+        "새 RTL 프로젝트, 파트 xc7a35tcpg236-1",
+        "rtl/*.v 추가 (tb/ 제외), constr/basys3.xdc 추가, 최상위 basys3_top",
+        "Run Synthesis → Run Implementation → Generate Bitstream",
+        "OV7670 모듈: VCC=3.3V, GND 공통, SIO_C→Pmod JA1, SIO_D↔Pmod JA2",
+        "PCLK→JA7, VSYNC→JA8, HREF→JA9, D[7]→JA10, D[6:3]→JB1~JB4, D[2:0]→JC1~JC3",
+        "SW[0] ON 후 btnc 한 번 → SCCB ROM 10 엔트리 전송 → LED[0] 점등 (CFG_DONE)",
+        "SW[1] ON 후 btnc 한 번 → 캡처 활성 → LED[1] 프레임 완료 시 점등"
+      ]
+    }
+  ],
+
+  "verification": {
+    "board": "not-tested",
+    "notes": "S3(보드 동작)는 에이전트가 올리지 않는다. 사람이 직접 확인 필요."
+  },
+
+  "risks": [
+    "PCLK 비동기 리셋: ov7670_capture의 prst는 시스템 리셋 신호를 그대로 받는다. PCLK 도메인에서 리셋 메타스태빌리티 위험 — 이식 시 2-FF 동기화 추가 필요",
+    "sync_pulse 조건: src 펄스 간격 > 2 dst 클럭 주기 보장 필요. pixel_valid는 PCLK 주기마다 가능하여, 24 MHz PCLK에서 2×(1/100 MHz)=20 ns 미충족 위험. 픽셀마다 pixel_valid를 올리는 현재 설계는 고속 환경에서 CDC 누락 가능 — 고속 전송 시 BRAM FIFO + handshake로 교체 권장",
+    "설정 ROM 크기: 10 엔트리만 포함 (실제 OV7670 RGB565 초기화는 약 50+ 레지스터). 나머지 레지스터는 기본값 의존",
+    "na_err: OV7670 SCCB는 NA(don't-care)이므로 na_err=1이어도 정상 동작 가능. 에러 처리 없이 래치만 함",
+    "IO 전압: Pmod 3.3V, OV7670 모듈 IO 3.3V. 직접 연결 가능하나 모듈 종류에 따라 5V VCC 공급 필요한 경우가 있으므로 모듈 사양 확인 필수"
+  ]
+}

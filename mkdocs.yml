@@ -1,0 +1,64 @@
+site_name: FPGA·SoC 기술 지식 허브
+site_url: https://yuul-jung.github.io/fpga-soc-harness/
+site_description: >-
+  FPGA/SoC, Arduino, STM32, ESP32, Raspberry Pi, 임베디드 공통, 전자기술
+  분야의 세계 최고 수준 기술 자료를 수집·구조화·캡스톤화한 지식 허브.
+  Basys3(XC7A35T, Vivado 2024.2) 기준 캡스톤 과제 포함.
+
+repo_url: https://github.com/Yuul-Jung/fpga-soc-harness
+repo_name: Yuul-Jung/fpga-soc-harness
+
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  language: ko
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: 다크 모드로 전환
+    - scheme: slate
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: 라이트 모드로 전환
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.tabs.link
+
+plugins:
+  - search:
+      lang: ko
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - tables
+  - attr_list
+  - toc:
+      permalink: true
+
+nav:
+  - 홈: index.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Yuul-Jung/fpga-soc-harness

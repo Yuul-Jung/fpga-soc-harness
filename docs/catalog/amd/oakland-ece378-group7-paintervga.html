@@ -1,0 +1,46 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>oakland-ece378-group7-paintervga</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../../hub.html">FPGA SoC 하네스</a><a href="../../hub.html">메인</a><a href="../../hub.html#capstones">캡스톤</a><a href="../../soc-map/tech-tree.html">기술 트리</a><a href="../../catalog/index.html">카탈로그</a><a href="../../inbox/ideas.html">아이디어</a><a href="../../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/catalog/amd/oakland-ece378-group7-paintervga.md">GitHub 원본: catalog/amd/oakland-ece378-group7-paintervga.md</a></p><h1>oakland-ece378-group7-paintervga</h1><div class="panel fm"><table><tr><td>name</td><td><a href="oakland-ece378-group7-paintervga.html">oakland-ece378-group7-paintervga</a></td></tr><tr><td>url</td><td>https://www.secs.oakland.edu/~llamocca/Courses/ECE378/FinalProject/Group7_PainterVGA.pdf</td></tr><tr><td>source_type</td><td>report</td></tr><tr><td>vendor</td><td>amd</td></tr><tr><td>board</td><td>[Nexys4]</td></tr><tr><td>fit_basys3</td><td>needs-port</td></tr><tr><td>cpu</td><td>none(FSM)</td></tr><tr><td>language</td><td>VHDL</td></tr><tr><td>tools</td><td>[]</td></tr><tr><td>bus</td><td>none</td></tr><tr><td>peripherals</td><td>[hid-ps2, video-vga]</td></tr><tr><td>stage</td><td>T2</td></tr><tr><td>license</td><td>unknown</td></tr><tr><td>stats</td><td>{}</td></tr><tr><td>doc_language</td><td>en</td></tr><tr><td>verification</td><td>L3</td></tr><tr><td>checked_at</td><td>2026-11-02</td></tr><tr><td>status</td><td>2026-11-02 /verify 재열람 시도 실패(WebFetch 권한 요청 미응답) — 이번 사이클 미대조, rechecked_at 미기록</td></tr><tr><td>sources</td><td>[https://www.secs.oakland.edu/~llamocca/Courses/ECE378/FinalProject/Group7_PainterVGA.pdf]</td></tr><tr><td>unverified</td><td>Vivado 버전, 자원 사용량 수치, 소스 공개 여부와 라이선스</td></tr></table></div><h2>요약</h2>
+<p>Oakland University ECE 378 기말 프로젝트 보고서. PS/2 마우스로 VGA 화면에 그림을 그리는 간단한 그림판. 왼쪽 버튼을 누른 채 끌면 그려지고, 클릭으로 색을 고르며, 스위치로 화면을 지운다.</p>
+<h2>구조</h2>
+<ul><li style="margin-left:0.0em">상위 두 모듈: <code>mouse_top</code>(마우스 입력과 커서 로직), <code>VGA_Control</code>(타이밍과 RAM).</li><li style="margin-left:0.0em">마우스: 버튼 신호와 9비트 x/y 이동량을 받아 10비트 x/y 커서 좌표와 왼쪽 버튼 신호로 변환.</li><li style="margin-left:0.0em">화면: 640×480, 픽셀당 3비트 색. 이중 포트 RAM의 한 포트는 hcount/vcount를 따라 계속 읽어 화면을 갱신하고, 다른 포트는 버튼이 눌린 동안 커서 위치에 쓴다.</li><li style="margin-left:0.0em">표시 우선순위: 커서가 가장 높고 그림 영역은 그 아래(보고서 서술).</li></ul>
+<h2>검증·재현성</h2>
+<ul><li style="margin-left:0.0em">결과: 임의 픽셀에 색을 쓰고, 8색으로 그리고, 스위치로 흰색 초기화가 동작한다고 서술.</li><li style="margin-left:0.0em">시뮬레이션, 빌드 절차, 자원 사용량: unverified: 보고서에 없음.</li></ul>
+<h2>한계·위험</h2>
+<ul><li style="margin-left:0.0em">메모리 한계 때문에 12비트 색 계획을 3비트로 줄이고 단일 포트 RAM을 이중 포트로 바꿨다고 서술. 내 판단: 640×480×3비트 프레임 버퍼는 Basys3의 BRAM(XC7A35T)에 그대로 들어가는지 확인이 필요해 계산 없이 단정할 수 없다. <code>bram-bound</code> 후보.</li><li style="margin-left:0.0em">저장·커서 크기 변경·텍스트는 미구현(향후 과제로 기재).</li><li style="margin-left:0.0em">보드는 Nexys4(보고서 표기) → Basys3 포팅 필요: 마우스는 Basys3에서 USB HID→PS/2 에뮬레이션 경로이며 키보드와 동시 사용 불가.</li></ul>
+<h2>재사용 메모</h2>
+<ul><li style="margin-left:0.0em">내 판단: 마우스 패킷→커서 좌표→VGA 오버레이 구조는 우리 SoC의 마우스 MMIO(좌표·버튼 레지스터)와 VGA 커서 레이어를 설계할 때 구조 참고가 된다. 프레임 버퍼를 쓰지 않고 커서 오버레이만 두는 축소판이 <code>no-dram</code> 보드에 더 맞다.</li><li style="margin-left:0.0em">코드는 가져오지 않는다. 라이선스 unknown.</li></ul></main></body></html>

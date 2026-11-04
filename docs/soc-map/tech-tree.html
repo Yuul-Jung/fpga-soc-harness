@@ -1,0 +1,68 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SoC 기술 트리 (단계별 카드 연결)</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../hub.html">FPGA SoC 하네스</a><a href="../hub.html">메인</a><a href="../hub.html#capstones">캡스톤</a><a href="../soc-map/tech-tree.html">기술 트리</a><a href="../catalog/index.html">카탈로그</a><a href="../inbox/ideas.html">아이디어</a><a href="../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/soc-map/tech-tree.md">GitHub 원본: soc-map/tech-tree.md</a></p><h1>SoC 기술 트리 (단계별 카드 연결)</h1>
+<p>갱신: 2026-11-04 (/verify 6차). 카드 185건 기준. 비 FPGA 도메인(STM32 18건·ESP32 12건·RPi·Arduino·임베디드·전자기술·papers 포함).</p>
+<hr>
+<h2>FPGA·SoC 단계별 연결 (Basys3 직접 연결 가능 카드)</h2>
+<div class="panel"><table><tr><th>단계</th><th>주요 카드</th><th>비고</th></tr><tr><td class="nw">T0</td><td><a href="../catalog/vendor-neutral/zipcpu-pmodamp2-project-ladder.html">zipcpu-pmodamp2-project-ladder</a> (T0-T2)</td><td>핀 확인과 단음 단계</td></tr><tr><td class="nw">T1</td><td><a href="../catalog/amd/wangxuan95-fpga-sdcard-file.html">wangxuan95-fpga-sdcard-file</a>, <a href="../catalog/amd/element14-security-camera-2-sd-card-interfacing.html">element14-security-camera-2-sd-card-interfacing</a></td><td>CPU 없이 FSM으로 SD·카메라</td></tr><tr><td class="nw">T2</td><td><a href="../catalog/amd/digilent-forum-pmodamp3-basys3-i2s.html">digilent-forum-pmodamp3-basys3-i2s</a>, <a href="../catalog/vendor-neutral/zipcpu-sdspi.html">zipcpu-sdspi</a>, <a href="../catalog/vendor-neutral/zipcpu-pmodamp2-project-ladder.html">zipcpu-pmodamp2-project-ladder</a></td><td>I2S 송신, Wishbone 주변장치</td></tr><tr><td class="nw">T3</td><td>(FPGA 카드 없음)</td><td>gap: 프레임워크 기반 SoC에 주변장치를 붙인 Basys3 사례 미확보</td></tr><tr><td class="nw">T4</td><td><a href="../catalog/intel/columbia-4840-audio-visualizer.html">columbia-4840-audio-visualizer</a></td><td>DE1-SoC HPS 기반 — Basys3 직접 이식 불가</td></tr><tr><td class="nw">T5</td><td>(카드 없음)</td><td>gap: DRAM 보드 필요, 현 카탈로그 범위 밖</td></tr></table></div>
+<hr>
+<h2>개조 참고 — MCU·임베디드 도메인 (needs-port)</h2>
+<p>비 FPGA 도메인 카드는 &quot;FPGA SoC 주변장치 IP로 옮길 수 있는 구조&quot;를 기준으로 연결한다. 카드의 <code>개조:</code> 줄 참조.</p>
+<h3>T1 단계 개조 참고</h3>
+<div class="panel"><table><tr><th>카드 (도메인)</th><th>개조 대응 IP</th></tr><tr><td><a href="../catalog/esp32/espressif-idf-watchdog-timers.html">espressif-idf-watchdog-timers</a> (ESP32)</td><td>AXI4-Lite WDT IP (WDT_EN, WDT_TIMEOUT, WDT_RESET 레지스터)</td></tr><tr><td><a href="../catalog/stm32/deepbluembedded-stm32-complementary-pwm-dead-time.html">deepbluembedded-stm32-complementary-pwm-dead-time</a> (STM32)</td><td>상보 PWM + 데드타임 RTL (카운터 기반 N 클럭 지연)</td></tr></table></div>
+<h3>T2 단계 개조 참고</h3>
+<div class="panel"><table><tr><th>카드 (도메인)</th><th>개조 대응 IP</th></tr><tr><td><a href="../catalog/esp32/espressif-idf-freertos-smp-multicore.html">espressif-idf-freertos-smp-multicore</a> (ESP32)</td><td>AXI4-Lite DMA 채널 우선순위 분리 구조 (Core0/Core1 역할 분담 → DMA/MMIO 분리)</td></tr><tr><td><a href="../catalog/esp32/espressif-idf-ringbuf-ipc.html">espressif-idf-ringbuf-ipc</a> (ESP32)</td><td>AXI4-Stream FIFO 모드 선택 근거, MicroBlaze V SWI 패턴</td></tr><tr><td><a href="../catalog/esp32/rcaelers-esp32-beacon-scanner.html">rcaelers-esp32-beacon-scanner</a> (ESP32)</td><td>BLE→UART 패킷 형식 (UART 수신 FSM 근거)</td></tr><tr><td><a href="../catalog/esp32/hideakitai-esp32spislave.html">hideakitai-esp32spislave</a> (ESP32)</td><td>SPI CS·데이터 타이밍 (FPGA SPI 마스터 IP 타이밍)</td></tr></table></div>
+<h3>T3 단계 개조 참고</h3>
+<div class="panel"><table><tr><th>카드 (도메인)</th><th>개조 대응 IP</th></tr><tr><td><a href="../catalog/esp32/espressif-ota-updates-framework.html">espressif-ota-updates-framework</a> (ESP32)</td><td>이중 슬롯 부트 FSM — FPGA ICAP 멀티부트 흐름 비교</td></tr><tr><td><a href="../catalog/esp32/espressif-esp-ble-mesh.html">espressif-esp-ble-mesh</a> (ESP32)</td><td>BLE Mesh 노드에 센서 공급하는 UART 인터페이스 설계 근거</td></tr></table></div>
+<hr>
+<h2>RPi 도메인 단계 연결 (개조 참고)</h2>
+<p>Buildroot·Linux 이미지 카드는 Basys3 LiteX Linux·MicroBlaze V BSP 개발에 개조 경로가 있다.</p>
+<div class="panel"><table><tr><th>단계</th><th>카드</th><th>개조 대상</th></tr><tr><td class="nw">T0</td><td><a href="../catalog/rpi/sujan-coder-buildroot-linux-rpi3.html">sujan-coder-buildroot-linux-rpi3</a></td><td>Buildroot 구성 → LiteX Linux 최소 rootfs 패턴</td></tr><tr><td class="nw">T0</td><td><a href="../catalog/rpi/obuda-buildroot-mini-linux-tutorial.html">obuda-buildroot-mini-linux-tutorial</a></td><td>이미지 크기·부팅 시간 비교 측정 절차 → LiteX 환경 적용</td></tr><tr><td class="nw">T1</td><td><a href="../catalog/rpi/smartmechatronics-embedded-linux-boot-time-reduction.html">smartmechatronics-embedded-linux-boot-time-reduction</a></td><td>U-Boot 딜레이 제거·SD 로드·커널 모듈화 → LiteX U-Boot 이식(I-059), BusyBox init(I-060)</td></tr></table></div>
+<h2>임베디드 도메인 단계 연결 (RTOS, 개조 참고)</h2>
+<p>FreeRTOS·Zephyr 비교 카드는 MicroBlaze V + AXI INTC RTOS 설계에 개조 경로가 있다.</p>
+<div class="panel"><table><tr><th>단계</th><th>카드</th><th>개조 대상</th></tr><tr><td class="nw">T2</td><td><a href="../catalog/embedded/freertos-org-faq-memory.html">freertos-org-faq-memory</a></td><td>스케줄러 236B + 태스크 64B → MicroBlaze V BSP BRAM 할당 계획</td></tr><tr><td class="nw">T2</td><td><a href="../catalog/embedded/ezurio-freertos-vs-zephyr-benchmark.html">ezurio-freertos-vs-zephyr-benchmark</a></td><td>STM32F4 협력형/뮤텍스 사이클 비교 → MicroBlaze V ISR 반응성 타이밍 계획 근거</td></tr><tr><td class="nw">T2</td><td><a href="../catalog/embedded/beningo-freertos-to-zephyr-migration.html">beningo-freertos-to-zephyr-migration</a></td><td>API 대응표·ISR 포팅 함정 → FreeRTOS→Zephyr 이식 경로 참고 (Vitis BSP FreeRTOS 경로 권장)</td></tr></table></div>
+<hr>
+<h2>필드버스 도메인 단계 연결 (CAN · MODBUS · EtherCAT, 개조 참고)</h2>
+<p>필드버스 프로토콜 카드는 MicroBlaze V에 AXI4-Lite 래퍼로 붙일 수 있는 통신 IP 개발에 개조 경로가 있다.</p>
+<div class="panel"><table><tr><th>단계</th><th>카드</th><th>개조 대상</th></tr><tr><td class="nw">T1</td><td><a href="../catalog/embedded/isluckyhui-fpga-modbus-rtu.html">isluckyhui-fpga-modbus-rtu</a> (임베디드)</td><td>FC 0x03 FSM + CRC16 → AXI4-Lite MODBUS RTU 슬레이브 IP (DE/RE 추가, free_slots 1슬롯)</td></tr><tr><td class="nw">T2</td><td><a href="../catalog/papers/csselectronics-can-fd-frame-guide.html">csselectronics-can-fd-frame-guide</a> (papers)</td><td>CAN FD 프레임 구조(FDF·BRS·ESI·DLC·CRC) → CAN FD 파서 FSM 설계 근거</td></tr><tr><td class="nw">T2</td><td><a href="../catalog/vendor-neutral/wangxuan95-fpga-can.html">wangxuan95-fpga-can</a> (vendor-neutral)</td><td>CAN 2.0 Verilog RTL → CAN FD 확장 기점 (FDF 감지 FSM 분기 추가 필요)</td></tr><tr><td class="nw">T3</td><td><a href="../catalog/esp32/egerobotics-esp32s3-ethercat-soes.html">egerobotics-esp32s3-ethercat-soes</a> (esp32)</td><td>소프트 ESC 구조 (W5500 SPI, SOES, TwinCAT 연동) → MicroBlaze V EtherCAT 슬레이브 개조 (사이클 타임 미검증, 가장 복잡)</td></tr></table></div>
+<hr>
+<h2>기능 안전 도메인 단계 연결 (IEC 61508, 개조 참고)</h2>
+<p>안전 관련 카드는 AXI4-Lite 워치독 IP·CRC 검사 IP·스택 센티넬 소프트웨어 패턴 개발에 개조 경로가 있다. 상세는 <code>atlas/functional-safety.md</code> 참조.</p>
+<div class="panel"><table><tr><th>단계</th><th>카드</th><th>개조 대상</th></tr><tr><td class="nw">T0</td><td><a href="../catalog/embedded/heia-fr-ma-embreal-zephyr-stack-protection.html">heia-fr-ma-embreal-zephyr-stack-protection</a> (embedded)</td><td>Zephyr 스택 보호 4계층 → MicroBlaze V 소프트웨어 센티넬(C) + AXI4-Lite 감시 IP</td></tr><tr><td class="nw">T0</td><td><a href="../catalog/papers/tum-industrial-es-2015-functional-safety.html">tum-industrial-es-2015-functional-safety</a> (papers)</td><td>IEC 61508 개념(FMEA/FMEDA/CRC) → 캡스톤 보고서 안전 분석 절 근거</td></tr><tr><td class="nw">T1</td><td><a href="../catalog/embedded/rtime-cvut-openmsp430-watchdog.html">rtime-cvut-openmsp430-watchdog</a> (embedded)</td><td>openMSP430 WDT FSM → AXI4-Lite WDT IP (패스워드 보호, 비트-탭 타임아웃, free_slots 배정)</td></tr></table></div>
+<hr>
+<h2>gap 목록 (내 판단)</h2>
+<ul><li style="margin-left:0.0em">gap T1→T2: 오디오·SD를 AXI4-Lite 레지스터 맵으로 감싼 Basys3 완성형 카드 미확보.</li><li style="margin-left:0.0em">gap T2→T4: FPGA 내부 FFT (BRAM 제약) 사례 없음 — Columbia는 HW FFT 포기.</li><li style="margin-left:0.0em">gap T2: 모터 제어(엔코더 + PID) 를 Basys3 AXI4-Lite IP로 구현한 FPGA 카드 없음; STM32 도메인에 모터 제어 카드 다수 → 개조 경로는 있으나 Basys3 이식 카드 아직 없음(내 판단).</li><li style="margin-left:0.0em">gap T3: ESP32 BLE/Wi-Fi를 UART로 Basys3에 붙인 통합 SoC 카드 없음.</li><li style="margin-left:0.0em">gap T3: Basys3 LiteX Linux 부트 최적화(U-Boot, BusyBox init) 사례 없음; RPi Yocto·Buildroot 사례 → 개조 경로 있음(I-059, I-060, 내 판단).</li><li style="margin-left:0.0em">gap T5: DRAM 보드 필요, 수집 대상 밖.</li><li style="margin-left:0.0em">gap T2: MODBUS RTU AXI4-Lite 슬레이브 IP 카드 없음; <a href="../catalog/embedded/isluckyhui-fpga-modbus-rtu.html">isluckyhui-fpga-modbus-rtu</a>(FC 0x03 슬레이브)가 기초, AXI 래퍼 신규 작성 필요(I-065 vetted).</li><li style="margin-left:0.0em">gap T2: CAN FD 파서 FPGA Verilog 카드 없음; <a href="../catalog/vendor-neutral/wangxuan95-fpga-can.html">wangxuan95-fpga-can</a>(CAN 2.0)에서 FDF 분기 추가 경로(I-064 vetted).</li><li style="margin-left:0.0em">gap T3: EtherCAT 소프트 슬레이브 Basys3 MicroBlaze V 사례 없음; <a href="../catalog/esp32/egerobotics-esp32s3-ethercat-soes.html">egerobotics-esp32s3-ethercat-soes</a> 개조 경로 있으나 사이클 타임 미검증(I-066 dropped, 재등록 조건 필요).</li><li style="margin-left:0.0em">gap T1: Basys3 MicroBlaze V에 연결된 AXI4-Lite 워치독 IP 카드 없음; <a href="../catalog/embedded/rtime-cvut-openmsp430-watchdog.html">rtime-cvut-openmsp430-watchdog</a> 개조 경로 있음(I-070 vetted, 7점).</li><li style="margin-left:0.0em">gap T2: Basys3 BRAM 명령 메모리 CRC 검사 AXI IP 카드 없음(I-071 vetted, 5점, I-070 선행 필요).</li></ul></main></body></html>

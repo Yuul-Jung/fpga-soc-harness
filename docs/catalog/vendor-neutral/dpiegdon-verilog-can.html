@@ -1,0 +1,46 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>dpiegdon-verilog-can</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../../hub.html">FPGA SoC 하네스</a><a href="../../hub.html">메인</a><a href="../../hub.html#capstones">캡스톤</a><a href="../../soc-map/tech-tree.html">기술 트리</a><a href="../../catalog/index.html">카탈로그</a><a href="../../inbox/ideas.html">아이디어</a><a href="../../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/catalog/vendor-neutral/dpiegdon-verilog-can.md">GitHub 원본: catalog/vendor-neutral/dpiegdon-verilog-can.md</a></p><h1>dpiegdon-verilog-can</h1><div class="panel fm"><table><tr><td>name</td><td><a href="dpiegdon-verilog-can.html">dpiegdon-verilog-can</a></td></tr><tr><td>url</td><td>https://github.com/dpiegdon/verilog-can</td></tr><tr><td>source_type</td><td>repo</td></tr><tr><td>vendor</td><td>neutral</td></tr><tr><td>board</td><td>[unspecified]</td></tr><tr><td>fit_basys3</td><td>unknown</td></tr><tr><td>cpu</td><td>none(FSM)</td></tr><tr><td>language</td><td>Verilog</td></tr><tr><td>tools</td><td>[unverified]</td></tr><tr><td>bus</td><td>Wishbone</td></tr><tr><td>peripherals</td><td>[comm-can]</td></tr><tr><td>stage</td><td>T2</td></tr><tr><td>license</td><td>LGPL-2.1</td></tr><tr><td>stats</td><td>{stars: 20, forks: 10, commits: 23}</td></tr><tr><td>doc_language</td><td>en</td></tr><tr><td>verification</td><td>L3</td></tr><tr><td>checked_at</td><td>2026-11-02</td></tr><tr><td>status</td><td>README가 &quot;Currently nonfunctional&quot;로 표기, 진행 중 작업</td></tr><tr><td>sources</td><td>[https://github.com/dpiegdon/verilog-can, https://github.com/dpiegdon/verilog-can/blob/master/can_top.v]</td></tr></table></div><h2>요약</h2>
+<p>OpenCores의 SJA1000 호환 CAN 컨트롤러(Igor Mohor 작, 2009년경부터 방치)를 정리·버그 수정하려는 포크. 현재 동작하지 않는다고 README가 밝힌다.</p>
+<h2>구조</h2>
+<ul><li style="margin-left:0.0em">코어 파일: <code>can_acf/bsp/btl/crc/fifo/ibo/registers/top.v</code>, 레지스터 변형 4종, 설정 <code>can_top_defines.v</code>, 테스트벤치 <code>can_top_tb.v</code>.</li><li style="margin-left:0.0em"><code>can_top.v</code> 모듈 4종(can_top.v@master): <code>can_controller</code>(8비트 <code>addr_i/data_i/data_o</code>, <code>cs_i</code>, <code>we_i</code>), <code>can_wishbone_top</code>(wb_* 8비트 데이터·주소, <code>wb_ack_o</code>), 8051 버스 래퍼 2종. 공통 <code>rx_i/tx_o/irq_n_o/bus_off_on_o/clkout_o</code>.</li><li style="margin-left:0.0em">파라미터는 <code>Tp</code>(지연) 하나. 선택 BIST 포트는 <code>CAN_BIST</code> 정의 시.</li></ul>
+<h2>검증·재현성</h2>
+<ul><li style="margin-left:0.0em">Makefile과 <code>testbench/</code> 폴더 존재. 시뮬레이터·타깃 FPGA: unverified: README에 명시 없음. 자원 사용: unverified.</li></ul>
+<h2>한계·위험</h2>
+<ul><li style="margin-left:0.0em">&quot;현재 동작하지 않음&quot; 표기. SJA1000 기능 구현 범위 서술 없음.</li><li style="margin-left:0.0em">헤더: LGPL 2.1 이상. 또한 헤더가 CAN 프로토콜은 Bosch 특허 대상이며 실리콘 구현 시 라이선스가 필요하다고 안내(FPGA 교육용과는 구분해 확인 필요).</li><li style="margin-left:0.0em">커밋 날짜·SHA: unverified: 페이지에서 확인 못함. LICENSE 본문은 열람 못해 LGPL은 헤더 기준.</li></ul>
+<h2>재사용 메모</h2>
+<ul><li style="margin-left:0.0em">내 판단: 8비트 레지스터 버스(주소 8비트)와 <code>irq_n_o</code> 구조는 레지스터 맵 설계의 참고가 된다. 기능이 동작하지 않아 학습·구조 참고 이상으로 쓰기 어렵다.</li><li style="margin-left:0.0em">개조: 레지스터 접근이 단순 8비트 읽기/쓰기라 AXI4-Lite 슬레이브 래퍼로 감싸기 쉽다(CPU 코어와 무관). 다만 코어 신뢰성이 없어 WangXuan95 계열 FSM을 자체 RTL로 쓰는 쪽이 현실적이다(내 판단).</li></ul></main></body></html>

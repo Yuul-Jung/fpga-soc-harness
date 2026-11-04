@@ -317,5 +317,51 @@
     "xdc 핀 배치는 Digilent 마스터 XDC와 대조하지 않았다.",
     "버튼 디바운스가 없어 한 번 눌러도 여러 번 송신될 수 있다.",
     "미매핑 주소를 오류로 처리하지 않는다."
-  ]
+  ],
+  "integration": {
+    "bus": "mmio-lite",
+    "address_map": "custom",
+    "compat": "incompatible",
+    "target_map": "mbv-frozen-v2",
+    "plan": "이 패키지는 CPU 없이 시뮬레이션하려고 자체 버스 mmio-lite(0x1000_xxxx)를 쓴 파일럿이다. 동결 맵(mbv-frozen-v2)으로 옮기는 것은 주소만 바꾸는 일이 아니다. (1) gpio·uart는 동결 맵에 이미 AMD IP가 있다([00] AXI GPIO, [02] UART Lite). 레지스터 배치가 달라(AXI GPIO는 DATA/TRI, UART Lite는 RX/TX FIFO·STAT·CTRL) 우리 모듈을 그대로 꽂을 수 없고, 이식 때는 AMD IP를 쓰고 드라이버를 맞춘다. (2) 자체 주변장치는 프로젝트의 IP 표준(64KB 창, 0xFFF0 ID·VER·IRQ_STATUS·IRQ_ENABLE)에 맞춰 새로 감싼다. (3) mmio-lite→AXI4-Lite 마스터 다리는 아직 없다(gap)."
+  },
+  "external_parts": [
+    {
+      "id": "p_btn",
+      "name": "Basys3 푸시버튼 (btnU, btnC)",
+      "block": "x_btn",
+      "interface": "GPIO 입력",
+      "io_voltage": 3.3,
+      "qty": 2,
+      "board_resident": true,
+      "arduino_compatible": false,
+      "notes": "btnU=송신 트리거, btnC=리셋"
+    },
+    {
+      "id": "p_swled",
+      "name": "Basys3 슬라이드 스위치 16 / LED 16",
+      "block": "x_sw",
+      "interface": "GPIO 입출력",
+      "io_voltage": 3.3,
+      "qty": 32,
+      "board_resident": true,
+      "arduino_compatible": false,
+      "notes": "보드 내장"
+    },
+    {
+      "id": "p_uart",
+      "name": "Basys3 USB-UART (FTDI)",
+      "block": "x_uart",
+      "interface": "UART TX 115200 8N1",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": true,
+      "arduino_compatible": false,
+      "notes": "보드 내장, PC 터미널 연결"
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "외부 부품의 전기 회로도(커넥터 핀 배선, 풀업, 전원 분리)는 아직 작성하지 않았다. 이 패키지의 외부 부품은 Basys3 내장 장치와 Pmod 모듈이라 핀 배정은 constr/basys3.xdc를 따른다. 새 외부 모듈을 쓰는 캡스톤은 회로도를 별도 산출물로 둔다."
+  }
 }

@@ -1,0 +1,1290 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PS/2 키보드 수신기 + 스캔코드→ASCII 디코더 (Basys3)</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+
+.colhead{font:600 11px sans-serif;fill:var(--muted)}
+.link{fill:none;stroke:var(--line);stroke-width:1.5}.arrow{fill:var(--line)}
+.lbl{font:11px sans-serif;fill:var(--muted)}
+.bname{font:600 13px sans-serif;fill:var(--text)}.bdesc{font:11px sans-serif;fill:var(--muted)}
+.k-cpu rect{fill:var(--c-cpu);stroke:var(--c-cpu-s)}.k-bus rect{fill:var(--c-bus);stroke:var(--c-bus-s)}
+.k-periph rect,.k-memory rect{fill:var(--c-per);stroke:var(--c-per-s)}
+.k-external rect{fill:var(--c-ext);stroke:var(--c-ext-s);stroke-dasharray:4 3}
+.k-clock rect{fill:var(--c-clk);stroke:var(--c-clk-s)}
+</style></head><body><header class="top"><a class="brand" href="../hub.html">FPGA SoC 하네스</a><a href="../hub.html">메인</a><a href="../hub.html#capstones">캡스톤</a><a href="../soc-map/tech-tree.html">기술 트리</a><a href="../catalog/index.html">카탈로그</a><a href="../inbox/ideas.html">아이디어</a><a href="../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main>
+<p class="muted">캡스톤 패키지 · Digilent Basys3 (XC7A35T) · 단계 T1</p>
+<h1>PS/2 키보드 수신기 + 스캔코드→ASCII 디코더 (Basys3)</h1><p>mmio-uart-gpio-skeleton(T1)에 PS/2 키보드 수신기를 추가한 확장 패키지. ps2_rx가 11-bit 프레임을 수신하고, ps2_kbd가 Set 2 스캔코드를 ASCII로 변환한 뒤 MMIO 레지스터로 노출한다. demo_master FSM이 kbd_ready를 폴링해 make 이벤트는 LED에 표시하고 UART로 송신, break 이벤트는 LED를 클리어한다.</p>
+<div class="badges"><span class="badge b-not-run">린트: 미실행</span><span class="badge b-not-run">시뮬레이션: 미실행</span><span class="badge b-not-run">합성: 미실행</span><span class="badge b-not-run">보드: 미실행</span></div>
+<p class="muted">검증 상태는 실행 기록이 있을 때만 표시한다. 기록이 없으면 '미실행'이다.</p>
+<nav><a href="#goal">목표</a><a href="#arch">계통도</a><a href="#hier">모듈 계층</a><a href="#map">메모리맵</a><a href="#ext">외부 부품·전기</a><a href="#road">기술 트리</a><a href="#src">실행 소스</a><a href="#verify">검증</a><a href="#ref">참고·위험</a></nav>
+<h2 id="goal">1. 목표와 범위</h2><h3>목표</h3><ul><li>PS/2 프레임(11-bit: start + D0–D7 + 패리티 + stop)을 하강 에지에서 수신하고 홀수 패리티를 검사한다.</li><li>Set 2 스캔코드(make/break/extended)를 ASCII로 변환한다.</li><li>MMIO 레지스터(STATUS 0x00, DATA 0x04)를 FSM이 폴링해 make/break 이벤트를 LED와 UART로 출력한다.</li><li>자체 점검 테스트벤치로 T1~T5를 시뮬레이션에서 통과한다.</li></ul><h3>범위 밖</h3><ul><li>CPU 구현 (마스터는 FSM)</li><li>키보드 호스트 송신(대기 명령, 초기화)</li><li>대문자·특수문자(Shift/Ctrl 조합)</li><li>NumLock·CapsLock LED 제어</li><li>외부 메모리</li></ul><p class="muted">이 패키지의 소스는 하네스가 직접 작성한 원본이며 외부 코드를 포함하지 않는다. 아이디어 I-007 기반. 시뮬레이션·합성 결과는 CI가 기록한다.</p>
+<h2 id="arch">2. 계통도</h2><p>클럭: 100 MHz 단일 클럭 (CLK_100, W5), 비동기 리셋 (BTNC, U18, 액티브 하이)</p><div class="panel"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 974 372" role="img" aria-label="블록 다이어그램">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arrow"/></marker></defs>
+<text x="24" y="16" class="colhead">클럭·입력·마스터</text>
+<text x="274" y="16" class="colhead">버스</text>
+<text x="524" y="16" class="colhead">주변장치</text>
+<text x="774" y="16" class="colhead">외부</text>
+<path d="M200,227.0 C362.0,227.0 362.0,63.0 524,63.0" class="link" marker-end="url(#ar)"/>
+<text x="362.0" y="138.0" class="lbl" text-anchor="middle">PS2_CLK / PS2_DATA</text>
+<path d="M612.0,92 L612.0,116" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="104.0" class="lbl" text-anchor="middle">rx_data / rx_valid / rx_err</text>
+<path d="M524,145.0 C464,8 510,8 450,63.0" class="link" marker-end="url(#ar)"/>
+<text x="487.0" y="16" class="lbl" text-anchor="middle">rdata_kbd / sel_kbd</text>
+<path d="M200,309.0 C237.0,309.0 237.0,63.0 274,63.0" class="link" marker-end="url(#ar)"/>
+<text x="237.0" y="179.0" class="lbl" text-anchor="middle">mmio-lite</text>
+<path d="M450,63.0 C487.0,63.0 487.0,227.0 524,227.0" class="link" marker-end="url(#ar)"/>
+<text x="487.0" y="138.0" class="lbl" text-anchor="middle">sel_gpio / rdata_gpio</text>
+<path d="M450,63.0 C487.0,63.0 487.0,309.0 524,309.0" class="link" marker-end="url(#ar)"/>
+<text x="487.0" y="179.0" class="lbl" text-anchor="middle">sel_uart / rdata_uart</text>
+<path d="M450,63.0 C487.0,63.0 487.0,145.0 524,145.0" class="link" marker-end="url(#ar)"/>
+<text x="487.0" y="97.0" class="lbl" text-anchor="middle">sel_kbd / we / off</text>
+<path d="M700,227.0 C737.0,227.0 737.0,63.0 774,63.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="138.0" class="lbl" text-anchor="middle">sw / led</text>
+<path d="M700,309.0 C737.0,309.0 737.0,145.0 774,145.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="220.0" class="lbl" text-anchor="middle">txd</text>
+<g class="k-clock"><rect x="24" y="34" width="176" height="58" rx="8"/><text x="112.0" y="58" text-anchor="middle" class="bname">CLK_100 100MHz</text><text x="112.0" y="76" text-anchor="middle" class="bdesc">보드 클럭</text></g>
+<g class="k-external"><rect x="24" y="116" width="176" height="58" rx="8"/><text x="112.0" y="140" text-anchor="middle" class="bname">BTNC</text><text x="112.0" y="158" text-anchor="middle" class="bdesc">리셋 버튼</text></g>
+<g class="k-external"><rect x="24" y="198" width="176" height="58" rx="8"/><text x="112.0" y="222" text-anchor="middle" class="bname">PS/2 키보드</text><text x="112.0" y="240" text-anchor="middle" class="bdesc">PS/2 키보드</text></g>
+<g class="k-periph"><rect x="524" y="34" width="176" height="58" rx="8"/><text x="612.0" y="58" text-anchor="middle" class="bname">ps2_rx</text><text x="612.0" y="76" text-anchor="middle" class="bdesc">PS/2 프레임 수신</text></g>
+<g class="k-periph"><rect x="524" y="116" width="176" height="58" rx="8"/><text x="612.0" y="140" text-anchor="middle" class="bname">ps2_kbd</text><text x="612.0" y="158" text-anchor="middle" class="bdesc">스캔코드→ASCII + MMIO</text></g>
+<g class="k-cpu"><rect x="24" y="280" width="176" height="58" rx="8"/><text x="112.0" y="304" text-anchor="middle" class="bname">demo_master</text><text x="112.0" y="322" text-anchor="middle" class="bdesc">폴링 FSM (CPU 슬롯)</text></g>
+<g class="k-bus"><rect x="274" y="34" width="176" height="58" rx="8"/><text x="362.0" y="58" text-anchor="middle" class="bname">mmio_bus</text><text x="362.0" y="76" text-anchor="middle" class="bdesc">주소 디코드·읽기 mux</text></g>
+<g class="k-periph"><rect x="524" y="198" width="176" height="58" rx="8"/><text x="612.0" y="222" text-anchor="middle" class="bname">gpio</text><text x="612.0" y="240" text-anchor="middle" class="bdesc">LED 16, SW 16</text></g>
+<g class="k-periph"><rect x="524" y="280" width="176" height="58" rx="8"/><text x="612.0" y="304" text-anchor="middle" class="bname">uart_tx</text><text x="612.0" y="322" text-anchor="middle" class="bdesc">115200 8N1 송신</text></g>
+<g class="k-external"><rect x="774" y="34" width="176" height="58" rx="8"/><text x="862.0" y="58" text-anchor="middle" class="bname">SW / LED</text><text x="862.0" y="76" text-anchor="middle" class="bdesc">스위치·LED</text></g>
+<g class="k-external"><rect x="774" y="116" width="176" height="58" rx="8"/><text x="862.0" y="140" text-anchor="middle" class="bname">RsTx (USB-UART)</text><text x="862.0" y="158" text-anchor="middle" class="bdesc">PC 터미널</text></g>
+</svg></div>
+<p class="muted"><a href="diagram.svg">diagram.svg</a>로 따로 받을 수 있다.</p>
+<h3>버스 규약: mmio-lite</h3><div class="panel"><table><tr><th>신호</th><th>방향</th><th>설명</th></tr><tr><td><code>valid</code></td><td>master→bus</td><td>요청 유효</td></tr><tr><td><code>we</code></td><td>master→bus</td><td>1이면 쓰기</td></tr><tr><td><code>addr[31:0]</code></td><td>master→bus</td><td>바이트 주소, 4바이트 정렬</td></tr><tr><td><code>wdata[31:0]</code></td><td>master→bus</td><td>쓰기 데이터</td></tr><tr><td><code>rdata[31:0]</code></td><td>bus→master</td><td>읽기 데이터 (조합)</td></tr><tr><td><code>ready</code></td><td>bus→master</td><td>항상 1 (1사이클 접근)</td></tr></table></div><p>미매핑 주소 읽기는 0 반환. 대기 상태·오류 없음.</p>
+<h3>통합 선언 (SoC 적합성)</h3><p class="badge b-fail">이 패키지는 MicroBlaze V 동결 주소맵과 호환되지 않는다 (파일럿). 아래 이식 계획을 따라야 SoC에 합칠 수 있다.</p><div class="panel"><table><tr><th style="white-space:nowrap">버스</th><td><code>mmio-lite (자체, 단독 실행용)</code></td></tr><tr><th style="white-space:nowrap">주소맵</th><td><code>custom</code> → 동결 맵 <code>mbv-frozen-v2</code> 적합 여부: <b>적합하지 않음</b></td></tr><tr><th style="white-space:nowrap">이식 계획</th><td>이 패키지는 단독 시뮬레이션·보드 확인용으로 자체 mmio-lite 버스(0x1000_xxxx~0x1002_xxxx)를 쓴다. 동결 맵(mbv-frozen-v2) 이식 계획: (1) GPIO·UART는 동결 맵 [00]/[02] AMD IP를 그대로 쓰고 드라이버를 맞춘다. (2) ps2_kbd는 동결 맵 [0B](0x400B_0000)에 IP 표준(64KB 창, 0xFFF0 ID/VER)으로 감싸서 AXI4-Lite 슬레이브로 등록한다. (3) demo_master 대신 MicroBlaze V + 폴링 드라이버(C) 또는 인터럽트(irq→INTC)로 교체한다.</td></tr></table></div>
+<h2 id="hier">3. 모듈 계층</h2><div class="panel"><ul class="tree"><li><code>basys3_top</code> <span class="muted">(rtl/basys3_top.v)</span><ul><li><code>soc_top</code> <span class="muted">(rtl/soc_top.v)</span><ul><li><code>demo_master</code> <span class="muted">(rtl/demo_master.v)</span></li><li><code>mmio_bus</code> <span class="muted">(rtl/mmio_bus.v)</span></li><li><code>gpio</code> <span class="muted">(rtl/gpio.v)</span></li><li><code>uart_tx</code> <span class="muted">(rtl/uart_tx.v)</span></li><li><code>ps2_rx</code> <span class="muted">(rtl/ps2_rx.v)</span></li><li><code>ps2_kbd</code> <span class="muted">(rtl/ps2_kbd.v)</span></li></ul></li></ul></li></ul></div>
+<h2 id="map">4. 메모리맵</h2><h3>gpio <code>0x1000_0000</code> <span class="muted">크기 0x10000</span></h3><div class="panel"><table><tr><th>오프셋</th><th>이름</th><th>접근</th><th>설명</th></tr><tr><td><code>0x00</code></td><td>LED</td><td>RW</td><td>하위 16비트 LED</td></tr><tr><td><code>0x04</code></td><td>SW</td><td>RO</td><td>하위 16비트 스위치 (2단 동기화)</td></tr></table></div><h3>uart_tx <code>0x1001_0000</code> <span class="muted">크기 0x10000</span></h3><div class="panel"><table><tr><th>오프셋</th><th>이름</th><th>접근</th><th>설명</th></tr><tr><td><code>0x00</code></td><td>DATA</td><td>WO</td><td>하위 8비트 송신 시작, busy 중 무시</td></tr><tr><td><code>0x04</code></td><td>STATUS</td><td>RO</td><td>bit0 = busy</td></tr></table></div><h3>ps2_kbd <code>0x1002_0000</code> <span class="muted">크기 0x10000</span></h3><div class="panel"><table><tr><th>오프셋</th><th>이름</th><th>접근</th><th>설명</th></tr><tr><td><code>0x00</code></td><td>STATUS</td><td>RO</td><td>bit0 = kbd_ready (새 문자 수신 대기)</td></tr><tr><td><code>0x04</code></td><td>DATA</td><td>RO/C</td><td>{22&#x27;h0, key_up, valid, ascii[7:0]}. 읽으면 kbd_ready 클리어</td></tr></table></div>
+<h2 id="ext">5. 외부 부품과 전기 회로도</h2><p class="muted">2절의 계통도는 <b>디지털 모듈 연결도</b>다. 전압, 풀업, 커넥터 배선 같은 전기 사항은 이 절에서 따로 다룬다. 기계가 읽는 사본: <a href="bom.csv">bom.csv</a> · <a href="connections.json">connections.json</a></p><p class="badge b-skipped">전기 회로도: 미작성</p><p class="muted">외부 부품은 Basys3 보드 내장 장치(USB HID 포트, SW, LED, USB-UART)뿐이다. 별도 회로 연결이 없으므로 전기 회로도는 작성하지 않는다. 핀 배정은 constr/basys3.xdc를 따른다.</p><div class="panel"><table><tr><th>id</th><th>부품</th><th>인터페이스</th><th>신호 전압</th><th>구분</th><th>레벨 변환</th><th>비고</th></tr><tr><td><code>p_ps2</code></td><td>USB HID 키보드 (PS/2 에뮬레이션)</td><td>PS/2 CLK(C17) / DATA(B17), 풀업 내장</td><td style="white-space:nowrap">3.3 V</td><td style="white-space:nowrap">외부 모듈</td><td>불필요 (3.3V)</td><td>Basys3의 USB HID 포트가 PS/2 CLK/DATA로 에뮬레이션. 별도 레벨 변환 불필요(3.3V 직결)</td></tr><tr><td><code>p_swled</code></td><td>Basys3 슬라이드 스위치 16 / LED 16</td><td>GPIO 입출력</td><td style="white-space:nowrap">3.3 V</td><td style="white-space:nowrap">보드 내장</td><td>불필요 (3.3V)</td><td>보드 내장</td></tr><tr><td><code>p_uart</code></td><td>Basys3 USB-UART (FTDI)</td><td>UART TX 115200 8N1 (A18)</td><td style="white-space:nowrap">3.3 V</td><td style="white-space:nowrap">보드 내장</td><td>불필요 (3.3V)</td><td>보드 내장, PC 터미널 연결</td></tr><tr><td><code>p_btn</code></td><td>Basys3 푸시버튼 BTNC</td><td>GPIO 입력 (U18)</td><td style="white-space:nowrap">3.3 V</td><td style="white-space:nowrap">보드 내장</td><td>불필요 (3.3V)</td><td>BTNC=비동기 리셋</td></tr></table></div><p class="muted">Basys3 FPGA 핀은 3.3V 신호만 직접 받는다. 5V·12V·모터·릴레이는 직결하지 않는다.</p>
+<h2 id="road">6. 기술 트리 (이 캡스톤의 확장 경로)</h2><div class="panel"><ul style="list-style:none;padding:0"><li class="step"><span class="tag s-done">T1</span><span>MMIO 버스 + GPIO + UART (CPU 슬롯 FSM) <span class='muted'>참고: <code>mmio-uart-gpio-skeleton</code></span></span></li><li class="step"><span class="tag s-current">T1</span><span>PS/2 수신기 + 스캔코드→ASCII 디코더 추가</span></li><li class="step"><span class="tag s-planned">T2</span><span>마스터를 PicoRV32로 교체, BRAM 프로그램 메모리 추가 <span class='muted'>참고: <code>fanguoc2len-risc-v-computer</code>, <a href="../catalog/amd/tmahlburg-picosoc-basys3.html"><code>tmahlburg-picosoc-basys3</code></a></span></span></li><li class="step"><span class="tag s-planned">T3</span><span>동결 맵 이식: AXI4-Lite, MicroBlaze V, IP 표준 래퍼 <span class='muted'>참고: <code>fanguoc2len-risc-v-computer</code></span></span></li></ul></div>
+<h2 id="src">7. 실행 소스</h2><p>저장소의 <code>capstones/mmio-ps2-kbd-checker/</code>에 있는 파일 그대로다. 이 문서는 파일에서 읽어 넣은 것이므로 항상 일치한다. <a href="mmio-ps2-kbd-checker.zip">소스 전체 내려받기 (.zip)</a> · <a href="https://github.com/Yuul-Jung/fpga-soc-harness/tree/main/capstones/mmio-ps2-kbd-checker">GitHub에서 보기</a></p><details><summary><code>rtl/ps2_rx.v</code> <span class="muted">116줄</span></summary><pre>// ps2_rx.v — PS/2 수신기 (PS/2 Set 2 스캔코드, Verilog-2001)
+// 하네스 직접 작성 원본.
+//
+// PS/2 프레임 구조: [START=0] [D0..D7] [PARITY(홀수)] [STOP=1]
+// 하강 에지에서 데이터를 샘플링한다.
+// PS/2 CLK과 DATA는 2단 동기화 후 사용한다.
+//
+// 출력:
+//   rx_data[7:0]  — 수신된 스캔코드 바이트 (rx_valid 사이클에만 유효)
+//   rx_valid      — 1사이클 펄스, 오류 없이 한 프레임을 완수했을 때
+//   rx_err        — 1사이클 펄스, 패리티 또는 정지 비트 오류
+`timescale 1ns/1ps
+module ps2_rx (
+    input  wire       clk,
+    input  wire       rst,
+    // PS/2 핀 (외부 입력)
+    input  wire       ps2_clk_in,
+    input  wire       ps2_data_in,
+    // 출력
+    output reg  [7:0] rx_data,
+    output reg        rx_valid,
+    output reg        rx_err
+);
+
+    // ----------------------------------------------------------------
+    // PS/2 CLK 2단 동기화 + 하강 에지 검출
+    // ----------------------------------------------------------------
+    reg ps2_c1, ps2_c2, ps2_c3;
+    always @(posedge clk or posedge rst) begin
+        if (rst) begin
+            ps2_c1 &lt;= 1&#x27;b1;
+            ps2_c2 &lt;= 1&#x27;b1;
+            ps2_c3 &lt;= 1&#x27;b1;
+        end else begin
+            ps2_c1 &lt;= ps2_clk_in;
+            ps2_c2 &lt;= ps2_c1;
+            ps2_c3 &lt;= ps2_c2;
+        end
+    end
+    // 하강 에지: 직전이 High, 현재가 Low
+    wire clk_fall = ps2_c3 &amp; (~ps2_c2);
+
+    // ----------------------------------------------------------------
+    // PS/2 DATA 2단 동기화
+    // ----------------------------------------------------------------
+    reg ps2_d1, ps2_d2;
+    always @(posedge clk or posedge rst) begin
+        if (rst) begin
+            ps2_d1 &lt;= 1&#x27;b1;
+            ps2_d2 &lt;= 1&#x27;b1;
+        end else begin
+            ps2_d1 &lt;= ps2_data_in;
+            ps2_d2 &lt;= ps2_d1;
+        end
+    end
+
+    // ----------------------------------------------------------------
+    // 수신 FSM
+    //   bit_cnt=0  : 대기 (START 비트 검출)
+    //   bit_cnt=1~8: 데이터 비트 D0~D7 (LSB 먼저)
+    //   bit_cnt=9  : 패리티 비트
+    //   bit_cnt=10 : 정지 비트 → 출력
+    // ----------------------------------------------------------------
+    reg [3:0]  bit_cnt;
+    reg [7:0]  data_sr;    // D0부터 순서대로 쌓는 시프트 레지스터
+    reg        parity_acc; // 수신한 데이터 비트의 XOR 누산
+
+    always @(posedge clk or posedge rst) begin
+        rx_valid &lt;= 1&#x27;b0;
+        rx_err   &lt;= 1&#x27;b0;
+        if (rst) begin
+            bit_cnt    &lt;= 4&#x27;d0;
+            data_sr    &lt;= 8&#x27;h00;
+            parity_acc &lt;= 1&#x27;b0;
+        end else if (clk_fall) begin
+            case (bit_cnt)
+                4&#x27;d0: begin
+                    // START 비트 = 0 이면 수신 시작
+                    if (~ps2_d2) begin
+                        data_sr    &lt;= 8&#x27;h00;
+                        parity_acc &lt;= 1&#x27;b0;
+                        bit_cnt    &lt;= 4&#x27;d1;
+                    end
+                    // START = 1 이면 무시 (라인 High 상태)
+                end
+                4&#x27;d1, 4&#x27;d2, 4&#x27;d3, 4&#x27;d4,
+                4&#x27;d5, 4&#x27;d6, 4&#x27;d7, 4&#x27;d8: begin
+                    // 데이터 비트: D0(bit_cnt=1)~D7(bit_cnt=8)
+                    // LSB 먼저이므로 MSB 쪽으로 밀어 쌓는다
+                    data_sr    &lt;= {ps2_d2, data_sr[7:1]};
+                    parity_acc &lt;= parity_acc ^ ps2_d2;
+                    bit_cnt    &lt;= bit_cnt + 4&#x27;d1;
+                end
+                4&#x27;d9: begin
+                    // 패리티 비트 (홀수 패리티 → data XOR parity = 1)
+                    // 여기서는 parity_acc에 패리티 비트를 XOR해 나중에 판정
+                    data_sr    &lt;= data_sr; // 유지
+                    parity_acc &lt;= parity_acc ^ ps2_d2;
+                    bit_cnt    &lt;= 4&#x27;d10;
+                end
+                4&#x27;d10: begin
+                    // 정지 비트 = 1
+                    bit_cnt &lt;= 4&#x27;d0;
+                    if (ps2_d2 &amp;&amp; (parity_acc == 1&#x27;b1)) begin
+                        // 정지=1, 홀수 패리티 OK
+                        rx_data  &lt;= data_sr;
+                        rx_valid &lt;= 1&#x27;b1;
+                    end else begin
+                        rx_err &lt;= 1&#x27;b1;
+                    end
+                end
+                default: bit_cnt &lt;= 4&#x27;d0;
+            endcase
+        end
+    end
+endmodule
+</pre></details><details><summary><code>rtl/ps2_kbd.v</code> <span class="muted">170줄</span></summary><pre>// ps2_kbd.v — PS/2 키보드 디코더 + MMIO 슬레이브 (Verilog-2001)
+// 하네스 직접 작성 원본.
+//
+// 역할:
+//   - ps2_rx에서 스캔코드를 받아 make/break 시퀀스를 처리한다.
+//   - 스캔코드를 ASCII로 변환한다.
+//   - MMIO 레지스터 인터페이스를 제공한다.
+//
+// PS/2 Set 2 특수 코드:
+//   0xF0 : Break prefix (다음 바이트는 뗌 코드)
+//   0xE0 : Extended key prefix (여기서는 무시)
+//
+// MMIO 레지스터 (오프셋 7:0 기준):
+//   0x00 STATUS : {31&#x27;h0, kbd_ready}   kbd_ready=1 → 새 문자 수신
+//   0x04 DATA   : {22&#x27;h0, key_up, valid, ascii[7:0]}
+//                 key_up=1 → 키 뗌(break), valid=1 → ASCII 유효
+//                 DATA를 읽으면 kbd_ready가 클리어된다.
+`timescale 1ns/1ps
+module ps2_kbd (
+    input  wire       clk,
+    input  wire       rst,
+    // ps2_rx 입력
+    input  wire [7:0] rx_data,
+    input  wire       rx_valid,
+    // verilator lint_off UNUSED
+    input  wire       rx_err,   // 오류 카운트용 (현재 버전은 무시)
+    // verilator lint_on UNUSED
+    // MMIO 슬레이브 인터페이스
+    input  wire       sel,
+    input  wire       we,
+    input  wire [7:0] off,
+    input  wire [31:0] wdata,
+    output reg  [31:0] rdata,
+    // 인터럽트 (선택 — 현재 버전은 출력만)
+    output wire       irq
+);
+    // verilator lint_off UNUSED
+    wire [31:0] _unused_wdata = wdata;
+    // verilator lint_on UNUSED
+
+    // ----------------------------------------------------------------
+    // 스캔코드 → ASCII 함수
+    // ----------------------------------------------------------------
+    function [7:0] scan_to_ascii;
+        input [7:0] sc;
+        case (sc)
+            8&#x27;h1C: scan_to_ascii = 8&#x27;h61; // a
+            8&#x27;h32: scan_to_ascii = 8&#x27;h62; // b
+            8&#x27;h21: scan_to_ascii = 8&#x27;h63; // c
+            8&#x27;h23: scan_to_ascii = 8&#x27;h64; // d
+            8&#x27;h24: scan_to_ascii = 8&#x27;h65; // e
+            8&#x27;h2B: scan_to_ascii = 8&#x27;h66; // f
+            8&#x27;h34: scan_to_ascii = 8&#x27;h67; // g
+            8&#x27;h33: scan_to_ascii = 8&#x27;h68; // h
+            8&#x27;h43: scan_to_ascii = 8&#x27;h69; // i
+            8&#x27;h3B: scan_to_ascii = 8&#x27;h6A; // j
+            8&#x27;h42: scan_to_ascii = 8&#x27;h6B; // k
+            8&#x27;h4B: scan_to_ascii = 8&#x27;h6C; // l
+            8&#x27;h3A: scan_to_ascii = 8&#x27;h6D; // m
+            8&#x27;h31: scan_to_ascii = 8&#x27;h6E; // n
+            8&#x27;h44: scan_to_ascii = 8&#x27;h6F; // o
+            8&#x27;h4D: scan_to_ascii = 8&#x27;h70; // p
+            8&#x27;h15: scan_to_ascii = 8&#x27;h71; // q
+            8&#x27;h2D: scan_to_ascii = 8&#x27;h72; // r
+            8&#x27;h1B: scan_to_ascii = 8&#x27;h73; // s
+            8&#x27;h2C: scan_to_ascii = 8&#x27;h74; // t
+            8&#x27;h3C: scan_to_ascii = 8&#x27;h75; // u
+            8&#x27;h2A: scan_to_ascii = 8&#x27;h76; // v
+            8&#x27;h1D: scan_to_ascii = 8&#x27;h77; // w
+            8&#x27;h22: scan_to_ascii = 8&#x27;h78; // x
+            8&#x27;h35: scan_to_ascii = 8&#x27;h79; // y
+            8&#x27;h1A: scan_to_ascii = 8&#x27;h7A; // z
+            8&#x27;h45: scan_to_ascii = 8&#x27;h30; // 0
+            8&#x27;h16: scan_to_ascii = 8&#x27;h31; // 1
+            8&#x27;h1E: scan_to_ascii = 8&#x27;h32; // 2
+            8&#x27;h26: scan_to_ascii = 8&#x27;h33; // 3
+            8&#x27;h25: scan_to_ascii = 8&#x27;h34; // 4
+            8&#x27;h2E: scan_to_ascii = 8&#x27;h35; // 5
+            8&#x27;h36: scan_to_ascii = 8&#x27;h36; // 6
+            8&#x27;h3D: scan_to_ascii = 8&#x27;h37; // 7
+            8&#x27;h3E: scan_to_ascii = 8&#x27;h38; // 8
+            8&#x27;h46: scan_to_ascii = 8&#x27;h39; // 9
+            8&#x27;h29: scan_to_ascii = 8&#x27;h20; // space
+            8&#x27;h5A: scan_to_ascii = 8&#x27;h0D; // Enter (CR)
+            8&#x27;h66: scan_to_ascii = 8&#x27;h08; // Backspace
+            8&#x27;h76: scan_to_ascii = 8&#x27;h1B; // Escape
+            8&#x27;h0D: scan_to_ascii = 8&#x27;h09; // Tab
+            default: scan_to_ascii = 8&#x27;h00; // 미지원
+        endcase
+    endfunction
+
+    // ----------------------------------------------------------------
+    // 디코더 FSM
+    //   IDLE     : 일반 make 코드 대기
+    //   BREAK    : F0 받음, 다음 바이트는 break 코드
+    //   EXTENDED : E0 받음, 다음 바이트를 무시 (simple version)
+    // ----------------------------------------------------------------
+    localparam S_IDLE = 2&#x27;d0, S_BREAK = 2&#x27;d1, S_EXTENDED = 2&#x27;d2;
+    reg [1:0] state;
+
+    // 출력 레지스터
+    reg       kbd_ready;
+    reg [7:0] ascii_buf;
+    reg       key_up_buf;
+
+    assign irq = kbd_ready; // 준비되면 IRQ 발생 (외부에서 연결 선택)
+
+    always @(posedge clk or posedge rst) begin
+        if (rst) begin
+            state     &lt;= S_IDLE;
+            kbd_ready &lt;= 1&#x27;b0;
+            ascii_buf &lt;= 8&#x27;h00;
+            key_up_buf&lt;= 1&#x27;b0;
+        end else begin
+            if (rx_valid) begin
+                case (state)
+                    S_IDLE: begin
+                        if (rx_data == 8&#x27;hF0) begin
+                            state &lt;= S_BREAK;
+                        end else if (rx_data == 8&#x27;hE0) begin
+                            state &lt;= S_EXTENDED;
+                        end else begin
+                            // Make 코드
+                            if (scan_to_ascii(rx_data) != 8&#x27;h00) begin
+                                ascii_buf  &lt;= scan_to_ascii(rx_data);
+                                key_up_buf &lt;= 1&#x27;b0;
+                                kbd_ready  &lt;= 1&#x27;b1;
+                            end
+                        end
+                    end
+                    S_BREAK: begin
+                        // Break 코드: 뗌 이벤트
+                        if (scan_to_ascii(rx_data) != 8&#x27;h00) begin
+                            ascii_buf  &lt;= scan_to_ascii(rx_data);
+                            key_up_buf &lt;= 1&#x27;b1;
+                            kbd_ready  &lt;= 1&#x27;b1;
+                        end
+                        state &lt;= S_IDLE;
+                    end
+                    S_EXTENDED: begin
+                        // E0 접두어: 현재 버전은 다음 바이트를 무시
+                        if (rx_data == 8&#x27;hF0)
+                            state &lt;= S_BREAK; // E0 F0 → extended break
+                        else
+                            state &lt;= S_IDLE;
+                    end
+                    default: state &lt;= S_IDLE;
+                endcase
+            end
+
+            // MMIO 읽기: DATA를 읽으면 kbd_ready 클리어
+            if (sel &amp;&amp; ~we &amp;&amp; (off == 8&#x27;h04))
+                kbd_ready &lt;= 1&#x27;b0;
+        end
+    end
+
+    // ----------------------------------------------------------------
+    // MMIO 읽기 조합 로직
+    // ----------------------------------------------------------------
+    always @* begin
+        rdata = 32&#x27;h0000_0000;
+        if (sel &amp;&amp; ~we) begin
+            case (off)
+                8&#x27;h00: rdata = {31&#x27;h0, kbd_ready};
+                8&#x27;h04: rdata = {22&#x27;h0, key_up_buf, (ascii_buf != 8&#x27;h00), ascii_buf};
+                default: rdata = 32&#x27;h0000_0000;
+            endcase
+        end
+    end
+endmodule
+</pre></details><details><summary><code>rtl/mmio_bus.v</code> <span class="muted">42줄</span></summary><pre>// mmio_bus.v — MMIO 주소 디코더 (64KB 창, addr[31:16] 기준)
+// 하네스 직접 작성 원본.
+// addr[31:16] 기준으로 슬레이브를 선택하고, addr[15:0]을 오프셋으로 전달한다.
+//
+// 슬롯 (mmio-lite 버스, 동결 맵과 별도):
+//   0x1000_xxxx : GPIO  (LED, SW)
+//   0x1001_xxxx : UART TX
+//   0x1002_xxxx : PS2_KBD  (동결 맵: 0x400B_0000)
+`timescale 1ns/1ps
+module mmio_bus (
+    input  wire        valid,
+    input  wire        we,
+    input  wire [31:0] addr,
+    input  wire [31:0] wdata,
+    // 슬레이브 선택
+    output wire        sel_gpio,
+    output wire        sel_uart,
+    output wire        sel_kbd,
+    // 슬레이브 읽기 데이터
+    input  wire [31:0] rdata_gpio,
+    input  wire [31:0] rdata_uart,
+    input  wire [31:0] rdata_kbd,
+    // 마스터 읽기 데이터
+    output reg  [31:0] rdata,
+    output wire        ready
+);
+    assign sel_gpio = valid &amp;&amp; (addr[31:16] == 16&#x27;h1000);
+    assign sel_uart = valid &amp;&amp; (addr[31:16] == 16&#x27;h1001);
+    assign sel_kbd  = valid &amp;&amp; (addr[31:16] == 16&#x27;h1002);
+    assign ready    = 1&#x27;b1; // 모든 접근 1사이클
+
+    always @* begin
+        if      (sel_gpio) rdata = rdata_gpio;
+        else if (sel_uart) rdata = rdata_uart;
+        else if (sel_kbd)  rdata = rdata_kbd;
+        else               rdata = 32&#x27;h0000_0000;
+    end
+
+    // verilator lint_off UNUSED
+    wire [31:0] _unused_wdata = wdata;
+    // verilator lint_on UNUSED
+endmodule
+</pre></details><details><summary><code>rtl/gpio.v</code> <span class="muted">41줄</span></summary><pre>// gpio.v — GPIO 슬레이브 (Verilog-2001)
+// 하네스 직접 작성 원본.
+// 원본 경로: capstones/mmio-uart-gpio-skeleton/rtl/gpio.v
+// 0x00 LED(RW, 16비트), 0x04 SW(RO, 2단 동기화)
+`timescale 1ns/1ps
+module gpio (
+    input  wire        clk,
+    input  wire        rst,
+    input  wire        sel,
+    input  wire        we,
+    input  wire [7:0]  off,
+    input  wire [31:0] wdata,
+    output reg  [31:0] rdata,
+    input  wire [15:0] sw,
+    output wire [15:0] led
+);
+    reg [15:0] led_r;
+    reg [15:0] sw_s1, sw_s2;
+    assign led = led_r;
+
+    always @(posedge clk or posedge rst) begin
+        if (rst) begin
+            led_r &lt;= 16&#x27;h0000;
+            sw_s1 &lt;= 16&#x27;h0000;
+            sw_s2 &lt;= 16&#x27;h0000;
+        end else begin
+            sw_s1 &lt;= sw;
+            sw_s2 &lt;= sw_s1;
+            if (sel &amp;&amp; we &amp;&amp; (off == 8&#x27;h00))
+                led_r &lt;= wdata[15:0];
+        end
+    end
+
+    always @* begin
+        case (off)
+            8&#x27;h00:   rdata = {16&#x27;h0000, led_r};
+            8&#x27;h04:   rdata = {16&#x27;h0000, sw_s2};
+            default: rdata = 32&#x27;h0000_0000;
+        endcase
+    end
+endmodule
+</pre></details><details><summary><code>rtl/uart_tx.v</code> <span class="muted">68줄</span></summary><pre>// uart_tx.v — UART 송신기 8N1 (Verilog-2001)
+// 하네스 직접 작성 원본.
+// 원본 경로: capstones/mmio-uart-gpio-skeleton/rtl/uart_tx.v
+// 0x00 DATA(WO, busy 중 무시), 0x04 STATUS(RO, bit0=busy)
+`timescale 1ns/1ps
+module uart_tx #(
+    parameter CLK_HZ = 100_000_000,
+    parameter BAUD   = 115_200
+) (
+    input  wire        clk,
+    input  wire        rst,
+    input  wire        sel,
+    input  wire        we,
+    input  wire [7:0]  off,
+    input  wire [31:0] wdata,
+    output reg  [31:0] rdata,
+    output wire        txd
+);
+    localparam DIV = CLK_HZ / BAUD;
+
+    reg [9:0]  sh;
+    reg [3:0]  nbit;
+    reg [15:0] cnt;
+    reg        busy;
+    reg        tx;
+    assign txd = tx;
+
+    wire wr_data = sel &amp;&amp; we &amp;&amp; (off == 8&#x27;h00);
+
+    always @(posedge clk or posedge rst) begin
+        if (rst) begin
+            busy &lt;= 1&#x27;b0;
+            tx   &lt;= 1&#x27;b1;
+            cnt  &lt;= 16&#x27;d0;
+            nbit &lt;= 4&#x27;d0;
+            sh   &lt;= 10&#x27;h3FF;
+        end else if (!busy) begin
+            tx &lt;= 1&#x27;b1;
+            if (wr_data) begin
+                sh   &lt;= {1&#x27;b1, wdata[7:0], 1&#x27;b0};
+                busy &lt;= 1&#x27;b1;
+                cnt  &lt;= DIV - 1;
+                nbit &lt;= 4&#x27;d0;
+                tx   &lt;= 1&#x27;b0;
+            end
+        end else begin
+            if (cnt == 16&#x27;d0) begin
+                cnt &lt;= DIV - 1;
+                if (nbit == 4&#x27;d9) begin
+                    busy &lt;= 1&#x27;b0;
+                    tx   &lt;= 1&#x27;b1;
+                end else begin
+                    nbit &lt;= nbit + 4&#x27;d1;
+                    tx   &lt;= sh[nbit + 4&#x27;d1];
+                end
+            end else begin
+                cnt &lt;= cnt - 16&#x27;d1;
+            end
+        end
+    end
+
+    always @* begin
+        case (off)
+            8&#x27;h04:   rdata = {31&#x27;d0, busy};
+            default: rdata = 32&#x27;h0000_0000;
+        endcase
+    end
+endmodule
+</pre></details><details><summary><code>rtl/demo_master.v</code> <span class="muted">172줄</span></summary><pre>// demo_master.v — PS/2 키보드 폴링 마스터 FSM (Verilog-2001)
+// 하네스 직접 작성 원본.
+//
+// 역할:
+//   - PS/2 키보드 MMIO를 1사이클 단위로 폴링한다.
+//   - 새 키(kbd_ready=1)가 오면 DATA 레지스터를 읽어 ASCII를 추출한다.
+//   - make 이벤트(key_up=0, valid=1)이면:
+//     - LED 하위 8비트에 ASCII를 표시한다.
+//     - UART TX가 쉬면 ASCII를 UART로 송신한다.
+//   - break 이벤트(key_up=1, valid=1)이면:
+//     - LED를 클리어한다.
+//
+// 버스 주소 (mmio-lite 맵, addr[31:0] 기준):
+//   0x1000_0000 : GPIO LED  (WO: wdata[15:0])
+//   0x1001_0000 : UART TX DATA (WO: wdata[7:0])
+//   0x1001_0004 : UART TX STATUS (RO: bit0=busy)
+//   0x1002_0000 : KBD STATUS (RO: bit0=kbd_ready)
+//   0x1002_0004 : KBD DATA   (RO: {22&#x27;h0, key_up, valid, ascii[7:0]})
+`timescale 1ns/1ps
+module demo_master (
+    input  wire        clk,
+    input  wire        rst,
+    // 버스 마스터 포트
+    output reg         valid,
+    output reg         we,
+    output reg  [31:0] addr,
+    output reg  [31:0] wdata,
+    input  wire [31:0] rdata,
+    input  wire        ready
+);
+    // FSM 상태
+    localparam
+        S_POLL_KBD   = 4&#x27;d0,  // KBD STATUS 읽기 요청
+        S_WAIT_KBD   = 4&#x27;d1,  // STATUS 응답 대기
+        S_READ_DATA  = 4&#x27;d2,  // KBD DATA 읽기 요청
+        S_WAIT_DATA  = 4&#x27;d3,  // DATA 응답 대기
+        S_CHK_UART   = 4&#x27;d4,  // UART STATUS 읽기 요청
+        S_WAIT_UART  = 4&#x27;d5,  // UART STATUS 대기
+        S_SEND_UART  = 4&#x27;d6,  // UART DATA 쓰기
+        S_LED_MAKE   = 4&#x27;d7,  // LED 쓰기 (make)
+        S_LED_BREAK  = 4&#x27;d8,  // LED 클리어 (break)
+        S_IDLE       = 4&#x27;d9;  // 짧은 대기 (다음 폴링 전)
+
+    reg [3:0]  state;
+    reg [7:0]  ascii_hold;
+    reg        key_up_hold;
+    reg [7:0]  idle_cnt;
+
+    always @(posedge clk or posedge rst) begin
+        if (rst) begin
+            state      &lt;= S_POLL_KBD;
+            valid      &lt;= 1&#x27;b0;
+            we         &lt;= 1&#x27;b0;
+            addr       &lt;= 32&#x27;h0;
+            wdata      &lt;= 32&#x27;h0;
+            ascii_hold &lt;= 8&#x27;h0;
+            key_up_hold&lt;= 1&#x27;b0;
+            idle_cnt   &lt;= 8&#x27;d0;
+        end else begin
+            case (state)
+                // ---- KBD STATUS 읽기 ----
+                S_POLL_KBD: begin
+                    valid &lt;= 1&#x27;b1;
+                    we    &lt;= 1&#x27;b0;
+                    addr  &lt;= 32&#x27;h1002_0000;
+                    wdata &lt;= 32&#x27;h0;
+                    state &lt;= S_WAIT_KBD;
+                end
+                S_WAIT_KBD: begin
+                    if (ready) begin
+                        valid &lt;= 1&#x27;b0;
+                        if (rdata[0]) begin
+                            // kbd_ready=1 → DATA 읽기
+                            state &lt;= S_READ_DATA;
+                        end else begin
+                            // 아직 없음 → 짧은 대기 후 다시
+                            state    &lt;= S_IDLE;
+                            idle_cnt &lt;= 8&#x27;d4;
+                        end
+                    end
+                end
+                // ---- KBD DATA 읽기 ----
+                S_READ_DATA: begin
+                    valid &lt;= 1&#x27;b1;
+                    we    &lt;= 1&#x27;b0;
+                    addr  &lt;= 32&#x27;h1002_0004;
+                    wdata &lt;= 32&#x27;h0;
+                    state &lt;= S_WAIT_DATA;
+                end
+                S_WAIT_DATA: begin
+                    if (ready) begin
+                        valid       &lt;= 1&#x27;b0;
+                        ascii_hold  &lt;= rdata[7:0];
+                        key_up_hold &lt;= rdata[9];
+                        // valid 비트(bit8)가 세트된 경우에만 처리
+                        if (rdata[8]) begin
+                            if (rdata[9]) begin
+                                // key_up → LED 클리어
+                                state &lt;= S_LED_BREAK;
+                            end else begin
+                                // make → UART 전송 가능 여부 확인
+                                state &lt;= S_LED_MAKE;
+                            end
+                        end else begin
+                            // valid=0이면 무효 → 다시 폴링
+                            state    &lt;= S_IDLE;
+                            idle_cnt &lt;= 8&#x27;d4;
+                        end
+                    end
+                end
+                // ---- LED 쓰기 (make) ----
+                S_LED_MAKE: begin
+                    valid &lt;= 1&#x27;b1;
+                    we    &lt;= 1&#x27;b1;
+                    addr  &lt;= 32&#x27;h1000_0000;
+                    wdata &lt;= {24&#x27;h0, ascii_hold};
+                    state &lt;= S_CHK_UART;
+                end
+                // ---- UART STATUS 읽기 ----
+                S_CHK_UART: begin
+                    if (ready) begin
+                        // LED 쓰기 완료, UART 상태 확인
+                        valid &lt;= 1&#x27;b1;
+                        we    &lt;= 1&#x27;b0;
+                        addr  &lt;= 32&#x27;h1001_0004;
+                        wdata &lt;= 32&#x27;h0;
+                        state &lt;= S_WAIT_UART;
+                    end
+                end
+                S_WAIT_UART: begin
+                    if (ready) begin
+                        valid &lt;= 1&#x27;b0;
+                        if (!rdata[0]) begin
+                            // busy=0 → 전송 가능
+                            state &lt;= S_SEND_UART;
+                        end else begin
+                            // 바쁨 → 잠시 대기
+                            state    &lt;= S_IDLE;
+                            idle_cnt &lt;= 8&#x27;d4;
+                        end
+                    end
+                end
+                // ---- UART DATA 쓰기 ----
+                S_SEND_UART: begin
+                    valid &lt;= 1&#x27;b1;
+                    we    &lt;= 1&#x27;b1;
+                    addr  &lt;= 32&#x27;h1001_0000;
+                    wdata &lt;= {24&#x27;h0, ascii_hold};
+                    state &lt;= S_POLL_KBD;
+                end
+                // ---- LED 클리어 (break) ----
+                S_LED_BREAK: begin
+                    valid &lt;= 1&#x27;b1;
+                    we    &lt;= 1&#x27;b1;
+                    addr  &lt;= 32&#x27;h1000_0000;
+                    wdata &lt;= 32&#x27;h0000_0000;
+                    state &lt;= S_POLL_KBD;
+                end
+                // ---- 짧은 대기 ----
+                S_IDLE: begin
+                    valid &lt;= 1&#x27;b0;
+                    if (idle_cnt == 8&#x27;d0) begin
+                        state &lt;= S_POLL_KBD;
+                    end else begin
+                        idle_cnt &lt;= idle_cnt - 8&#x27;d1;
+                    end
+                end
+                default: state &lt;= S_POLL_KBD;
+            endcase
+        end
+    end
+endmodule
+</pre></details><details><summary><code>rtl/soc_top.v</code> <span class="muted">140줄</span></summary><pre>// soc_top.v — SoC 최상위 (PS/2 키보드 수신기 + 스캔코드 디코더) (Verilog-2001)
+// 하네스 직접 작성 원본.
+//
+// 블록:
+//   demo_master  — 버스 마스터 (PS/2 폴링 FSM)
+//   mmio_bus     — 주소 디코더 (GPIO/UART/KBD)
+//   gpio         — GPIO 슬레이브 (LED/SW)
+//   uart_tx      — UART TX 슬레이브 (115200 8N1)
+//   ps2_rx       — PS/2 프레임 수신기 (11-bit, 하강 에지 샘플)
+//   ps2_kbd      — PS/2 키보드 디코더 + MMIO 슬레이브
+`timescale 1ns/1ps
+module soc_top #(
+    parameter CLK_HZ = 100_000_000
+) (
+    input  wire        clk,
+    input  wire        rst,
+    // PS/2
+    input  wire        ps2_clk_in,
+    input  wire        ps2_data_in,
+    // GPIO
+    input  wire [15:0] sw,
+    output wire [15:0] led,
+    // UART
+    output wire        txd
+);
+    // ----------------------------------------------------------------
+    // 버스 신호
+    // ----------------------------------------------------------------
+    wire        bus_valid;
+    wire        bus_we;
+    wire [31:0] bus_addr;
+    wire [31:0] bus_wdata;
+    wire [31:0] bus_rdata;
+    wire        bus_ready;
+
+    // 슬레이브 선택
+    wire        sel_gpio, sel_uart, sel_kbd;
+    wire [31:0] rdata_gpio, rdata_uart, rdata_kbd;
+
+    // ----------------------------------------------------------------
+    // 버스 마스터
+    // ----------------------------------------------------------------
+    demo_master u_master (
+        .clk   (clk),
+        .rst   (rst),
+        .valid (bus_valid),
+        .we    (bus_we),
+        .addr  (bus_addr),
+        .wdata (bus_wdata),
+        .rdata (bus_rdata),
+        .ready (bus_ready)
+    );
+
+    // ----------------------------------------------------------------
+    // 주소 디코더 (MMIO 버스)
+    // ----------------------------------------------------------------
+    mmio_bus u_bus (
+        .valid      (bus_valid),
+        .we         (bus_we),
+        .addr       (bus_addr),
+        .wdata      (bus_wdata),
+        .sel_gpio   (sel_gpio),
+        .sel_uart   (sel_uart),
+        .sel_kbd    (sel_kbd),
+        .rdata_gpio (rdata_gpio),
+        .rdata_uart (rdata_uart),
+        .rdata_kbd  (rdata_kbd),
+        .rdata      (bus_rdata),
+        .ready      (bus_ready)
+    );
+
+    // ----------------------------------------------------------------
+    // GPIO 슬레이브
+    // ----------------------------------------------------------------
+    gpio u_gpio (
+        .clk   (clk),
+        .rst   (rst),
+        .sel   (sel_gpio),
+        .we    (bus_we),
+        .off   (bus_addr[7:0]),
+        .wdata (bus_wdata),
+        .rdata (rdata_gpio),
+        .sw    (sw),
+        .led   (led)
+    );
+
+    // ----------------------------------------------------------------
+    // UART TX 슬레이브
+    // ----------------------------------------------------------------
+    uart_tx #(
+        .CLK_HZ (CLK_HZ),
+        .BAUD   (115_200)
+    ) u_uart (
+        .clk   (clk),
+        .rst   (rst),
+        .sel   (sel_uart),
+        .we    (bus_we),
+        .off   (bus_addr[7:0]),
+        .wdata (bus_wdata),
+        .rdata (rdata_uart),
+        .txd   (txd)
+    );
+
+    // ----------------------------------------------------------------
+    // PS/2 수신기
+    // ----------------------------------------------------------------
+    wire [7:0] rx_data;
+    wire       rx_valid;
+    wire       rx_err;
+
+    ps2_rx u_rx (
+        .clk         (clk),
+        .rst         (rst),
+        .ps2_clk_in  (ps2_clk_in),
+        .ps2_data_in (ps2_data_in),
+        .rx_data     (rx_data),
+        .rx_valid    (rx_valid),
+        .rx_err      (rx_err)
+    );
+
+    // ----------------------------------------------------------------
+    // PS/2 키보드 디코더 + MMIO 슬레이브
+    // ----------------------------------------------------------------
+    // verilator lint_off UNUSED
+    wire kbd_irq;
+    // verilator lint_on UNUSED
+    ps2_kbd u_kbd (
+        .clk      (clk),
+        .rst      (rst),
+        .rx_data  (rx_data),
+        .rx_valid (rx_valid),
+        .rx_err   (rx_err),
+        .sel      (sel_kbd),
+        .we       (bus_we),
+        .off      (bus_addr[7:0]),
+        .wdata    (bus_wdata),
+        .rdata    (rdata_kbd),
+        .irq      (kbd_irq)
+    );
+endmodule
+</pre></details><details><summary><code>rtl/basys3_top.v</code> <span class="muted">36줄</span></summary><pre>// basys3_top.v — Basys3 보드 래퍼 (Verilog-2001)
+// 하네스 직접 작성 원본.
+//
+// Basys3 (XC7A35T-1CPG236C) 핀 매핑:
+//   CLK_100   : W5  (100MHz 온보드 클럭)
+//   BTNC      : U18 (리셋, 액티브 하이)
+//   PS2_CLK   : C17 (USB HID PS/2 에뮬레이션)
+//   PS2_DATA  : B17
+//   SW[15:0]  : V17,V16,W16,W17,W15,V15,W14,W13,V2,T3,T2,R3,W2,U1,T1,R2
+//   LED[15:0] : U16,E19,U19,V19,W18,U15,U14,V14,V13,V3,W3,U3,P3,N3,P1,L1
+//   UART_TXD  : A18 (USB UART TX)
+`timescale 1ns/1ps
+module basys3_top (
+    input  wire        CLK_100,
+    input  wire        BTNC,
+    // PS/2
+    input  wire        PS2_CLK,
+    input  wire        PS2_DATA,
+    // GPIO
+    input  wire [15:0] SW,
+    output wire [15:0] LED,
+    // UART
+    output wire        UART_TXD
+);
+    soc_top #(
+        .CLK_HZ (100_000_000)
+    ) u_soc (
+        .clk         (CLK_100),
+        .rst         (BTNC),
+        .ps2_clk_in  (PS2_CLK),
+        .ps2_data_in (PS2_DATA),
+        .sw          (SW),
+        .led         (LED),
+        .txd         (UART_TXD)
+    );
+endmodule
+</pre></details><details><summary><code>tb/tb_ps2_kbd.v</code> <span class="muted">309줄</span></summary><pre>// tb_ps2_kbd.v — PS/2 키보드 수신기 자체 점검 테스트벤치 (Verilog-2001)
+// 하네스 직접 작성 원본.
+//
+// 테스트 항목:
+//   T1  make  &#x27;H&#x27; (스캔코드 0x33, ASCII 0x68)
+//   T2  break &#x27;H&#x27; (F0+0x33, key_up=1)
+//   T3  make  &#x27;I&#x27; (스캔코드 0x43, ASCII 0x69)
+//   T4  패리티 오류 프레임 → rx_err=1, kbd_ready는 올라오지 않아야 함
+//   T5  MMIO 읽기: STATUS/DATA 레지스터 값 확인
+//
+// PS/2 Set 2: 하강 에지에서 데이터를 샘플링한다 (11-bit 프레임).
+// 클럭: 100MHz 시스템 / PS/2 CLK 주기 = 40us (25kHz)
+`timescale 1ns/1ps
+
+module tb_ps2_kbd;
+    // ----------------------------------------------------------------
+    // 파라미터
+    // ----------------------------------------------------------------
+    localparam CLK_PERIOD  = 10;        // 100MHz = 10ns
+    localparam PS2_HALF    = 20_000;    // PS/2 CLK 반주기 20us (50ns × 400 = 20us)
+    // PS2_HALF를 짧게 해 시뮬 속도 확보: 실제 20us 대신 2us (200클럭)
+    // 200클럭 반주기 → 하강 에지에서 수신, 3-사이클 동기화 후 샘플
+
+    // ----------------------------------------------------------------
+    // DUT 신호
+    // ----------------------------------------------------------------
+    reg         clk;
+    reg         rst;
+    reg         ps2_clk_in;
+    reg         ps2_data_in;
+    wire [15:0] led;
+    wire        txd;
+
+    // MMIO 직접 접근용
+    wire        sel_kbd;
+    wire [31:0] rdata_kbd;
+    reg         tb_sel;
+    reg         tb_we;
+    reg  [7:0]  tb_off;
+    reg  [31:0] tb_wdata;
+
+    // ----------------------------------------------------------------
+    // DUT 인스턴스 (테스트 편의를 위해 soc_top 대신 하위 모듈 직접)
+    // ----------------------------------------------------------------
+    wire [7:0] rx_data;
+    wire       rx_valid;
+    wire       rx_err;
+
+    ps2_rx u_rx (
+        .clk         (clk),
+        .rst         (rst),
+        .ps2_clk_in  (ps2_clk_in),
+        .ps2_data_in (ps2_data_in),
+        .rx_data     (rx_data),
+        .rx_valid    (rx_valid),
+        .rx_err      (rx_err)
+    );
+
+    wire kbd_irq;
+    wire [31:0] rdata_out;
+
+    ps2_kbd u_kbd (
+        .clk      (clk),
+        .rst      (rst),
+        .rx_data  (rx_data),
+        .rx_valid (rx_valid),
+        .rx_err   (rx_err),
+        .sel      (tb_sel),
+        .we       (tb_we),
+        .off      (tb_off),
+        .wdata    (tb_wdata),
+        .rdata    (rdata_out),
+        .irq      (kbd_irq)
+    );
+
+    // ----------------------------------------------------------------
+    // 클럭 생성
+    // ----------------------------------------------------------------
+    initial clk = 0;
+    always #(CLK_PERIOD/2) clk = ~clk;
+
+    // ----------------------------------------------------------------
+    // 카운터와 결과
+    // ----------------------------------------------------------------
+    integer fail_cnt;
+    integer test_num;
+
+    // ----------------------------------------------------------------
+    // PS/2 프레임 송신 태스크 (DUT에서는 수신)
+    //   PS/2 장치가 호스트로 보내는 방향: CLK은 장치가 생성
+    //   Start=0, D0..D7 (LSB first), Parity(odd), Stop=1
+    //   하강 에지에서 호스트가 샘플링한다
+    // ----------------------------------------------------------------
+    task send_ps2_byte;
+        input [7:0] data;
+        input       bad_parity; // 1이면 패리티를 반전해 오류 유도
+        integer i;
+        reg parity;
+        reg [10:0] frame;
+        begin
+            // 홀수 패리티: 1의 개수가 홀수
+            parity = ^data; // data 비트의 XOR → 짝수면 1, 홀수면 0
+            if (!parity) parity = 1&#x27;b1; else parity = 1&#x27;b0;
+            // 오류 유도 시 반전
+            if (bad_parity) parity = ~parity;
+            // 프레임: [0]=start, [1..8]=data LSB→MSB, [9]=parity, [10]=stop
+            frame = {1&#x27;b1, parity, data, 1&#x27;b0};
+
+            // 라인 초기 상태: CLK=1, DATA=1
+            ps2_clk_in  = 1&#x27;b1;
+            ps2_data_in = 1&#x27;b1;
+            #(PS2_HALF * CLK_PERIOD);
+
+            for (i = 0; i &lt;= 10; i = i + 1) begin
+                // DATA 세팅 (CLK 하이 중)
+                ps2_data_in = frame[i];
+                #(PS2_HALF * CLK_PERIOD / 2);
+                // CLK 하강 에지
+                ps2_clk_in = 1&#x27;b0;
+                #(PS2_HALF * CLK_PERIOD);
+                // CLK 상승 에지
+                ps2_clk_in = 1&#x27;b1;
+                #(PS2_HALF * CLK_PERIOD / 2);
+            end
+
+            // 프레임 후 라인 복귀
+            ps2_data_in = 1&#x27;b1;
+            ps2_clk_in  = 1&#x27;b1;
+            #(PS2_HALF * CLK_PERIOD * 2);
+        end
+    endtask
+
+    // ----------------------------------------------------------------
+    // MMIO 읽기 헬퍼
+    // ----------------------------------------------------------------
+    task mmio_read;
+        input [7:0] offset;
+        output [31:0] data;
+        begin
+            @(negedge clk);
+            tb_sel  = 1&#x27;b1;
+            tb_we   = 1&#x27;b0;
+            tb_off  = offset;
+            tb_wdata= 32&#x27;h0;
+            @(negedge clk);
+            data = rdata_out;
+            tb_sel  = 1&#x27;b0;
+            @(posedge clk); // 1사이클 여유
+        end
+    endtask
+
+    // ----------------------------------------------------------------
+    // 검증 헬퍼
+    // ----------------------------------------------------------------
+    task check_eq;
+        input [31:0] got;
+        input [31:0] exp;
+        input [63:0] label; // 최대 8글자 ASCII 태그
+        begin
+            if (got !== exp) begin
+                $display(&quot;FAIL T%0d [%s]: got=0x%08X exp=0x%08X&quot;,
+                         test_num, label, got, exp);
+                fail_cnt = fail_cnt + 1;
+            end
+        end
+    endtask
+
+    // ----------------------------------------------------------------
+    // 메인
+    // ----------------------------------------------------------------
+    reg [31:0] rd;
+
+    initial begin
+        // 초기화
+        fail_cnt    = 0;
+        test_num    = 0;
+        rst         = 1&#x27;b1;
+        ps2_clk_in  = 1&#x27;b1;
+        ps2_data_in = 1&#x27;b1;
+        tb_sel      = 1&#x27;b0;
+        tb_we       = 1&#x27;b0;
+        tb_off      = 8&#x27;h0;
+        tb_wdata    = 32&#x27;h0;
+
+        repeat(10) @(posedge clk);
+        rst = 1&#x27;b0;
+        repeat(5) @(posedge clk);
+
+        // ============================================================
+        // T1: make &#x27;H&#x27; (스캔코드 0x33, ASCII 0x68)
+        // ============================================================
+        test_num = 1;
+        send_ps2_byte(8&#x27;h33, 1&#x27;b0); // make H
+
+        // kbd_ready가 올라올 때까지 최대 50사이클 대기
+        begin : wait_t1
+            integer w;
+            for (w = 0; w &lt; 50; w = w + 1) begin
+                @(posedge clk);
+                if (kbd_irq) disable wait_t1;
+            end
+        end
+
+        // STATUS 읽기: kbd_ready=1 기대
+        mmio_read(8&#x27;h00, rd);
+        check_eq(rd, 32&#x27;h0000_0001, &quot;T1-STAT&quot;);
+
+        // DATA 읽기: key_up=0, valid=1, ascii=0x68
+        mmio_read(8&#x27;h04, rd);
+        check_eq(rd[9],   1&#x27;b0,       &quot;T1-KUP &quot;); // key_up=0
+        check_eq(rd[8],   1&#x27;b1,       &quot;T1-VLD &quot;); // valid=1
+        check_eq(rd[7:0], 8&#x27;h68,      &quot;T1-ASCII&quot;); // &#x27;h&#x27;
+
+        // DATA 읽기 후 kbd_ready가 클리어됐는지 확인
+        mmio_read(8&#x27;h00, rd);
+        check_eq(rd, 32&#x27;h0000_0000, &quot;T1-CLR &quot;);
+
+        // ============================================================
+        // T2: break &#x27;H&#x27; (F0 + 0x33, key_up=1)
+        // ============================================================
+        test_num = 2;
+        send_ps2_byte(8&#x27;hF0, 1&#x27;b0); // break prefix
+        // F0은 ASCII=0이므로 kbd_ready는 올라오지 않음; 다음 바이트를 기다림
+        repeat(5) @(posedge clk);
+
+        send_ps2_byte(8&#x27;h33, 1&#x27;b0); // break &#x27;H&#x27;
+        begin : wait_t2
+            integer w;
+            for (w = 0; w &lt; 50; w = w + 1) begin
+                @(posedge clk);
+                if (kbd_irq) disable wait_t2;
+            end
+        end
+
+        mmio_read(8&#x27;h00, rd);
+        check_eq(rd, 32&#x27;h0000_0001, &quot;T2-STAT&quot;);
+
+        mmio_read(8&#x27;h04, rd);
+        check_eq(rd[9],   1&#x27;b1,  &quot;T2-KUP &quot;); // key_up=1
+        check_eq(rd[8],   1&#x27;b1,  &quot;T2-VLD &quot;); // valid=1
+        check_eq(rd[7:0], 8&#x27;h68, &quot;T2-ASCII&quot;); // &#x27;h&#x27;
+
+        // ============================================================
+        // T3: make &#x27;I&#x27; (스캔코드 0x43, ASCII 0x69)
+        // ============================================================
+        test_num = 3;
+        send_ps2_byte(8&#x27;h43, 1&#x27;b0); // make I
+
+        begin : wait_t3
+            integer w;
+            for (w = 0; w &lt; 50; w = w + 1) begin
+                @(posedge clk);
+                if (kbd_irq) disable wait_t3;
+            end
+        end
+
+        mmio_read(8&#x27;h04, rd);
+        check_eq(rd[9],   1&#x27;b0,  &quot;T3-KUP &quot;); // key_up=0
+        check_eq(rd[8],   1&#x27;b1,  &quot;T3-VLD &quot;); // valid=1
+        check_eq(rd[7:0], 8&#x27;h69, &quot;T3-ASCII&quot;); // &#x27;i&#x27;
+
+        // ============================================================
+        // T4: 패리티 오류 프레임 → rx_err=1, kbd_ready 올라오지 않음
+        // ============================================================
+        test_num = 4;
+        // 먼저 kbd_ready 클리어 확인 (DATA 이미 읽음)
+        mmio_read(8&#x27;h00, rd);
+        check_eq(rd, 32&#x27;h0000_0000, &quot;T4-PRE &quot;);
+
+        // 오류 프레임 전송
+        send_ps2_byte(8&#x27;h1C, 1&#x27;b1); // &#x27;A&#x27; but bad parity
+
+        // rx_err 펄스 후 kbd_ready는 여전히 0이어야 함
+        repeat(10) @(posedge clk);
+        // rx_err is a 1-cycle pulse, check irq (=kbd_ready) stayed low
+        mmio_read(8&#x27;h00, rd);
+        check_eq(rd, 32&#x27;h0000_0000, &quot;T4-ERR &quot;);
+
+        // ============================================================
+        // T5: E0 확장 코드 무시 확인 (E0 + 임의 바이트)
+        // ============================================================
+        test_num = 5;
+        send_ps2_byte(8&#x27;hE0, 1&#x27;b0); // extended prefix
+        repeat(5) @(posedge clk);
+        send_ps2_byte(8&#x27;h75, 1&#x27;b0); // Up arrow (extended, 0x75)
+        repeat(10) @(posedge clk);
+        // kbd_ready는 올라오지 않아야 함
+        mmio_read(8&#x27;h00, rd);
+        check_eq(rd, 32&#x27;h0000_0000, &quot;T5-EXT &quot;);
+
+        // ============================================================
+        // 결과
+        // ============================================================
+        if (fail_cnt == 0)
+            $display(&quot;PASS: 모든 테스트 통과 (%0d개)&quot;, test_num);
+        else
+            $display(&quot;FAIL: %0d개 실패&quot;, fail_cnt);
+
+        $finish;
+    end
+
+    // 타임아웃
+    initial begin
+        #(50_000_000); // 50ms (100MHz 기준 5백만 클럭)
+        $display(&quot;FAIL: 타임아웃&quot;);
+        $finish;
+    end
+
+endmodule
+</pre></details><details><summary><code>constr/basys3.xdc</code> <span class="muted">65줄</span></summary><pre>## Basys3 (XC7A35T-1CPG236C) 제약 파일
+## mmio-ps2-kbd-checker 패키지
+## 하네스 직접 작성 원본.
+
+## ----------------------------------------------------------------
+## 클럭
+## ----------------------------------------------------------------
+set_property -dict {PACKAGE_PIN W5  IOSTANDARD LVCMOS33} [get_ports CLK_100]
+create_clock -add -name sys_clk_pin -period 10.000 -waveform {0 5} [get_ports CLK_100]
+
+## ----------------------------------------------------------------
+## 리셋 (BTNC)
+## ----------------------------------------------------------------
+set_property -dict {PACKAGE_PIN U18 IOSTANDARD LVCMOS33} [get_ports BTNC]
+
+## ----------------------------------------------------------------
+## PS/2 (USB HID 에뮬레이션)
+## ----------------------------------------------------------------
+set_property -dict {PACKAGE_PIN C17 IOSTANDARD LVCMOS33} [get_ports PS2_CLK]
+set_property -dict {PACKAGE_PIN B17 IOSTANDARD LVCMOS33} [get_ports PS2_DATA]
+
+## ----------------------------------------------------------------
+## 스위치 SW[0..15]
+## ----------------------------------------------------------------
+set_property -dict {PACKAGE_PIN V17 IOSTANDARD LVCMOS33} [get_ports {SW[0]}]
+set_property -dict {PACKAGE_PIN V16 IOSTANDARD LVCMOS33} [get_ports {SW[1]}]
+set_property -dict {PACKAGE_PIN W16 IOSTANDARD LVCMOS33} [get_ports {SW[2]}]
+set_property -dict {PACKAGE_PIN W17 IOSTANDARD LVCMOS33} [get_ports {SW[3]}]
+set_property -dict {PACKAGE_PIN W15 IOSTANDARD LVCMOS33} [get_ports {SW[4]}]
+set_property -dict {PACKAGE_PIN V15 IOSTANDARD LVCMOS33} [get_ports {SW[5]}]
+set_property -dict {PACKAGE_PIN W14 IOSTANDARD LVCMOS33} [get_ports {SW[6]}]
+set_property -dict {PACKAGE_PIN W13 IOSTANDARD LVCMOS33} [get_ports {SW[7]}]
+set_property -dict {PACKAGE_PIN V2  IOSTANDARD LVCMOS33} [get_ports {SW[8]}]
+set_property -dict {PACKAGE_PIN T3  IOSTANDARD LVCMOS33} [get_ports {SW[9]}]
+set_property -dict {PACKAGE_PIN T2  IOSTANDARD LVCMOS33} [get_ports {SW[10]}]
+set_property -dict {PACKAGE_PIN R3  IOSTANDARD LVCMOS33} [get_ports {SW[11]}]
+set_property -dict {PACKAGE_PIN W2  IOSTANDARD LVCMOS33} [get_ports {SW[12]}]
+set_property -dict {PACKAGE_PIN U1  IOSTANDARD LVCMOS33} [get_ports {SW[13]}]
+set_property -dict {PACKAGE_PIN T1  IOSTANDARD LVCMOS33} [get_ports {SW[14]}]
+set_property -dict {PACKAGE_PIN R2  IOSTANDARD LVCMOS33} [get_ports {SW[15]}]
+
+## ----------------------------------------------------------------
+## LED[0..15]
+## ----------------------------------------------------------------
+set_property -dict {PACKAGE_PIN U16 IOSTANDARD LVCMOS33} [get_ports {LED[0]}]
+set_property -dict {PACKAGE_PIN E19 IOSTANDARD LVCMOS33} [get_ports {LED[1]}]
+set_property -dict {PACKAGE_PIN U19 IOSTANDARD LVCMOS33} [get_ports {LED[2]}]
+set_property -dict {PACKAGE_PIN V19 IOSTANDARD LVCMOS33} [get_ports {LED[3]}]
+set_property -dict {PACKAGE_PIN W18 IOSTANDARD LVCMOS33} [get_ports {LED[4]}]
+set_property -dict {PACKAGE_PIN U15 IOSTANDARD LVCMOS33} [get_ports {LED[5]}]
+set_property -dict {PACKAGE_PIN U14 IOSTANDARD LVCMOS33} [get_ports {LED[6]}]
+set_property -dict {PACKAGE_PIN V14 IOSTANDARD LVCMOS33} [get_ports {LED[7]}]
+set_property -dict {PACKAGE_PIN V13 IOSTANDARD LVCMOS33} [get_ports {LED[8]}]
+set_property -dict {PACKAGE_PIN V3  IOSTANDARD LVCMOS33} [get_ports {LED[9]}]
+set_property -dict {PACKAGE_PIN W3  IOSTANDARD LVCMOS33} [get_ports {LED[10]}]
+set_property -dict {PACKAGE_PIN U3  IOSTANDARD LVCMOS33} [get_ports {LED[11]}]
+set_property -dict {PACKAGE_PIN P3  IOSTANDARD LVCMOS33} [get_ports {LED[12]}]
+set_property -dict {PACKAGE_PIN N3  IOSTANDARD LVCMOS33} [get_ports {LED[13]}]
+set_property -dict {PACKAGE_PIN P1  IOSTANDARD LVCMOS33} [get_ports {LED[14]}]
+set_property -dict {PACKAGE_PIN L1  IOSTANDARD LVCMOS33} [get_ports {LED[15]}]
+
+## ----------------------------------------------------------------
+## UART TX (USB UART — JA-UART 브릿지)
+## ----------------------------------------------------------------
+set_property -dict {PACKAGE_PIN A18 IOSTANDARD LVCMOS33} [get_ports UART_TXD]
+</pre></details><details><summary><code>Makefile</code> <span class="muted">28줄</span></summary><pre># mmio-ps2-kbd-checker Makefile
+# 단계: lint(verilator) → sim(iverilog) → synth(yosys, 자원 추정)
+# Vivado 빌드는 capstone.json howto 항목을 참조한다.
+
+RTL_ALL = rtl/ps2_rx.v rtl/ps2_kbd.v rtl/mmio_bus.v rtl/gpio.v rtl/uart_tx.v rtl/demo_master.v rtl/soc_top.v rtl/basys3_top.v
+RTL_SOC = rtl/ps2_rx.v rtl/ps2_kbd.v rtl/mmio_bus.v rtl/gpio.v rtl/uart_tx.v rtl/demo_master.v rtl/soc_top.v
+TB      = tb/tb_ps2_kbd.v
+
+.PHONY: lint sim synth clean
+
+build:
+	mkdir -p build
+
+lint: build
+	verilator --lint-only -Wall -Wno-fatal --top-module basys3_top $(RTL_ALL) 2&gt;&amp;1 | tee build/lint.log
+	@! grep -q &quot;%Error&quot; build/lint.log
+
+sim: build
+	iverilog -g2005 -o build/sim.vvp $(TB) $(RTL_SOC)
+	vvp build/sim.vvp | tee build/sim.log
+	@grep -q &quot;^PASS&quot; build/sim.log &amp;&amp; ! grep -q &quot;^FAIL&quot; build/sim.log
+
+synth: build
+	yosys -q -l build/synth.log -p &quot;read_verilog $(RTL_ALL); synth_xilinx -top basys3_top -family xc7; stat&quot;
+	@grep -E &quot;LUT|FDRE|FDCE|FDPE|Number of cells&quot; build/synth.log | tail -12
+
+clean:
+	rm -rf build
+</pre></details><h3>시뮬레이션</h3><ol><li>iverilog, verilator, yosys 설치</li><li>make -C capstones/mmio-ps2-kbd-checker lint sim synth</li></ol><h3>Vivado 빌드 (Basys3)</h3><ol><li>새 RTL 프로젝트, 파트 xc7a35tcpg236-1</li><li>rtl/*.v 추가 (tb 제외), constr/basys3.xdc 추가, 최상위 basys3_top</li><li>Generate Bitstream 후 Program Device</li><li>USB 키보드를 Basys3 HID 포트에 연결</li><li>키를 누르면 LED 하위 8비트에 ASCII 코드가 표시됨</li><li>PC에서 115200 8N1 터미널을 열면 눌린 키의 ASCII 문자가 도착함</li><li>키를 떼면 (break 이벤트) LED가 꺼짐</li></ol>
+<h2 id="verify">8. 검증</h2><div class="panel"><table><tr><th>단계</th><th>결과</th><th>내용</th></tr>
+<tr><td>린트(verilator)</td><td>미실행</td><td></td></tr><tr><td>시뮬레이션(iverilog)</td><td>미실행</td><td></td></tr><tr><td>합성 추정(yosys)</td><td>미실행</td><td></td></tr><tr><td>보드 동작</td><td>미실행</td><td></td></tr>
+</table></div><p>시뮬레이션·합성은 CI가 실행하면 자동으로 채워진다. 보드 동작은 수동 확인 후 board 값을 pass로 바꾸고 날짜를 notes에 적는다.</p>
+<h2 id="ref">9. 참고 카드와 위험</h2><h3>참고 카드</h3><ul><li><code>mmio-uart-gpio-skeleton</code> — 이 패키지의 선행 단계(T1 뼈대). GPIO, UART, mmio_bus, demo_master를 여기서 가져와 확장 <span class="muted">(카드 미작성)</span></li><li><code>fanguoc2len-risc-v-computer</code> — PS/2 디코더를 갖춘 Basys3 SoC의 비교 대상 (외부 코드 미포함) <span class="muted">(카드 미작성)</span></li><li><code>janga786-basys3-fpga-portfolio</code> — PS/2 HID 드라이버 패턴 비교 <span class="muted">(카드 미작성)</span></li></ul><h3>위험·한계</h3><ul><li>PS/2 클럭 하강 에지 검출은 3-사이클 동기화(ps2_c3 &amp; ~ps2_c2)를 쓰므로 타이밍 여유가 있지만, 100MHz보다 느린 클럭에서는 메타스태빌리티를 재검토해야 한다.</li><li>demo_master의 UART 바쁨 처리는 short idle 후 재시도이므로, 연속 키 입력 시 일부 문자가 손실될 수 있다.</li><li>Extended key(E0 접두어)는 무시하므로 화살표, Fn 키, Insert, Delete 등은 처리되지 않는다.</li><li>kbd_ready와 MMIO 읽기 클리어가 같은 클럭 에지에서 경합할 경우(rx_valid와 sel &amp;&amp; ~we &amp;&amp; off==0x04 동시), 읽기 클리어가 우선한다(always 블록 순서). 이 패키지에서는 demo_master가 단독 마스터이므로 경합이 없다.</li><li>xdc 핀 배치는 Digilent 마스터 XDC 2024.1을 참조했으나 보드 개정판에 따라 다를 수 있다.</li></ul>
+</main></body></html>

@@ -1,0 +1,507 @@
+{
+  "slug": "mmio-multi-axis-motion-ctrl",
+  "title": "2채널 속도 PID 모션 제어 IP",
+  "summary": "2채널 직교 엔코더(4체배)·고정소수점 속도 PI·10비트 PWM을 공통 1kHz 주기 트리거로 동기시키는 MMIO-lite IP. 채널 간 지터 없음과 출력 포화를 자체 점검 테스트벤치로 검증한다.",
+  "board": "Basys3",
+  "stage": "T4",
+  "goals": [
+    "채널당 직교 엔코더 4체배 + 고정소수점 PI(Q4.12) + 10비트 PWM 한 세트 RTL",
+    "공통 1kHz 주기 타이머로 채널 A·B PID 갱신 동기화(채널 간 지터 0 클럭)",
+    "자체 점검 테스트벤치: setpoint=0·에러>0·긴급정지 세 시나리오 PASS/FAIL"
+  ],
+  "non_goals": [
+    "실 보드 엔코더·모터 연결(S3 보드 확인은 사용자 몫)",
+    "부동소수점 연산",
+    "3채널 이상 확장",
+    "위치 제어 모드"
+  ],
+  "architecture": {
+    "clock": "100 MHz (Basys3 W5)",
+    "blocks": [
+      {
+        "id": "top",
+        "name": "basys3_mac_top",
+        "kind": "top",
+        "module": "basys3_mac_top",
+        "file": "rtl/multi_axis_motion_ip.v",
+        "desc": "Basys3 최상위 래퍼. CLK100MHZ 입력, Pmod JA·JB에 엔코더·PWM 연결",
+        "short": "Board top",
+        "side": "left"
+      },
+      {
+        "id": "ip",
+        "name": "multi_axis_motion_ip",
+        "kind": "mmio_slave",
+        "module": "multi_axis_motion_ip",
+        "file": "rtl/multi_axis_motion_ip.v",
+        "desc": "MMIO-lite 슬레이브 IP. 공통 1kHz 트리거 + 2채널 속도 PI 제어 + IP 표준 관리 레지스터",
+        "short": "Motion IP",
+        "side": "center"
+      },
+      {
+        "id": "enc_a",
+        "name": "qenc_4x (CH_A)",
+        "kind": "sub",
+        "module": "qenc_4x",
+        "file": "rtl/multi_axis_motion_ip.v",
+        "desc": "채널 A 직교 엔코더 4체배 디코더. 2단 동기화 + 에지 XOR 계수",
+        "short": "Encoder A",
+        "side": "right"
+      },
+      {
+        "id": "enc_b",
+        "name": "qenc_4x (CH_B)",
+        "kind": "sub",
+        "module": "qenc_4x",
+        "file": "rtl/multi_axis_motion_ip.v",
+        "desc": "채널 B 직교 엔코더 4체배 디코더",
+        "short": "Encoder B",
+        "side": "right"
+      },
+      {
+        "id": "pwm_a",
+        "name": "pwm10 (CH_A)",
+        "kind": "sub",
+        "module": "pwm10",
+        "file": "rtl/multi_axis_motion_ip.v",
+        "desc": "채널 A 10비트 PWM 생성기. duty=0~1023, freq≈97.6kHz@100MHz",
+        "short": "PWM A",
+        "side": "right"
+      },
+      {
+        "id": "pwm_b",
+        "name": "pwm10 (CH_B)",
+        "kind": "sub",
+        "module": "pwm10",
+        "file": "rtl/multi_axis_motion_ip.v",
+        "desc": "채널 B 10비트 PWM 생성기",
+        "short": "PWM B",
+        "side": "right"
+      },
+      {
+        "id": "enc_a_ext",
+        "name": "직교 엔코더 A",
+        "kind": "external",
+        "desc": "채널 A 모터 엔코더 (3.3V 또는 5V). 5V 사용 시 레벨 변환 필수.",
+        "short": "Enc A (외부)",
+        "side": "right"
+      },
+      {
+        "id": "enc_b_ext",
+        "name": "직교 엔코더 B",
+        "kind": "external",
+        "desc": "채널 B 모터 엔코더 (3.3V 또는 5V). 5V 사용 시 레벨 변환 필수.",
+        "short": "Enc B (외부)",
+        "side": "right"
+      },
+      {
+        "id": "drv_a_ext",
+        "name": "모터 드라이버 A",
+        "kind": "external",
+        "desc": "채널 A 모터 드라이버 (PWM+DIR 입력, 3.3V IO). TB6612FNG 등.",
+        "short": "Driver A (외부)",
+        "side": "right"
+      },
+      {
+        "id": "drv_b_ext",
+        "name": "모터 드라이버 B",
+        "kind": "external",
+        "desc": "채널 B 모터 드라이버 (PWM+DIR 입력, 3.3V IO).",
+        "short": "Driver B (외부)",
+        "side": "right"
+      }
+    ],
+    "links": [
+      {
+        "from": "top",
+        "to": "ip",
+        "label": "MMIO-lite"
+      },
+      {
+        "from": "ip",
+        "to": "enc_a",
+        "label": "enc_a_q[1:0]"
+      },
+      {
+        "from": "ip",
+        "to": "enc_b",
+        "label": "enc_b_q[1:0]"
+      },
+      {
+        "from": "ip",
+        "to": "pwm_a",
+        "label": "ca_duty[9:0]"
+      },
+      {
+        "from": "ip",
+        "to": "pwm_b",
+        "label": "cb_duty[9:0]"
+      },
+      {
+        "from": "enc_a",
+        "to": "ip",
+        "label": "cnt_a[15:0]"
+      },
+      {
+        "from": "enc_b",
+        "to": "ip",
+        "label": "cnt_b[15:0]"
+      },
+      {
+        "from": "pwm_a",
+        "to": "top",
+        "label": "pwm_a_o"
+      },
+      {
+        "from": "pwm_b",
+        "to": "top",
+        "label": "pwm_b_o"
+      }
+    ]
+  },
+  "bus_protocol": {
+    "name": "MMIO-lite",
+    "signals": [
+      {
+        "name": "valid",
+        "dir": "in",
+        "width": 1,
+        "desc": "트랜잭션 유효"
+      },
+      {
+        "name": "we",
+        "dir": "in",
+        "width": 1,
+        "desc": "1=쓰기, 0=읽기"
+      },
+      {
+        "name": "addr",
+        "dir": "in",
+        "width": 32,
+        "desc": "주소 (addr[15:0]만 디코딩)"
+      },
+      {
+        "name": "wdata",
+        "dir": "in",
+        "width": 32,
+        "desc": "쓰기 데이터"
+      },
+      {
+        "name": "rdata",
+        "dir": "out",
+        "width": 32,
+        "desc": "읽기 데이터 (1사이클 레이턴시)"
+      }
+    ],
+    "latency": "1 cycle",
+    "note": "addr[15:0]만 디코딩. valid&&we 동시에 1일 때 쓰기."
+  },
+  "integration": {
+    "bus": "mmio-lite",
+    "address_map": "custom",
+    "compat": "partial",
+    "target_map": "mbv-frozen-v2",
+    "plan": "free_slots [17]=0x4017_0000 사용(제안: [16]은 mmio-qenc-diag-checker에 배정됨). 프로젝트 측에서 동결 필요. IRQ 13 배정(intc_free 첫 번호). 동결 완료 시 address_map을 mbv-frozen-v2로 변경하고 frozen_mapping을 추가한다.",
+    "frozen_mapping": []
+  },
+  "external_parts": [
+    {
+      "id": "enc_a",
+      "name": "직교 엔코더 모터 A",
+      "block": "enc_a_ext",
+      "interface": "quadrature (A/B 2신호)",
+      "io_voltage": "3.3V 또는 5V",
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": "5V 또는 12V (모터 전원 별도)",
+      "level_shift": "5V 신호 사용 시 필요 (TXS0102 등)",
+      "power_note": "5V 엔코더 신호는 레벨 변환 필요(TXS0102 등). 모터 전원은 Basys3와 완전 분리, GND 공통.",
+      "arduino_compatible": true,
+      "notes": "Pmod JA 핀 1-2 (ja[0]=ENC_A_A, ja[1]=ENC_A_B)"
+    },
+    {
+      "id": "enc_b",
+      "name": "직교 엔코더 모터 B",
+      "block": "enc_b_ext",
+      "interface": "quadrature (A/B 2신호)",
+      "io_voltage": "3.3V 또는 5V",
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": "5V 또는 12V",
+      "level_shift": "5V 신호 사용 시 필요 (TXS0102 등)",
+      "power_note": "5V 엔코더 신호는 레벨 변환 필요. 전원 분리 필수.",
+      "arduino_compatible": true,
+      "notes": "Pmod JB 핀 1-2 (jb[0]=ENC_B_A, jb[1]=ENC_B_B)"
+    },
+    {
+      "id": "drv_a",
+      "name": "모터 드라이버 A (방향+PWM 입력)",
+      "block": "drv_a_ext",
+      "interface": "PWM + DIR 디지털 출력",
+      "io_voltage": "3.3V",
+      "qty": 1,
+      "board_resident": false,
+      "notes": "Pmod JA 핀 3-4 (ja[2]=PWM_A, ja[3]=DIR_A). TB6612FNG 등 호환."
+    },
+    {
+      "id": "drv_b",
+      "name": "모터 드라이버 B",
+      "block": "drv_b_ext",
+      "interface": "PWM + DIR 디지털 출력",
+      "io_voltage": "3.3V",
+      "qty": 1,
+      "board_resident": false,
+      "notes": "Pmod JB 핀 3-4 (jb[2]=PWM_B, jb[3]=DIR_B)."
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "레벨 변환과 Pmod 연결 회로도 미작성. external_parts의 전압·핀 메모 참조."
+  },
+  "hierarchy": {
+    "module": "basys3_mac_top",
+    "file": "rtl/multi_axis_motion_ip.v",
+    "children": [
+      {
+        "module": "multi_axis_motion_ip",
+        "file": "rtl/multi_axis_motion_ip.v",
+        "children": [
+          {
+            "module": "qenc_4x",
+            "file": "rtl/multi_axis_motion_ip.v"
+          },
+          {
+            "module": "qenc_4x",
+            "file": "rtl/multi_axis_motion_ip.v"
+          },
+          {
+            "module": "pwm10",
+            "file": "rtl/multi_axis_motion_ip.v"
+          },
+          {
+            "module": "pwm10",
+            "file": "rtl/multi_axis_motion_ip.v"
+          }
+        ]
+      }
+    ]
+  },
+  "memory_map": [
+    {
+      "base": "0x4017_0000",
+      "size": "0x10000",
+      "block": "ip",
+      "desc": "multi_axis_motion_ip 레지스터 공간 (slot [17], intc=13, 동결 전 제안)",
+      "regs": [
+        {
+          "off": "0x0000",
+          "name": "CTRL",
+          "access": "RW",
+          "desc": "[0]=enable, [1]=emstop (즉시 PWM=0 게이트)"
+        },
+        {
+          "off": "0x0004",
+          "name": "PERIOD",
+          "access": "RW",
+          "desc": "[19:0] 주기 클럭 수 (기본 100000 = 1kHz@100MHz)"
+        },
+        {
+          "off": "0x0008",
+          "name": "STATUS",
+          "access": "RO",
+          "desc": "[0]=period_tick(셀프클리어) [1]=ch_a_sat [2]=ch_b_sat"
+        },
+        {
+          "off": "0x0010",
+          "name": "CA_SETPT",
+          "access": "RW",
+          "desc": "[15:0] 채널A 목표 속도 (부호있는 카운트/주기)"
+        },
+        {
+          "off": "0x0014",
+          "name": "CA_KP",
+          "access": "RW",
+          "desc": "[15:0] 채널A Kp Q4.12"
+        },
+        {
+          "off": "0x0018",
+          "name": "CA_KI",
+          "access": "RW",
+          "desc": "[15:0] 채널A Ki Q4.12"
+        },
+        {
+          "off": "0x001C",
+          "name": "CA_CNT",
+          "access": "RO",
+          "desc": "[15:0] 채널A 최근 주기 엔코더 카운트 (부호있는)"
+        },
+        {
+          "off": "0x0020",
+          "name": "CA_PWM",
+          "access": "RO",
+          "desc": "[9:0] 채널A 현재 PWM 듀티 (0=0%, 1023=100%)"
+        },
+        {
+          "off": "0x0024",
+          "name": "CA_ITERM",
+          "access": "RW",
+          "desc": "[31:0] 채널A 적분항 (윈드업 클리어용)"
+        },
+        {
+          "off": "0x0030",
+          "name": "CB_SETPT",
+          "access": "RW",
+          "desc": "[15:0] 채널B 목표 속도"
+        },
+        {
+          "off": "0x0034",
+          "name": "CB_KP",
+          "access": "RW",
+          "desc": "[15:0] 채널B Kp Q4.12"
+        },
+        {
+          "off": "0x0038",
+          "name": "CB_KI",
+          "access": "RW",
+          "desc": "[15:0] 채널B Ki Q4.12"
+        },
+        {
+          "off": "0x003C",
+          "name": "CB_CNT",
+          "access": "RO",
+          "desc": "[15:0] 채널B 최근 주기 엔코더 카운트"
+        },
+        {
+          "off": "0x0040",
+          "name": "CB_PWM",
+          "access": "RO",
+          "desc": "[9:0] 채널B 현재 PWM 듀티"
+        },
+        {
+          "off": "0x0044",
+          "name": "CB_ITERM",
+          "access": "RW",
+          "desc": "[31:0] 채널B 적분항"
+        },
+        {
+          "off": "0xFFF0",
+          "name": "ID",
+          "access": "RO",
+          "desc": "0x4D435431 (MCT1)"
+        },
+        {
+          "off": "0xFFF4",
+          "name": "VER",
+          "access": "RO",
+          "desc": "0x01000001"
+        },
+        {
+          "off": "0xFFF8",
+          "name": "IRQ_STATUS",
+          "access": "RW1C",
+          "desc": "[0]=period_tick_event"
+        },
+        {
+          "off": "0xFFFC",
+          "name": "IRQ_ENABLE",
+          "access": "RW",
+          "desc": "[0]=period_tick_irq_en"
+        }
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T2",
+      "state": "done",
+      "title": "MMIO GPIO + UART (기초 버스 연결)",
+      "refs": [
+        "mmio-uart-gpio-skeleton"
+      ]
+    },
+    {
+      "stage": "T3",
+      "state": "done",
+      "title": "단일 채널 속도 PI (mmio-speed-pi-checker)",
+      "refs": [
+        "mmio-speed-pi-checker"
+      ]
+    },
+    {
+      "stage": "T4",
+      "state": "current",
+      "title": "2채널 동기 PID 모션 제어 (이 패키지)",
+      "refs": [
+        "mmio-multi-axis-motion-ctrl"
+      ]
+    },
+    {
+      "stage": "T4",
+      "state": "planned",
+      "title": "위치 제어 + 경로 보간 추가",
+      "refs": []
+    }
+  ],
+  "references": [
+    {
+      "card": "iccas-2003-general-purpose-pid-motion-controller-fpga",
+      "why": "다채널 PID 모션 컨트롤러 FPGA 구조 근거"
+    },
+    {
+      "card": "ieek-2009-dc-servo-speed-control-fpga",
+      "why": "속도 측정(카운터·창) + PI 구현 패턴"
+    },
+    {
+      "card": "deepc94-pid-fpga-vhdl",
+      "why": "VHDL PID 고정소수점 구현 참고"
+    },
+    {
+      "card": "columbia-4840-dc-motor-controller",
+      "why": "DC 모터 제어기 테스트벤치 설계 참고"
+    }
+  ],
+  "sources": {
+    "rtl": [
+      "rtl/multi_axis_motion_ip.v"
+    ],
+    "tb": [
+      "tb/tb_multi_axis_motion.v"
+    ],
+    "constraints": [
+      "constr/basys3.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
+  },
+  "howto": [
+    {
+      "title": "시뮬레이션",
+      "steps": [
+        "iverilog, yosys 설치",
+        "make -C capstones/mmio-multi-axis-motion-ctrl lint sim synth",
+        "build/sim.log에서 PASS: multi_axis_motion_ip 모든 항목(7개) 통과 확인"
+      ]
+    },
+    {
+      "title": "Vivado 합성",
+      "steps": [
+        "read_verilog rtl/multi_axis_motion_ip.v",
+        "set_property top basys3_mac_top [current_fileset]",
+        "read_xdc constr/basys3.xdc",
+        "launch_runs synth_1"
+      ]
+    }
+  ],
+  "verification": {
+    "board": "not-tested",
+    "notes": "CI run 41816928159 (SHA 5e73742): lint/sim/synth PASS → S2. S3 보드 확인은 사용자 몫. 실 엔코더·모터 연결 후 진행."
+  },
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 Verilog-2001 원본이며 외부 코드를 포함하지 않는다. 시뮬레이션·합성 결과는 CI가 기록한다. 아이디어 I-015 (ready, 차단조건재심사 7점)으로 생성됨 (2026-11-04).",
+  "risks": [
+    "엔코더 신호 글리치: 2단 동기화+에지 검출로 완화. 긴 선로 capacitance는 보드 확인 필요",
+    "PI 적분 윈드업: 최대 듀티(1023) 도달 시 적분 클램프 미구현 → CA_ITERM/CB_ITERM 직접 소거 필요",
+    "고속 엔코더: 100MHz 클럭으로 동기화하므로 에지 간 최소 2클럭 이상 유지해야 함 (매우 고속 엔코더 주의)",
+    "5V 엔코더 신호: 레벨 변환 없이 직결 시 Basys3 I/O 과전압 위험"
+  ]
+}

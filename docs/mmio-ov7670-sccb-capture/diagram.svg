@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 974 618" role="img" aria-label="블록 다이어그램">
+<style>:root{--muted:#6a6a64;--line:#8a8a82;--text:#1d1d1b;--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b}@media (prefers-color-scheme: dark){:root{--muted:#a3a29b;--line:#8d8c85;--text:#ecebe6;--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6}}
+.colhead{font:600 11px sans-serif;fill:var(--muted)}
+.link{fill:none;stroke:var(--line);stroke-width:1.5}.arrow{fill:var(--line)}
+.lbl{font:11px sans-serif;fill:var(--muted)}
+.bname{font:600 13px sans-serif;fill:var(--text)}.bdesc{font:11px sans-serif;fill:var(--muted)}
+.k-cpu rect{fill:var(--c-cpu);stroke:var(--c-cpu-s)}.k-bus rect{fill:var(--c-bus);stroke:var(--c-bus-s)}
+.k-periph rect,.k-memory rect{fill:var(--c-per);stroke:var(--c-per-s)}
+.k-external rect{fill:var(--c-ext);stroke:var(--c-ext-s);stroke-dasharray:4 3}
+.k-clock rect{fill:var(--c-clk);stroke:var(--c-clk-s)}
+</style><defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arrow"/></marker></defs>
+<text x="24" y="16" class="colhead">클럭·입력·마스터</text>
+<text x="274" y="16" class="colhead">버스</text>
+<text x="524" y="16" class="colhead">주변장치</text>
+<text x="774" y="16" class="colhead">외부</text>
+<path d="M612.0,92 L612.0,116" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="104.0" class="lbl" text-anchor="middle">mmio_addr/wdata/wen/ren/rdata</text>
+<path d="M612.0,174 L612.0,198" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="186.0" class="lbl" text-anchor="middle">start/done/na_err/reg_addr/reg_data</text>
+<path d="M700,227.0 C737.0,227.0 737.0,63.0 774,63.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="138.0" class="lbl" text-anchor="middle">SIO_C, SIO_D (오픈 드레인)</text>
+<path d="M774,63.0 C714,8 760,8 700,309.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="16" class="lbl" text-anchor="middle">PCLK/VSYNC/HREF/D[7:0]</text>
+<path d="M612.0,338 L612.0,362" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="350.0" class="lbl" text-anchor="middle">frame_done (PCLK)</text>
+<path d="M612.0,338 L612.0,444" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="391.0" class="lbl" text-anchor="middle">pixel_valid + pixel_data (PCLK)</text>
+<path d="M612.0,338 L612.0,526" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="432.0" class="lbl" text-anchor="middle">frame_start (PCLK)</text>
+<path d="M612.0,420 L612.0,116" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="268.0" class="lbl" text-anchor="middle">sys_frame_done (SYS CLK)</text>
+<path d="M612.0,502 L612.0,116" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="309.0" class="lbl" text-anchor="middle">sys_pixel_valid (SYS CLK)</text>
+<path d="M612.0,584 L612.0,116" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="350.0" class="lbl" text-anchor="middle">sys_frame_start (SYS CLK)</text>
+<path d="M700,63.0 C737.0,63.0 737.0,63.0 774,63.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="56.0" class="lbl" text-anchor="middle">IOBUF SIO_D (Pmod JA2)</text>
+<g class="k-wrapper"><rect x="524" y="34" width="176" height="58" rx="8"/><text x="612.0" y="58" text-anchor="middle" class="bname">basys3_top</text><text x="612.0" y="76" text-anchor="middle" class="bdesc">보드 래퍼</text></g>
+<g class="k-mmio_slave"><rect x="524" y="116" width="176" height="58" rx="8"/><text x="612.0" y="140" text-anchor="middle" class="bname">ov7670_sccb_top</text><text x="612.0" y="158" text-anchor="middle" class="bdesc">SoC 코어</text></g>
+<g class="k-serial_master"><rect x="524" y="198" width="176" height="58" rx="8"/><text x="612.0" y="222" text-anchor="middle" class="bname">sccb_tx</text><text x="612.0" y="240" text-anchor="middle" class="bdesc">SCCB TX</text></g>
+<g class="k-capture"><rect x="524" y="280" width="176" height="58" rx="8"/><text x="612.0" y="304" text-anchor="middle" class="bname">ov7670_capture</text><text x="612.0" y="322" text-anchor="middle" class="bdesc">픽셀 캡처</text></g>
+<g class="k-cdc"><rect x="524" y="362" width="176" height="58" rx="8"/><text x="612.0" y="386" text-anchor="middle" class="bname">sync_pulse (frame_done)</text><text x="612.0" y="404" text-anchor="middle" class="bdesc">CDC fd</text></g>
+<g class="k-cdc"><rect x="524" y="444" width="176" height="58" rx="8"/><text x="612.0" y="468" text-anchor="middle" class="bname">sync_pulse (pixel_valid)</text><text x="612.0" y="486" text-anchor="middle" class="bdesc">CDC pv</text></g>
+<g class="k-cdc"><rect x="524" y="526" width="176" height="58" rx="8"/><text x="612.0" y="550" text-anchor="middle" class="bname">sync_pulse (frame_start)</text><text x="612.0" y="568" text-anchor="middle" class="bdesc">CDC fs</text></g>
+<g class="k-external"><rect x="774" y="34" width="176" height="58" rx="8"/><text x="862.0" y="58" text-anchor="middle" class="bname">OV7670</text><text x="862.0" y="76" text-anchor="middle" class="bdesc">OV7670 카메라</text></g>
+</svg>

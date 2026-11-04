@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 974 700" role="img" aria-label="블록 다이어그램">
+<style>:root{--muted:#6a6a64;--line:#8a8a82;--text:#1d1d1b;--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b}@media (prefers-color-scheme: dark){:root{--muted:#a3a29b;--line:#8d8c85;--text:#ecebe6;--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6}}
+.colhead{font:600 11px sans-serif;fill:var(--muted)}
+.link{fill:none;stroke:var(--line);stroke-width:1.5}.arrow{fill:var(--line)}
+.lbl{font:11px sans-serif;fill:var(--muted)}
+.bname{font:600 13px sans-serif;fill:var(--text)}.bdesc{font:11px sans-serif;fill:var(--muted)}
+.k-cpu rect{fill:var(--c-cpu);stroke:var(--c-cpu-s)}.k-bus rect{fill:var(--c-bus);stroke:var(--c-bus-s)}
+.k-periph rect,.k-memory rect{fill:var(--c-per);stroke:var(--c-per-s)}
+.k-external rect{fill:var(--c-ext);stroke:var(--c-ext-s);stroke-dasharray:4 3}
+.k-clock rect{fill:var(--c-clk);stroke:var(--c-clk-s)}
+</style><defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arrow"/></marker></defs>
+<text x="24" y="16" class="colhead">클럭·입력·마스터</text>
+<text x="274" y="16" class="colhead">버스</text>
+<text x="524" y="16" class="colhead">주변장치</text>
+<text x="774" y="16" class="colhead">외부</text>
+<path d="M200,63.0 C362.0,63.0 362.0,637.0 524,637.0" class="link" marker-end="url(#ar)"/>
+<text x="362.0" y="343.0" class="lbl" text-anchor="middle">clk</text>
+<path d="M612.0,666 L612.0,526" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="596.0" class="lbl" text-anchor="middle">clk/rst_n</text>
+<path d="M524,555.0 C464,90 260,90 200,145.0" class="link" marker-end="url(#ar)"/>
+<text x="362.0" y="98" class="lbl" text-anchor="middle">mmio</text>
+<path d="M200,145.0 C237.0,145.0 237.0,63.0 274,63.0" class="link" marker-end="url(#ar)"/>
+<text x="237.0" y="97.0" class="lbl" text-anchor="middle">addr/wdata/we/rdata</text>
+<path d="M450,63.0 C487.0,63.0 487.0,391.0 524,391.0" class="link" marker-end="url(#ar)"/>
+<text x="487.0" y="220.0" class="lbl" text-anchor="middle">sel_gpio</text>
+<path d="M450,63.0 C487.0,63.0 487.0,473.0 524,473.0" class="link" marker-end="url(#ar)"/>
+<text x="487.0" y="261.0" class="lbl" text-anchor="middle">sel_uart</text>
+<path d="M450,63.0 C487.0,63.0 487.0,309.0 524,309.0" class="link" marker-end="url(#ar)"/>
+<text x="487.0" y="179.0" class="lbl" text-anchor="middle">sel_hub</text>
+<path d="M612.0,338 L612.0,34" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="186.0" class="lbl" text-anchor="middle">ctrl/status</text>
+<path d="M612.0,338 L612.0,116" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="227.0" class="lbl" text-anchor="middle">ctrl/status</text>
+<path d="M612.0,338 L612.0,198" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="268.0" class="lbl" text-anchor="middle">cmd/data/status</text>
+<path d="M700,63.0 C737.0,63.0 737.0,63.0 774,63.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="56.0" class="lbl" text-anchor="middle">trig_o</text>
+<path d="M774,145.0 C714,8 760,8 700,63.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="16" class="lbl" text-anchor="middle">echo_i</text>
+<path d="M700,145.0 C737.0,145.0 737.0,227.0 774,227.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="179.0" class="lbl" text-anchor="middle">dht_io(tri)</text>
+<path d="M700,227.0 C737.0,227.0 737.0,309.0 774,309.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="261.0" class="lbl" text-anchor="middle">sda_io(tri)</text>
+<path d="M700,227.0 C737.0,227.0 737.0,391.0 774,391.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="302.0" class="lbl" text-anchor="middle">scl_o</text>
+<path d="M700,391.0 C737.0,391.0 737.0,473.0 774,473.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="425.0" class="lbl" text-anchor="middle">led/sw</text>
+<path d="M700,473.0 C737.0,473.0 737.0,555.0 774,555.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="507.0" class="lbl" text-anchor="middle">RsTx</text>
+<g class="k-clock"><rect x="24" y="34" width="176" height="58" rx="8"/><text x="112.0" y="58" text-anchor="middle" class="bname">CLK_100 100MHz</text><text x="112.0" y="76" text-anchor="middle" class="bdesc">CLK</text></g>
+<g class="k-external"><rect x="774" y="34" width="176" height="58" rx="8"/><text x="862.0" y="58" text-anchor="middle" class="bname">HC-SR04 TRIG(Pmod)</text><text x="862.0" y="76" text-anchor="middle" class="bdesc">TRIG</text></g>
+<g class="k-external"><rect x="774" y="116" width="176" height="58" rx="8"/><text x="862.0" y="140" text-anchor="middle" class="bname">HC-SR04 ECHO(Pmod)</text><text x="862.0" y="158" text-anchor="middle" class="bdesc">ECHO</text></g>
+<g class="k-external"><rect x="774" y="198" width="176" height="58" rx="8"/><text x="862.0" y="222" text-anchor="middle" class="bname">DHT11 DATA(Pmod)</text><text x="862.0" y="240" text-anchor="middle" class="bdesc">DHT</text></g>
+<g class="k-external"><rect x="774" y="280" width="176" height="58" rx="8"/><text x="862.0" y="304" text-anchor="middle" class="bname">I2C SDA(Pmod)</text><text x="862.0" y="322" text-anchor="middle" class="bdesc">SDA</text></g>
+<g class="k-external"><rect x="774" y="362" width="176" height="58" rx="8"/><text x="862.0" y="386" text-anchor="middle" class="bname">I2C SCL(Pmod)</text><text x="862.0" y="404" text-anchor="middle" class="bdesc">SCL</text></g>
+<g class="k-external"><rect x="774" y="444" width="176" height="58" rx="8"/><text x="862.0" y="468" text-anchor="middle" class="bname">SW / LED</text><text x="862.0" y="486" text-anchor="middle" class="bdesc">SW/LED</text></g>
+<g class="k-external"><rect x="774" y="526" width="176" height="58" rx="8"/><text x="862.0" y="550" text-anchor="middle" class="bname">RsTx (USB-UART)</text><text x="862.0" y="568" text-anchor="middle" class="bdesc">RsTx</text></g>
+<g class="k-periph"><rect x="524" y="34" width="176" height="58" rx="8"/><text x="612.0" y="58" text-anchor="middle" class="bname">hcsr04_ctrl</text><text x="612.0" y="76" text-anchor="middle" class="bdesc">HCSR04</text></g>
+<g class="k-periph"><rect x="524" y="116" width="176" height="58" rx="8"/><text x="612.0" y="140" text-anchor="middle" class="bname">dht11_ctrl</text><text x="612.0" y="158" text-anchor="middle" class="bdesc">DHT11</text></g>
+<g class="k-periph"><rect x="524" y="198" width="176" height="58" rx="8"/><text x="612.0" y="222" text-anchor="middle" class="bname">i2c_master</text><text x="612.0" y="240" text-anchor="middle" class="bdesc">I2CM</text></g>
+<g class="k-periph"><rect x="524" y="280" width="176" height="58" rx="8"/><text x="612.0" y="304" text-anchor="middle" class="bname">sensor_hub_top</text><text x="612.0" y="322" text-anchor="middle" class="bdesc">HUB</text></g>
+<g class="k-periph"><rect x="524" y="362" width="176" height="58" rx="8"/><text x="612.0" y="386" text-anchor="middle" class="bname">gpio</text><text x="612.0" y="404" text-anchor="middle" class="bdesc">GPIO</text></g>
+<g class="k-periph"><rect x="524" y="444" width="176" height="58" rx="8"/><text x="612.0" y="468" text-anchor="middle" class="bname">uart_tx</text><text x="612.0" y="486" text-anchor="middle" class="bdesc">UART</text></g>
+<g class="k-bus"><rect x="274" y="34" width="176" height="58" rx="8"/><text x="362.0" y="58" text-anchor="middle" class="bname">mmio_bus</text><text x="362.0" y="76" text-anchor="middle" class="bdesc">BUS</text></g>
+<g class="k-cpu"><rect x="24" y="116" width="176" height="58" rx="8"/><text x="112.0" y="140" text-anchor="middle" class="bname">demo_master</text><text x="112.0" y="158" text-anchor="middle" class="bdesc">MASTER</text></g>
+<g class="k-periph"><rect x="524" y="526" width="176" height="58" rx="8"/><text x="612.0" y="550" text-anchor="middle" class="bname">soc_top</text><text x="612.0" y="568" text-anchor="middle" class="bdesc">SOC</text></g>
+<g class="k-periph"><rect x="524" y="608" width="176" height="58" rx="8"/><text x="612.0" y="632" text-anchor="middle" class="bname">basys3_top</text><text x="612.0" y="650" text-anchor="middle" class="bdesc">TOP</text></g>
+</svg>

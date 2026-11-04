@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-sd-spi-block-reader",
+  "files": [
+    {
+      "group": "rtl",
+      "path": "rtl/spi_byte.v",
+      "sha256": "74960367dca53b01b8de8a1b9824b02442bcaae0fe27b16727828e1d5f33c5a6",
+      "lines": 49,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/sd_spi.v",
+      "sha256": "f093e20715008ebe0683fc11b92f06088e16429f47713133bf59c2d49cda9172",
+      "lines": 164,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/mmio_bus.v",
+      "sha256": "a9bdd3006b7b492b0352abd33569886e968c93680ced0572eabd354b9f6429b4",
+      "lines": 25,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/gpio.v",
+      "sha256": "361a775059a2d122b44de44f55d2b55443d65c1f1267dea62a407def6a079b3a",
+      "lines": 33,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/uart_tx.v",
+      "sha256": "4afad820651054da671ef40f71dbee0e5a85c9aec595fc219beb5a3d9a41b494",
+      "lines": 64,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/soc_top.v",
+      "sha256": "a563bd5afef9ba0be62b417f51c2c533444f422818a58ffe724a6232f900aae8",
+      "lines": 49,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/demo_master.v",
+      "sha256": "c193525c3f23ff86f41c7943da110f9f620a59ee62a50beddb87468badd1f5ea",
+      "lines": 67,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/basys3_top.v",
+      "sha256": "18a648372af7b638055f5f8e2fc971e32134bbda565c97f8caa9d4479a2152c4",
+      "lines": 37,
+      "origin": "first_party"
+    },
+    {
+      "group": "tb",
+      "path": "tb/sd_card_model.v",
+      "sha256": "6a5280a34861568b0df3f49dee60a9634eaad3be66c68edeaa1a1bef5b55e21b",
+      "lines": 135,
+      "origin": "first_party"
+    },
+    {
+      "group": "tb",
+      "path": "tb/tb_sd.v",
+      "sha256": "1f33f9d0ee7ea51eeffbf6a7a979b690cfacf0fc04d4040c43075e6d8705dc9f",
+      "lines": 141,
+      "origin": "first_party"
+    },
+    {
+      "group": "tb",
+      "path": "tb/tb_demo.v",
+      "sha256": "ac4c4abe6f572d677f7ca8e64d0345f7b52858e64a491bdcc3e897dcc59015bf",
+      "lines": 76,
+      "origin": "first_party"
+    },
+    {
+      "group": "constraints",
+      "path": "constr/basys3.xdc",
+      "sha256": "a0c7538f7369209c5197357f379d8a7c9f1537a309528fb3c7abc64ae09c7bb9",
+      "lines": 47,
+      "origin": "first_party"
+    },
+    {
+      "group": "build",
+      "path": "Makefile",
+      "sha256": "3575dd775063c019de957f1970a34f98fb8986ad1cb65e6c8f8062ec93fabcc1",
+      "lines": 26,
+      "origin": "first_party"
+    }
+  ],
+  "note": "소스는 하네스가 직접 쓴 원본이다. 외부 저장소 코드는 포함하지 않는다(HARNESS §13.3)."
+}

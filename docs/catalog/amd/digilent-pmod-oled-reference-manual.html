@@ -1,0 +1,46 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>digilent-pmod-oled-reference-manual</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../../hub.html">FPGA SoC 하네스</a><a href="../../hub.html">메인</a><a href="../../hub.html#capstones">캡스톤</a><a href="../../soc-map/tech-tree.html">기술 트리</a><a href="../../catalog/index.html">카탈로그</a><a href="../../inbox/ideas.html">아이디어</a><a href="../../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/catalog/amd/digilent-pmod-oled-reference-manual.md">GitHub 원본: catalog/amd/digilent-pmod-oled-reference-manual.md</a></p><h1>digilent-pmod-oled-reference-manual</h1><div class="panel fm"><table><tr><td>name</td><td><a href="digilent-pmod-oled-reference-manual.html">digilent-pmod-oled-reference-manual</a></td></tr><tr><td>url</td><td>https://www.electrokit.com/upload/product/41010/41010136/PmodOLED_rm.pdf</td></tr><tr><td>source_type</td><td>article</td></tr><tr><td>vendor</td><td>amd</td></tr><tr><td>board</td><td>[Basys3]</td></tr><tr><td>fit_basys3</td><td>needs-port</td></tr><tr><td>cpu</td><td>none(FSM)</td></tr><tr><td>language</td><td>unverified</td></tr><tr><td>tools</td><td>[unverified]</td></tr><tr><td>bus</td><td>none</td></tr><tr><td>peripherals</td><td>[comm-spi, display-oled, SSD1306]</td></tr><tr><td>stage</td><td>T2</td></tr><tr><td>license</td><td>unknown</td></tr><tr><td>stats</td><td>{}</td></tr><tr><td>doc_language</td><td>en</td></tr><tr><td>verification</td><td>L3</td></tr><tr><td>checked_at</td><td>2026-11-03</td></tr><tr><td>sources</td><td>[https://www.electrokit.com/upload/product/41010/41010136/PmodOLED_rm.pdf, https://forum.digilent.com/topic/3855-pmodoled-vhdl-source/]</td></tr><tr><td>unverified</td><td>VDD·VBAT 전압값(매뉴얼 본문에 없음), SPI 모드(CPOL/CPHA), 초기화 명령 목록, 픽셀 메모리 바이트 배치, 매뉴얼 개정 번호(전자상거래 사이트 사본)</td></tr></table></div><h2>요약</h2>
+<p>Digilent Pmod OLED(128x32 단색, SSD1306 호환 컨트롤러)의 공식 레퍼런스 매뉴얼 사본. 쓰기 전용 SPI와 D/C·RES 선, 전원 스위치 두 줄(VDDC, VBATC)로 구성되고, 전원 투입·차단 순서가 핵심이다. Basys3용 예제가 없다는 포럼 답변을 함께 읽었다.</p>
+<h2>구조</h2>
+<ul><li style="margin-left:0.0em">패널은 0.9인치 WiseChip/Univision UG-23832HSWEG04, 컨트롤러는 Solomon Systech SSD1306 호환 명령 집합, 해상도 128x32 (매뉴얼 J1 설명).</li><li style="margin-left:0.0em">12핀 커넥터 J1: 1 CS, 2 SDIN(MOSI), 3 미사용, 4 SCLK, 5·11 GND, 6·12 VCC, 7 D/C, 8 RES, 9 VBATC, 10 VDDC. VBATC·VDDC는 FET 스위치 제어선이며 풀업 때문에 구동하지 않으면 전원이 꺼진 상태.</li><li style="margin-left:0.0em">D/C 높음 = 표시 데이터, 낮음 = 명령. RES는 낮추어 리셋하고 낮은 구간은 최소 3 µs. 장치는 쓰기 전용이라 읽기 불가. 전송 중 CS 낮음 유지, 최대 클럭 10 MHz.</li><li style="margin-left:0.0em">전원 투입 순서: VDD 인가 → Display Off → 표시 모드 초기화 → 화면 지우기 → VBAT 인가 → 100 ms 대기 → Display On. 차단 순서: Display Off → VBAT 끄기 → 100 ms 대기 → VDD 끄기.</li><li style="margin-left:0.0em">Digilent 포럼(2017-03-31 질문): Basys3용 VHDL 예제는 없고, Nexys 3 예제를 XDC로 옮기거나 MicroBlaze용 PmodOLED IP를 쓰라는 답변.</li></ul>
+<h2>검증·재현성</h2>
+<ul><li style="margin-left:0.0em">매뉴얼은 하드웨어 설명서이며 RTL·테스트벤치를 포함하지 않는다. Basys3 직접 예제는 포럼 기준 없음.</li></ul>
+<h2>한계·위험</h2>
+<ul><li style="margin-left:0.0em">매뉴얼 본문에서 VDD·VBAT 전압값을 확인하지 못했다(unverified). 커넥터 VCC가 3.3 V인지는 Digilent 공식 페이지에서 따로 확인해야 한다.</li><li style="margin-left:0.0em">예제 포럼 글은 2017년 기준이며 링크된 튜토리얼이 바뀌었을 수 있다.</li></ul>
+<h2>재사용 메모</h2>
+<ul><li style="margin-left:0.0em">내 판단: 디스플레이 출력 사다리의 SPI 단색 단계. 전원 순서(100 ms 대기 두 번)와 RES 3 µs를 FSM 파라미터로 둘 수 있다.</li><li style="margin-left:0.0em">개조: 자체 SPI 송신 FSM + 초기화 ROM + 128x32 프레임 버퍼를 AXI4-Lite IP 표준 레지스터(제어, 상태, 버퍼 창)로 노출. 제어 루프 값(속도·오차)을 글자로 표시하는 응용. 새 IP는 <code>free_slots</code>에서 한 칸 제안.</li></ul></main></body></html>

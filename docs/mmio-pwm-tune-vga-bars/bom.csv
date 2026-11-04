@@ -1,0 +1,5 @@
+id,name,interface,io_voltage_V,supply_V,qty,board_resident,arduino_compatible,level_shift,notes
+p_btn,"Basys3 푸시버튼 (btnU, btnC)",GPIO 입력,3.3,,2,true,false,,"btnU=재생 시작, btnC=리셋"
+p_swled,Basys3 슬라이드 스위치 16 / LED 16,GPIO 입출력,3.3,,32,true,false,,"SW[7:0]=음량, LED=재생 중인 음(원-핫)"
+p_amp,Pmod AMP2 (Digilent) 오디오 증폭기,PWM 1비트 + GAIN + SHUTDOWN_N,3.3,3.3,1,false,false,,Pmod 전원은 3.3V. 출력은 스피커/헤드폰이며 디지털 신호가 아니다. 음량이 클 수 있으니 SW 값을 낮게 시작한다
+p_vga,Basys3 VGA 커넥터 (4비트 저항 DAC),VGA 아날로그 RGB + Hsync/Vsync,3.3,,1,true,false,,보드 내장. 모니터 케이블만 연결

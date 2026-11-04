@@ -1,0 +1,188 @@
+{
+  "_comment": "캡스톤 명세 v0.6 — 단일 원본, tools/build.py가 문서·계통도 생성",
+  "slug": "mmio-vga-tilemap-dashboard",
+  "title": "VGA 타일맵 계기판 IP: 제어 루프 상태를 타일 글자와 막대로 표시 (프레임 버퍼 없음)",
+  "summary": "80×60 타일맵(256 타일, 16색 팔레트)을 AXI4-Lite 슬레이브로 노출한다. CPU가 타일 인덱스와 속성을 써넣으면 렌더러가 줄 단위로 화소를 만들어 VGA로 내보낸다. 프레임 버퍼 BRAM이 없어 자원을 절약하고, 프레임 끝 인터럽트로 제어 루프와 동기화한다.",
+  "board": "Basys3",
+  "stage": "T3",
+  "goals": [
+    "AXI4-Lite 슬레이브로 80×60 타일맵과 8×8 폰트를 프로그래밍 가능하게 한다",
+    "16색 팔레트 레지스터를 제공해 각 타일의 전경/배경색을 개별 설정한다",
+    "스캔라인 렌더러로 프레임 버퍼 BRAM 없이 640×480 VGA를 출력한다",
+    "프레임 끝(vsync 하강) 인터럽트를 intc 슬롯 13에 연결한다",
+    "자체 점검 테스트벤치에서 AXI 레지스터 쓰기 → 화소 출력을 PASS/FAIL로 검증한다"
+  ],
+  "non_goals": [
+    "스프라이트, 스크롤, 하드웨어 커서",
+    "32비트 프레임 버퍼(DRAM 없는 Basys3에서는 불가)",
+    "VGA 타이밍 외 디스플레이 표준(HDMI, DVI)",
+    "폰트 비트맵 ROM 기본값 내장(소프트웨어가 초기화)"
+  ],
+  "architecture": {
+    "clock": "단일 25 MHz 클럭(clk_25m). Basys3 100 MHz 입력을 2비트 카운터로 분주. 프로덕션에서는 MMCM을 쓰고 AXI 버스(100 MHz)와 VGA 도메인(25 MHz) CDC를 추가한다.",
+    "blocks": [
+      {"id": "clk",      "name": "CLK100",        "kind": "clock",    "module": null,            "file": null,                    "desc": "100 MHz Basys3 클럭 입력", "short": "CLK100"},
+      {"id": "clkdiv",   "name": "clk_div",        "kind": "periph",   "module": null,            "file": "rtl/basys3_top.v",      "desc": "2비트 분주기 → 25 MHz (basys3_top 내부 reg)", "short": "CLKDIV"},
+      {"id": "vgatime",  "name": "vga_timing",     "kind": "periph",   "module": "vga_timing",    "file": "rtl/vga_timing.v",      "desc": "640×480 VGA 타이밍 생성기(h/v 카운터, sync)", "short": "VGATIME"},
+      {"id": "tilemap",  "name": "tilemap_axil",   "kind": "periph",   "module": "tilemap_axil",  "file": "rtl/tilemap_axil.v",    "desc": "AXI4-Lite 슬레이브 + 2단 스캔라인 렌더러", "short": "TILEMAP", "side": "left"},
+      {"id": "x_cpu",    "name": "MicroBlaze V",   "kind": "external", "module": null,            "file": null,                    "desc": "MicroBlaze V AXI4-Lite 마스터(제어 루프 펌웨어)", "short": "CPU"},
+      {"id": "x_vga",    "name": "VGA DAC",        "kind": "external", "module": null,            "file": null,                    "desc": "Basys3 내장 VGA DAC(저항 R-2R)", "short": "VGAOUT"},
+      {"id": "x_mon",    "name": "VGA 모니터",      "kind": "external", "module": null,            "file": null,                    "desc": "VGA 모니터", "short": "MONITOR"}
+    ],
+    "links": [
+      {"from": "clk",    "to": "clkdiv",  "label": "clk100"},
+      {"from": "clkdiv", "to": "vgatime", "label": "clk_25m"},
+      {"from": "clkdiv", "to": "tilemap", "label": "clk_25m"},
+      {"from": "vgatime","to": "tilemap", "label": "h_count,v_count,active"},
+      {"from": "x_cpu",  "to": "tilemap", "label": "AXI4-Lite (TILE_ADDR/DATA, FONT, PALETTE)"},
+      {"from": "tilemap","to": "x_vga",   "label": "pix_r[3:0],pix_g[3:0],pix_b[3:0],hsync,vsync"},
+      {"from": "x_vga",  "to": "x_mon",  "label": "VGA 케이블"}
+    ]
+  },
+  "bus_protocol": {
+    "name": "AXI4-Lite",
+    "data_width": 32,
+    "addr_width": 16,
+    "signals": [
+      {"name": "s_axil_awaddr",  "dir": "in",  "width": 16, "desc": "쓰기 주소 (16비트)"},
+      {"name": "s_axil_awvalid", "dir": "in",  "width": 1,  "desc": "쓰기 주소 유효"},
+      {"name": "s_axil_awready", "dir": "out", "width": 1,  "desc": "쓰기 주소 준비 (상시 1)"},
+      {"name": "s_axil_wdata",   "dir": "in",  "width": 32, "desc": "쓰기 데이터"},
+      {"name": "s_axil_wstrb",   "dir": "in",  "width": 4,  "desc": "쓰기 스트로브"},
+      {"name": "s_axil_wvalid",  "dir": "in",  "width": 1,  "desc": "쓰기 데이터 유효"},
+      {"name": "s_axil_wready",  "dir": "out", "width": 1,  "desc": "쓰기 데이터 준비 (상시 1)"},
+      {"name": "s_axil_bresp",   "dir": "out", "width": 2,  "desc": "쓰기 응답 (00=OKAY)"},
+      {"name": "s_axil_bvalid",  "dir": "out", "width": 1,  "desc": "쓰기 응답 유효"},
+      {"name": "s_axil_bready",  "dir": "in",  "width": 1,  "desc": "쓰기 응답 준비"},
+      {"name": "s_axil_araddr",  "dir": "in",  "width": 16, "desc": "읽기 주소 (16비트)"},
+      {"name": "s_axil_arvalid", "dir": "in",  "width": 1,  "desc": "읽기 주소 유효"},
+      {"name": "s_axil_arready", "dir": "out", "width": 1,  "desc": "읽기 주소 준비 (상시 1)"},
+      {"name": "s_axil_rdata",   "dir": "out", "width": 32, "desc": "읽기 데이터"},
+      {"name": "s_axil_rresp",   "dir": "out", "width": 2,  "desc": "읽기 응답 (00=OKAY)"},
+      {"name": "s_axil_rvalid",  "dir": "out", "width": 1,  "desc": "읽기 데이터 유효"},
+      {"name": "s_axil_rready",  "dir": "in",  "width": 1,  "desc": "읽기 데이터 준비"}
+    ],
+    "note": "AWVALID+WVALID 동시 수용(단일 사이클 write). ARVALID에 1사이클 후 RVALID. BRESP/RRESP 항상 2'b00(OKAY)."
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "custom",
+    "compat": "partial",
+    "target_map": "mbv-frozen-v2",
+    "plan": "mbv-frozen-v2 슬롯 [16]=0x4016_0000을 최초로 사용 제안. intc_free [13]번을 프레임 끝 IRQ로 제안. 다음 슬롯은 [17]=0x4017_0000부터. 주소맵을 동결하려면 사용자가 config/soc_address_map.json에 tilemap 항목을 추가한다(제안, 아직 미동결).",
+    "frozen_mapping": [
+      {"block": "tilemap", "region": "free_slot_16", "base": "0x4016_0000", "intc": 13}
+    ]
+  },
+  "external_parts": [],
+  "schematic": {
+    "state": "not-written",
+    "note": "VGA 출력은 Basys3 보드 내장 저항 DAC(12비트 R/G/B 각 4비트)이므로 외부 부품 없음. 미작성."
+  },
+  "hierarchy": {
+    "module": "basys3_top",
+    "file": "rtl/basys3_top.v",
+    "children": [
+      {
+        "module": "vga_timing",
+        "file": "rtl/vga_timing.v"
+      },
+      {
+        "module": "tilemap_axil",
+        "file": "rtl/tilemap_axil.v"
+      }
+    ]
+  },
+  "memory_map": [
+    {
+      "base": "0x4016_0000",
+      "size": "0x10000",
+      "block": "tilemap",
+      "regs": [
+        {"off": "0x0000", "name": "ID",         "access": "RO", "desc": "0x544D4150 'TMAP'"},
+        {"off": "0x0004", "name": "VER",        "access": "RO", "desc": "0x00010000 (버전 1.0)"},
+        {"off": "0x0008", "name": "IRQ_STATUS", "access": "RW1C", "desc": "bit0=frame_end(vsync 하강)"},
+        {"off": "0x000C", "name": "IRQ_ENABLE", "access": "RW",  "desc": "bit0=frame_end IRQ 활성화"},
+        {"off": "0x0010", "name": "CTRL",       "access": "RW",  "desc": "bit0=disp_en(기본 1)"},
+        {"off": "0x0014", "name": "STATUS",     "access": "RO",  "desc": "bit0=vblank 중"},
+        {"off": "0x0018", "name": "TILE_ADDR",  "access": "WO",  "desc": "간접 쓰기 주소: 타일 인덱스 0..4799 (row*80+col)"},
+        {"off": "0x001C", "name": "TILE_DATA",  "access": "WO",  "desc": "[7:0]=tile_id, [15:12]=bg_color[3:0], [11:8]=fg_color[3:0]"},
+        {"off": "0x0020", "name": "FONT_ADDR",  "access": "WO",  "desc": "간접 쓰기 주소: tile_id*8+row, 0..2047"},
+        {"off": "0x0024", "name": "FONT_DATA",  "access": "WO",  "desc": "[7:0]=8비트 비트맵(MSB=좌측 화소)"},
+        {"off": "0x0028", "name": "PALETTE[0]", "access": "RW",  "desc": "[11:0]={R[3:0],G[3:0],B[3:0]} 검정"},
+        {"off": "0x002C", "name": "PALETTE[1]", "access": "RW",  "desc": "파랑"},
+        {"off": "0x0030", "name": "PALETTE[2]", "access": "RW",  "desc": "초록"},
+        {"off": "0x0034", "name": "PALETTE[3]", "access": "RW",  "desc": "청록"},
+        {"off": "0x0038", "name": "PALETTE[4]", "access": "RW",  "desc": "빨강"},
+        {"off": "0x003C", "name": "PALETTE[5]", "access": "RW",  "desc": "자홍"},
+        {"off": "0x0040", "name": "PALETTE[6]", "access": "RW",  "desc": "갈색/노랑"},
+        {"off": "0x0044", "name": "PALETTE[7]", "access": "RW",  "desc": "밝은 회색"},
+        {"off": "0x0048", "name": "PALETTE[8]", "access": "RW",  "desc": "어두운 회색"},
+        {"off": "0x004C", "name": "PALETTE[9]", "access": "RW",  "desc": "밝은 파랑"},
+        {"off": "0x0050", "name": "PALETTE[A]", "access": "RW",  "desc": "밝은 초록"},
+        {"off": "0x0054", "name": "PALETTE[B]", "access": "RW",  "desc": "밝은 청록"},
+        {"off": "0x0058", "name": "PALETTE[C]", "access": "RW",  "desc": "밝은 빨강"},
+        {"off": "0x005C", "name": "PALETTE[D]", "access": "RW",  "desc": "밝은 자홍"},
+        {"off": "0x0060", "name": "PALETTE[E]", "access": "RW",  "desc": "밝은 노랑"},
+        {"off": "0x0064", "name": "PALETTE[F]", "access": "RW",  "desc": "흰색"}
+      ]
+    }
+  ],
+  "roadmap": [
+    {"stage": "T2", "state": "done",    "title": "mmio-uart-axilite-bridge — MMIO UART + AXI4-Lite 버스 브리지", "refs": ["mmio-uart-axilite-bridge"]},
+    {"stage": "T3", "state": "current", "title": "mmio-vga-tilemap-dashboard — VGA 타일맵 계기판 IP",           "refs": []},
+    {"stage": "T4", "state": "planned", "title": "엔코더·PID 값을 타일 글자로 출력하는 제어 루프 펌웨어 통합",  "refs": []}
+  ],
+  "references": [
+    {"card": "columbia-4840-tiles-tutorial",          "why": "80×60 타일맵 설계 근거 (131,456비트 메모리 추정)"},
+    {"card": "zipcpu-llvga-video-timing",             "why": "VGA 타이밍 카운터와 hsync/vsync 극성 참조"},
+    {"card": "microchip-an532-dc-servo-pid",          "why": "PID 계기판 화면 레이아웃 아이디어"},
+    {"card": "ubc-elex2117-lab6-quadrature-encoder",  "why": "엔코더 카운터 값 AXI 레지스터 형식 참조"}
+  ],
+  "sources": {
+    "rtl": [
+      "rtl/vga_timing.v",
+      "rtl/tilemap_axil.v",
+      "rtl/basys3_top.v"
+    ],
+    "tb": [
+      "tb/tb_tilemap.v"
+    ],
+    "constraints": [
+      "constr/basys3.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
+  },
+  "howto": [
+    {
+      "title": "시뮬레이션 (iverilog)",
+      "steps": [
+        "make lint — verilator --lint-only로 RTL 문법 검사",
+        "make sim  — iverilog -g2005으로 tb_tilemap.v를 컴파일하고 vvp로 실행. PASS가 출력되면 S1.",
+        "make synth — yosys synth_xilinx으로 자원 추정. LUT/FF/BRAM 수를 build/synth.log에서 확인."
+      ]
+    },
+    {
+      "title": "Vivado 합성",
+      "steps": [
+        "Vivado 2024.2: 프로젝트 생성 → Basys3 xc7a35tcpg236-1.",
+        "rtl/*.v와 constr/basys3.xdc를 소스로 추가한다.",
+        "MMCM으로 25 MHz 생성 추천(clk_div는 jitter 큼).",
+        "Generate Bitstream → Program Device."
+      ]
+    }
+  ],
+  "verification": {
+    "board": "not-tested",
+    "notes": "S3(보드 동작)은 사람이 확인. 에이전트는 board: pass를 쓰지 않는다(HARNESS §13.4). S0~S2는 CI가 기록."
+  },
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 Verilog-2001 원본이며 외부 코드를 포함하지 않는다. 아이디어 I-027 기반(차단조건재심사 2026-11-04, 10점). 시뮬레이션·합성 결과는 CI가 기록한다.",
+  "risks": [
+    "clk_div 2비트 분주는 jitter가 커서 Vivado 타이밍 분석에서 경고가 날 수 있음. 프로덕션에서 MMCM 교체 권장.",
+    "단일 클럭 설계(25 MHz 전체). 100 MHz AXI 버스와 연결 시 CDC(Gray-code BRAM 포인터 등) 추가 필요.",
+    "tilemap/font 메모리는 regs 배열 추론(LUTRAM 또는 BRAM). yosys 추정치와 Vivado 실제 사용량이 다를 수 있음.",
+    "TILE_ADDR 범위(0..4799)를 소프트웨어가 벗어나면 메모리 경계 밖 쓰기가 발생함. 하드웨어 클램핑 없음."
+  ]
+}

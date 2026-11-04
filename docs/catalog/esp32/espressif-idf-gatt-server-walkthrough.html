@@ -1,0 +1,49 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>espressif-idf-gatt-server-walkthrough</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../../hub.html">FPGA SoC 하네스</a><a href="../../hub.html">메인</a><a href="../../hub.html#capstones">캡스톤</a><a href="../../soc-map/tech-tree.html">기술 트리</a><a href="../../catalog/index.html">카탈로그</a><a href="../../inbox/ideas.html">아이디어</a><a href="../../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/catalog/esp32/espressif-idf-gatt-server-walkthrough.md">GitHub 원본: catalog/esp32/espressif-idf-gatt-server-walkthrough.md</a></p><h1>espressif-idf-gatt-server-walkthrough</h1><div class="panel fm"><table><tr><td>name</td><td><a href="espressif-idf-gatt-server-walkthrough.html">espressif-idf-gatt-server-walkthrough</a></td></tr><tr><td>url</td><td>https://github.com/espressif/esp-idf/blob/v3.1.5/examples/bluetooth/gatt_server/tutorial/Gatt_Server_Example_Walkthrough.md</td></tr><tr><td>source_type</td><td>article</td></tr><tr><td>vendor</td><td>neutral</td></tr><tr><td>board</td><td>[ESP32-DevKitC]</td></tr><tr><td>fit_basys3</td><td>needs-port</td></tr><tr><td>cpu</td><td>none(MCU 펌웨어)</td></tr><tr><td>language</td><td>C</td></tr><tr><td>tools</td><td>[ESP-IDF 3.x, Bluedroid BLE stack]</td></tr><tr><td>bus</td><td>GATT (ATT over BLE)</td></tr><tr><td>peripherals</td><td>[BLE-GATT-server]</td></tr><tr><td>stage</td><td>T2</td></tr><tr><td>license</td><td>Apache-2.0</td></tr><tr><td>stats</td><td>{stars: N/A, commits: N/A, last_update: 2018}</td></tr><tr><td>doc_language</td><td>en</td></tr><tr><td>verification</td><td>L3</td></tr><tr><td>checked_at</td><td>2026-11-04</td></tr><tr><td>source_rev</td><td></td></tr><tr><td>sources</td><td>[https://github.com/espressif/esp-idf/blob/v3.1.5/examples/bluetooth/gatt_server/tutorial/Gatt_Server_Example_Walkthrough.md]</td></tr></table></div><p>unverified: source_rev — v3.1.5 태그 기준이나 커밋 SHA 미확인</p>
+<h2>요약 (3줄 이내)</h2>
+<p>Espressif 공식 ESP-IDF v3.1.5의 BLE GATT 서버 구현 단계별 해설 문서. 두 개의 Application Profile을 Bluedroid 스택 위에 구축하고, 광고·연결·읽기·쓰기·CCCD(notify/indicate) 흐름을 이벤트 콜백 순서로 설명한다. ESP32 BLE 주변장치 IP 설계의 개념적 기준으로 활용 가능하다.</p>
+<h2>구조</h2>
+<ul><li style="margin-left:0.0em"><strong>Application Profile 배열</strong>: 클라이언트 앱별로 독립된 <code>gatts_profile_inst</code> 구조체를 배열(<code>profile_tab[]</code>)에 저장하고, <code>gatts_if</code>로 이벤트를 분기한다.</li><li style="margin-left:0.0em"><strong>각 프로파일 구성</strong>: Service 1개(16비트 UUID, 핸들 4개) + Characteristic 1개(Properties: READ/WRITE/NOTIFY) + CCCD 1개.</li><li style="margin-left:0.0em"><strong>초기화 순서</strong>: NVS → BT 컨트롤러 → Bluedroid 스택 → GAP/GATTS 콜백 등록 → <code>esp_ble_gatts_app_register(PROFILE_A/B_APP_ID)</code> → MTU 512 설정.</li><li style="margin-left:0.0em"><strong>광고 파라미터</strong>: <code>adv_int_min</code> 0x20(40 ms), <code>adv_int_max</code> 0x40(80 ms), <code>ADV_IND</code>, 공용 주소, 전 채널.</li><li style="margin-left:0.0em"><strong>이벤트 흐름</strong>:</li><li style="margin-left:1.2em"><code>REG_EVT</code> → 기기명·광고 데이터·스캔 응답 설정</li><li style="margin-left:1.2em"><code>CREATE_EVT</code> → 서비스 시작, <code>esp_ble_gatts_add_char()</code> 호출</li><li style="margin-left:1.2em"><code>ADD_CHAR_EVT</code> → 특성 핸들 저장, BLE2902 디스크립터 추가</li><li style="margin-left:1.2em"><code>CONNECT_EVT</code> → <code>esp_ble_gap_update_conn_params()</code>(프로파일 A만: 20–40 ms, 4000 ms 타임아웃)</li><li style="margin-left:1.2em"><code>READ_EVT</code> → 더미 4바이트 <code>esp_ble_gatts_send_response()</code></li><li style="margin-left:1.2em"><code>WRITE_EVT</code> → CCCD 값 해석(0x0001 notify, 0x0002 indicate, 0x0000 off) 및 데이터 전송</li><li style="margin-left:1.2em"><code>EXEC_WRITE_EVT</code> → Prepare Write 버퍼 확정·해제</li></ul>
+<h2>검증·재현성</h2>
+<ul><li style="margin-left:0.0em">Espressif 공식 예제이며 ESP-IDF v3.1.5에서 빌드·동작이 확인된 문서다.</li><li style="margin-left:0.0em">테스트 앱으로 nRF Connect (Android/iOS)를 권장한다.</li><li style="margin-left:0.0em">Write Long 처리(Prepare/Execute Write 시퀀스)와 연결 파라미터 갱신 절차를 완전히 다루고 있다.</li></ul>
+<h2>한계·위험</h2>
+<ul><li style="margin-left:0.0em">ESP-IDF v3.x 기준이라 v5.x의 <code>esp_bt_gap_set_device_name()</code> 등 최신 API 이름과 차이가 있을 수 있다.</li><li style="margin-left:0.0em">Bluedroid 기반이며, NimBLE(IDF 4.x 이후 옵션) 사용 시 API가 달라진다.</li><li style="margin-left:0.0em">외부 IP(코드) 복사 불필요; 구조·흐름만 참조한다.</li></ul>
+<h2>재사용 메모</h2>
+<ul><li style="margin-left:0.0em">BLE GATT 서버의 이벤트 디스패치 구조(프로파일 배열 + <code>gatts_if</code> 분기)는 MicroBlaze V AXI-Lite 슬레이브의 레지스터 맵 주소 디코딩과 비교할 수 있다. CCCD(enable/disable notify) 개념은 AXI Stream TREADY 흐름 제어와 역할이 유사하다.</li><li style="margin-left:0.0em">개조: GATT Characteristic 속성(READ/WRITE/NOTIFY)과 CCCD 디스크립터 활성화 로직은 AXI4-Lite 슬레이브의 상태 레지스터 + 인터럽트 마스크 레지스터 설계로 1:1 대응 가능하다. CPU 코어(ESP32 BT 컨트롤러)와 Bluedroid 스택은 옮길 수 없다. 주변장치 흐름(read/write 이벤트 → 응답 함수 호출)만 추출해 AXI-Lite FSM 상태 머신으로 재현한다.</li></ul>
+<hr>
+<p>*내 판단: BLE GATT 이벤트 흐름이 AXI-Lite 트랜잭션 처리 방식과 구조적으로 유사해 ESP32 IP 설계 참고로 가치가 높다.*</p></main></body></html>
