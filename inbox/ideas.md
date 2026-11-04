@@ -296,7 +296,7 @@
 - 차단조건재심사: 2026-11-04, 근거 3(wiznet-makers-gavinchang-w5500-udp-loopback·digilent-pmod-nic100-reference-manual·digilent-forum-basys3-ethernet-ipv4-udp, rechecked_at 불문) + 새로움 2(이더넷 IP + 모터 텔레메트리 없음) + 적합성 1(W5500 SPI 모드·전원 미확인, unverified) + 완결성 2(UDP TX 초기화+SEND 명령 범위 명확) = 8점 → ready 승격. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-027 제어 루프 계기판 IP: 타일맵 VGA에 모터 속도·PID 값을 글자와 막대로 표시 (프레임 버퍼 없음)
-- 상태: ready
+- 상태: used (패키지: mmio-vga-tilemap-dashboard, 2026-11-04)
 - 요약: 내 판단: 80x60 tilemap + 256 타일 + 16색 팔레트를 AXI4-Lite 슬레이브로 노출하고, 속도·목표값·오차 같은 숫자를 타일 글자로, 오차 크기를 막대 타일로 그린다. 제어 루프가 쓰는 레지스터를 읽어 줄 단위로 화소를 만들므로 프레임 버퍼가 없다. 테스트벤치는 레지스터에 숫자를 쓰고 특정 타일 좌표의 출력 화소를 확인한다.
 - 조합: [VGA 타일 렌더러, 엔코더·PID 값 레지스터, AXI4-Lite 레지스터, 프레임 끝 인터럽트]
 - 근거: [columbia-4840-tiles-tutorial, zipcpu-llvga-video-timing, microchip-an532-dc-servo-pid, ubc-elex2117-lab6-quadrature-encoder]
