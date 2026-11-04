@@ -1109,3 +1109,25 @@
 - 내 판단: S7 사다리의 T1 위치(입문 디커플링 개념 습득 후, 고급 SI 규칙 적용 전). 비교적 좁은 범위이지만 MicroBlaze V SoC 주변장치 PCB 설계 시 필수 체크 항목.
 - 난이도: 2 / 단계: T1 / 상태: vetted
 - 심사: 2026-11-05 /verify(11차), 첫 raw→vetted 심사. 근거 0(jlcpcb-decoupling-capacitor-guide·ema-eda-fpga-pcb-design-guide·vishay-fpga-power-supply-consideration 모두 rechecked_at 없음) + 새로움 2(XC7A35T 전원 레일별 디커플링 체크리스트 아이디어 카탈로그에 없음; vishay 가이드는 범용, XC7A35T 레일별 적용 조합 없음) + 적합성 2(XC7A35T 전원 핀 직접 해당; 확장 보드 설계 대상이지만 RTL 불필요 → T1 위치 적합성 충분하나 RTL-TB 연결 없음) + 완결성 1(VCCINT·VCCO·VCCAUX 체크리스트 문서 완결 가능하나 MicroBlaze V SoC PDN 추정 방법 범위 넓어 TB 없음) = 5점 → vetted. 보강: 근거 카드 rechecked_at 취득, PDN 임피던스 추정 방법 범위 세분화.
+
+## I-085 RPi4 Python spidev + airhdl SPI-to-AXI4-Lite → Basys3 AXI 주변장치 자동 테스트 하네스 (T2)
+
+- 내 판단: Basys3 Pmod(JA/JB 헤더, 3.3V)에 RPi4 SPI0(GPIO 10/11/9/8=MOSI/MISO/CLK/CE) 직결. airhdl spi-to-axi-bridge(Apache-2.0)를 Basys3 `free_slots` 한 칸에 배정해 MicroBlaze V AXI4-Lite 슬레이브 IP를 MicroBlaze V 없이 RPi Python spidev로 자동 R/W 검증.
+- 조합: [airhdl-spi-to-axi-bridge, RPi4 spidev, Basys3 Pmod, MicroBlaze V free_slots AXI4-Lite 슬레이브]
+- 근거 카드: [airhdl-spi-to-axi-bridge, ananthu-islam-ahb-apb-bridge-rpi-artix7]
+- 근거 URL: [https://github.com/airhdl/spi-to-axi-bridge, https://arxiv.org/html/2501.01147v1]
+- 새로움의 근거: 카탈로그에 RPi4 spidev로 Basys3 AXI 주변장치를 자동화 테스트하는 아이디어 없음. michalstc-rpi-zero-fpga-spi-wishbone은 Wishbone 기반으로 AXI4-Lite 버스 직접 타깃 아님.
+- Basys3 적합성의 근거: Basys3 Pmod 3.3V ↔ RPi GPIO 3.3V 레벨 변환 불필요. airhdl IP 단일 파일(sv 또는 vhd), Basys3 XC7A35T에 fit_basys3=yes. 11바이트 SPI 거래로 32비트 AXI4-Lite R/W 가능. RPi Python spidev 패키지가 CI에서 pytest로 자동화 가능.
+- 내 판단: SoC 개발에서 MicroBlaze V 없이 주변장치 IP만 단독 검증하는 "headless AXI 테스트" 패턴. Basys3 Pmod에 RPi를 꽂고 pytest로 레지스터 R/W를 자동화하면 IP 개발 주기가 단축됨.
+- 난이도: 3 / 단계: T2 / 상태: raw
+
+## I-086 spibone_gen.py AXI-Lite 출력 + Basys3 Pmod → RP2040(Pico) SPIBone으로 AXI-Lite IP 단독 검증 패턴 (T2-T3)
+
+- 내 판단: enjoy-digital/litex_rp2040_pmod_test의 SPIBone 패턴을 Basys3로 이식. `spibone_gen.py --mode hybrid-axi-lite`로 Basys3 AXI4-Lite 슬레이브 Verilog IP를 추출해 `free_slots` 한 칸에 배정. RP2040 Pico를 Basys3 Pmod(JA)에 꽂아 MicroPython `test_spibone.py`로 AXI 레지스터 R/W. RPi4 Linux spidev 대신 Pico MicroPython을 호스트로 쓰는 경량 테스트 환경.
+- 조합: [enjoy-digital-litex-rp2040-pmod-test(SPIBone), Basys3 Pmod, RP2040 Pico, MicroBlaze V free_slots]
+- 근거 카드: [enjoy-digital-litex-rp2040-pmod-test, airhdl-spi-to-axi-bridge]
+- 근거 URL: [https://github.com/enjoy-digital/litex_rp2040_pmod_test]
+- 새로움의 근거: 카탈로그에 RP2040 Pico를 Basys3 Pmod 호스트로 쓰는 AXI-Lite 단독 검증 아이디어 없음. 기존 아이디어(I-085)는 RPi4 Linux spidev 사용으로 경량 Pico 패턴과 구분.
+- Basys3 적합성의 근거: Basys3 Pmod 3.3V ↔ Pico GPIO 3.3V 직결 가능. spibone_gen.py --mode hybrid-axi-lite 출력은 LiteX 없이 순수 Verilog. SPIBone 9바이트 프레임은 단순해 Pico MicroPython에서 machine.SPI로 직접 구현 가능.
+- 내 판단: LiteX/iCEBreaker 환경을 Basys3+MicroBlaze V 환경으로 옮기는 개조 경로가 명확. Pico 대신 RPi4를 쓸 때는 spidev로 같은 9바이트 프레임 전송 가능(I-085와 상호 보완).
+- 난이도: 3 / 단계: T2-T3 / 상태: raw

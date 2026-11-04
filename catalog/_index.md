@@ -205,3 +205,6 @@
 | [jlcpcb-decoupling-capacitor-guide](electronics/jlcpcb-decoupling-capacitor-guide.md) | L3 | T0 | 없음 (기사) | 2026-11-05 |
 | [rfessentials-split-ground-plane-emi](electronics/rfessentials-split-ground-plane-emi.md) | L3 | T1 | 없음 (기사) | 2026-11-05 |
 | [ema-eda-fpga-pcb-design-guide](electronics/ema-eda-fpga-pcb-design-guide.md) | L3 | T2 | 없음 (기사, FPGA PCB 체크리스트) | 2026-11-05 |
+| [ananthu-islam-ahb-apb-bridge-rpi-artix7](papers/ananthu-islam-ahb-apb-bridge-rpi-artix7.md) | L3 | T2 | Artix-7 100TCSG324 (Basys3 needs-port) | 2026-11-05 |
+| [airhdl-spi-to-axi-bridge](vendor-neutral/airhdl-spi-to-axi-bridge.md) | L3 | T2 | 보드 없음 (Basys3 yes) | 2026-11-05 |
+| [enjoy-digital-litex-rp2040-pmod-test](rpi/enjoy-digital-litex-rp2040-pmod-test.md) | L3 | T3 | iCEBreaker (Basys3 needs-port) | 2026-11-05 |

@@ -98,7 +98,7 @@
 ## 도메인 보충 4 (2026-11-03 §12.2-3: stm32/esp32/rpi/embedded/electronics 카드 0건, 위에서부터 소비)
 - [x] STM32 모터 제어: 타이머 엔코더 모드 + PWM + PID (HAL/LL) 사례와 FPGA 엔코더/PWM IP 레지스터로의 개조 (stm32 카드 0건, S3) — 2026-11-03 23시대 사이클: 카드 3건(L3), catalog/stm32/ 신설, PID 이득·샘플 주기 공개 자료와 LL 드라이버 직접 자료는 못 찾음, mbed 32비트 확장은 리다이렉트로 열람 못 함
 - [x] ESP32 센서 허브: Wi-Fi/BLE 텔레메트리 + FreeRTOS 센서 태스크, Basys3 UART 브리지 조합 (esp32 카드 0건) — 2026-11-03 사이클: 카드 3건(L3, esp32 신설 2건+ICE-V Wireless), Basys3 직접 ESP32 브리지 사례와 소스·SHA 열람은 못 함, 큐에 tinytapeout Basys3 UART 링크 등 후보
-- [ ] [B3] Raspberry Pi GPIO/SPI 호스트로 Basys3 주변장치 IP를 제어·시험하는 사례 (rpi 카드 0건)
+- [x] [B3] Raspberry Pi GPIO/SPI 호스트로 Basys3 주변장치 IP를 제어·시험하는 사례 (rpi 카드 0건) — 2026-11-05 02시대 사이클: 카드 3건(L3: arXiv AHB-APB, airhdl SPI-AXI, litex_rp2040), 직접 Basys3 사례 없음
 - [x] 모터 드라이버 회로: H-브리지 MOSFET 선택·게이트 드라이버·데드타임·역기전력 보호 — 2026-11-04 사이클: IRS2110 게이트 드라이버·역기전력 보호·MOSFET 선택 카드 3건(L3), catalog/electronics/ 신설
 
 ## Basys3 직접 확장 (2026-11-04 추가)

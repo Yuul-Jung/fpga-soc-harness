@@ -472,3 +472,10 @@
 - https://www.analog.com/en/resources/app-notes/an-347.html | Analog Devices AN-347: 혼합 신호 PCB 레이아웃에서 접지 평면 분리 — 미열람(L1) | analog devices mixed signal PCB ground plane separation
 - https://www.ti.com/lit/an/slva407a/slva407a.pdf | TI SLVA407A: FPGA 디커플링 커패시터 선택·배치 가이드(TI 앱노트) — 미열람(L1) | TI FPGA decoupling capacitor selection placement application note
 - https://dev.to/pcbdesign/fpga-pcb-design-tips-signal-integrity | Dev.to: FPGA PCB 설계 팁 — 신호 무결성, 임피던스, 패키지 선택 — 미열람(L1) | FPGA PCB design signal integrity tips
+
+## RPi GPIO/SPI → FPGA 주변장치 제어 사례 (2026-11-05 02시대 사이클, S3+S1)
+- https://github.com/xobs/spibone | xobs/spibone: Migen SPI-to-Wishbone 브리지(원본 SPIBone, 11★, Apache-2.0), MicroPython 호스트 사이드 포함 — 미열람(L1) | SPIBone SPI FPGA Wishbone bridge Migen
+- https://wishbone-utils.readthedocs.io/en/latest/wishbone-tool/ | wishbone-tool: Rust CLI, SPI/JTAG/USB 경유 Wishbone 레지스터 R/W, RPi 사용 가능 — 미열람(L1) | Raspberry Pi FPGA Wishbone SPI tool CLI
+- https://github.com/jakubcabal/spi-fpga | jakubcabal/spi-fpga: VHDL SPI 마스터·슬레이브 코어 (Artix-7·Nexys A7 타깃, MIT) — 미열람(L1) | FPGA SPI VHDL cores Artix-7
+- https://github.com/charkster/cmod_a7_spi_sram | charkster/cmod_a7_spi_sram: Cmod A7(Artix-7) SPI 슬레이브 → 외부 SRAM 맵핑 — 미열람(L1) | Artix-7 SPI slave SRAM memory mapping
+- https://stackoverflow.com/questions/64011451/32-bits-data-transfer-from-Pi-to-FPGA-using-spidev | Stack Overflow: RPi spidev로 FPGA에 32비트 전송 (답변 미흡, L1) | Raspberry Pi spidev FPGA SPI 32-bit transfer

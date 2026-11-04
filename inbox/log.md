@@ -150,3 +150,4 @@
 2026-11-05 01:16 | collect | PCB 설계 체크리스트 · S7 난이도 사다리(주)+S5 비정형 출처(보조) | 카드 +3 | 아이디어 +3 | 큐 잔여 425 | blocked 0
 2026-11-05 01:43 | verify | 재열람 0(차단: WebFetch PROVENANCE_REQUIRED 전면 차단 11차 연속) | 수정 1(mmio-i2c-master-ip capstone.json: memory_map 형식·references 키명·hierarchy 형식 수정) | 불일치 1(capstone.json 명세 형식) | 승격 L2→L3 0 | ready +2(I-077·I-079, 차단조건재심사 11차: 각 10점) | raw→vetted +3(I-082 5점·I-083 5점·I-084 5점) | 차단조건재심사 보류: I-081 10점(다음 사이클 1순위)·I-080 9점(다음 사이클 2순위)
 2026-11-05 01:58 | capstone | mmio-xadc-pwr-mon (I-075) · 무조건생성원칙 | S0(CI 대기) | Vccint·Vccaux·Vccbram 전원 감시 AXI4-Lite IP, DRP FSM + 임계값 비교 + IRQ W1C, TC1~TC5 자체 점검 테스트벤치
+2026-11-05 02:15 | collect | RPi GPIO/SPI 호스트·Basys3 IP 제어시험 · S3+S1 | 카드 +3 | 아이디어 +2 | 큐 잔여 ~435 | blocked 0
