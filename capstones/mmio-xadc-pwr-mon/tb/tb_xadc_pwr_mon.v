@@ -153,11 +153,14 @@ module tb_xadc_pwr_mon;
             @(posedge clk); #1;
             araddr = addr; arvalid = 1'b1;
             rready = 1'b1;
+            // AR+R 동시 핸드셰이크 (RTL이 같은 클럭에 arready/rvalid를 세트)
+            // rready=1이 미리 어서트돼 있어 rvalid는 1클럭 펄스뿐이므로
+            // arready/rvalid 를 같은 posedge(NBA 반영 후)에서 확인한다.
             @(posedge clk);
-            while (!arready) @(posedge clk);
-            #1; arvalid = 1'b0;
-            while (!rvalid) @(posedge clk);
-            data = rdata;
+            while (!arready || !rvalid) @(posedge clk);
+            data = rdata;    // 활성 영역에서 캡처 (NBA 소거 전)
+            #1;
+            arvalid = 1'b0;
             @(posedge clk); #1;
             rready = 1'b0;
         end
