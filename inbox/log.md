@@ -161,3 +161,4 @@
 2026-11-05 03:20 | collect | Basys3 7세그 멀티플렉서 고급 활용(blank·dp·PWM 밝기) · S3 빈틈 추적(주)+S2 조합 탐색(보조) | 카드 +3 | 아이디어 +1 | 큐 잔여 466 | blocked 1
 
 2026-11-05 03:49 | verify | 재열람 0 (WebFetch PROVENANCE_REQUIRED 전면 차단 13차 연속) | 수정 3 (감사 경고 라이선스 주석 추가: arxiv-1002340-spartan3e-spwm-inverter·elngar-telkomnika-7seg-artix7·element14-arty-s7-7seg-brightness) | 불일치 0 | 승격 L2→L3 0 | ready +2 (I-082·I-083 차단조건재심사 8점)
+2026-11-05 04:28 | capstone | mmio-i2c-nmea-sensor-hub | I-036 | S0 | 카드 +2(debounce FSM) | 큐 잔여 469 | I-036 → used

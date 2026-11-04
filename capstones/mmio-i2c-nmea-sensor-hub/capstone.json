@@ -1,0 +1,212 @@
+{
+  "slug": "mmio-i2c-nmea-sensor-hub",
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 Verilog-2001 원본이며 외부 코드를 포함하지 않는다. 아이디어 I-036(§13.7)로 생성됨 (2026-11-05). I2C 비트뱅 마스터가 MPU-6050·BMP280·HMC5883L 세 장치를 100 ms 주기로 순회하고, NMEA UART 수신기가 '\\n' 종단 GPS 문장 완료를 인터럽트로 알리며, 모든 샘플에 32비트 타임스탬프를 붙여 깊이 16 FIFO에 저장하는 AXI4-Lite 슬레이브 허브 IP. 기존 mmio-sensor-hub-checker(HC-SR04·DHT11)와 구별: 이 IP는 I2C 3장치 순회 + NMEA UART 수신 조합.",
+  "title": "I2C 3장치 순회 + NMEA UART 수신 센서 허브 IP",
+  "summary": "I2C 마스터가 MPU-6050(0x68), BMP280(0x76), HMC5883L(0x1E) 세 장치를 100 ms 주기로 순회 읽기하고, UART 수신기가 9600 baud NMEA 문장(GGA 계열) 1줄 완료를 인터럽트로 알리며, 모든 표본에 자유 실행 32비트 카운터 타임스탬프를 붙여 깊이 16 FIFO에 쌓는 AXI4-Lite 슬레이브 허브 IP. 보정 계산과 NMEA 필드 추출은 펌웨어 담당.",
+  "board": "Basys3",
+  "stage": "T2",
+  "goals": [
+    "I2C 마스터 FSM이 주소 테이블(0x68·0x76·0x1E)을 순회하며 센서 원시값 6 바이트씩 읽기",
+    "UART 수신기(9600 baud, 100 MHz)가 '\\n' 종단 NMEA 문장 한 줄 완료 시 인터럽트 발생",
+    "모든 표본(I2C 순회 1회, UART 1문장)에 타임스탬프 붙여 FIFO(깊이 16) 저장",
+    "AXI4-Lite 레지스터로 샘플 팝·인터럽트 클리어·FIFO 상태 노출",
+    "iverilog 시뮬레이션 PASS, yosys 합성 성공(S2)"
+  ],
+  "non_goals": [
+    "센서 보정·칼만 필터·NMEA 필드 파싱은 펌웨어 담당",
+    "I2C 슬레이브 모드, 멀티마스터, 클럭 스트레칭 미지원",
+    "Vivado AXI-IIC IP 미사용(순수 RTL)"
+  ],
+  "architecture": {
+    "clock": "100 MHz 단일 클럭 (clk), 동기 리셋 (rst_n active-low)",
+    "blocks": [
+      {"id": "top",        "name": "axil_i2c_nmea_hub",   "kind": "top",      "module": "axil_i2c_nmea_hub",   "file": "rtl/axil_i2c_nmea_hub.v",   "desc": "AXI4-Lite 슬레이브 + 레지스터 디코더 최상위",         "short": "AXI Hub",   "side": "left"},
+      {"id": "i2c_fsm",   "name": "i2c_cycle_fsm",        "kind": "rtl",      "module": "i2c_cycle_fsm",        "file": "rtl/i2c_cycle_fsm.v",        "desc": "I2C 비트 뱅 마스터 + 3장치 순회 FSM",                  "short": "I2C FSM",   "side": "left"},
+      {"id": "uart_rx",   "name": "nmea_uart_rx",          "kind": "rtl",      "module": "nmea_uart_rx",         "file": "rtl/nmea_uart_rx.v",         "desc": "9600 baud UART 수신기, '\\n' 종단 감지",             "short": "NMEA RX",   "side": "left"},
+      {"id": "ts_fifo",   "name": "ts_fifo",               "kind": "rtl",      "module": "ts_fifo",              "file": "rtl/ts_fifo.v",              "desc": "타임스탬프 붙인 샘플 FIFO (깊이 16, 72비트 엔트리)", "short": "TS FIFO",   "side": "right"},
+      {"id": "pmod_i2c",  "name": "Pmod I2C 버스",          "kind": "external", "module": null,                   "file": null,                         "desc": "JA Pmod SCL/SDA (MPU-6050, BMP280, HMC5883L 공유)", "short": "JA Pmod",   "side": "right"},
+      {"id": "pmod_uart", "name": "Pmod UART RX",          "kind": "external", "module": null,                   "file": null,                         "desc": "JB Pmod pin 1 (GPS 모듈 TX, 9600 baud)",            "short": "JB RX",     "side": "right"}
+    ],
+    "links": [
+      {"from": "top",      "to": "i2c_fsm",   "label": "ctrl/data"},
+      {"from": "top",      "to": "uart_rx",   "label": "ctrl/data"},
+      {"from": "top",      "to": "ts_fifo",   "label": "pop/status"},
+      {"from": "i2c_fsm",  "to": "ts_fifo",   "label": "push sample"},
+      {"from": "uart_rx",  "to": "ts_fifo",   "label": "push line_done"},
+      {"from": "i2c_fsm",  "to": "pmod_i2c",  "label": "SCL/SDA"},
+      {"from": "uart_rx",  "to": "pmod_uart", "label": "RX"}
+    ]
+  },
+  "bus_protocol": {
+    "name": "AXI4-Lite",
+    "data_width": 32,
+    "addr_width": 8,
+    "signals": [
+      {"name": "s_awaddr",  "width": 8,  "dir": "in",  "desc": "쓰기 주소"},
+      {"name": "s_awvalid", "width": 1,  "dir": "in",  "desc": "쓰기 주소 유효"},
+      {"name": "s_awready", "width": 1,  "dir": "out", "desc": "쓰기 주소 수락"},
+      {"name": "s_wdata",   "width": 32, "dir": "in",  "desc": "쓰기 데이터"},
+      {"name": "s_wstrb",   "width": 4,  "dir": "in",  "desc": "바이트 스트로브"},
+      {"name": "s_wvalid",  "width": 1,  "dir": "in",  "desc": "쓰기 데이터 유효"},
+      {"name": "s_wready",  "width": 1,  "dir": "out", "desc": "쓰기 데이터 수락"},
+      {"name": "s_bresp",   "width": 2,  "dir": "out", "desc": "쓰기 응답"},
+      {"name": "s_bvalid",  "width": 1,  "dir": "out", "desc": "쓰기 응답 유효"},
+      {"name": "s_bready",  "width": 1,  "dir": "in",  "desc": "쓰기 응답 수락"},
+      {"name": "s_araddr",  "width": 8,  "dir": "in",  "desc": "읽기 주소"},
+      {"name": "s_arvalid", "width": 1,  "dir": "in",  "desc": "읽기 주소 유효"},
+      {"name": "s_arready", "width": 1,  "dir": "out", "desc": "읽기 주소 수락"},
+      {"name": "s_rdata",   "width": 32, "dir": "out", "desc": "읽기 데이터"},
+      {"name": "s_rresp",   "width": 2,  "dir": "out", "desc": "읽기 응답"},
+      {"name": "s_rrvalid", "width": 1,  "dir": "out", "desc": "읽기 데이터 유효"},
+      {"name": "s_rready",  "width": 1,  "dir": "in",  "desc": "읽기 데이터 수락"},
+      {"name": "irq",       "width": 1,  "dir": "out", "desc": "FIFO 반가득·UART 줄 완료 인터럽트"}
+    ],
+    "note": "단방향 슬레이브. BRESP/RRESP 항상 2'b00(OKAY)."
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "mbv-frozen-v1",
+    "compat": "compatible",
+    "plan": "free_slots [18]=0x4018_0000 사용, 인터럽트 13번 할당(intc_free). MicroBlaze V XPS/Vitis에서 AXI-INTC 채널 13에 연결. 슬레이브 ID 레지스터 0x4018_0000+0x00=0x4B485542('KHUB').",
+    "frozen_mapping": {
+      "i2c_nmea_hub": "0x4018_0000 ~ 0x4018_FFFF"
+    }
+  },
+  "external_parts": [
+    {
+      "id": "mpu6050",
+      "name": "MPU-6050 모듈 (3.3V 호환)",
+      "block": "pmod_i2c",
+      "interface": "I2C (SCL/SDA)",
+      "io_voltage": "3.3",
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": "3.3",
+      "level_shift": false,
+      "power_note": "VDD=3.3V. I2C 풀업 4.7kΩ → 3.3V 필요. AD0 GND → 주소 0x68.",
+      "arduino_compatible": true,
+      "notes": "5V 모듈 사용 시 레벨 변환 필수(SDA 양방향). 3.3V 전용 모듈 권장."
+    },
+    {
+      "id": "bmp280",
+      "name": "BMP280 모듈 (3.3V 호환)",
+      "block": "pmod_i2c",
+      "interface": "I2C (SCL/SDA)",
+      "io_voltage": "3.3",
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": "3.3",
+      "level_shift": false,
+      "power_note": "VDD max 3.6V. SDO GND → 주소 0x76.",
+      "arduino_compatible": true,
+      "notes": "I2C 버스 공유. CSB를 3.3V에 연결(SPI 비활성화)."
+    },
+    {
+      "id": "hmc5883l",
+      "name": "HMC5883L 모듈 (3.3V 호환)",
+      "block": "pmod_i2c",
+      "interface": "I2C (SCL/SDA)",
+      "io_voltage": "3.3",
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": "3.3",
+      "level_shift": false,
+      "power_note": "VDD=2.16~3.6V. 주소 고정 0x1E.",
+      "arduino_compatible": true,
+      "notes": "DRDY 핀 미사용(폴링 모드). 모듈 내장 풀업 확인 필요."
+    },
+    {
+      "id": "gps_module",
+      "name": "GPS NMEA 모듈 (NEO-6M 등, 3.3V TX)",
+      "block": "pmod_uart",
+      "interface": "UART TX → FPGA RX",
+      "io_voltage": "3.3",
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": "3.3",
+      "level_shift": false,
+      "power_note": "TX 로직 레벨 3.3V. 5V TX 모듈 사용 시 분압 또는 레벨 변환 필수.",
+      "arduino_compatible": true,
+      "notes": "9600 baud, N81 고정. GPS 모듈 VCC는 별도 전원(3.3V 또는 5V, 최대 50mA)."
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "디지털 계통도만 작성. 외부 부품(I2C 풀업, 레벨 변환 여부, Pmod 배선)은 문서 '외부 부품' 절 참조."
+  },
+  "hierarchy": {
+    "module": "axil_i2c_nmea_hub",
+    "file": "rtl/axil_i2c_nmea_hub.v",
+    "children": [
+      {"module": "i2c_cycle_fsm", "file": "rtl/i2c_cycle_fsm.v", "children": []},
+      {"module": "nmea_uart_rx",  "file": "rtl/nmea_uart_rx.v",  "children": []},
+      {"module": "ts_fifo",       "file": "rtl/ts_fifo.v",        "children": []}
+    ]
+  },
+  "memory_map": [
+    {
+      "base": "0x4018_0000",
+      "size": "0x10000",
+      "block": "top",
+      "regs": [
+        {"off": "0x00", "name": "ID",          "access": "RO", "desc": "슬레이브 ID: 0x4B485542 ('KHUB')"},
+        {"off": "0x04", "name": "CTRL",        "access": "RW", "desc": "[0]=EN(허브 활성), [1]=IE(인터럽트 활성), [2]=FIFO_CLR"},
+        {"off": "0x08", "name": "STATUS",      "access": "RO", "desc": "[3:0]=FIFO_CNT, [4]=FIFO_FULL, [5]=I2C_BUSY, [6]=UART_LINE_RDY"},
+        {"off": "0x0C", "name": "IRQ_STATUS",  "access": "RW1C","desc": "[0]=FIFO_HF(절반 가득), [1]=UART_LINE_DONE"},
+        {"off": "0x10", "name": "I2C_CFG",     "access": "RW", "desc": "[15:0]=주기 카운터 임계(기본 10,000,000=100ms@100MHz)"},
+        {"off": "0x14", "name": "FIFO_DATA_HI","access": "RO", "desc": "팝 샘플 [71:40]: 타임스탬프[31:0]"},
+        {"off": "0x18", "name": "FIFO_DATA_LO","access": "RO", "desc": "팝 샘플 [39:0]: 타입[7:0]+데이터[31:0]. 읽으면 팝 완료"},
+        {"off": "0x1C", "name": "UART_CFG",    "access": "RW", "desc": "[15:0]=BAUD_DIV(기본 10417=9600baud@100MHz)"}
+      ]
+    }
+  ],
+  "roadmap": [
+    {"stage": "T1", "state": "done",    "title": "UART+GPIO skeleton",    "refs": ["ArmmyC-HolySoC"]},
+    {"stage": "T2", "state": "current", "title": "I2C+NMEA 센서 허브 IP", "refs": ["ammar-bin-amir-arty-a7-i2c-mpu-6050", "shillehtek-nano-mpu6050-neo6m-vehicle-logger"]},
+    {"stage": "T3", "state": "planned", "title": "센서 융합·칼만 가속기",  "refs": []}
+  ],
+  "references": [
+    {"card": "shillehtek-nano-mpu6050-neo6m-vehicle-logger", "why": "MPU-6050+NEO-6M I2C/UART 조합 패턴"},
+    {"card": "arduino-forum-nano-crash-3-i2c-gps",           "why": "I2C 3장치 충돌 사례 — 주소 분리 근거"},
+    {"card": "jpralves-car-hud-speed-compass",               "why": "GPS+나침반 HUD 조합 참고"},
+    {"card": "ammar-bin-amir-arty-a7-i2c-mpu-6050",          "why": "FPGA I2C 마스터 RTL 구조 참고"},
+    {"card": "angelojacobo-fpga-i2c-implementation",         "why": "순수 RTL I2C 비트뱅 FSM 구조"},
+    {"card": "ecen220wiki-basys3-debounce-fsm",              "why": "Basys3 100MHz 타이밍 기준"}
+  ],
+  "sources": {
+    "rtl":         ["rtl/axil_i2c_nmea_hub.v", "rtl/i2c_cycle_fsm.v", "rtl/nmea_uart_rx.v", "rtl/ts_fifo.v"],
+    "tb":          ["tb/tb_i2c_nmea_hub.v"],
+    "constraints": ["constr/basys3.xdc"],
+    "build":       ["Makefile"]
+  },
+  "howto": [
+    {
+      "title": "시뮬레이션 (iverilog)",
+      "steps": [
+        "make lint  — axil_i2c_nmea_hub 모듈 verilator --lint-only 린트",
+        "make sim   — I2C 슬레이브 모델 + UART 주입으로 TB T1~T6 자체 점검; PASS 확인",
+        "make synth — yosys로 axil_i2c_nmea_hub 단독 합성·자원 추정"
+      ]
+    },
+    {
+      "title": "Vivado 연결 (MicroBlaze V SoC)",
+      "steps": [
+        "axil_i2c_nmea_hub.v, i2c_cycle_fsm.v, nmea_uart_rx.v, ts_fifo.v를 프로젝트에 추가한다.",
+        "AXI4-Lite 버스 주소 슬롯 [18] = 0x4018_0000으로 연결한다.",
+        "irq를 AXI-INTC 채널 13에 연결한다.",
+        "i2c_scl_oe/sda_oe는 IOBUF open-drain 출력으로 처리하고, 외부 4.7kΩ 풀업(3.3V)을 JA Pmod에 연결한다.",
+        "GPS 모듈 TX(3.3V)를 JB Pmod pin 1(uart_rx)에 연결한다."
+      ]
+    }
+  ],
+  "verification": {
+    "board": "not-tested",
+    "notes": "S3는 사용자가 직접 올림. 에이전트는 S2까지만."
+  },
+  "risks": [
+    "I2C 버스에 세 장치 풀업 공유 — 4.7kΩ×3 병렬이면 ~1.57kΩ. 100 kHz I2C에서 허용 범위 내이나 긴 배선 시 커패시턴스 증가 주의.",
+    "NMEA 문장 최대 길이(80자)를 초과하는 GPS 모듈은 버퍼 오버플로(이 IP는 최대 80바이트 라인 버퍼 사용).",
+    "BMP280·HMC5883L 초기화 레지스터 쓰기 미구현(전원 인가 후 기본값 사용). 측정 모드 설정 필요.",
+    "5V I/O GPS 모듈 사용 시 Basys3 3.3V I/O 손상 위험 — 외부 부품 절 경고 참고."
+  ]
+}
