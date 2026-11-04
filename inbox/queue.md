@@ -491,3 +491,8 @@
 - https://www.fpga4fun.com/Odom.html | fpga4fun: 7세그 주행거리계 예제, 소수점 DP 활용 — 미열람(L1) | seven segment odometer decimal point fpga4fun
 - https://github.com/CARWHO/FPGA-Reaction-Timer | CARWHO/FPGA-Reaction-Timer: Basys3 반응속도 타이머, 7세그+소수점 카운트다운, 8커밋 — 미열람(L1) | Basys3 reaction timer seven segment decimal point
 - https://github.com/gmcastil/basys3 | gmcastil/basys3: MIT, 210커밋, Basys3 IP 컬렉션; 7세그 모듈 존재 추정 — src/ 차단(blocked) | Basys3 IP collection seven segment MIT
+
+# 2026-11-05 디바운스 FSM 수집
+- https://ecen220wiki.groups.et.byu.edu/labs/lab-08/ | Basys3 100MHz 디바운스 FSM + 단발 에지 검출, L3 열람, 카드 작성 완료 | Basys3 button debounce FSM Verilog course
+- https://mg-04.github.io/posts/2025/02/lab1 | FPGA 짧은 누름/긴 누름 FSM (50MHz, SystemVerilog), L3 열람, 카드 작성 완료 | FPGA button long short press FSM SystemVerilog
+- https://www.instructables.com/Debouncing-Button-on-Basys-3/ | Basys3 디바운스 instructables (L2 — 메타데이터만) | Basys3 debounce button instructables

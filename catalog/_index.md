@@ -211,3 +211,5 @@
 | [byu-ecen320-seven-segment4](amd/byu-ecen320-seven-segment4.md) | L2 | T1 | Basys3 | 2026-11-04 |
 | [elngar-telkomnika-7seg-artix7](papers/elngar-telkomnika-7seg-artix7.md) | L3 | T1 | Nexys-4 DDR (Basys3 needs-port) | 2026-11-04 |
 | [element14-arty-s7-7seg-brightness](amd/element14-arty-s7-7seg-brightness.md) | L3 | T1 | Arty S7 (Basys3 needs-port) | 2026-11-04 |
+| [ecen220wiki-basys3-debounce-fsm](vendor-neutral/ecen220wiki-basys3-debounce-fsm.md) | L3 | T0 | Basys3 (yes) | 2026-11-05 |
+| [mg04-fpga-button-long-short-press](vendor-neutral/mg04-fpga-button-long-short-press.md) | L3 | T0 | 보드 불명 (needs-port) | 2026-11-05 |
