@@ -134,7 +134,7 @@
 - 차단조건재심사: 2026-11-04, 점수 9(근거3+새로움2+적합성2+완결성2)
 
 ## I-012 UART 메모리 브리지 IP: PC 명령으로 AXI4-Lite 읽기/쓰기, 주변장치 IP 시험 겸 디버그
-- 상태: ready
+- 상태: used (패키지: mmio-uart-axilite-bridge)
 - 요약: 내 판단: 바이트 프로토콜(주소·길이·데이터)을 해석해 AXI4-Lite 마스터 트랜잭션을 만드는 FSM IP. CPU 없이도 PC에서 GPIO·PWM 등 슬레이브 레지스터를 읽고 쓸 수 있고, 테스트벤치에서는 UART 바이트열을 주입해 슬레이브 모델의 레지스터 값이 맞는지 PASS/FAIL로 검사하는 T2.
 - 조합: [comm-uart, debug, AXI4-Lite 마스터]
 - 근거: [symbiflow-arch-defs-picosoc-basys3, yosyshq-picorv32-picosoc, morsucci-wireless-fpga-debugger]

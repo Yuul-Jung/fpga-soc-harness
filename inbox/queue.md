@@ -382,13 +382,8 @@
 - https://github.com/petrkucerak/buildroot-rpi4-rt | petrkucerak/buildroot-rpi4-rt: Buildroot + PREEMPT_RT RPi4 — 미열람(L1) | buildroot raspberry pi 4 real time PREEMPT_RT
 - https://www.bootlin.com/training/buildroot/ | Bootlin Buildroot 교육 자료(전문 임베디드 교육업체) — 미열람(L1) | Bootlin Buildroot training embedded Linux
 - https://www.yoctoproject.org/development/technical-overview/ | Yocto Project 기술 개요(Yocto vs Buildroot 비교용) — 미열람(L1) | Yocto project technical overview comparison Buildroot
-
-## 2026-11-04 16시대 수집 — RTOS 비교: FreeRTOS vs Zephyr vs ThreadX (S3 빈틈 추적 + S6 실패 사례)
-- https://www.freertos.org/FAQMem.html | FreeRTOS 공식 메모리 FAQ — L3 열람 완료: 스케줄러 236B, 태스크 64B, ROM 5~10KB, 컨텍스트 전환 84사이클(Cortex-M3) | FreeRTOS memory footprint kernel RAM ROM
-- https://www.ezurio.com/resources/blog/freertos-vs-zephyr | Ezurio FreeRTOS vs Zephyr 비교 블로그 — L3 열람 완료: STM32F4 168MHz 벤치마크(협력형 전환 FreeRTOS 223 vs Zephyr 524사이클), 메모리 비교 | FreeRTOS Zephyr RTOS comparison benchmark STM32
-- https://www.beningo.com/migrating-from-freertos-to-zephyr/ | Beningo FreeRTOS→Zephyr 마이그레이션 가이드 — L3 열람 완료: API 매핑 테이블(xTaskCreate→K_THREAD_DEFINE 등), 우선순위 반전·스택 단위·ISR API 함정 | FreeRTOS to Zephyr migration porting API mapping
-- https://www.zephyrproject.org/getting-started-with-zephyr/ | Zephyr RTOS 공식 시작 가이드 — 미열람(L1), Kconfig·devicetree 빌드 시스템 세부 | Zephyr RTOS getting started tutorial
-- https://docs.zephyrproject.org/latest/kernel/services/threads/index.html | Zephyr 공식 문서: 스레드 서비스 — 미열람(L1), K_THREAD_DEFINE 파라미터 세부 | Zephyr thread API reference documentation
-- https://eclipse.org/threadx | Eclipse ThreadX 공식 사이트 — 미열람(L1), MIT 라이선스 이전 경위·GUIX·USBX 포함 여부 확인용 | Eclipse ThreadX MIT license embedded RTOS
-- https://github.com/eclipse-threadx/threadx | eclipse-threadx/threadx GitHub — 미열람(L1), 소스 직접 확인 필요 | Eclipse ThreadX RTOS GitHub source MIT license
-- https://hackaday.com/2024/01/16/the-state-of-embedded-rtos-in-2024/ | Hackaday 2024 임베디드 RTOS 현황 — L2 열람 완료: ThreadX→Eclipse 이전, Mbed 단종, RT-Thread·Zephyr 성장 | embedded RTOS comparison 2024 state
+- https://www.ezurio.com/resources/blog/zephyr-rtos-vs-freertos-a-comprehensive-comparison-for-iot-and-embedded-systems | FreeRTOS vs Zephyr 종합 비교(메모리·스케줄러·SMP) — L3 열람 완료 | FreeRTOS Zephyr embedded RTOS comparison IoT
+- https://promwad.com/news/choosing-rtos-freertos-zephyr-threadx-comparison | FreeRTOS·Zephyr·ThreadX 비교 표(메모리·SMP·라이선스) — L2 부분 열람 | RTOS comparison FreeRTOS Zephyr ThreadX IoT 2024
+- https://iiot-world.com/industrial-iot/connected-industry/freertos-vs-threadx-vs-zephyr-the-fight-for-true-open-source-rtos | FreeRTOS·ThreadX·Zephyr 오픈소스 거버넌스 비교 — L2 부분 열람 | FreeRTOS ThreadX Zephyr open source RTOS comparison
+- https://www.boston-engineering.com/wp-content/uploads/2023/07/Porting-from-FreeRTOS-to-Zephyr_Boston-Engineering.pdf | Boston Engineering: FreeRTOS→Zephyr 포팅 가이드 — 미열람(L1), 포팅 단계·코드 패턴 포함 가능 | porting FreeRTOS to Zephyr guide
+- https://learn.microsoft.com/en-us/answers/questions/757118/build-azrtos-with-cmsis-rtos-v2-or-use-threadx-cal | Microsoft: Azure RTOS ThreadX CMSIS-RTOS v2 호환성 — 미열람(L1), ThreadX STM32 포팅 관련 | ThreadX STM32 CMSIS RTOS porting
