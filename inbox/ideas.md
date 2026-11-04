@@ -193,7 +193,7 @@
 - 차단조건재심사: 2026-11-04 /verify, 근거 3(element14-arty-s7-artybot-axi-speed-sensing-ip, wdevore-tinyfpga-quadrature-decoder-gist, ubc-elex2117-lab6-quadrature-encoder, deepbluembedded-stm32-timer-encoder-mode, stm32-community-encoder-rollover-management, 5건 rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 → ready. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-017 PID 계단 응답 캡처·이득 조정 IP: 레지스터로 이득 쓰기 + 응답 로그 BRAM 캡처 + 와인드업 보호 자체 점검
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: 속도 PID의 KP/KI/KD를 AXI4-Lite 레지스터로 런타임 변경하고, 계단 입력 후 측정값을 작은 BRAM 버퍼에 담아 읽어 가는 IP. 테스트벤치는 모델 모터로 포화 시 적분 정지(와인드업 없음)와 정착값 오차를 PASS/FAIL로 검사하는 T4.
 - 조합: [직교 엔코더(sensor), PWM(actuator), PID FSM, 응답 캡처 BRAM]
 - 근거: [hakan-demirli-pid-fpga, microchip-an532-dc-servo-pid, 1runxu-520-pid-fpga, deepc94-pid-fpga-vhdl]
@@ -201,6 +201,7 @@
 - Basys3 적합성의 근거: BRAM 소량(예: 1K×16 한 개, 내 추정)과 곱셈기 몇 개, 핀은 Pmod 2개. 자원 수치는 카드에 없음.
 - 난이도: 3 / 단계: T4
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(응답 캡처 IP 없음) + 적합성 2(BRAM 소량·Pmod 2개 범위) + 완결성 2(KP/KI/KD 런타임·BRAM 캡처·와인드업 범위 명확) = 6점. 보강: 근거 카드 rechecked_at 1건 추가.
+- 차단조건재심사: 2026-11-04 /verify(5차), 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 4건(hakan-demirli-pid-fpga, microchip-an532-dc-servo-pid, 1runxu-520-pid-fpga, deepc94-pid-fpga-vhdl, rechecked_at 불문) → 근거 3 + 새로움 2(응답 캡처·BRAM 버퍼 IP 없음) + 적합성 2(BRAM 소량·Pmod 2개·곱셈기 소수) + 완결성 2(와인드업·BRAM 캡처 범위 명확) = 9점 ≥ 7 → ready 승격. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-018 스텝모터 가감속 IP: 단위시간당 스텝 누산기 FSM + 스텝 손실 시험 시나리오
 - 상태: ready
@@ -819,8 +820,9 @@
 - Basys3 적합성 근거: 100 MHz 클럭으로 5 Mbit/s 오버샘플(20 클럭/비트) 가능. CAN 트랜시버(TJA1050 등)를 Pmod에 연결. BRAM 소모 적음(프레임 버퍼 2~3개).
 - 난이도: 3
 - 단계: T2
-- 상태: vetted
+- 상태: ready
 - 심사: 2026-11-04 /verify, 근거 1(wangxuan95-fpga-can rechecked_at: 2026-11-02; csselectronics·dpiegdon rechecked_at 없음) + 새로움 2(CAN FD FSM IP 없음) + 적합성 3(100MHz 20클럭/비트 오버샘플 가능, Pmod 연결 가능, BRAM 소량) + 완결성 2(FDF·BRS·DLC·CRC FSM 범위 명확, AXI래퍼 작성 가능, TB 가능) = 8점. 근거 1<3이므로 ready 미달 → vetted. 보강: csselectronics·dpiegdon rechecked_at 취득 필요(차단 조건 적용 불가: raw→vetted 첫 심사).
+- 차단조건재심사: 2026-11-04 /verify(5차), 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(csselectronics-can-fd-frame-guide, wangxuan95-fpga-can, dpiegdon-verilog-can, rechecked_at 불문) → 근거 3 + 새로움 2(CAN FD FSM·AXI4-Lite IP 없음) + 적합성 3(100 MHz 20클럭/비트 오버샘플 가능, Pmod TJA1050 연결, BRAM 소량) + 완결성 2(FDF·BRS·DLC·21비트 CRC FSM 범위 명확) = 10점 ≥ 7 → ready 승격. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ---
 
