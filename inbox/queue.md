@@ -416,3 +416,14 @@
 - https://docs.zephyrproject.org/latest/services/device_mgmt/dfu.html | Zephyr 공식 DFU 문서: MCUboot 연동, flash partition 설정 — 미열람(PROVENANCE_REQUIRED) | Zephyr DFU MCUboot Kconfig partition
 - https://academy.nordicsemi.com/courses/nrf-connect-sdk-intermediate/lessons/lesson-9-bootloaders-and-dfu-fota/ | Nordic Academy: NCS Lesson 9 MCUboot FOTA BLE — 미열람(L1) | Nordic nRF52 MCUboot FOTA BLE NCS lesson
 - https://hubble.com/community/guides/zephyr-dfu-and-mcuboot-over-the-air-updates-with-rollback-protection/ | Hubble: Zephyr DFU + MCUboot 롤백 보호(2026-03) — 미열람(L2 본문 잘림) | Zephyr MCUboot rollback OTA DFU
+
+## 2026-11-04 — 안전 기능(MISRA C, 워치독, 스택 카나리, CRC, FMEA) S7+S1 추가 후보
+
+- https://github.com/jubnzv/MISRA-Example-Suite | MISRA-C:2012 위반 예제 모음(C, Python 린트 하네스) — 미열람(PROVENANCE_REQUIRED) | MISRA C 2012 violation examples safety embedded
+- https://github.com/mbuesch/crcgen | mbuesch/crcgen: Python으로 CRC 알고리즘을 Verilog/VHDL/C/Python으로 생성하는 코드 생성기(MIT) — 미열람(PROVENANCE_REQUIRED) | CRC generator Verilog VHDL Python MIT hardware implementation
+- https://github.com/bard0-design/crcZero | bard0-design/crcZero: FPGA CRC 하드웨어 구현 Verilog 예시 — 미열람(PROVENANCE_REQUIRED, L1) | CRC Verilog FPGA implementation hardware accelerator
+- https://www.incompliancemag.com/article/implementing-robust-watchdog-timers-for-embedded-systems/ | inCompliance Magazine: 워치독 타이머 유형 종합(핀 구동·윈도우·챌린지-응답·계층형·이중 출력·코프로세서 교차 감시) — L3 직접 열람(카드 작성 한도 초과로 큐 등록) | watchdog timer types windowed challenge-response IEC 61508 ISO 26262
+- https://zephyrproject.org/safety-and-zephyr-rtos/ | Zephyr 공식 블로그: 안전 기능 개요(MISRA C 갭 분석·FMEA·ISO 26262) — L3 직접 열람(카드 작성 한도 초과로 큐 등록) | Zephyr RTOS MISRA C FMEA ISO 26262 functional safety
+- https://www.microchip.com/en-us/development-tool/atavrfeb-safety | Microchip ATAVRFEB-SAFETY 평가 보드: 코어-독립 윈도우 워치독·CRC 메모리 스캔(Class B)·BOR·VLM·POR 하드웨어 데모 — L3 직접 열람(카드 작성 한도 초과) | Microchip ATtiny watchdog windowed CRC Class B safety evaluation board
+- https://opencores.org/websvn/listing.php?repname=openmsp430&path=%2F | openMSP430 전체 소스 트리 목록 — 미열람(L1), 워치독·기타 주변장치 추가 파일 확인 필요 | openMSP430 Verilog MSP430 softcore peripherals source tree
+- https://www.ti.com/lit/ug/slau208q/slau208q.pdf | TI MSP430 패밀리 사용자 가이드: WDTCTL 레지스터 공식 명세 (openMSP430 대조 목적) — 미열람(L1) | TI MSP430 watchdog timer register WDTCTL user guide

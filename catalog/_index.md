@@ -184,3 +184,6 @@
 | [memfault-interrupt-mcuboot-overview](embedded/memfault-interrupt-mcuboot-overview.md) | L3 | T3 | nRF52840-DK (Basys3 needs-port) | 2026-11-04 |
 | [cnxsoft-arduino-mcuboot-stm32h7](embedded/cnxsoft-arduino-mcuboot-stm32h7.md) | L3 | T3 | Arduino Portenta H7 STM32H7 (Basys3 needs-port) | 2026-11-04 |
 | [hubble-ble-ota-dfu-zephyr-mcuboot](embedded/hubble-ble-ota-dfu-zephyr-mcuboot.md) | L2 | T3 | nRF52840-DK (Basys3 needs-port) | 2026-11-04 |
+| [rtime-cvut-openmsp430-watchdog](embedded/rtime-cvut-openmsp430-watchdog.md) | L3 | T1 | 미지정 (Basys3 needs-port) | 2026-11-04 |
+| [heia-fr-ma-embreal-zephyr-stack-protection](embedded/heia-fr-ma-embreal-zephyr-stack-protection.md) | L3 | T0 | nRF5340dk (Basys3 needs-port) | 2026-11-04 |
+| [tum-industrial-es-2015-functional-safety](papers/tum-industrial-es-2015-functional-safety.md) | L3 | T0 | 미지정 | 2026-11-04 |

@@ -912,3 +912,35 @@
 - 단계: T3
 - 상태: dropped
 - 심사: 2026-11-04 /verify, 근거 0(memfault-interrupt-mcuboot-overview·cnxsoft-arduino-mcuboot-stm32h7 rechecked_at 없음; 근거 카드 2건만) + 새로움 2(ECDSA-256 MicroBlaze V 사례 없음; FPGA 소프트 CPU 공개키 검증 타이밍 측정 카드 미존재) + 적합성 1(Mbed TLS MicroBlaze V 빌드 가능이나 BRAM/캐시 없는 환경 타이밍 불확실, I-068 선행 없이 단독 실행 불가) + 완결성 1(I-068 선행 필요, Mbed TLS 포팅 절차 미정, 단독 TB 범위 불명확) = 4점 → dropped. 사유: 근거 없음·적합성·완결성 미달. I-068 완성 후 재심사 가능.
+
+---
+
+## I-070 AXI4-Lite 워치독 IP 난이도 사다리: 기본 카운터 → 윈도우 WDT → 패스워드 보호 AXI 슬레이브
+
+내 판단: S7 난이도 사다리 — 기능 안전 워치독을 세 단계로 구현하는 T1→T2→T3 캡스톤 체인. 1단계(T1): 단순 카운터 비트-탭 WDT, KICK 레지스터 하나, 타임아웃 시 `wdt_rst` 출력. 2단계(T2): 윈도우 WDT — 최소(MIN) 시간 전 KICK 금지, 최대(MAX) 시간 후 타임아웃, 두 레지스터(WIN_MIN·WIN_MAX). 3단계(T3): IEC 61508 Class B — 패스워드 보호 쓰기(WDTPW), 오류 카운터, 오류 과다 시 NMI 출력, AXI4-Lite 슬레이브 IP 표준 래퍼.
+
+- id: I-070
+- 조합: [AXI4-Lite 슬레이브 IP(comm, T1~T3), 워치독 카운터(embedded FSM), 윈도우 비교기(T2), 패스워드 레지스터(T3), MicroBlaze V 인터럽트 컨트롤러(AXI INTC, T3)]
+- 근거 카드: [[rtime-cvut-openmsp430-watchdog]], [[heia-fr-ma-embreal-zephyr-stack-protection]], [[tum-industrial-es-2015-functional-safety]]
+- 근거 URL: https://www.incompliancemag.com/article/implementing-robust-watchdog-timers-for-embedded-systems/
+- 새로움 근거: 카탈로그에 AXI4-Lite 워치독 IP 카드 없음. 윈도우 WDT 패턴을 Basys3 MicroBlaze V에 맞는 AXI4-Lite 슬레이브로 단계적으로 구현한 사례 없음 — 내 판단.
+- Basys3 적합성 근거: 순수 FSM+카운터이므로 BRAM·LUT 소모 최소(< 100 LUT 추정). AXI4-Lite 슬레이브 래퍼는 `library/rtl/axil_regs.v` 참고 가능. `free_slots` 중 하나에 64KB 배정 가능.
+- 난이도: 2 (1단계), 3 (2단계), 4 (3단계)
+- 단계: T1 → T2 → T3
+- 상태: raw
+
+---
+
+## I-071 소프트웨어+하드웨어 통합 메모리 무결성 검사 IP: CRC 스캔 + 스택 센티넬 (MicroBlaze V)
+
+내 판단: S1 인접 도메인 이식 — MCU(ATtiny, Zephyr) 환경의 Class B 안전 패턴 두 가지를 MicroBlaze V + Basys3 환경으로 이식. ① AXI4-Lite CRC 검사 IP: BRAM 명령 메모리의 CRC를 주기적으로 계산해 기준 레지스터와 비교, 불일치 시 인터럽트 발생. ② 소프트웨어 스택 센티넬: MicroBlaze V C 코드에서 스택 최하단에 매직 값 기록, 주기적 체크 함수 호출, 오버플로 검출 시 AXI GPIO로 LED 경보.
+
+- id: I-071
+- 조합: [AXI4-Lite CRC IP(T2, embedded FSM), AXI BRAM Controller(storage), 스택 센티넬 C 코드(T1 소프트웨어), AXI GPIO LED 경보(T1 peripheral), MicroBlaze V 인터럽트 컨트롤러]
+- 근거 카드: [[tum-industrial-es-2015-functional-safety]], [[heia-fr-ma-embreal-zephyr-stack-protection]], [[rtime-cvut-openmsp430-watchdog]]
+- 근거 URL: https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/197/ATAVRFEB-SAFETY_Web.pdf
+- 새로움 근거: 카탈로그에 CRC 검사 AXI IP 카드 없음. 스택 센티넬 + CRC 복합 안전 계층을 Basys3 MicroBlaze V에 적용한 사례 없음 — 내 판단.
+- Basys3 적합성 근거: CRC FSM은 LUT 소모 최소(< 200 LUT). BRAM 접근은 AXI BRAM Controller 경유. 스택 센티넬 C 코드는 MicroBlaze V에서 직접 동작. I-070 1단계(기본 WDT) 완성 후 T2 확장으로 추가 가능.
+- 난이도: 3
+- 단계: T2
+- 상태: raw

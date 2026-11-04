@@ -76,7 +76,7 @@
 - [x] 프로토콜 심화: CAN FD 프레임 구조, MODBUS RTU/TCP, EtherCAT 기초
 - [x] 디버그 기법: JTAG/SWD 트레이스, OpenOCD, Segger RTT, 논리 분석기 활용 — 2026-11-04: 카드 3건(meiniki-logip L3·lekgolo167-enxor-logic-analyzer L3·enjoy-digital-litescope L2), 큐 등록 7건, S6+S4 전략
 - [x] 펌웨어 OTA: MCUboot 부트로더, 이중 파티션 업데이트, 서명 검증
-- [ ] 안전 기능: MISRA C, 워치독, 스택 카나리, CRC 검사, FMEA 예시
+- [x] 안전 기능: MISRA C, 워치독, 스택 카나리, CRC 검사, FMEA 예시 — 2026-11-04: 카드 3건(L3), openMSP430 워치독 Verilog·HEIA-FR Zephyr 스택 보호·TUM IEC 61508 강의, 큐 8건, 아이디어 2건, S7 난이도 사다리+S1 인접 도메인 이식 전략
 
 ## 전자기술 도메인 (2026-11-03 추가, 위에서부터 소비)
 - [ ] 모터 드라이버 회로: H-브리지 MOSFET 선택·게이트 드라이버·데드타임·역기전력 보호
