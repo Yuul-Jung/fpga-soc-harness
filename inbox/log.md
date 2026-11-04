@@ -5,6 +5,7 @@
 - verify: `YYYY-MM-DD HH:MM | verify | 재열람 N | 수정 M | 불일치 K | 승격 L2→L3 P | ready +R`
 - capstone: `YYYY-MM-DD HH:MM | capstone | <slug> | 등급 S0~S2` 또는 `... | skip: <사유>`
 
+2026-11-05 05:43 | verify | 재열람 0(WebFetch 전면 차단으로 재열람 불가) | 수정 2(capstone.json 명세 버그: references 키 name/reason→card/why, hierarchy 배열→딕셔너리) | 불일치 2 | 승격 L2→L3 0 | ready +2 (I-022·I-023, 차단조건재심사 8점) | 차단조건재심사 완료: I-010(6점 vetted), I-024·I-028~I-031·I-033~I-035·I-038(8~9점, 사이클 상한 도달) | tools/check.py 통과(217건) | WebFetch 15차 연속 차단
 2026-11-05 05:41 | capstone | mmio-sensor-hub-nmea-ip (I-036) | 등급 S2 (attempt 2: uart baud타이밍·nmea_line_rdy else-if·ts_latch·i2c_gap·wstrb 수정, CI lint+sim PASS+synth LUT254 FF279)
 2026-11-05 05:14 | capstone | mmio-i2c3-nmea-hub (I-036) | 등급 S2 (fix 3회: integer모듈레벨→다중드라이버fifo_pop펄스→IRQ이벤트기반, CI lint+sim PASS+synth LUT106 FF53) | 큐 잔여 418
 2026-11-05 04:53 | capstone | mmio-sensor-hub-nmea-ip (I-036) | 등급 S0 (로컬 iverilog 없음; CI에서 S1/S2 결정 예정) | I2C 3장치 순회+NMEA UART+타임스탬프 FIFO AXI4-Lite 허브 IP | 큐 잔여 418

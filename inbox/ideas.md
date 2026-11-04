@@ -121,6 +121,7 @@
 - Basys3 적합성의 근거: TX/RX 2핀과 100 MHz 분주로 충분(wangxuan95 README의 clk/분주값 식). PHY는 5 V 전원이라 전원 분리·레벨 확인 필요(README 기준).
 - 난이도: 3 / 단계: T2
 - 심사: 2026-11-04 /verify, 근거 2(wangxuan95-fpga-can·dpiegdon-verilog-can) + 새로움 2(카탈로그에 CAN 패키지 없음) + 적합성 1(PHY 5V 전원 분리 필요, Basys3 Pmod 실측 없음) + 완결성 1(다중 노드 모델 범위 미확정) = 6점. 보강: CAN 카드 1건 추가, 단일 노드로 범위 축소.
+- 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 2건(wangxuan95-fpga-can·dpiegdon-verilog-can, rechecked_at 불문) → 차단 근거 2 + 새로움 2(CAN 패키지 없음) + 적합성 1(PHY 5V 전원 분리, Pmod 실측 없음) + 완결성 1(다중 노드 모델 범위 미확정) = 6점 < 7 → vetted 유지. 보강 필요: CAN 카드 1건 추가, 단일 노드로 범위 축소.
 
 ## I-011 모터 IP 입문 세트: AXI-Lite PWM(서보·DC) + 직교 엔코더 카운터 자체 점검
 - 상태: used (패키지: mmio-pwm-qenc-checker, 2026-11-04)
@@ -249,7 +250,7 @@
 - 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 4건(comillas-tfg-2026-lqr-cartpole-basys3, polito-upm-2023-cartpole-fpga-lqr-pid-rl, andreicito2-inverted-pendulum, jie-2011-fpga-inverted-pendulum-robot, rechecked_at 불문) → 근거 3(최대) + 새로움 2(LQR IP + 모델 폐루프 시험 없음) + 적합성 2(Comillas 초록 Basys3 1 ms 주기 L2) + 완결성 1(이산 모델·이득 고정 범위 미정) = 8점 ≥ 7 → ready 승격. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-022 릴레이 자동 튜닝 IP: 릴레이 피드백 FSM(주기·진폭 측정) + PID IP 이득 쓰기, 1차+지연 모터 모델 폐루프 테스트벤치
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: PID를 끈 상태에서 출력을 ±a로 번갈아 주고 설정값 교차 때 부호를 뒤집는 릴레이 FSM을 만들고, 한계 사이클의 주기와 진폭을 레지스터로 읽게 한다. MicroBlaze V(또는 테스트벤치의 계산 모델)가 Ziegler-Nichols 표로 이득을 계산해 PID IP에 쓴다. 테스트벤치는 모터 속도를 1차+지연으로 근사한 모델을 붙여 한계 사이클 주기가 해석값과 맞는지 자체 점검한다.
 - 조합: [릴레이 FSM, 엔코더 속도 측정, PID IP, PWM/H-브리지, AXI4-Lite 레지스터]
 - 근거: [controleng-relay-method-automates-pid-loop-tuning, kmitl-iccas-2003-auto-tune-digital-pid-fpga, tees-isie-2017-compass-search-self-tuning-pid-dc-drive]
@@ -257,9 +258,10 @@
 - Basys3 적합성의 근거: 릴레이 FSM은 비교기와 카운터 위주라 곱셈이 필요 없음(내 추정, 자원 수치 없음). 엔코더 2핀과 PWM 1핀은 Pmod 3.3V. 5V 모터 드라이버는 레벨 변환, 모터 전원은 분리.
 - 난이도: 4 / 단계: T4
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(릴레이 피드백 FPGA 사례 없음) + 적합성 2(릴레이 FSM 비교기·카운터, Pmod 소수) + 완결성 1(모터 모델 1차+지연 파라미터 미정) = 5점. 보강: 근거 카드 rechecked_at 1건, 모터 모델 파라미터 명시.
+- 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(controleng-relay-method-automates-pid-loop-tuning·kmitl-iccas-2003-auto-tune-digital-pid-fpga·tees-isie-2017-compass-search-self-tuning-pid-dc-drive, rechecked_at 불문) → 차단 근거 3 + 새로움 2(릴레이 피드백 FPGA 사례 없음) + 적합성 2(릴레이 FSM 비교기·카운터, Pmod 소수, 레벨 변환 명시) + 완결성 1(모터 모델 1차+지연 파라미터 미정) = 8점 ≥ 7 → ready 승격. §14.2 차단 조건 적용(사이클 1번째).
 
 ## I-023 BLDC 사다리: 홀센서 6스텝 FSM + 데드타임 PWM IP → 전류 샘플링 창 → 모터 모델 폐루프 테스트벤치
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: 홀 3입력 해독 FSM(양방향), 10비트 PWM, 상·하 암 데드타임 삽입을 AXI4-Lite 레지스터(듀티, 방향, 데드타임 클럭 수, 홀 상태 읽기)로 묶는다. 테스트벤치는 홀 신호를 생성하는 단순 회전자 모델을 붙여 상 순서, 상·하 암 동시 ON 없음, 데드타임 최소값을 자체 점검한다. 다음 단계로 FOC의 하단 3암 ON 구간 샘플링 신호를 같은 PWM에서 뽑는다.
 - 조합: [홀센서 해독 FSM, 데드타임 PWM, 샘플 트리거, AXI4-Lite 레지스터]
 - 근거: [arief-2026-ijecbe-artix7-36v-bldc-hall-sixstep, wangxuan95-fpga-foc, mari-upc-2022-fpga-foc-ipmsm-field-weakening]
@@ -267,6 +269,7 @@
 - Basys3 적합성의 근거: 홀 3핀 + PWM 6핀 = Pmod 2개 정도(내 추정, 자원 수치 없음). 3.3V 신호만 직결, 인버터 전원 분리·GND 공통.
 - 난이도: 4 / 단계: T2
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(6스텝→FOC 샘플링 사다리 없음) + 적합성 2(홀 3핀+PWM 6핀 Pmod 2개, 인버터 전원 분리) + 완결성 1(FOC 샘플링 창 범위 미정) = 5점. 보강: 근거 카드 rechecked_at 1건, 6스텝 단계로 범위 축소.
+- 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(arief-2026-ijecbe-artix7-36v-bldc-hall-sixstep·wangxuan95-fpga-foc·mari-upc-2022-fpga-foc-ipmsm-field-weakening, rechecked_at 불문) → 차단 근거 3 + 새로움 2(6스텝→FOC 샘플링 사다리 없음) + 적합성 2(홀 3핀+PWM 6핀 Pmod 2개, 인버터 전원 분리) + 완결성 1(FOC 샘플링 창 범위 미정) = 8점 ≥ 7 → ready 승격. §14.2 차단 조건 적용(사이클 2번째).
 
 ## I-024 소리·기울기 반응 LED 매트릭스 IP: PDM/I2S 마이크 대역 에너지 + ADXL345 기울기 → MAX7219 열 버퍼 레지스터
 - 상태: vetted
@@ -277,6 +280,7 @@
 - Basys3 적합성의 근거: MAX7219는 SPI 3핀(Pmod 1개), 마이크 모듈 3~4핀. 대역 16개 분석은 DSP/BRAM 소량으로 추정(내 추정, 자원 수치 없음; VHDPlus는 12 MHz에서 구동). MAX7219는 5V 전원이라 데이터선 레벨 변환 필요(원 카드는 모두 레벨 변환을 언급).
 - 난이도: 3 / 단계: T2
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(소리+기울기 모드 전환 IP 없음) + 적합성 2(MAX7219 SPI 3핀+마이크 모듈 Pmod 2개, 레벨 변환 명시) + 완결성 1(16대역 FFT/필터 구현 범위 미정) = 5점. 보강: 근거 카드 rechecked_at 1건, 대역 수 고정.
+- 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 4건(vhdplus-spectrum-analyzer-max7219·renesas-forgefpga-fg015-running-string·mit-6111-2017-team20-audio-spectrum-analyzer·jpralves-car-hud-speed-compass, rechecked_at 불문) → 차단 근거 3 + 새로움 2(소리+기울기 모드 전환 IP 없음) + 적합성 2(MAX7219 SPI 3핀+Pmod 2개, 레벨 변환 명시) + 완결성 1(16대역 FFT/필터 범위 미정) = 8점 ≥ 7, 사이클 상한 2건 도달로 vetted 유지. 다음 사이클에서 ready 승격 가능.
 
 
 ## I-025 CTRL/DATA형 I2C 마스터 IP: NEORV32 TWI 레지스터 배치 착안 + MPU-6050 읽기 시험 모델 테스트벤치
@@ -321,6 +325,7 @@
 - Basys3 적합성의 근거: Pmod 2개(JSTK2 SPI 4핀, 서보 신호 2핀)로 가능. 서보 전원은 외부 5 V 분리, 신호 3.3 V 직결 가능 여부는 서보별로 확인 필요(vhdlwhiz는 레벨 변환 권장).
 - 난이도: 2 / 단계: T2
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(JSTK2→서보 IP 조합 없음) + 적합성 2(Pmod 2개·서보 전원 분리 명시) + 완결성 2(JSTK2 모델+서보 펄스 비교 범위 명확) = 6점. 보강: 근거 카드 rechecked_at 1건.
+- 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(digikey-forum-jstk2-pmod-controller-vhdl·vhdlwhiz-rc-servo-controller·shashankr-basys3-fpga-robotic-arm, rechecked_at 불문) → 차단 근거 3 + 새로움 2(JSTK2→서보 IP 없음) + 적합성 2(Pmod 2개·서보 전원 분리) + 완결성 2(JSTK2 모델+서보 펄스 비교 명확) = 9점 ≥ 7, 사이클 상한 2건 도달로 vetted 유지. 다음 사이클에서 ready 승격 가능.
 
 ## I-029 상태 표시 OLED IP: SPI 초기화 ROM + 128x32 프레임 버퍼 창, 제어 루프 값(속도·오차)을 글자로 표시, SPI 출력 바이트열 비교 테스트벤치
 - 상태: vetted
@@ -331,6 +336,7 @@
 - Basys3 적합성의 근거: Pmod 1개(SPI 4핀 + D/C, RES, 전원 제어 2핀)면 되고 프레임 버퍼 128x32비트는 512바이트 수준이라 BRAM 부담이 작다(내 계산: 128×32/8 = 512 B). 전원 전압은 공식 페이지로 확인 필요(unverified).
 - 난이도: 2 / 단계: T2
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(OLED 모듈 IP 없음) + 적합성 2(Pmod 1개·512 B BRAM·전원 unverified 명시) + 완결성 2(초기화 ROM+버퍼 범위 명확) = 6점. 보강: 근거 카드 rechecked_at 1건, 전원 전압 확인.
+- 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(digilent-pmod-oled-reference-manual·lushaylabs-tang-nano-9k-ssd1306-oled·masterplayer-lcd-st7789-sv, rechecked_at 불문) → 차단 근거 3 + 새로움 2(OLED IP 없음) + 적합성 2(Pmod 1개·512 B BRAM 소량) + 완결성 2(초기화 ROM+버퍼 범위 명확) = 9점 ≥ 7, 사이클 상한 2건 도달로 vetted 유지. 다음 사이클에서 ready 승격 가능.
 
 ## I-030 1-Wire 온도 IP: 비트 마스터 하드웨어 + 스크래치패드·CRC 소프트웨어 분담, DS18B20 모델 포함 테스트벤치
 - 상태: vetted
@@ -341,6 +347,7 @@
 - Basys3 적합성의 근거: Pmod 핀 1개(양방향, 외부 풀업)와 3.3 V 전원이면 되고 100 MHz에서 1 µs 틱 분주 100이면 충분해 BRAM이 필요 없다(내 계산).
 - 난이도: 2 / 단계: T2
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(1-Wire 비트 마스터 IP 없음) + 적합성 2(Pmod 1핀·외부 풀업·BRAM 불필요) + 완결성 2(리셋·쓰기·읽기 비트 FSM + DS18B20 모델 범위 명확) = 6점. 보강: 근거 카드 rechecked_at 1건.
+- 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(cvut-pehnelt-2014-vhdl-periferie-nexys4·analog-maxim-interfacing-ds18x20·opencores-onewire-ds1820, rechecked_at 불문) → 차단 근거 3 + 새로움 2(1-Wire IP 없음) + 적합성 2(Pmod 1핀·풀업·BRAM 불필요) + 완결성 2(비트 FSM+DS18B20 모델 명확) = 9점 ≥ 7, 사이클 상한 2건 도달로 vetted 유지. 다음 사이클에서 ready 승격 가능.
 
 
 ## I-031 블루투스 텔레메트리 브리지 IP: UART 슬롯 위 프레임 송수신 + STATE/EN GPIO, HC-05 응답 모델 테스트벤치
@@ -352,6 +359,7 @@
 - Basys3 적합성의 근거: Pmod 1개(TX, RX, STATE, EN) 3.3V 로직, 9600 bps는 분주 10417(내 계산)이라 BRAM 불필요.
 - 난이도: 2 / 단계: T2
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(HC-05 AT 분리+모델 시험 없음) + 적합성 2(Pmod 1개·3.3V·9600 bps 분주 명확) + 완결성 2(프레임 송수신 모델 범위 명확) = 6점. 보강: 근거 카드 rechecked_at 1건.
+- 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(hackster-ee2259-lab8-bluetooth-uart·epfl-prsoc-bluetooth-hc05·ndroid-hc06-at-commandcenter, rechecked_at 불문) → 차단 근거 3 + 새로움 2(HC-05 AT 분리+모델 시험 없음) + 적합성 2(Pmod 1개·3.3V·9600 bps) + 완결성 2(프레임 송수신 모델 명확) = 9점 ≥ 7, 사이클 상한 2건 도달로 vetted 유지. 다음 사이클에서 ready 승격 가능.
 
 ## I-032 아날로그 입력 허브 IP: XADC 4채널(JXADC) 스캔 + 채널별 스케일·평균 레지스터, 모의 ADC 모델 테스트벤치
 - 상태: used (mmio-xadc-hub-checker, 2026-11-04)
@@ -374,6 +382,7 @@
 - Basys3 적합성의 근거: Pmod 1개(SCL, SDA)와 3.3 V 로직, 외부 풀업 필요(DigiKey 글 서술), BRAM 불필요. 400 kHz면 분주 250(내 계산, 100 MHz 기준).
 - 난이도: 2 / 단계: T2
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(RTC+EEPROM 한 IP 없음) + 적합성 2(Pmod 1개·외부 풀업·BRAM 불필요) + 완결성 2(DS3231+24LC256 모델 범위 명확) = 6점. 보강: 근거 카드 rechecked_at 1건.
+- 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(angelojacobo-fpga-i2c-implementation·digikey-forum-mcp79410-pmod-rtcc-vhdl·mines-eeng383-lecture25-24lc256-i2c, rechecked_at 불문) → 차단 근거 3 + 새로움 2(RTC+EEPROM 한 IP 없음) + 적합성 2(Pmod 1개·풀업·BRAM 불필요) + 완결성 2(DS3231+24LC256 모델 명확) = 9점 ≥ 7, 사이클 상한 2건 도달로 vetted 유지. 다음 사이클에서 ready 승격 가능.
 
 ## I-034 IR 리모컨 조종 IP: NEC 디코더(반복 코드 포함) + 명령→모터·서보 매핑 레지스터, 합성 IR 프레임 테스트벤치
 - 상태: vetted
@@ -384,6 +393,7 @@
 - Basys3 적합성의 근거: Pmod 1핀(수신 모듈 출력)이면 충분, 3.3 V형 모듈 선택 시 변환 불필요, BRAM 불필요. 100 MHz에서 562.5 µs = 56,250 클럭(내 계산).
 - 난이도: 2 / 단계: T2
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(NEC+반복 코드+구동기 조합 없음) + 적합성 2(Pmod 1핀·3.3V 모듈·BRAM 불필요) + 완결성 2(정상·반전·반복·잘림 프레임 테스트벤치 범위 명확) = 6점. 보강: 근거 카드 rechecked_at 1건.
+- 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(opencores-nec-ir-decoder·bcit-elex7660-infrared-communication·marph91-icestick-remote, rechecked_at 불문) → 차단 근거 3 + 새로움 2(NEC+반복 코드+구동기 없음) + 적합성 2(Pmod 1핀·3.3V·BRAM 불필요) + 완결성 2(정상·반전·반복·잘림 테스트벤치 명확) = 9점 ≥ 7, 사이클 상한 2건 도달로 vetted 유지. 다음 사이클에서 ready 승격 가능.
 
 ## I-035 SPI 무선 모듈 IP: nRF24L01형 명령/상태 프레임 엔진 + CE 펄스·IRQ 3종 인터럽트, 레지스터 모델 테스트벤치
 - 상태: vetted
@@ -394,6 +404,7 @@
 - Basys3 적합성의 근거: Pmod 1~2개(SCK, MOSI, MISO, CSN, CE, IRQ 6핀)와 3.3 V 로직으로 충분하고 BRAM 불필요. 모듈 전원 순간 전류용 커패시터 필요(글 서술). SPI 분주는 설계 시 정함(내 판단).
 - 난이도: 3 / 단계: T2
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(SPI 무선 IP + 레지스터 모델 없음) + 적합성 2(Pmod 1~2개·3.3V·BRAM 불필요) + 완결성 1(LoRa 확장 단계 미정) = 5점. 보강: 근거 카드 rechecked_at 1건, nRF24L01 단계로 범위 고정.
+- 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(mikrocontroller-net-nrf24l01-tutorial·electroniclinic-arduino-sx1278-lora-two-way·microcontrollerslab-sx1278-lora-module, rechecked_at 불문) → 차단 근거 3 + 새로움 2(SPI 무선 IP 없음) + 적합성 2(Pmod 1~2개·3.3V·BRAM 불필요) + 완결성 1(LoRa 단계 미정) = 8점 ≥ 7, 사이클 상한 2건 도달로 vetted 유지. 다음 사이클에서 ready 승격 가능.
 
 ## I-036 센서 허브 IP: I2C 3장치(MPU-6050·BMP280·HMC5883L) 순회 + NMEA UART 수신, 공통 타임스탬프 표본 FIFO
 - 상태: used
@@ -427,6 +438,7 @@
 - Basys3 적합성의 근거: Pmod 한 개(SS, MOSI, MISO, SCK 4핀, Digilent 순서)로 가능, BRAM 불필요. SPI 클럭은 100 MHz 시스템 클럭에 동기화하는 방식을 택하면 소량 LUT로 가능(내 추정, 수치 없음).
 - 난이도: 3 / 단계: T2
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(SPI 슬레이브→AXI-Lite 마스터 브리지 없음) + 적합성 2(Pmod 1개·BRAM 불필요·LUT 소량 추정) + 완결성 2(쓰기 후 읽기 왕복·잘못된 주소 응답 테스트벤치 명확) = 6점. 보강: 근거 카드 rechecked_at 1건.
+- 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(cvonk-fpga-spi·arduino-forum-spi-interface-with-fpga-3-3voltage-issue·digilent-pmod-shield-refmanual, rechecked_at 불문) → 차단 근거 3 + 새로움 2(SPI 슬레이브→AXI-Lite 마스터 없음) + 적합성 2(Pmod 1개·BRAM 불필요) + 완결성 2(쓰기 후 읽기 왕복·잘못된 주소 응답 명확) = 9점 ≥ 7, 사이클 상한 2건 도달로 vetted 유지. 다음 사이클에서 ready 승격 가능.
 
 ## I-039 제어 루프 지터 측정 IP: 주기 타임스탬프 min/max/평균과 오버런 카운터를 AXI4-Lite로 노출
 - 상태: used (mmio-loop-jitter-mon, 2026-11-04)
