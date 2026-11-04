@@ -1177,9 +1177,10 @@
 - 새로움의 근거: 카탈로그에 blank·dp·PWM 밝기를 AXI4-Lite 레지스터로 통합한 Basys3 IP 없음. 기존 카드들은 개별 기능만 다루며 조합 IP 아이디어 없음.
 - Basys3 적합성의 근거: Basys3 4자리 공통 애노드 7세그 직접 지원. REFRESH_RATE=200 → 4자리 × 200 Hz = 800 Hz 애노드 순환, 100 MHz 클럭 분주로 충분. PWM 밝기는 duty cycle 카운터로 추가 LUT 최소 소모.
 - 내 판단: 두 카드의 아이디어를 조합하면 MicroBlaze V 소프트웨어에서 단순 레지스터 쓰기만으로 7세그 고급 제어가 가능한 IP 완성. T1→T2 전환점의 대표 예제로 적합.
-- 난이도: 2 / 단계: T1-T2 / 상태: vetted
+- 난이도: 2 / 단계: T1-T2 / 상태: used (mmio-7seg-adv-ip)
 - 심사: 2026-11-05 /verify(13차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(byu-ecen320-seven-segment4·element14-arty-s7-7seg-brightness 모두 rechecked_at 없음) + 새로움 2(카탈로그에 blank·dp·PWM 밝기를 AXI4-Lite 레지스터로 통합한 Basys3 IP 없음; 기존 7세그 카드들은 개별 기능만 다룸) + 적합성 3(Basys3 4자리 공통 애노드 7세그 직접 지원, REFRESH_RATE=200 → 100MHz 분주 충분, PWM 밝기 duty cycle 카운터 LUT 최소 소모) + 완결성 2(DIGIT_DATA+BRIGHTNESS 레지스터 2개 구조 제안, 범위 명확, RTL+TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득 후 ready 재심사.
 - 차단조건재심사: 2026-11-05 /verify(14차), 모든 WebFetch PROVENANCE_REQUIRED 차단(14차 연속). 근거 카드 총 2건(byu-ecen320-seven-segment4, element14-arty-s7-7seg-brightness, rechecked_at 불문) → 근거 2 + 새로움 2(카탈로그에 blank·dp·PWM 밝기를 AXI4-Lite 레지스터로 통합한 Basys3 IP 없음) + 적합성 3(Basys3 4자리 공통 애노드 7세그 직접 지원, REFRESH_RATE=200 → 100MHz 분주 충분, PWM 밝기 duty cycle 카운터 LUT 최소 소모) + 완결성 2(DIGIT_DATA+BRIGHTNESS 레지스터 2개 구조 제안, 범위 명확, RTL+TB 작성 가능) = 9점 ≥ 7, 14차 2건 상한 초과(I-084·I-085 선 승격) → vetted 유지. 다음 사이클 2순위.
+- 과제화: 2026-11-05 /capstone(자동), ready→used. 슬러그 mmio-7seg-adv-ip, free_slot [1F] 0x401F_0000, T2 단계.
 
 ## I-087 AXI4-Lite 멀티 버튼 IP — 디바운스+긴 누름+원샷 에지 검출 통합, 소프트웨어 가변 임계값 (T2)
 

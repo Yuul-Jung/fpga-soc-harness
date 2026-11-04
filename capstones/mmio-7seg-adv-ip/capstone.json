@@ -1,0 +1,227 @@
+{
+  "slug": "mmio-7seg-adv-ip",
+  "title": "AXI4-Lite 7세그 고급 IP — 자리별 blank·dp·PWM 밝기 레지스터 제어",
+  "summary": "MicroBlaze V에서 레지스터 2개(DATA, CTRL)로 Basys3 4자리 7세그먼트를 완전 제어하는 AXI4-Lite 슬레이브 IP. blank[3:0] 자리별 소등, dp[3:0] 소수점, 16단계 PWM 밝기를 단일 IP에서 지원한다.",
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 원본이며 외부 코드를 포함하지 않는다. 아이디어 근거 카드(byu-ecen320-seven-segment4, element14-arty-s7-7seg-brightness)의 패턴을 참고했으며, 코드는 복사하지 않았다. 시뮬레이션·합성 결과는 CI가 기록한다.",
+  "board": "Basys3",
+  "stage": "T2",
+  "goals": [
+    "AXI4-Lite 슬레이브 레지스터(DATA, CTRL)로 4자리 7세그먼트를 소프트웨어 제어",
+    "자리별 blank(자리 단위 소등) 지원",
+    "자리별 dp(소수점) 독립 제어",
+    "16단계 PWM 밝기 제어(0=꺼짐, 15=최대)",
+    "Verilog-2001 iverilog·verilator·yosys 호환 RTL, 자체 점검 테스트벤치"
+  ],
+  "non_goals": [
+    "BCD 자동 디코딩(16진수 입력만 지원)",
+    "자리 수 4개 초과",
+    "보드 동작 검증(S3): 시뮬레이션 S1까지만",
+    "MicroBlaze V 드라이버 C 코드 제공"
+  ],
+  "architecture": {
+    "clock": "100 MHz 단일 클럭 (aclk, W5), 비동기 리셋-해제 (aresetn = ~btnC)",
+    "blocks": [
+      {
+        "id": "axil",
+        "name": "AXI4-Lite 슬레이브 레지스터 뱅크",
+        "kind": "peripheral",
+        "module": "axil_7seg_ip",
+        "file": "rtl/axil_7seg_ip.v",
+        "desc": "AXI4-Lite 프로토콜 핸들러 + 레지스터 2개(DATA, CTRL)",
+        "short": "AXI4-Lite regbank",
+        "side": "left"
+      },
+      {
+        "id": "enc",
+        "name": "16진수→7세그 인코더",
+        "kind": "submodule",
+        "module": "-",
+        "desc": "4비트 16진수를 7세그먼트 패턴(7비트, active-low)으로 변환 (axil_7seg_ip 내부 조합 논리)",
+        "short": "hex encoder",
+        "side": "center"
+      },
+      {
+        "id": "mux",
+        "name": "4자리 멀티플렉서 FSM",
+        "kind": "submodule",
+        "module": "-",
+        "desc": "1 kHz 단위로 4자리를 순환. blank 자리는 모든 세그먼트 OFF. anode·cathode 출력 (axil_7seg_ip 내부 FSM)",
+        "short": "digit mux",
+        "side": "center"
+      },
+      {
+        "id": "pwm",
+        "name": "PWM 밝기 생성기",
+        "kind": "submodule",
+        "module": "-",
+        "desc": "16단계 PWM: 4비트 카운터와 bright[3:0] 비교로 anode enable 게이트 (axil_7seg_ip 내부)",
+        "short": "PWM",
+        "side": "right"
+      },
+      {
+        "id": "board",
+        "name": "Basys3 최상위 래퍼",
+        "kind": "top",
+        "module": "basys3_top_7seg",
+        "file": "rtl/basys3_top_7seg.v",
+        "desc": "100 MHz 클럭, 리셋 버튼, 7세그 핀, AXI4-Lite 루프백(테스트용)",
+        "short": "board top",
+        "side": "left"
+      }
+    ],
+    "links": [
+      {"from": "board", "to": "axil", "label": "AXI4-Lite"},
+      {"from": "axil", "to": "enc", "label": "digit_val[3:0]×4"},
+      {"from": "axil", "to": "mux", "label": "seg_data, blank, dp"},
+      {"from": "axil", "to": "pwm", "label": "bright[3:0]"},
+      {"from": "enc", "to": "mux", "label": "seg_pattern[6:0]×4"},
+      {"from": "pwm", "to": "mux", "label": "pwm_gate"},
+      {"from": "mux", "to": "board", "label": "an[3:0], seg[6:0], dp"}
+    ]
+  },
+  "bus_protocol": {
+    "name": "AXI4-Lite",
+    "signals": [
+      {"name": "awaddr[7:0]", "dir": "in",  "desc": "쓰기 주소 (8비트, 오프셋)"},
+      {"name": "awvalid",     "dir": "in",  "desc": "쓰기 주소 유효"},
+      {"name": "awready",     "dir": "out", "desc": "쓰기 주소 수락"},
+      {"name": "wdata[31:0]", "dir": "in",  "desc": "쓰기 데이터"},
+      {"name": "wstrb[3:0]",  "dir": "in",  "desc": "바이트 스트로브"},
+      {"name": "wvalid",      "dir": "in",  "desc": "쓰기 데이터 유효"},
+      {"name": "wready",      "dir": "out", "desc": "쓰기 데이터 수락"},
+      {"name": "bresp[1:0]",  "dir": "out", "desc": "쓰기 응답 (00=OKAY)"},
+      {"name": "bvalid",      "dir": "out", "desc": "쓰기 응답 유효"},
+      {"name": "bready",      "dir": "in",  "desc": "쓰기 응답 수락"},
+      {"name": "araddr[7:0]", "dir": "in",  "desc": "읽기 주소 (8비트, 오프셋)"},
+      {"name": "arvalid",     "dir": "in",  "desc": "읽기 주소 유효"},
+      {"name": "arready",     "dir": "out", "desc": "읽기 주소 수락"},
+      {"name": "rdata[31:0]", "dir": "out", "desc": "읽기 데이터"},
+      {"name": "rresp[1:0]",  "dir": "out", "desc": "읽기 응답 (00=OKAY)"},
+      {"name": "rvalid",      "dir": "out", "desc": "읽기 데이터 유효"},
+      {"name": "rready",      "dir": "in",  "desc": "읽기 데이터 수락"}
+    ],
+    "note": "단순 1사이클 handshake. 버스트·WLAST 미지원. bresp/rresp=OKAY(2'b00) 고정."
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "custom",
+    "compat": "partial",
+    "plan": "mbv-frozen-v2 기준 free_slot [16] (0x4016_0000, 64KB)부터 차례로 배정 제안. 인터럽트 불필요(폴링으로 충분). 슬롯은 사용자가 프로젝트 인덱스 표에서 동결한다. 동결 전이므로 compat=partial."
+  },
+  "external_parts": [],
+  "schematic": {
+    "state": "not-written",
+    "note": "7세그먼트 디스플레이는 Basys3 보드 내장. 외부 부품 없음."
+  },
+  "hierarchy": {
+    "module": "basys3_top_7seg",
+    "file": "rtl/basys3_top_7seg.v",
+    "children": [
+      {
+        "module": "axil_7seg_ip",
+        "file": "rtl/axil_7seg_ip.v",
+        "note": "AXI4-Lite 레지스터 뱅크 + 인코더 + 멀티플렉서 + PWM 통합"
+      }
+    ]
+  },
+  "memory_map": [
+    {
+      "base": "0x4016_0000",
+      "size": "0x10000",
+      "block": "axil",
+      "desc": "7세그 IP 레지스터 공간 (free_slot [16] 제안, 동결 전, 인터럽트 없음)",
+      "regs": [
+        {
+          "off": "0x0000",
+          "name": "DATA",
+          "access": "RW",
+          "desc": "자리 값: [15:12]=d3, [11:8]=d2, [7:4]=d1, [3:0]=d0 (각 4비트 hex 0~F). [31:16]=reserved.",
+          "reset": "0x00000000"
+        },
+        {
+          "off": "0x0004",
+          "name": "CTRL",
+          "access": "RW",
+          "desc": "[3:0]=blank (1=해당 자리 소등, d3..d0 순), [7:4]=dp_en (1=소수점 표시), [11:8]=bright (0=꺼짐, 15=최대밝기), [12]=en (0=전체 꺼짐), [31:13]=reserved.",
+          "reset": "0x00001F0F",
+          "note": "리셋값: en=1, bright=15(최대), dp=0, blank=0xF(모두 소등) → 첫 DATA 쓰기 전 소등 보장"
+        }
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T1",
+      "state": "done",
+      "title": "mmio-uart-gpio-skeleton — UART + GPIO 기초",
+      "refs": ["fanguoc2len-risc-v-computer"]
+    },
+    {
+      "stage": "T2",
+      "state": "current",
+      "title": "mmio-7seg-adv-ip — 7세그 고급 AXI IP",
+      "refs": ["byu-ecen320-seven-segment4", "element14-arty-s7-7seg-brightness"]
+    },
+    {
+      "stage": "T3",
+      "state": "planned",
+      "title": "다음 단계: 7세그 + VGA 조합 대시보드 IP (I-119 예정)",
+      "refs": []
+    }
+  ],
+  "references": [
+    {
+      "card": "byu-ecen320-seven-segment4",
+      "why": "blank[3:0]+dp_in[3:0]+REFRESH_RATE 파라미터 패턴 참조. Basys3 직접 지원(L2)."
+    },
+    {
+      "card": "element14-arty-s7-7seg-brightness",
+      "why": "pulseDuration[3:0] 15단계 PWM 밝기 패턴 참조. Arty S7 사례(L3), Basys3 개조 적용."
+    }
+  ],
+  "sources": {
+    "rtl": ["rtl/axil_7seg_ip.v", "rtl/basys3_top_7seg.v"],
+    "tb": ["tb/tb_axil_7seg_ip.v"],
+    "constraints": ["constr/basys3_7seg.xdc"],
+    "build": ["Makefile"]
+  },
+  "howto": [
+    {
+      "title": "시뮬레이션 (iverilog)",
+      "steps": [
+        "iverilog -o build/tb_axil_7seg_ip tb/tb_axil_7seg_ip.v rtl/axil_7seg_ip.v",
+        "vvp build/tb_axil_7seg_ip  # PASS 출력 확인"
+      ]
+    },
+    {
+      "title": "린트 (verilator)",
+      "steps": [
+        "verilator --lint-only -Wall rtl/axil_7seg_ip.v rtl/basys3_top_7seg.v"
+      ]
+    },
+    {
+      "title": "합성 추정 (yosys)",
+      "steps": [
+        "yosys -p 'synth_xilinx -top basys3_top_7seg' rtl/axil_7seg_ip.v rtl/basys3_top_7seg.v > build/synth.log"
+      ]
+    },
+    {
+      "title": "Vivado 빌드 (Basys3, S3 사람이 직접 수행)",
+      "steps": [
+        "Vivado 2024.2에서 새 프로젝트 생성 (Basys3, XC7A35TCPG236-1)",
+        "rtl/*.v, constr/basys3_7seg.xdc를 추가",
+        "Run Synthesis → Implementation → Generate Bitstream",
+        "7세그 출력을 보드에서 확인"
+      ]
+    }
+  ],
+  "verification": {
+    "board": "not-tested",
+    "notes": "시뮬레이션(S1): iverilog tb 자체 점검. 합성(S2): yosys 추정. 보드(S3): 미검증 — 사람이 확인해야 함."
+  },
+  "risks": [
+    "PWM 밝기 최저(bright=1)에서 1/16 듀티, 100 MHz 클럭에서 주기 약 1 ms/16=62.5 µs: 눈에 띄는 깜빡임 가능성 (내 판단, 측정 필요)",
+    "멀티플렉서 주기(1 kHz)보다 PWM 주기가 짧으면(1 kHz×16=16 kHz) 세그먼트 밝기 균일성 보장 — 설계상 보장됨",
+    "yosys 합성은 Artix-7 LUT 추정이며 Vivado와 다를 수 있음"
+  ]
+}

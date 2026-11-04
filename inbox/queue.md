@@ -540,3 +540,6 @@
 - https://industrialmonitordirect.com/blogs/knowledgebase/i2c-ip-corner-case-test-plan-state-machine-arbitration-verification | I2C IP 코너 케이스·중재 검증 테스트 계획(S6 실패·엣지 케이스) — 미열람(L1) | I2C arbitration corner case verification test plan
 - https://www.i2c-bus.org/multimaster/ | I2C-bus.org 멀티마스터 중재 프로토콜 공식 가이드(S5 비정형) — 미열람(L1) | I2C multimaster arbitration protocol specification
 - https://github.com/truhy/fpga_i2c | FPGA I2C 마스터 Verilog(멀티마스터 중재 여부 미확인) — 미열람(L1) | FPGA Verilog I2C master arbitration clock stretching
+- https://github.com/tom-urkin/I2C | SystemVerilog I2C: 멀티마스터 중재·클럭 스트레칭·NACK 처리 포함, Basys3 미검증(L1) | I2C multi-master arbitration FPGA Verilog clock stretching AXI4-Lite GitHub
+- https://github.com/trondd/oc-i2c | OpenCores I2C Verilog 포트: 멀티마스터 중재 FSM 포함, 보드 미지정(L1) | I2C multi-master arbitration FPGA Verilog GitHub
+- https://byu-cpe.github.io/ecen320/labs/multi-segment | BYU ECEN 320 7세그 멀티플렉서 고급 실습(blank, dp_in, REFRESH_RATE), Basys3(L1) | BYU ECEN 320 seven segment display Verilog blank dp REFRESH_RATE Basys3
