@@ -332,8 +332,8 @@ end
 reg        inj_valid;
 reg [31:0] inj_data;
 
+integer i;  // Verilog-2001: 모듈 레벨 선언 (unnamed block 불가)
 always @(posedge aclk or negedge aresetn) begin
-    integer i;
     if (!aresetn) begin
         fifo_wptr <= 4'd0;
         fifo_rptr <= 4'd0;
