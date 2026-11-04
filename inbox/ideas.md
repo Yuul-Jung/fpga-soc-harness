@@ -419,7 +419,7 @@
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(SPI 슬레이브→AXI-Lite 마스터 브리지 없음) + 적합성 2(Pmod 1개·BRAM 불필요·LUT 소량 추정) + 완결성 2(쓰기 후 읽기 왕복·잘못된 주소 응답 테스트벤치 명확) = 6점. 보강: 근거 카드 rechecked_at 1건.
 
 ## I-039 제어 루프 지터 측정 IP: 주기 타임스탬프 min/max/평균과 오버런 카운터를 AXI4-Lite로 노출
-- 상태: ready
+- 상태: used (mmio-loop-jitter-mon, 2026-11-04)
 - 요약: 내 판단: 제어 루프 시작 펄스(예: 1 kHz 틱)마다 자유 실행 카운터로 주기를 재서 최소·최대·직전 주기와 기준 초과(오버런) 횟수를 레지스터로 보여 주는 소형 IP. 인터럽트는 오버런 시 발생. 테스트벤치는 일부러 주기를 늘린 틱 열로 min/max/오버런 값을 PASS/FAIL 점검.
 - 조합: [틱 입력, 주기 카운터, min/max 레지스터, 오버런 임계 비교기, AXI4-Lite 레지스터·인터럽트]
 - 근거: [circuitdigest-feroflyf405-open-source-fc, pinkfluffyunic0rn-stm32flight, https://discuss.ardupilot.org/t/fast-loop-timing-jitter/54486, https://github.com/Visaging/Pulse-Flight-Controller]

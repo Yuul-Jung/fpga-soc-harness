@@ -1,0 +1,252 @@
+{
+  "slug": "mmio-loop-jitter-mon",
+  "title": "제어 루프 지터 측정 IP (Loop Jitter Monitor)",
+  "summary": "틱 입력의 주기를 클럭 카운터로 측정해 min/max/마지막 값·오버런 카운터를 mmio-lite 레지스터로 노출하는 경량 감시 IP. IP 표준(rev.1) 관리 레지스터(ID/VER/IRQ_STATUS/IRQ_ENABLE) 포함.",
+  "board": "Digilent Basys3 (XC7A35T)",
+  "stage": "T2",
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 원본이며 외부 코드를 포함하지 않는다. 아이디어 I-039 기반. 외부 부품 없음(보드 내장 LED만 사용).",
+
+  "goals": [
+    "틱 신호의 클럭 주기를 32비트 카운터로 측정",
+    "PERIOD_MIN / PERIOD_MAX / PERIOD_LAST 레지스터를 읽기 전용으로 제공",
+    "THRESHOLD 초과 시 OVERRUN_CNT 증가 및 IRQ_STATUS[0] 셋(W1C)",
+    "CTRL[0]=enable_meas, CTRL[1]=stats_clear(자동 복귀), THRESHOLD R/W 지원",
+    "IP 표준 rev.1 관리 레지스터(ID=JMON / VER / IRQ_STATUS W1C / IRQ_ENABLE) 포함",
+    "iverilog 시뮬레이션 PASS 확인(S1 목표)"
+  ],
+
+  "non_goals": [
+    "실제 MicroBlaze V CPU 연동 및 드라이버 작성",
+    "AXI4-Lite 래퍼 RTL(동결 맵 이식 시 별도 작성)",
+    "보드에서 직접 검증(S3)은 사용자 담당",
+    "지터 히스토그램, 고분해능 타임스탬프"
+  ],
+
+  "architecture": {
+    "clock": "100 MHz 단일 클럭 (CLK_100, W5), 비동기 리셋 (BTNC, U18, 액티브 하이)",
+    "blocks": [
+      {
+        "id": "clk",
+        "name": "CLK_100 100 MHz",
+        "kind": "clock",
+        "desc": "보드 100 MHz 클럭 입력 (W5)",
+        "short": "보드 클럭",
+        "side": "in"
+      },
+      {
+        "id": "x_btnc",
+        "name": "BTNC",
+        "kind": "external",
+        "desc": "센터 버튼, 비동기 리셋 (U18)",
+        "short": "리셋 버튼",
+        "side": "in"
+      },
+      {
+        "id": "x_led",
+        "name": "LED[15:0]",
+        "kind": "external",
+        "desc": "보드 내장 LED 16개. LED[15]=irq, LED[14]=tick_1khz",
+        "short": "상태 LED",
+        "side": "out"
+      },
+      {
+        "id": "tick_gen",
+        "name": "tick_gen (내부 카운터)",
+        "kind": "internal",
+        "module": "basys3_jitter_mon_top",
+        "file": "rtl/basys3_jitter_mon_top.v",
+        "desc": "100 MHz → 1 kHz (100,000 클럭) 분주기. 보드 시연용 틱 발생",
+        "short": "1kHz 틱 생성"
+      },
+      {
+        "id": "cfg_fsm",
+        "name": "cfg_fsm (스타트업 설정)",
+        "kind": "internal",
+        "module": "basys3_jitter_mon_top",
+        "file": "rtl/basys3_jitter_mon_top.v",
+        "desc": "리셋 후 2클럭 동안 THRESHOLD=150000, CTRL=enable 를 mmio-lite로 쓰고 idle 진입",
+        "short": "초기 설정 FSM"
+      },
+      {
+        "id": "jmon",
+        "name": "loop_jitter_mon",
+        "kind": "ip",
+        "module": "loop_jitter_mon",
+        "file": "rtl/loop_jitter_mon.v",
+        "desc": "제어 루프 지터 측정 IP. mmio-lite 슬레이브. IP 표준 rev.1 관리 레지스터 포함.",
+        "short": "지터 측정 IP"
+      }
+    ],
+    "links": [
+      { "from": "clk",      "to": "tick_gen", "label": "clk" },
+      { "from": "clk",      "to": "jmon",     "label": "clk" },
+      { "from": "x_btnc",   "to": "jmon",     "label": "rst" },
+      { "from": "tick_gen", "to": "jmon",     "label": "tick_in" },
+      { "from": "cfg_fsm",  "to": "jmon",     "label": "sel/we/offset/wdata" },
+      { "from": "jmon",     "to": "x_led",    "label": "irq / 내부 rdata" }
+    ]
+  },
+
+  "bus_protocol": {
+    "name": "mmio-lite",
+    "signals": [
+      { "name": "sel",    "dir": "master→slave", "desc": "슬레이브 선택 (이 사이클이 이 IP 대상)" },
+      { "name": "we",     "dir": "master→slave", "desc": "1=쓰기, 0=읽기" },
+      { "name": "offset", "dir": "master→slave", "desc": "16비트 오프셋 (addr[15:0])" },
+      { "name": "wdata",  "dir": "master→slave", "desc": "32비트 쓰기 데이터" },
+      { "name": "rdata",  "dir": "slave→master", "desc": "32비트 읽기 데이터 (sel=1 사이클 유효)" }
+    ],
+    "note": "1사이클 완료. 미매핑 오프셋 읽기는 32'h0 반환. 쓰기 무시. 대기·오류 없음."
+  },
+
+  "integration": {
+    "bus": "mmio-lite (자체, 단독 실행용)",
+    "address_map": "custom",
+    "compat": "incompatible",
+    "target_map": "mbv-frozen-v2",
+    "plan": "이 패키지는 단독 시뮬레이션과 보드 합성 확인을 위해 mmio-lite 버스(offset[15:0] 직접 비교)를 사용한다. 동결 맵(mbv-frozen-v2) 슬롯 [16]=0x4016_0000 / intc=13 에 이식하려면 (1) IP 표준 래퍼(axil_slave 패턴, 64KB 창)를 추가 작성하고 (2) AXI Interconnect에 연결하며 (3) IRQ는 INTC 입력 13번으로 배선한다. 레지스터 오프셋(0x0000~0x0014, 0xFFF0~0xFFFC)은 그대로 유지된다.",
+    "frozen_mapping": [
+      {
+        "block": "jmon",
+        "region": "[16] jmon_core 0x4016_0000, intc=13 (제안, 미동결)"
+      }
+    ]
+  },
+
+  "external_parts": [
+    {
+      "id": "p_led",
+      "name": "Basys3 LED 16개",
+      "block": "x_led",
+      "interface": "GPIO 출력",
+      "io_voltage": 3.3,
+      "qty": 16,
+      "board_resident": true,
+      "arduino_compatible": false,
+      "notes": "보드 내장. LED[15]=irq, LED[7:0]=overrun_cnt[7:0] 표시"
+    },
+    {
+      "id": "p_btnc",
+      "name": "Basys3 센터 버튼 (BTNC)",
+      "block": "x_btnc",
+      "interface": "GPIO 입력",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": true,
+      "arduino_compatible": false,
+      "notes": "비동기 리셋"
+    }
+  ],
+
+  "schematic": {
+    "state": "not-written",
+    "note": "외부 배선이 없는 순수 디지털 IP. 모든 연결은 보드 내장 LED/버튼. 추가 회로도 불필요."
+  },
+
+  "hierarchy": {
+    "module": "basys3_jitter_mon_top",
+    "file": "rtl/basys3_jitter_mon_top.v",
+    "children": [
+      {
+        "module": "loop_jitter_mon",
+        "file": "rtl/loop_jitter_mon.v"
+      }
+    ]
+  },
+
+  "memory_map": [
+    {
+      "base": "0x1000_0000",
+      "size": "0x10000",
+      "block": "jmon",
+      "note": "시뮬레이션용 주소. 동결 맵 이식 시 0x4016_0000으로 변경",
+      "regs": [
+        { "off": "0x0000", "name": "CTRL",        "access": "RW",  "desc": "bit[0]=enable_meas, bit[1]=stats_clear(W, 자동 복귀, 읽기 시 0)" },
+        { "off": "0x0004", "name": "PERIOD_MIN",  "access": "RO",  "desc": "측정된 최소 주기(클럭 수). 리셋/stats_clear 시 0xFFFF_FFFF" },
+        { "off": "0x0008", "name": "PERIOD_MAX",  "access": "RO",  "desc": "측정된 최대 주기(클럭 수). 리셋/stats_clear 시 0" },
+        { "off": "0x000C", "name": "PERIOD_LAST", "access": "RO",  "desc": "마지막 측정 주기(클럭 수). 첫 틱 전에는 0" },
+        { "off": "0x0010", "name": "OVERRUN_CNT", "access": "RO",  "desc": "THRESHOLD 초과 횟수. stats_clear 시 0" },
+        { "off": "0x0014", "name": "THRESHOLD",   "access": "RW",  "desc": "오버런 판정 임계값(클럭 수). 0이면 오버런 검출 비활성" },
+        { "off": "0xFFF0", "name": "ID",          "access": "RO",  "desc": "IP ID = 0x4A4D_4F4E ('JMON')" },
+        { "off": "0xFFF4", "name": "VER",         "access": "RO",  "desc": "0x0100_0100 = [31:24]=표준 rev1, [15:8]=주1, [7:0]=부0" },
+        { "off": "0xFFF8", "name": "IRQ_STATUS",  "access": "W1C", "desc": "bit[0]=overrun_irq. W1C. stats_clear로도 클리어" },
+        { "off": "0xFFFC", "name": "IRQ_ENABLE",  "access": "RW",  "desc": "bit[0]=overrun_irq 활성화. 리셋 시 0" }
+      ]
+    }
+  ],
+
+  "roadmap": [
+    {
+      "stage": "T1",
+      "state": "done",
+      "title": "MMIO 뼈대 (GPIO + UART)",
+      "refs": ["mmio-uart-gpio-skeleton"]
+    },
+    {
+      "stage": "T2",
+      "state": "current",
+      "title": "지터 측정 IP – mmio-lite 버스, IP 표준 관리 레지스터",
+      "refs": []
+    },
+    {
+      "stage": "T3",
+      "state": "planned",
+      "title": "AXI4-Lite 래퍼 추가, 동결 맵 슬롯 [16]에 이식, MicroBlaze V 연동",
+      "refs": []
+    }
+  ],
+
+  "references": [
+    {
+      "card": "circuitdigest-feroflyf405-open-source-fc",
+      "why": "제어 루프 타이밍 모니터링의 필요성과 오버런 검출 패턴 근거"
+    },
+    {
+      "card": "pinkfluffyunic0rn-stm32flight",
+      "why": "STM32 비행 제어기에서 루프 주기 계측 사례, THRESHOLD 아이디어 근거"
+    }
+  ],
+
+  "sources": {
+    "rtl": ["rtl/loop_jitter_mon.v", "rtl/basys3_jitter_mon_top.v"],
+    "tb": ["tb/tb_loop_jitter_mon.v"],
+    "constraints": ["constr/basys3_jitter_mon.xdc"],
+    "build": ["Makefile"]
+  },
+
+  "howto": [
+    {
+      "title": "시뮬레이션",
+      "steps": [
+        "iverilog, verilator, yosys 설치",
+        "make -C capstones/mmio-loop-jitter-mon lint sim synth",
+        "build/sim.log 에서 'PASS' 확인"
+      ]
+    },
+    {
+      "title": "Vivado 합성 (보드)",
+      "steps": [
+        "Vivado 2024.2 에서 새 프로젝트 생성 (xc7a35tcpg236-1)",
+        "rtl/*.v, constr/basys3_jitter_mon.xdc 추가",
+        "상위 모듈 basys3_jitter_mon_top 선택 후 Generate Bitstream",
+        "Programming 후 보드에서 LED[15](irq) 확인"
+      ]
+    }
+  ],
+
+  "verification": {
+    "lint": "verilator --lint-only -Wall -Wno-fatal --top-module basys3_jitter_mon_top rtl/*.v",
+    "sim": "iverilog -g2005 -o build/sim.vvp tb/tb_loop_jitter_mon.v rtl/loop_jitter_mon.v && vvp build/sim.vvp | grep PASS",
+    "synth": "yosys -p 'read_verilog rtl/*.v; synth_xilinx -top basys3_jitter_mon_top -family xc7; stat'",
+    "board": "pending",
+    "notes": "board 검증은 사용자 담당(S3). CI에서 lint+sim+synth → S1/S2 목표."
+  },
+
+  "risks": [
+    "tick_in은 2단 동기화 후 사용하므로 100 MHz보다 훨씬 빠른 틱(>40 MHz)은 측정 불가 — 대역외 사용 시 주의",
+    "THRESHOLD=0이면 오버런 검출이 비활성화됨. 초기값이 0이므로 반드시 활성 전에 쓸 것",
+    "stats_clear 사이클에 tick_rise가 겹치면 해당 에지 측정은 건너뜀(1샘플 손실) — 허용 가능한 측정 오차",
+    "OVERRUN_CNT는 32비트 포화(wraparound). 장시간 오버런 시 오버플로 주의",
+    "동결 맵 이식(T3)에서 AXI4-Lite 래퍼 추가가 필요하며, IRQ 선번(intc=13)은 프로젝트에서 동결 전까지 제안값임"
+  ]
+}
