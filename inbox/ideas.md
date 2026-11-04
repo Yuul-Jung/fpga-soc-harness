@@ -396,11 +396,8 @@
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(SPI 무선 IP + 레지스터 모델 없음) + 적합성 2(Pmod 1~2개·3.3V·BRAM 불필요) + 완결성 1(LoRa 확장 단계 미정) = 5점. 보강: 근거 카드 rechecked_at 1건, nRF24L01 단계로 범위 고정.
 
 ## I-036 센서 허브 IP: I2C 3장치(MPU-6050·BMP280·HMC5883L) 순회 + NMEA UART 수신, 공통 타임스탬프 표본 FIFO
-<<<<<<< Updated upstream
-- 상태: used (mmio-i2c3-nmea-hub, 2026-11-04)
-=======
-- 상태: used (mmio-i2c-nmea-sensor-hub, 2026-11-05)
->>>>>>> Stashed changes
+- 상태: used
+- 패키지: mmio-sensor-hub-nmea-ip, 2026-11-05
 - 요약: 내 판단: I2C 마스터가 주소 표(0x68, 0x76/0x77, 0x1E)를 순회해 센서별 원시값을 읽고, UART 수신기가 NMEA 문장 한 줄을 완료 인터럽트로 알리며, 모든 표본에 자유 실행 카운터 타임스탬프를 붙여 FIFO에 쌓는 AXI4-Lite 허브 IP. 보정 계산과 NMEA 필드 추출은 펌웨어. 테스트벤치에 I2C 슬레이브 모델 3개와 NMEA 문장 발생기를 넣는다.
 - 조합: [I2C 순회 마스터, UART NMEA 수신, 타임스탬프 FIFO, AXI4-Lite 레지스터·인터럽트]
 - 근거: [shillehtek-nano-mpu6050-neo6m-vehicle-logger, arduino-forum-nano-crash-3-i2c-gps, jpralves-car-hud-speed-compass, ammar-bin-amir-arty-a7-i2c-mpu-6050]

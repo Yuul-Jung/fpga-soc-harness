@@ -1,0 +1,222 @@
+{
+  "schema_version": "0.6",
+  "slug": "mmio-sensor-hub-nmea-ip",
+  "title": "I2C 3장치 순회 + NMEA UART 센서 허브 IP",
+  "summary": "MPU-6050(가속도), BMP280(기압/온도), HMC5883L(지자기) 3개 I2C 장치를 순회 읽기하고 NEO-6M GPS의 NMEA 문장을 수신해 공통 64비트 타임스탬프 FIFO에 쌓는 AXI4-Lite 슬레이브 IP.",
+  "board": "Basys3",
+  "stage": "T2",
+  "goals": [
+    "AXI4-Lite 슬레이브 인터페이스로 접근 가능한 I2C 마스터 구현 (100 kHz, 7비트 주소)",
+    "MPU-6050, BMP280, HMC5883L 3개 장치를 순회하며 1바이트씩 읽어 FIFO에 저장",
+    "9600baud NMEA UART RX: GPGGA/GPRMC 문장을 90바이트 버퍼에 캡처, 완성 시 IRQ",
+    "64비트 자유 주행 타임스탬프 카운터를 모든 샘플에 첨부",
+    "iverilog 시뮬레이션에서 PASS 확인 (I2C 슬레이브 모델 × 3, NMEA 발생기 포함)"
+  ],
+  "non_goals": [
+    "I2C 버스 중재 (마스터 1개 전용)",
+    "NMEA 문장 파싱 (바이트 스트림만 버퍼링)",
+    "GPS 위치 계산 및 화면 표시",
+    "다중 레지스터 연속 읽기(burst)",
+    "Vivado IP Integrator 연동 (AXI4-Lite 직결 충분)"
+  ],
+  "architecture": {
+    "clock": "100 MHz (aclk), 100 kHz I2C, 9600 baud UART",
+    "blocks": [
+      {
+        "id": "hub",
+        "name": "sensor_hub_top",
+        "kind": "ip",
+        "module": "sensor_hub_top",
+        "file": "rtl/sensor_hub_top.v",
+        "desc": "AXI4-Lite 슬레이브. I2C 마스터, NMEA UART RX, 샘플 FIFO, IRQ 생성 포함.",
+        "short": "센서 허브 IP",
+        "side": "left"
+      },
+      {
+        "id": "demo",
+        "name": "demo_axil_master",
+        "kind": "sim",
+        "module": "tb_sensor_hub_nmea",
+        "file": "tb/tb_sensor_hub_nmea.v",
+        "desc": "시뮬레이션용 AXI4-Lite 마스터 + I2C 슬레이브 모델 × 3 + NMEA 발생기.",
+        "short": "시뮬레이션 마스터",
+        "side": "right"
+      }
+    ],
+    "links": [
+      { "from": "demo", "to": "hub", "label": "AXI4-Lite" },
+      { "from": "hub",  "to": "demo", "label": "I2C (open-drain)" },
+      { "from": "demo", "to": "hub", "label": "UART RX" },
+      { "from": "hub",  "to": "demo", "label": "IRQ" }
+    ]
+  },
+  "bus_protocol": {
+    "name": "AXI4-Lite",
+    "data_width": 32,
+    "addr_width": 16,
+    "note": "WSTRB는 전체 워드(0xF)만 사용. 비정렬 접근 미지원."
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "custom",
+    "compat": "partial",
+    "plan": "mbv-frozen-v2 free_slot [1D] = 0x401D_0000 사용 제안. intc 13 사용 제안(FIFO_NE 인터럽트). 프로젝트 인덱스 표가 동결한다.",
+    "frozen_mapping": [
+      {
+        "block": "hub",
+        "region": "free_slot_1D",
+        "base": "0x401D_0000",
+        "size": "0x10000",
+        "intc": 13
+      }
+    ],
+    "note": "MicroBlaze V 연동 시: HUB_BASE = 0x401D_0000. demo_axil_master 블록을 제거하고 MBv가 AXI 마스터가 된다. I2C Pmod(JA[0]=SCL, JA[1]=SDA), UART Pmod(JB[0]=RX) 배선 필요."
+  },
+  "external_parts": [
+    {
+      "id": "mpu6050",
+      "name": "GY-521 (MPU-6050)",
+      "block": "hub",
+      "interface": "I2C",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": 3.3,
+      "level_shift": false,
+      "arduino_compatible": true,
+      "notes": "I2C 주소 0x68 (AD0=GND). SDA/SCL에 4.7kΩ 풀업 필요."
+    },
+    {
+      "id": "bmp280",
+      "name": "BMP280 기압/온도 모듈",
+      "block": "hub",
+      "interface": "I2C",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": 3.3,
+      "level_shift": false,
+      "arduino_compatible": true,
+      "notes": "I2C 주소 0x76 (SDO=GND). 모듈 내부 LDO 포함 여부 확인."
+    },
+    {
+      "id": "hmc5883l",
+      "name": "GY-271 (HMC5883L)",
+      "block": "hub",
+      "interface": "I2C",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": 3.3,
+      "level_shift": false,
+      "arduino_compatible": true,
+      "notes": "I2C 주소 0x1E (고정). 연속 측정 모드 설정 필요(0x02 레지스터)."
+    },
+    {
+      "id": "neo6m",
+      "name": "NEO-6M GPS 모듈",
+      "block": "hub",
+      "interface": "UART",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": 5.0,
+      "level_shift": true,
+      "power_note": "TX 출력이 3.3V여서 Basys3 직결 가능. VCC는 5V 별도 공급.",
+      "arduino_compatible": true,
+      "notes": "9600baud 기본. UART TX→Basys3 Pmod RX. 레벨 변환 불필요(TX 3.3V)."
+    },
+    {
+      "id": "pullup_i2c",
+      "name": "4.7kΩ 저항 × 2 (I2C 풀업)",
+      "block": "hub",
+      "interface": "I2C",
+      "io_voltage": 3.3,
+      "qty": 2,
+      "board_resident": false,
+      "supply_voltage": 3.3,
+      "level_shift": false,
+      "notes": "SCL, SDA 각 1개. 3.3V 전원에 연결."
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "디지털 계통도(diagram.svg)와 별개. 전기 회로도 미작성."
+  },
+  "hierarchy": [
+    {
+      "module": "sensor_hub_top",
+      "file": "rtl/sensor_hub_top.v",
+      "children": []
+    }
+  ],
+  "memory_map": [
+    {
+      "region": "sensor_hub",
+      "base": "0x401D_0000",
+      "size": "0x10000",
+      "block": "hub",
+      "regs": [
+        { "off": "0x0000", "name": "CTRL",      "access": "RW", "desc": "[0]=scan_en, [1]=fifo_rst, [2]=nmea_en" },
+        { "off": "0x0004", "name": "STATUS",    "access": "RO", "desc": "[0]=fifo_empty, [1]=fifo_full, [2]=i2c_busy, [3]=nmea_line_rdy" },
+        { "off": "0x0008", "name": "FIFO_DATA", "access": "RO", "desc": "FIFO 팝: 32비트 센서 데이터(읽으면 꺼냄)" },
+        { "off": "0x000C", "name": "FIFO_META", "access": "RO", "desc": "{ts_lo[15:0], dev_id[2:0], reg_id[7:0], data[7:0]}: 마지막 팝 메타데이터" },
+        { "off": "0x0010", "name": "NMEA_LEN",  "access": "RO", "desc": "마지막 완성 NMEA 문장 바이트 수" },
+        { "off": "0x0014", "name": "NMEA_BYTE", "access": "RO", "desc": "NMEA 버퍼 팝: 1바이트(읽으면 다음 바이트로 이동)" },
+        { "off": "0x0018", "name": "TS_HI",     "access": "RO", "desc": "타임스탬프 상위 32비트 (읽으면 TS_LO 래치)" },
+        { "off": "0x001C", "name": "TS_LO",     "access": "RO", "desc": "타임스탬프 하위 32비트 (TS_HI 읽은 뒤 유효)" },
+        { "off": "0xFFF0", "name": "IP_ID",     "access": "RO", "desc": "0x534E_5348 (ASCII 'SNSH')" },
+        { "off": "0xFFF4", "name": "IP_VER",    "access": "RO", "desc": "0x0000_0100 (Rev 1.0)" },
+        { "off": "0xFFF8", "name": "IRQ_STATUS","access": "RW", "desc": "[0]=fifo_ne(W1C), [1]=nmea_line_rdy(W1C)" },
+        { "off": "0xFFFC", "name": "IRQ_ENABLE","access": "RW", "desc": "[0]=fifo_ne_en, [1]=nmea_rdy_en" }
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T2",
+      "state": "current",
+      "title": "I2C 3장치 순회 + NMEA UART 수신 IP (이 패키지)",
+      "refs": [
+        "shillehtek-nano-mpu6050-neo6m-vehicle-logger",
+        "jpralves-car-hud-speed-compass",
+        "ammar-bin-amir-arty-a7-i2c-mpu-6050"
+      ]
+    },
+    {
+      "stage": "T3",
+      "state": "planned",
+      "title": "MicroBlaze V 펌웨어 드라이버 + 위치 로거 (C API)",
+      "refs": []
+    }
+  ],
+  "references": [
+    { "name": "shillehtek-nano-mpu6050-neo6m-vehicle-logger", "reason": "MPU-6050+NEO-6M 조합 아두이노 사례 (I-036 근거 카드)" },
+    { "name": "jpralves-car-hud-speed-compass",               "reason": "HMC5883L + GPS 조합 사례 (I-036 근거 카드)" },
+    { "name": "ammar-bin-amir-arty-a7-i2c-mpu-6050",         "reason": "FPGA I2C 마스터 + MPU-6050 AXI 인터페이스 사례 (I-036 근거 카드)" },
+    { "name": "mmio-i2c-master-ip",                           "reason": "이전 단계 I2C 마스터 IP 패키지 (AXI4-Lite 버스 패턴 참조)" }
+  ],
+  "sources": {
+    "rtl":         ["rtl/sensor_hub_top.v"],
+    "tb":          ["tb/tb_sensor_hub_nmea.v"],
+    "constraints": ["constr/basys3_sensor_hub.xdc"],
+    "build":       ["Makefile"]
+  },
+  "howto": {
+    "sim": "make sim  # iverilog + vvp, PASS/FAIL 출력 확인",
+    "lint": "make lint  # verilator --lint-only",
+    "synth": "make synth  # yosys synth_xilinx 자원 추정 (Vivado 기준과 다를 수 있음)",
+    "vivado": "Vivado에서 basys3_sensor_hub.xdc와 rtl/sensor_hub_top.v를 불러와 최상위를 sensor_hub_top으로 설정. I2C Pmod: JA[0]=SCL, JA[1]=SDA. UART Pmod: JB[0]=RX.",
+    "note": "시뮬레이션은 소규모 파라미터(I2C_HALF=4, BAUD_CNT=10)로 빠르게 돌린다."
+  },
+  "verification": {
+    "board": "not-tested",
+    "notes": "S0: 작성됨, 미검증. CI lint/sim 통과 시 S1, 합성 성공 시 S2."
+  },
+  "risks": [
+    "I2C 슬레이브 장치가 없으면 ACK가 없어 무한 재시도 → scan_en=0으로 멈춤",
+    "HMC5883L은 사용 전 연속 측정 모드 설정(0x02=0x00) 필요 — 이 IP는 설정하지 않음",
+    "NMEA 버퍼(90바이트)가 넘치면 뒷부분 잘림 — 완성 신호 전에 소비 필요",
+    "GPS 신호 취득까지 최대 수 분 소요 — 실내 테스트에서 UART는 더미 문장으로 확인"
+  ]
+}
