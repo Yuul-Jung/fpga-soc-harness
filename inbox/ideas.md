@@ -1021,8 +1021,9 @@
 - 근거 URL: [https://community.element14.com/technologies/fpga-group/b/blog/posts/vhdl-pwm-generator-with-dead-time-the-design, https://industrialmonitordirect.com/blogs/knowledgebase/igbt-h-bridge-shoot-through-fixing-pwm-timing-driver-issues]
 - 새로움의 근거: 카탈로그 내 SPWM 전용 AXI4-Lite IP 없음; IRS2110 카드는 드라이버 IC 설계에 집중하고 RTL FSM 미포함
 - Basys3 적합성의 근거: 100MHz 클럭 기준 500ns 데드타임 = 50 클럭 틱, 6비트 카운터 충분. Pmod 출력으로 HIN/LIN 쌍 직접 연결. 동결 맵 free_slots 1 블록(64KB) 배정
-- 난이도: 2 / 단계: T2 / 상태: vetted
+- 난이도: 2 / 단계: T2 / 상태: ready
 - 심사: 2026-11-05 /verify(10차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(근거 카드 모두 rechecked_at 없음) + 새로움 2(카탈로그 내 SPWM 전용 AXI4-Lite IP 없음; IRS2110 카드는 드라이버 IC 설계에 집중하고 RTL FSM 미포함) + 적합성 3(100MHz 클럭 기준 500ns 데드타임 = 50 클럭 틱, 6비트 카운터 충분; Pmod 출력으로 HIN/LIN 쌍 직접 연결 가능; 동결 맵 free_slots 1 블록 배정 가능) + 완결성 2(SPWM+데드타임 FSM+AXI4-Lite RTL 범위 명확, 보완 출력 TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득, 삼각파-기준파 비교 RTL 세부 파라미터 명세화.
+- 차단조건재심사: 2026-11-05 /verify(11차), 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(element14-cumps-deadtime-vhdl-pynqz2, industrialmonitordirect-irs2110-half-bridge, industrialmonitordirect-igbt-shootthrough, rechecked_at 불문) → 근거 3 + 새로움 2(카탈로그 내 SPWM 전용 AXI4-Lite IP 없음) + 적합성 3(100MHz 클럭 500ns 데드타임 50 클럭 틱, 6비트 카운터 충분, Pmod 출력 HIN/LIN 쌍 직접 연결, 동결 맵 free_slots 배정 가능) + 완결성 2(SPWM+데드타임 FSM+AXI4-Lite RTL 범위 명확, 보완 출력 TB 작성 가능) = 10점 ≥ 7 → ready 승격.
 
 ## I-078 Basys3 FPGA + IRS2110 + 소신호 H-브리지 슛스루 감지 테스트베드 T2
 
@@ -1043,8 +1044,9 @@
 - 근거 URL: [https://arxiv.org/abs/1002.3340, https://community.element14.com/technologies/fpga-group/b/blog/posts/vhdl-pwm-generator-with-dead-time-the-design]
 - 새로움의 근거: 카탈로그 내 SPWM + XADC 폐루프 조합 없음. XADC는 Basys3 내장 IP이므로 외부 ADC 불필요
 - Basys3 적합성의 근거: Basys3 XC7A35T에 XADC 블록 내장(12비트 1MSPS). 분압 저항으로 출력 전압 0–1V로 스케일해 XADC VAUXP/VAUXN에 연결(Pmod JA). I-077의 SPWM IP와 연동
-- 난이도: 4 / 단계: T3 / 상태: vetted
+- 난이도: 4 / 단계: T3 / 상태: ready
 - 심사: 2026-11-05 /verify(10차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(근거 카드 모두 rechecked_at 없음) + 새로움 2(카탈로그 내 SPWM + XADC 폐루프 조합 없음; XADC 내장 IP로 외부 ADC 불필요한 접근) + 적합성 3(Basys3 XC7A35T XADC 블록 내장 12비트 1MSPS; 분압 저항으로 출력 전압 0–1V 스케일, XADC VAUXP/VAUXN 연결 가능; I-077의 SPWM IP와 연동) + 완결성 2(SPWM+XADC+PI 제어기 RTL 또는 SW 범위 명확, 개루프 대비 폐루프 TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득, PI 제어기 RTL 또는 SW 구현 방식 선택(T3 → SW 구현 추천), 분압 저항 값 명세화.
+- 차단조건재심사: 2026-11-05 /verify(11차), 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(arxiv-1002340-spartan3e-spwm-inverter, element14-cumps-deadtime-vhdl-pynqz2, industrialmonitordirect-igbt-shootthrough, rechecked_at 불문) → 근거 3 + 새로움 2(카탈로그 내 SPWM + XADC 폐루프 조합 없음) + 적합성 3(Basys3 XC7A35T XADC 내장 12비트 1MSPS, VAUXP/VAUXN 연결 가능, I-077 SPWM IP와 연동) + 완결성 2(SPWM+XADC+PI 범위 명확, 개루프 대비 폐루프 TB 작성 가능) = 10점 ≥ 7 → ready 승격(2번째, 사이클 상한 도달).
 
 ## I-081 Basys3 XADC + ACS712 전류 측정 AXI4-Lite IP — T2
 
@@ -1057,6 +1059,7 @@
 - 내 판단: ACS712 출력 2.5V 중심이므로 분압 후 최대 0.5V·최소 0V 범위가 됨 — ±5A 범위를 절반만 측정하거나 오프셋을 소프트웨어로 보정해야 함. 단방향 전류(0~5A)면 0~0.5V 범위로 간단하게 가능. 변경: digilent-basys3-xadc-analog-input (존재하지 않는 카드)를 xilinx-xapp795-driving-xadc·amd-ug480-xadc-external-inputs로 교체.
 - 난이도: 3 / 단계: T2 / 상태: vetted
 - 심사: 2026-11-05 /verify(10차), 첫 raw→vetted 심사(차단조건재심사 불적용). ID 충돌 수정: 이전 I-079(YAML 형식, 중복) → I-081(마크다운 형식)으로 재번호. 근거 카드 오류(digilent-basys3-xadc-analog-input 존재하지 않음) → xilinx-xapp795-driving-xadc로 수정. 근거 0(sparkfun-acs712-current-sensor·xilinx-xapp795-driving-xadc·applied-ee-analog-front-end 모두 rechecked_at 없음) + 새로움 2(XADC + 홀 전류 센서 AXI IP 조합 카탈로그 없음; 기존 XADC 아이디어와 측정 목적 다름) + 적합성 3(XADC 내장, JXADC 헤더 4채널 가용, 분압기 R1/R2로 0–0.5V 스케일 가능, RC 필터 설계 명확) + 완결성 2(AXI4-Lite+이동평균+XADC RTL 범위 명확, 오프셋 보정 로직 TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득, ACS712 버전(05B/20A/30A) 선택 명세화.
+- 차단조건재심사: 2026-11-05 /verify(11차), 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(sparkfun-acs712-current-sensor, xilinx-xapp795-driving-xadc, applied-ee-analog-front-end, rechecked_at 불문) → 근거 3 + 새로움 2(XADC + 홀 전류 센서 AXI IP 조합 카탈로그 없음) + 적합성 3(XADC 내장, JXADC 헤더 4채널, 분압기 R1/R2로 0–0.5V 스케일 가능) + 완결성 2(AXI4-Lite+이동평균+XADC RTL 범위 명확, TB 작성 가능) = 10점 ≥ 7, 사이클당 최대 2건 상한(I-077·I-079 선 승격) → 보류. 다음 사이클 1순위.
 
 ## I-080 FPGA Verilog 범용 디지털 LPF 라이브러리 블록 (이동 평균 CIC 형식) — T1
 
@@ -1069,6 +1072,7 @@
 - 내 판단: N이 2의 거듭제곱이 아닌 경우 나눗셈 비용 발생 — N을 항상 2의 거듭제곱으로 제한하거나 별도 처리 필요.
 - 난이도: 2 / 단계: T1 / 상태: vetted
 - 심사: 2026-11-05 /verify(10차), 첫 raw→vetted 심사(차단조건재심사 불적용). 형식 변환: YAML 형식 → 마크다운 형식. 근거 카드 수정: digilent-basys3-xadc-analog-input(존재하지 않음) → amd-ug480-xadc-external-inputs. 근거 0(근거 카드 모두 rechecked_at 없음) + 새로움 2(library/rtl/ 디지털 필터 모듈 없음; CIC 이동 평균은 카탈로그 내 RTL 없음) + 적합성 3(순수 Verilog-2001, 2의 거듭제곱 N으로 나눗셈→비트 선택, LUT/FF 사용량 O(log N)) + 완결성 2(library/rtl/ 위치 명확, 파라미터 TB 작성 가능, Fco 공식으로 필터 특성 검증 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득, N 비2의거듭제곱 처리 방안 결정.
+- 차단조건재심사: 2026-11-05 /verify(11차), 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 2건(amd-ug480-xadc-external-inputs, applied-ee-analog-front-end, rechecked_at 불문) → 근거 2 + 새로움 2(library/rtl/ 디지털 필터 모듈 없음; CIC 이동 평균 RTL 카탈로그 없음) + 적합성 3(순수 Verilog-2001, 2의 거듭제곱 N으로 나눗셈→비트 선택, LUT/FF 사용량 O(log N)) + 완결성 2(library/rtl/ 위치 명확, 파라미터 TB 작성 가능) = 9점 ≥ 7, 사이클당 최대 2건 상한(I-077·I-079 선 승격) → 보류. 다음 사이클 2순위.
 
 ## I-082 MicroBlaze V AXI4-Lite SPI Pmod PCB 확장 보드 — PCB 설계 체크리스트 실습 (T2)
 
@@ -1079,7 +1083,8 @@
 - 새로움의 근거: 카탈로그에 Pmod 확장 PCB 설계 체크리스트 형태 아이디어 없음. 기존 PCB 관련 아이디어(없음) 대비 하드웨어·소프트웨어 통합 체크리스트 접근
 - Basys3 적합성의 근거: Basys3 표준 Pmod 포트(3.3V, JA-JD 커넥터), SPI는 MicroBlaze V AXI Quad SPI IP 활용, Pmod 핀 2개씩 배선 간격 ≥ 3×폭(3W 규칙) 적용 가능, 커넥터 근처 100nF + 1µF 배치
 - 내 판단: S7 난이도 사다리의 최종 응용 단계. 디커플링(T0) → GND 분리(T1) → SI·FPGA 체크리스트(T2)를 Pmod PCB 설계에 통합 적용하는 캡스톤형 실습.
-- 난이도: 3 / 단계: T2 / 상태: raw
+- 난이도: 3 / 단계: T2 / 상태: vetted
+- 심사: 2026-11-05 /verify(11차), 첫 raw→vetted 심사. 근거 0(jlcpcb-decoupling-capacitor-guide·rfessentials-split-ground-plane-emi·ema-eda-fpga-pcb-design-guide 모두 rechecked_at 없음) + 새로움 2(Pmod 확장 PCB 설계 체크리스트 형태 아이디어 카탈로그에 없음; 디커플링·GND 플레인·3W·직렬 종단 통합 가이드 없음) + 적합성 2(Basys3 Pmod 3.3V 커넥터 직접 해당, MicroBlaze V AXI Quad SPI IP 활용 가능; PCB 설계 가이드라서 RTL 없음 → 적합성은 보드 수준에서 충분하나 RTL-TB 연결 간접적) + 완결성 1(PCB 체크리스트 문서 주이므로 TB 없음; AXI4-Lite SPI IP 연동 RTL 범위 미명세화) = 5점 → vetted. 보강: 근거 카드 rechecked_at 취득, AXI4-Lite SPI IP 연동 RTL 범위 명세화.
 
 ## I-083 모터 드라이버 보드 GND 분리 + 스타 접지 실습 PCB 체크리스트 — MicroBlaze V PWM·H-브리지 경계 (T2)
 
@@ -1090,7 +1095,8 @@
 - 새로움의 근거: 카탈로그에 MicroBlaze V PWM ↔ H-브리지 GND 분리 체크리스트 아이디어 없음. 기존 H-브리지(industrialmonitordirect-irs2110-half-bridge) 카드는 회로 가이드이며 GND 분리·스타 접지 조합 없음
 - Basys3 적합성의 근거: Basys3 Pmod/GPIO 3.3V ↔ 12V 모터 전원 분리. H-브리지는 외부 보드(IRS2110 또는 L298N). GND 연결 브리지 2~5mm 폭, 광커플러 또는 MOSFET 드라이버 디커플링. FPGA 보드 자체는 무수정.
 - 내 판단: 모터 제어 사다리(엔코더→PID→모터 드라이버)에서 PCB 하드웨어 단 보완 사례로 적합. 기존 아이디어와 겹치지 않음.
-- 난이도: 3 / 단계: T2 / 상태: raw
+- 난이도: 3 / 단계: T2 / 상태: vetted
+- 심사: 2026-11-05 /verify(11차), 첫 raw→vetted 심사. 근거 0(rfessentials-split-ground-plane-emi·jlcpcb-decoupling-capacitor-guide·industrialmonitordirect-irs2110-half-bridge 모두 rechecked_at 없음) + 새로움 2(MicroBlaze V PWM ↔ H-브리지 GND 분리 체크리스트 아이디어 카탈로그에 없음; 기존 H-브리지 카드는 GND 분리·스타 접지 조합 없음) + 적합성 2(Basys3 Pmod/GPIO 3.3V ↔ 12V 모터 전원 분리 가능; H-브리지 외부 보드 필요; PCB 설계 가이드라서 RTL 불필요하나 외부 PCB 보드 필요) + 완결성 1(PCB 설계 가이드+스타 접지 체크리스트 문서 주이므로 TB 없음; MicroBlaze V PWM RTL 연동 범위 미명세화) = 5점 → vetted. 보강: 근거 카드 rechecked_at 취득, MicroBlaze V PWM RTL 범위(레지스터·TB) 명세화.
 
 ## I-084 FPGA SoC PCB 전원 무결성 검증 가이드 — VCCINT·VCCO·VCCAUX 디커플링 계층 체크 (T1)
 
@@ -1101,4 +1107,5 @@
 - 새로움의 근거: 카탈로그에 XC7A35T 전원 레일별 디커플링 계층 체크리스트 아이디어 없음. vishay-fpga-power-supply-consideration(기존 T0)은 범용 가이드이며 XC7A35T 레일별 적용 조합 없음
 - Basys3 적합성의 근거: XC7A35T 전원 핀 직접 해당. via-in-pad는 2층 기판 외 옵션, 4층 기판 권장 시 근접 GND 플레인 활용. Basys3 확장 보드 설계 시 적용 가능.
 - 내 판단: S7 사다리의 T1 위치(입문 디커플링 개념 습득 후, 고급 SI 규칙 적용 전). 비교적 좁은 범위이지만 MicroBlaze V SoC 주변장치 PCB 설계 시 필수 체크 항목.
-- 난이도: 2 / 단계: T1 / 상태: raw
+- 난이도: 2 / 단계: T1 / 상태: vetted
+- 심사: 2026-11-05 /verify(11차), 첫 raw→vetted 심사. 근거 0(jlcpcb-decoupling-capacitor-guide·ema-eda-fpga-pcb-design-guide·vishay-fpga-power-supply-consideration 모두 rechecked_at 없음) + 새로움 2(XC7A35T 전원 레일별 디커플링 체크리스트 아이디어 카탈로그에 없음; vishay 가이드는 범용, XC7A35T 레일별 적용 조합 없음) + 적합성 2(XC7A35T 전원 핀 직접 해당; 확장 보드 설계 대상이지만 RTL 불필요 → T1 위치 적합성 충분하나 RTL-TB 연결 없음) + 완결성 1(VCCINT·VCCO·VCCAUX 체크리스트 문서 완결 가능하나 MicroBlaze V SoC PDN 추정 방법 범위 넓어 TB 없음) = 5점 → vetted. 보강: 근거 카드 rechecked_at 취득, PDN 임피던스 추정 방법 범위 세분화.
