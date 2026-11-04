@@ -152,18 +152,24 @@ module multi_axis_motion_ip (
     reg         tick;         // 1클럭 펄스 (매 주기 시작)
     reg         tick_ev_r;   // IRQ용 이벤트 래치
 
+    // PERIOD 레지스터 쓰기 감지 (조합 신호 — 타이머 즉시 리로드용)
+    wire period_wr = valid && we && (addr[15:0] == 16'h0004);
+
     always @(posedge clk) begin
         if (rst) begin
-            period_cnt <= 20'd0;
+            period_cnt <= 20'd1;   // 리셋 직후 첫 tick을 2클럭 뒤로 미룸
             tick       <= 1'b0;
+        end else if (period_wr) begin
+            // 새 주기값으로 즉시 리로드 (tick 없음)
+            // wdata 는 combinational 이므로 다음 사이클부터 새 주기 적용
+            period_cnt <= wdata[19:0] - 20'd1;
+            tick       <= 1'b0;
+        end else if (period_cnt == 20'd0) begin
+            period_cnt <= period_r - 20'd1;
+            tick       <= 1'b1;
         end else begin
-            if (period_cnt == 20'd0) begin
-                period_cnt <= period_r - 20'd1;
-                tick       <= 1'b1;
-            end else begin
-                period_cnt <= period_cnt - 20'd1;
-                tick       <= 1'b0;
-            end
+            period_cnt <= period_cnt - 20'd1;
+            tick       <= 1'b0;
         end
     end
 
