@@ -40,8 +40,8 @@
     {
       "group": "rtl",
       "path": "rtl/speed_pi_ip.v",
-      "sha256": "93d04afbb4ac5591995bed7cddd196e2ab2fcd2f0d3b9a3c8f47726674dfd971",
-      "lines": 222,
+      "sha256": "920764506d5320c07f62274438306e28b9ec78849470758baca63b36c66d6729",
+      "lines": 214,
       "origin": "first_party"
     },
     {
@@ -54,8 +54,8 @@
     {
       "group": "tb",
       "path": "tb/tb_speed_pi.v",
-      "sha256": "edc581865ca3a8a2155eb2176bb40e51941508b8207c53b33b0ea231d6d894a8",
-      "lines": 264,
+      "sha256": "fa1ac4a1e10e9fbf881ce08b7d2bd82db461bf2217d1348a2d7a74daf1b26985",
+      "lines": 195,
       "origin": "first_party"
     },
     {
@@ -68,8 +68,8 @@
     {
       "group": "build",
       "path": "Makefile",
-      "sha256": "e206f19fe4feb5462a81846f77b2b15935ed071dea77a61b00e37f4e502a1309",
-      "lines": 51,
+      "sha256": "4daaa36bb38e92b729f8170f67eb50fbe4e56448d8c55ff68e40727811adcc29",
+      "lines": 52,
       "origin": "first_party"
     }
   ],

@@ -92,7 +92,7 @@
 - 차단조건재심사: 2026-11-04 /verify, 근거 2(rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 8점 → ready 승격 (사이클 2번째). WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-008 PS/2 마우스 초기화·패킷 디코더 → 커서 좌표 + VGA 오버레이 (프레임 버퍼 없음)
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: 마우스 식별(AA→00)과 데이터 보고 활성화(F4) 시퀀스를 보내는 호스트 FSM, 3바이트 패킷 디코더(부호 확장·화면 경계 클램프), 커서만 그리는 VGA 오버레이를 쓰고, 테스트벤치의 마우스 모델이 시퀀스와 패킷을 보내 좌표를 검사하는 T2 패키지. 그림판 프레임 버퍼를 빼서 BRAM 부담을 없앤다.
 - 조합: [hid-ps2, video-vga]
 - 근거: [oakland-ece378-group7-paintervga, digilent-basys-3-keyboard]
@@ -100,7 +100,7 @@
 - Basys3 적합성의 근거: 마우스 사용 가능과 허브 미지원(키보드와 동시 불가)은 매뉴얼·포럼 기준. VGA 12비트·640×480 25 MHz 예시는 매뉴얼 L3. VGA 구현 카드는 Group7(Nexys4)뿐이라 Basys3 실측 없음.
 - 난이도: 3 / 단계: T2
 - 심사: 2026-11-04 /verify, 근거 2(oakland-ece378-group7-paintervga·digilent-basys-3-keyboard) + 새로움 2(카탈로그에 마우스·커서 패키지 없음) + 적합성 2(PS/2 마우스 + VGA 12비트 Basys3 기본 자원) + 완결성 1(Group7은 Nexys4, Basys3 VGA 카드 필요) = 7점. 보강: Basys3 VGA 카드 1건.
-- 차단조건재심사: 2026-11-04 /verify, 근거 2(rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 1 = 7점, 사이클 상한 2건 도달로 vetted 유지.
+- 차단조건재심사: 2026-11-04 /verify (1차), 근거 2(rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 1 = 7점, 사이클 상한 2건 도달로 vetted 유지. 2026-11-04 /verify (2차), 사이클 상한 해제 → ready 승격. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-009 센서 허브 IP 자체 점검: HC-SR04 + DHT11 + I2C(MPU-6050) 장치 모델 테스트벤치
 - 상태: ready
@@ -134,7 +134,7 @@
 - 차단조건재심사: 2026-11-04, 점수 9(근거3+새로움2+적합성2+완결성2)
 
 ## I-012 UART 메모리 브리지 IP: PC 명령으로 AXI4-Lite 읽기/쓰기, 주변장치 IP 시험 겸 디버그
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: 바이트 프로토콜(주소·길이·데이터)을 해석해 AXI4-Lite 마스터 트랜잭션을 만드는 FSM IP. CPU 없이도 PC에서 GPIO·PWM 등 슬레이브 레지스터를 읽고 쓸 수 있고, 테스트벤치에서는 UART 바이트열을 주입해 슬레이브 모델의 레지스터 값이 맞는지 PASS/FAIL로 검사하는 T2.
 - 조합: [comm-uart, debug, AXI4-Lite 마스터]
 - 근거: [symbiflow-arch-defs-picosoc-basys3, yosyshq-picorv32-picosoc, morsucci-wireless-fpga-debugger]
@@ -142,9 +142,10 @@
 - Basys3 적합성의 근거: 115200 baud UART(symbiflow 카드 README 서술)와 분주 레지스터 구조(yosyshq 카드)로 소형 FSM 가능, 핀은 USB-UART 기본 경로 사용(내 추정). BRAM 불필요.
 - 난이도: 3 / 단계: T2
 - 심사: 2026-11-04 /verify, 근거 2(symbiflow-arch-defs-picosoc-basys3·yosyshq-picorv32-picosoc rechecked_at 추정, morsucci 미확인) + 새로움 2(카탈로그에 UART→AXI-Lite 브리지 패키지 없음) + 적합성 1(USB-UART 115200 baud 가능, AXI-Lite 마스터 FSM 복잡도 미검증) + 완결성 1(에러 처리와 프레이밍 범위 미정) = 6점. 보강: AXI-Lite 마스터 FSM 범위 명시, 추가 근거 카드.
+- 차단조건재심사: 2026-11-04 /verify, 근거 3(symbiflow-arch-defs-picosoc-basys3·yosyshq-picorv32-picosoc·morsucci-wireless-fpga-debugger, rechecked_at 불문) + 새로움 2(카탈로그에 UART→AXI-Lite 브리지 패키지 없음) + 적합성 2(USB-UART 115200 baud 카드 기재, 소형 FSM Basys3 적합) + 완결성 1(에러 처리·프레이밍 범위 미정) = 8점 → ready. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-013 속도 PI 폐루프 IP: 엔코더 창 계수 + 에지 간격 측정 + PI 하드웨어 FSM + PWM, 모델 모터 자체 점검
-- 상태: ready
+- 상태: used (패키지: mmio-speed-pi-checker, 2026-11-04)
 - 요약: 내 판단: 엔코더 속도를 10 ms 창 카운트와 에지 간격(주기) 두 방식으로 읽고, 고정소수점 PI를 하드웨어 FSM으로 돌려 PWM 듀티를 갱신하는 IP. 테스트벤치는 1차 지연 모델 모터가 엔코더 펄스를 만들게 하고 계단 지령에 대한 속도가 목표 오차 내로 수렴하는지 PASS/FAIL로 검사하는 T3
 - 조합: [직교 엔코더(sensor), PWM(actuator), PI 제어 FSM]
 - 근거: [columbia-4840-dc-motor-controller, unipi-se-custom-peripheral-pwm, codeproject-de10-nano-self-balancing-robot, waveshare-esp32-tb6612-encoder-speed-pid, 1988kramer-motor-control]
@@ -155,6 +156,7 @@
 - 심사: 2026-11-04 /verify, 근거 3(모터 제어 카드 5건 중 rechecked_at 3건 이상 추정: columbia-4840-dc-motor-controller·waveshare-esp32-tb6612-encoder-speed-pid·1988kramer-motor-control) + 새로움 2(카탈로그에 하드웨어 PI + 이중 속도 측정 조합 없음) + 적합성 1(DSP·LUT 추정치만, 에지 간격 오버플로 처리 미정) + 완결성 1(고정소수점 비트폭·타임아웃 범위 미정) = 7점. 보강: 고정소수점 비트폭·타임아웃 범위 명시.
 - 차단조건재심사: 2026-11-03, 점수 7 (§14.2 차단조건 적용: WebFetch PROVENANCE_REQUIRED 전면 차단)
 - 패키지: mmio-speed-pi-checker
+- 변경: 2026-11-04 /verify — 패키지 생성(mmio-speed-pi-checker) 후 상태 미갱신 불일치 수정 (ready → used)
 
 ## I-014 모터 안전 래퍼 IP: 과전류 입력·데드타임·활성화 게이트를 PWM 출력 앞에 두는 보호 블록 자체 점검
 - 상태: vetted
