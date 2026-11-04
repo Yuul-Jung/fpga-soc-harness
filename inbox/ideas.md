@@ -895,9 +895,10 @@
 - Basys3 적합성 근거: Basys3의 Pmod JA~JD로 W25Q64 SPI 연결 가능(SPI MOSI/MISO/CLK/CS). AXI Quad SPI IP는 MIG 없이 BRAM 50개 여유에서 실행. SHA256 소프트웨어 구현 약 2kB C 코드. BRAM 100kB 여유(T3 단계 이미지 크기 내).
 - 난이도: 4
 - 단계: T3
-- 상태: vetted
+- 상태: ready
 - 심사: 2026-11-04 /verify, 근거 0(memfault-interrupt-mcuboot-overview·cnxsoft-arduino-mcuboot-stm32h7·hubble-ble-ota-dfu-zephyr-mcuboot 모두 rechecked_at 없음) + 새로움 2(FPGA SoC OTA 부트로더 카드 없음; SPI Flash 2슬롯 OTA Basys3 MicroBlaze V 사례 없음) + 적합성 2(Basys3 Pmod SPI W25Q64 연결 가능, AXI Quad SPI IP BRAM 여유 충분, SHA256 C 코드 ~2kB) + 완결성 1(imgtool 이미지 형식·부트로더 FSM·C 코드·SPI 드라이버 조합 범위 큼; 1단계(이미지 헤더 검증, ECDSA 없음)로 범위 축소 필요) = 5점 → vetted. 보강: 근거 카드 rechecked_at 취득, 1단계 범위 명세화.
 - 차단조건재심사: 2026-11-04 /verify(6차), 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(memfault-interrupt-mcuboot-overview, cnxsoft-arduino-mcuboot-stm32h7, hubble-ble-ota-dfu-zephyr-mcuboot, rechecked_at 불문) → 근거 3 + 새로움 2(FPGA SoC OTA 부트로더 없음; SPI Flash 2슬롯 OTA 없음) + 적합성 2(Pmod SPI W25Q64 연결, AXI Quad SPI IP BRAM 여유, SHA256 C ~2kB) + 완결성 1(imgtool+FSM+C+SPI 드라이버 조합 범위 큼) = 8점 ≥ 7이나 한 사이클 2건 상한 초과로 보류 → vetted 유지. 다음 사이클 1순위 후보.
+- 차단조건재심사: 2026-11-04 /verify(7차), 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(memfault-interrupt-mcuboot-overview, cnxsoft-arduino-mcuboot-stm32h7, hubble-ble-ota-dfu-zephyr-mcuboot, rechecked_at 불문) → 근거 3 + 새로움 2 + 적합성 2 + 완결성 1 = 8점 ≥ 7, 6차 보류 1순위 후보 → ready 승격. 범위: 1단계(ECDSA 없는 이미지 헤더 검증·BRAM 복사·점프)만 구현, AXI Quad SPI IP + SHA256 C 모듈 + 부트로더 FSM.
 
 ---
 
@@ -930,8 +931,9 @@
 - Basys3 적합성 근거: 순수 FSM+카운터이므로 BRAM·LUT 소모 최소(< 100 LUT 추정). AXI4-Lite 슬레이브 래퍼는 `library/rtl/axil_regs.v` 참고 가능. `free_slots` 중 하나에 64KB 배정 가능.
 - 난이도: 2 (1단계), 3 (2단계), 4 (3단계)
 - 단계: T1 → T2 → T3
-- 상태: vetted
+- 상태: ready
 - 심사: 2026-11-04 /verify(6차), WebFetch 전면 차단으로 근거 카드 rechecked_at 없음. 근거 0(rtime-cvut-openmsp430-watchdog·heia-fr-ma-embreal-zephyr-stack-protection·tum-industrial-es-2015-functional-safety 모두 rechecked_at 없음) + 새로움 2(AXI4-Lite 워치독 IP 카드 없음; 단계적 WDT 구현 없음) + 적합성 3(순수 FSM+카운터 LUT 최소, free_slots 가용, axil_regs.v 참고) + 완결성 2(3단계 체인 범위 명확, RTL+TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득 필요.
+- 차단조건재심사: 2026-11-04 /verify(7차), 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(rtime-cvut-openmsp430-watchdog, heia-fr-ma-embreal-zephyr-stack-protection, tum-industrial-es-2015-functional-safety, rechecked_at 불문) → 근거 3 + 새로움 2(AXI4-Lite 워치독 IP 카드 없음; 단계적 WDT 없음) + 적합성 3(순수 FSM+카운터 LUT 최소, free_slots 가용, axil_regs.v 참고) + 완결성 2(3단계 체인 T1→T2→T3 범위 명확, RTL+TB 작성 가능) = 10점 ≥ 7 → ready 승격. 2건 상한 내 2번째 승격.
 
 ---
 
@@ -949,33 +951,34 @@
 - 단계: T2
 - 상태: vetted
 - 심사: 2026-11-04 /verify(6차), WebFetch 전면 차단. 근거 0(근거 카드 모두 rechecked_at 없음) + 새로움 2(CRC 검사 AXI IP 없음; 복합 안전 계층 없음) + 적합성 2(CRC FSM LUT 최소, BRAM Controller 경유 가능, C 코드 MicroBlaze V 동작) + 완결성 1(CRC IP + 스택 센티넬 C 조합 TB 복잡, I-070 선행 필요) = 5점 → vetted. 보강: 근거 카드 rechecked_at 취득, I-070 1단계 완성 후 재심사.
+- 차단조건재심사: 2026-11-04 /verify(7차), 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(tum-industrial-es-2015-functional-safety, heia-fr-ma-embreal-zephyr-stack-protection, rtime-cvut-openmsp430-watchdog, rechecked_at 불문) → 근거 3 + 새로움 2 + 적합성 2 + 완결성 1(I-070 선행 필요) = 8점 ≥ 7이나 한 사이클 2건 상한 초과로 보류 → vetted 유지. 다음 사이클 1순위 후보.
 
 ## I-072 FPGA RTL 데드타임 생성기 IP (IRS2110 외부 로직 대체)
-- 상태: raw
+- 상태: vetted
 - 요약: 내 판단: H-브리지 하이사이드/로우사이드 PWM 쌍을 AXI4-Lite 슬레이브로 제어하고, RTL 카운터로 200–500 ns 데드타임을 보장하는 T2 IP. IRS2110의 HIN/LIN 입력에 직접 연결.
 - 조합: [Basys3 FPGA(PWM+데드타임 IP), 로직레벨 MOSFET(VGS(th)<2.5V), 쇼트키 플라이백 다이오드]
 - 근거: [industrialmonitordirect-irs2110-half-bridge, zbotic-backem-flyback-protection, lcsc-mosfet-selection-motor-control]
 - 새로움의 근거: 기존 아이디어들은 슛스루 차단이 주목적; 이 IP는 IRS2110 HIN/LIN 쌍 직접 구동을 위한 데드타임 타이밍 IP로 목적이 다름
 - Basys3 적합성의 근거: Pmod JA/JB 핀(3.3V)으로 HIN/LIN 출력 가능; 100MHz 클럭으로 10 ns 분해능, 20클럭=200 ns 최소 데드타임 카운터 구현 가능
 - 난이도: 2 / 단계: T2
-- 심사: (미심사)
+- 심사: 2026-11-04 /verify(7차), 근거 0(industrialmonitordirect-irs2110-half-bridge·zbotic-backem-flyback-protection·lcsc-mosfet-selection-motor-control 모두 rechecked_at 없음; 이번 사이클에 처음 추가된 카드) + 새로움 2(AXI4-Lite 데드타임 IP 카드 없음; IRS2110 HIN/LIN 직접 구동용 타이밍 IP 조합 없음) + 적합성 2(Pmod JA/JB 3.3V 출력, 100MHz 클럭 10ns 분해능, 순수 FSM+카운터 BRAM 미사용; 단 IRS2110 외부 연결 전기 호환성 미확인) + 완결성 1(PWM+데드타임 RTL 범위는 명확하나 IRS2110 외부 하드웨어 연결 절차 미정) = 5점 → vetted. 보강: 근거 카드 rechecked_at 취득, IRS2110 외부 연결 절차 명세화. ※ 첫 raw→vetted 심사이므로 차단조건재심사 불적용(§14.2).
 
 ## I-073 역기전력 보호 회로 + FPGA XADC 과전류 감지 조합 T2
-- 상태: raw
+- 상태: vetted
 - 요약: 내 판단: RC 스너버·TVS·쇼트키 다이오드 하드웨어 보호와 Basys3 XADC 션트 저항 전류 측정을 결합한 소프트·하드 2중 모터 보호 시스템.
 - 조합: [Basys3 XADC(전류 샘플), zbotic 플라이백 보호 회로, mmio-motor-safety-wrapper RTL 연장]
 - 근거: [zbotic-backem-flyback-protection, industrialmonitordirect-irs2110-half-bridge]
 - 새로움의 근거: 순수 하드웨어 보호(쇼트키+TVS)와 FPGA XADC 소프트 과전류 차단을 계층화; 기존 아이디어는 RTL 슛스루·데드타임만 처리, XADC 연동 없음
 - Basys3 적합성의 근거: XADC JXADC 커넥터를 션트 저항 전압 측정에 사용(0–1V 범위); 외부 하드웨어 보호는 Pmod 외부 회로에 추가
 - 난이도: 3 / 단계: T2
-- 심사: (미심사)
+- 심사: 2026-11-04 /verify(7차), 근거 0(zbotic-backem-flyback-protection·industrialmonitordirect-irs2110-half-bridge 모두 rechecked_at 없음; 근거 카드 2건만) + 새로움 2(XADC 연동 과전류 감지+하드웨어 플라이백 보호 조합 카드 없음; 기존 아이디어는 RTL 슛스루·데드타임만) + 적합성 2(Basys3 XADC JXADC 커넥터 사용 가능, 션트 저항 0–1V 범위 측정 가능; 단 외부 보호 회로 설계 미정) + 완결성 1(XADC IP+과전류 비교 로직+하드웨어 보호 회로 각각 명세 복잡, RTL+TB 범위 완전히 정의 안 됨) = 5점 → vetted. 보강: 근거 카드 rechecked_at 취득(카드 2건 부족, 1건 추가 필요), 범위 세분화. ※ 첫 raw→vetted 심사이므로 차단조건재심사 불적용(§14.2).
 
 ## I-074 Basys3 Pmod 3.3V 직구동 로직레벨 H-브리지 테스트베드 T1
-- 상태: raw
+- 상태: vetted
 - 요약: 내 판단: 별도 게이트 드라이버 없이 Basys3 Pmod 3.3V 신호로 VGS(th)<2.5V 로직레벨 MOSFET을 직접 구동하는 소신호 모터 테스트베드. 소전류 모터(< 500 mA) 대상 최소 구성.
 - 조합: [Basys3 Pmod 직접 출력, 로직레벨 MOSFET(VGS(th)<2.5V), 쇼트키 플라이백]
 - 근거: [lcsc-mosfet-selection-motor-control, zbotic-backem-flyback-protection]
 - 새로움의 근거: 기존 카드들은 모두 별도 드라이버 IC 사용; Pmod 직접 구동 최소 구성 테스트베드는 카탈로그에 없음
 - Basys3 적합성의 근거: Pmod 출력 전류 제한(< 24 mA per pin 확인 필요) → 소신호 MOSFET(e.g. 2N7002) 게이트 전류 감당 가능 여부 확인 필요; 대전류 모터에는 부적합
 - 난이도: 1 / 단계: T1
-- 심사: (미심사)
+- 심사: 2026-11-04 /verify(7차), 근거 0(lcsc-mosfet-selection-motor-control·zbotic-backem-flyback-protection 모두 rechecked_at 없음; 근거 카드 2건만) + 새로움 2(Pmod 직접 구동 최소 구성 테스트베드 카드 없음; 기존 카드는 모두 별도 드라이버 IC 사용) + 적합성 1(Pmod 3.3V 출력 가능하나 출력 전류 제한 < 24 mA per pin 미확인; 2N7002 게이트 전류 감당 가능성 미확인; 소전류 모터 직구동 가능성 불확실) + 완결성 2(T1 단계 단순 Verilog PWM+H-브리지 출력, 범위 최소, RTL+외부 BOM 작성 가능) = 5점 → vetted. 보강: Pmod 출력 전류 제한 공식 확인, 근거 카드 rechecked_at 취득, 근거 카드 1건 추가. ※ 첫 raw→vetted 심사이므로 차단조건재심사 불적용(§14.2).
