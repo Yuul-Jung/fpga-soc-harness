@@ -855,3 +855,19 @@
 - 단계: T3
 - 상태: dropped
 - 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(EtherCAT 소프트 ESC FPGA 없음) + 적합성 1(W5500 연결 가능하나 사이클 타임 100μs 충족 불확실, MicroBlaze+FreeRTOS 레이턴시 미검증) + 완결성 1(SOES 포팅 절차 미정, C 환경 설정 복잡도 높음, 단일 캡스톤 범위 초과) = 4점 → dropped. 사유: 적합성·완결성이 모두 1점이고 근거 0, 범위가 T3 단일 캡스톤에 과도함. 재등록 조건: EtherCAT-W5500 SPI 타이밍 검증 카드 추가 + SOES 포팅 절차 명세 후 I-065 MODBUS 완성 뒤에 재심사.
+
+---
+
+## I-067 온칩 소프트 논리 분석기 IP (S4 제약 역전 — BRAM만으로 AXI 버스 파형 캡처)
+
+내 판단: `meiniki-logip`과 `lekgolo167-enxor-logic-analyzer`의 아키텍처를 참조해 MicroBlaze V SoC에 연결 가능한 AXI4-Lite 소프트 논리 분석기 IP를 작성하는 T2급 캡스톤. DRAM 없이 Basys3 BRAM 2개(72Kbit)로 최대 16채널 4096샘플을 캡처하고, UART 직렬 덤프로 PC의 GTKWave에서 .vcd 파형 열람. Vivado ILA 없이 시뮬레이션과 같은 파형 뷰어를 실 보드에서 구현한다.
+
+- id: I-067
+- 조합: [AXI4-Lite 슬레이브 래퍼(debug), BRAM 샘플 메모리(debug), 에지 트리거 FSM(debug), UART .vcd 덤프(comm-uart), Basys3 Pmod(물리층)]
+- 근거 카드: [[meiniki-logip]], [[lekgolo167-enxor-logic-analyzer]], [[enjoy-digital-litescope]]
+- 근거 URL: https://github.com/meiniKi/logIP, https://github.com/lekgolo167/enxor-logic-analyzer
+- 새로움 근거: AXI4-Lite 래퍼 + .vcd 직접 출력 조합 카드 없음. logIP는 SUMP·UART 출력, enxor는 자체 프로토콜·Tkinter GUI — 두 아이디어를 합쳐 MicroBlaze V 친화형으로 재설계하는 것은 새로운 조합(내 판단).
+- Basys3 적합성 근거: logIP가 Basys3 직접 합성 스크립트 제공. 16채널 4096샘플 = BRAM 2개(72Kbit). Basys3 BRAM 50개 여유 충분.
+- 난이도: 3
+- 단계: T2
+- 상태: raw

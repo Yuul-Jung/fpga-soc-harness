@@ -398,3 +398,13 @@
 - https://github.com/egerobotics/ESP32S3_W5500_SOES | ESP32S3 EtherCAT SOES 소스 코드 (hackaday 프로젝트 페이지에서 발견, L2 열람 필요 → L3 승격)
 - https://www.csselectronics.com/pages/modbus-protocol-explained | CSS Electronics Modbus 프로토콜 가이드
 - https://www.csselectronics.com/pages/ethercat-protocol-explained | CSS Electronics EtherCAT 프로토콜 가이드
+
+## 2026-11-04 — 디버그 기법(JTAG/SWD/논리 분석기) S6+S4 추가 후보
+
+- https://github.com/blackmagic-debug/blackmagic | Black Magic Probe: GDB direct JTAG/SWD 디버거, ARM Cortex+RISC-V, archived→Codeberg이전. 오픈소스 디버그 하드웨어 참고 사례 | black magic probe jtag swd gdb open source debugger
+- https://github.com/ZipCPU/wbscope | ZipCPU/wbscope: Wishbone 버스 온칩 오실로스코프, .vcd 출력 — 미열람(blocked: PROVENANCE_REQUIRED) | fpga wishbone scope logic analyzer vcd
+- https://github.com/trabucayre/openFPGALoader | openFPGALoader: 범용 FPGA 프로그래머(Basys3/Artix-7 지원) — 미열람(L1) | FPGA programmer openFPGALoader Basys3 open source
+- https://github.com/antonblanchard/migen-misc/tree/master/la | migen-misc 내 소프트 논리 분석기 모듈 — 미열람(L1) | migen LiteX logic analyzer module
+- https://github.com/jandecaluwe/ipcore-logic-analyzer | ipcore logic analyzer: MyHDL 기반, UART — 미열람(L1) | MyHDL logic analyzer FPGA UART
+- https://openocd.org/doc/html/Debug-Adapter-Hardware.html | OpenOCD 지원 디버그 어댑터 목록 — 미열람(L1), FPGA 경계 스캔 어댑터 참고 | OpenOCD JTAG adapter hardware list
+- blocked: https://github.com/jtagulator/JTAGulator | JTAGulator: 하드웨어 JTAG 핀 탐색기 — 하드웨어 전용, FPGA RTL 직접 연관 없음, 카드 작성 불필요

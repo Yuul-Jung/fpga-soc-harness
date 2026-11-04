@@ -178,3 +178,6 @@
 | [csselectronics-can-fd-frame-guide](papers/csselectronics-can-fd-frame-guide.md) | L3 | T2 | 없음 (기사) | 2026-11-04 |
 | [isluckyhui-fpga-modbus-rtu](embedded/isluckyhui-fpga-modbus-rtu.md) | L3 | T1 | 미명시 (Basys3 needs-port) | 2026-11-04 |
 | [egerobotics-esp32s3-ethercat-soes](esp32/egerobotics-esp32s3-ethercat-soes.md) | L2 | T3 | ESP32-S3 (Basys3 needs-port) | 2026-11-04 |
+| [meiniki-logip](embedded/meiniki-logip.md) | L3 | T2 | Basys3 | 2026-11-04 |
+| [lekgolo167-enxor-logic-analyzer](embedded/lekgolo167-enxor-logic-analyzer.md) | L3 | T2 | Artix-7 xc7a35t (Basys3 yes) | 2026-11-04 |
+| [enjoy-digital-litescope](embedded/enjoy-digital-litescope.md) | L2 | T3 | LiteX SoC (Basys3 needs-port) | 2026-11-04 |

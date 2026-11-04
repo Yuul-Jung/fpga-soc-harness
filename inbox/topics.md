@@ -74,7 +74,7 @@
 ## 임베디드 공통 도메인 (2026-11-03 추가, 위에서부터 소비)
 - [x] RTOS 비교: FreeRTOS vs Zephyr vs ThreadX — 태스크 모델·메모리·포팅 난이도 — 2026-11-04 16시대 사이클: 카드 3건(L3 1·L2 2), 큐 등록 5건, ezurio·promwad·iiot-world 비교 기사, 태스크 오버헤드 수치는 미확인
 - [x] 프로토콜 심화: CAN FD 프레임 구조, MODBUS RTU/TCP, EtherCAT 기초
-- [ ] 디버그 기법: JTAG/SWD 트레이스, OpenOCD, Segger RTT, 논리 분석기 활용
+- [x] 디버그 기법: JTAG/SWD 트레이스, OpenOCD, Segger RTT, 논리 분석기 활용 — 2026-11-04: 카드 3건(meiniki-logip L3·lekgolo167-enxor-logic-analyzer L3·enjoy-digital-litescope L2), 큐 등록 7건, S6+S4 전략
 - [ ] 펌웨어 OTA: MCUboot 부트로더, 이중 파티션 업데이트, 서명 검증
 - [ ] 안전 기능: MISRA C, 워치독, 스택 카나리, CRC 검사, FMEA 예시
 
