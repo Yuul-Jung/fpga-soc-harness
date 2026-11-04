@@ -81,7 +81,7 @@
 - 차단조건재심사: 2026-11-04 /verify (두 번째 사이클), 근거 3(rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 → ready 승격. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-007 PS/2 키보드 수신기 + 스캔코드→ASCII 자체 점검 (장치 모델 테스트벤치)
-- 상태: ready
+- 상태: used (패키지: mmio-ps2-kbd-checker, 2026-11-04)
 - 요약: 내 판단: PS/2 프레임(시작·8데이터·홀수 패리티·정지)을 받는 수신기와 make/break(F0)·확장(E0) 시퀀스 해석기를 쓰고, 테스트벤치의 PS/2 장치 모델이 일반 키·뗌·확장 키·패리티 오류 프레임을 보내 ASCII 바이트 출력과 중복 입력 없음을 PASS/FAIL로 검사하는 T1~T2 패키지. 출력은 UART로 낸다.
 - 조합: [hid-ps2, comm-uart]
 - 근거: [digilent-basys-3-keyboard, oakland-ece378-group4-keyboard2vga]

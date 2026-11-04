@@ -85,3 +85,4 @@
 2026-11-04 08:56 | verify | 재열람 0(차단: PROVENANCE_REQUIRED+GitHub MCP 외부접근불가) | 수정 2(ideas.md 전체심사+esp32.md 카드수 갱신) | 불일치 0 | 승격 L2→L3 0 | ready +2 (I-006·I-007 차단조건재심사) | atlas 갱신 esp32(8→11) | soc-map 갱신(multi-domain gap 추가)
 2026-11-04 09:26 | collect | ESP32 카메라·오디오(OV2640·I2S) · S1 인접 도메인 이식(주)+S6 실패 사례(보조) | 카드 +3 (espressif-esp32-camera, nopnop2002-esp-idf-websocket-camera, randomnerdtutorials-esp32-inmp441-i2s) | 아이디어 +3 (I-042~I-044) | 큐 잔여 327 | blocked 3 (rzeldent PROVENANCE_REQUIRED, Neumi LICENSE PROVENANCE_REQUIRED, esp32.com 봇 차단)
 2026-11-04 09:37 | verify | 재열람 0(차단: PROVENANCE_REQUIRED) | 수정 1(I-013 상태 불일치 수정) | 불일치 1 | 승격 L2→L3 0 | ready +2 (I-008·I-012 차단조건재심사) | atlas 갱신 없음(카드 변경 0건)
+2026-11-04 10:02 | capstone | mmio-ps2-kbd-checker (I-007, ready 직접 선택) | 등급 S0 (로컬 lint/sim/synth 없음, CI 대기) | check/audit/build 오류 0 | 선택 경로: §14.2 차단조건재심사 2026-11-04 점수 9점(근거3+새로움2+적합성2+완결성2) → ready, 직전 verify에서 ready +2 확인

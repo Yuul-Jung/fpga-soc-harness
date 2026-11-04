@@ -1,0 +1,352 @@
+{
+  "slug": "mmio-ps2-kbd-checker",
+  "title": "PS/2 키보드 수신기 + 스캔코드→ASCII 디코더 (Basys3)",
+  "summary": "mmio-uart-gpio-skeleton(T1)에 PS/2 키보드 수신기를 추가한 확장 패키지. ps2_rx가 11-bit 프레임을 수신하고, ps2_kbd가 Set 2 스캔코드를 ASCII로 변환한 뒤 MMIO 레지스터로 노출한다. demo_master FSM이 kbd_ready를 폴링해 make 이벤트는 LED에 표시하고 UART로 송신, break 이벤트는 LED를 클리어한다.",
+  "board": "Digilent Basys3 (XC7A35T)",
+  "stage": "T1",
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 원본이며 외부 코드를 포함하지 않는다. 아이디어 I-007 기반. 시뮬레이션·합성 결과는 CI가 기록한다.",
+  "goals": [
+    "PS/2 프레임(11-bit: start + D0–D7 + 패리티 + stop)을 하강 에지에서 수신하고 홀수 패리티를 검사한다.",
+    "Set 2 스캔코드(make/break/extended)를 ASCII로 변환한다.",
+    "MMIO 레지스터(STATUS 0x00, DATA 0x04)를 FSM이 폴링해 make/break 이벤트를 LED와 UART로 출력한다.",
+    "자체 점검 테스트벤치로 T1~T5를 시뮬레이션에서 통과한다."
+  ],
+  "non_goals": [
+    "CPU 구현 (마스터는 FSM)",
+    "키보드 호스트 송신(대기 명령, 초기화)",
+    "대문자·특수문자(Shift/Ctrl 조합)",
+    "NumLock·CapsLock LED 제어",
+    "외부 메모리"
+  ],
+  "architecture": {
+    "clock": "100 MHz 단일 클럭 (CLK_100, W5), 비동기 리셋 (BTNC, U18, 액티브 하이)",
+    "blocks": [
+      {
+        "id": "clk",
+        "name": "CLK_100 100MHz",
+        "kind": "clock",
+        "module": "-",
+        "desc": "보드 100MHz 클럭 입력 (W5)",
+        "short": "보드 클럭"
+      },
+      {
+        "id": "x_btnc",
+        "name": "BTNC",
+        "kind": "external",
+        "module": "-",
+        "desc": "센터 버튼, 비동기 리셋 (U18)",
+        "short": "리셋 버튼",
+        "side": "in"
+      },
+      {
+        "id": "x_ps2",
+        "name": "PS/2 키보드",
+        "kind": "external",
+        "module": "-",
+        "desc": "USB HID PS/2 에뮬레이션 (CLK=C17, DATA=B17)",
+        "short": "PS/2 키보드",
+        "side": "in"
+      },
+      {
+        "id": "ps2rx",
+        "name": "ps2_rx",
+        "kind": "periph",
+        "module": "ps2_rx",
+        "file": "rtl/ps2_rx.v",
+        "desc": "PS/2 11-bit 프레임 수신기. 하강 에지 샘플, 홀수 패리티 검사. rx_valid(1사이클), rx_err(오류)",
+        "short": "PS/2 프레임 수신"
+      },
+      {
+        "id": "ps2kbd",
+        "name": "ps2_kbd",
+        "kind": "periph",
+        "module": "ps2_kbd",
+        "file": "rtl/ps2_kbd.v",
+        "desc": "스캔코드→ASCII 변환 FSM + MMIO 슬레이브. STATUS(0x00), DATA(0x04: key_up/valid/ascii)",
+        "short": "스캔코드→ASCII + MMIO"
+      },
+      {
+        "id": "master",
+        "name": "demo_master",
+        "kind": "cpu",
+        "module": "demo_master",
+        "file": "rtl/demo_master.v",
+        "desc": "CPU 슬롯. 10상태 FSM: kbd STATUS 폴링 → DATA 읽기 → LED 쓰기 → UART 전송",
+        "short": "폴링 FSM (CPU 슬롯)"
+      },
+      {
+        "id": "bus",
+        "name": "mmio_bus",
+        "kind": "bus",
+        "module": "mmio_bus",
+        "file": "rtl/mmio_bus.v",
+        "desc": "addr[31:16] 기준 슬레이브 선택 (0x1000=GPIO, 0x1001=UART, 0x1002=KBD), 1사이클 ready",
+        "short": "주소 디코드·읽기 mux"
+      },
+      {
+        "id": "gpio",
+        "name": "gpio",
+        "kind": "periph",
+        "module": "gpio",
+        "file": "rtl/gpio.v",
+        "desc": "LED 16(RW, 0x00), SW 16(RO 2단동기화, 0x04)",
+        "short": "LED 16, SW 16"
+      },
+      {
+        "id": "uart",
+        "name": "uart_tx",
+        "kind": "periph",
+        "module": "uart_tx",
+        "file": "rtl/uart_tx.v",
+        "desc": "115200 8N1 송신. DATA(0x00 WO), STATUS(0x04 RO bit0=busy)",
+        "short": "115200 8N1 송신"
+      },
+      {
+        "id": "x_swled",
+        "name": "SW / LED",
+        "kind": "external",
+        "module": "-",
+        "desc": "슬라이드 스위치 16개, LED 16개",
+        "short": "스위치·LED",
+        "side": "inout"
+      },
+      {
+        "id": "x_uart",
+        "name": "RsTx (USB-UART)",
+        "kind": "external",
+        "module": "-",
+        "desc": "PC 터미널 연결 (A18)",
+        "short": "PC 터미널",
+        "side": "out"
+      }
+    ],
+    "links": [
+      {"from": "x_ps2",   "to": "ps2rx",  "label": "PS2_CLK / PS2_DATA"},
+      {"from": "ps2rx",   "to": "ps2kbd", "label": "rx_data / rx_valid / rx_err"},
+      {"from": "ps2kbd",  "to": "bus",    "label": "rdata_kbd / sel_kbd"},
+      {"from": "master",  "to": "bus",    "label": "mmio-lite"},
+      {"from": "bus",     "to": "gpio",   "label": "sel_gpio / rdata_gpio"},
+      {"from": "bus",     "to": "uart",   "label": "sel_uart / rdata_uart"},
+      {"from": "bus",     "to": "ps2kbd", "label": "sel_kbd / we / off"},
+      {"from": "gpio",    "to": "x_swled","label": "sw / led"},
+      {"from": "uart",    "to": "x_uart", "label": "txd"}
+    ]
+  },
+  "bus_protocol": {
+    "name": "mmio-lite",
+    "signals": [
+      {"name": "valid",        "dir": "master→bus", "desc": "요청 유효"},
+      {"name": "we",           "dir": "master→bus", "desc": "1이면 쓰기"},
+      {"name": "addr[31:0]",   "dir": "master→bus", "desc": "바이트 주소, 4바이트 정렬"},
+      {"name": "wdata[31:0]",  "dir": "master→bus", "desc": "쓰기 데이터"},
+      {"name": "rdata[31:0]",  "dir": "bus→master", "desc": "읽기 데이터 (조합)"},
+      {"name": "ready",        "dir": "bus→master", "desc": "항상 1 (1사이클 접근)"}
+    ],
+    "note": "미매핑 주소 읽기는 0 반환. 대기 상태·오류 없음."
+  },
+  "integration": {
+    "bus": "mmio-lite (자체, 단독 실행용)",
+    "address_map": "custom",
+    "compat": "incompatible",
+    "target_map": "mbv-frozen-v2",
+    "plan": "이 패키지는 단독 시뮬레이션·보드 확인용으로 자체 mmio-lite 버스(0x1000_xxxx~0x1002_xxxx)를 쓴다. 동결 맵(mbv-frozen-v2) 이식 계획: (1) GPIO·UART는 동결 맵 [00]/[02] AMD IP를 그대로 쓰고 드라이버를 맞춘다. (2) ps2_kbd는 동결 맵 [0B](0x400B_0000)에 IP 표준(64KB 창, 0xFFF0 ID/VER)으로 감싸서 AXI4-Lite 슬레이브로 등록한다. (3) demo_master 대신 MicroBlaze V + 폴링 드라이버(C) 또는 인터럽트(irq→INTC)로 교체한다.",
+    "frozen_mapping": [
+      {"block": "gpio",   "region": "[00] gpio_led_sw 0x4000_0000"},
+      {"block": "uart",   "region": "[02] uart_lite   0x4002_0000"},
+      {"block": "ps2kbd", "region": "[0B] kbd          0x400B_0000"}
+    ]
+  },
+  "hierarchy": {
+    "module": "basys3_top",
+    "file": "rtl/basys3_top.v",
+    "children": [
+      {
+        "module": "soc_top",
+        "file": "rtl/soc_top.v",
+        "children": [
+          {"module": "demo_master", "file": "rtl/demo_master.v"},
+          {"module": "mmio_bus",    "file": "rtl/mmio_bus.v"},
+          {"module": "gpio",        "file": "rtl/gpio.v"},
+          {"module": "uart_tx",     "file": "rtl/uart_tx.v"},
+          {"module": "ps2_rx",      "file": "rtl/ps2_rx.v"},
+          {"module": "ps2_kbd",     "file": "rtl/ps2_kbd.v"}
+        ]
+      }
+    ]
+  },
+  "memory_map": [
+    {
+      "base": "0x1000_0000",
+      "size": "0x10000",
+      "block": "gpio",
+      "regs": [
+        {"off": "0x00", "name": "LED",    "access": "RW", "desc": "하위 16비트 LED"},
+        {"off": "0x04", "name": "SW",     "access": "RO", "desc": "하위 16비트 스위치 (2단 동기화)"}
+      ]
+    },
+    {
+      "base": "0x1001_0000",
+      "size": "0x10000",
+      "block": "uart",
+      "regs": [
+        {"off": "0x00", "name": "DATA",   "access": "WO", "desc": "하위 8비트 송신 시작, busy 중 무시"},
+        {"off": "0x04", "name": "STATUS", "access": "RO", "desc": "bit0 = busy"}
+      ]
+    },
+    {
+      "base": "0x1002_0000",
+      "size": "0x10000",
+      "block": "ps2kbd",
+      "regs": [
+        {"off": "0x00", "name": "STATUS", "access": "RO",  "desc": "bit0 = kbd_ready (새 문자 수신 대기)"},
+        {"off": "0x04", "name": "DATA",   "access": "RO/C","desc": "{22'h0, key_up, valid, ascii[7:0]}. 읽으면 kbd_ready 클리어"}
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T1",
+      "state": "done",
+      "title": "MMIO 버스 + GPIO + UART (CPU 슬롯 FSM)",
+      "refs": ["mmio-uart-gpio-skeleton"]
+    },
+    {
+      "stage": "T1",
+      "state": "current",
+      "title": "PS/2 수신기 + 스캔코드→ASCII 디코더 추가",
+      "refs": []
+    },
+    {
+      "stage": "T2",
+      "state": "planned",
+      "title": "마스터를 PicoRV32로 교체, BRAM 프로그램 메모리 추가",
+      "refs": ["fanguoc2len-risc-v-computer", "tmahlburg-picosoc-basys3"]
+    },
+    {
+      "stage": "T3",
+      "state": "planned",
+      "title": "동결 맵 이식: AXI4-Lite, MicroBlaze V, IP 표준 래퍼",
+      "refs": ["fanguoc2len-risc-v-computer"]
+    }
+  ],
+  "references": [
+    {
+      "card": "mmio-uart-gpio-skeleton",
+      "why": "이 패키지의 선행 단계(T1 뼈대). GPIO, UART, mmio_bus, demo_master를 여기서 가져와 확장"
+    },
+    {
+      "card": "fanguoc2len-risc-v-computer",
+      "why": "PS/2 디코더를 갖춘 Basys3 SoC의 비교 대상 (외부 코드 미포함)"
+    },
+    {
+      "card": "janga786-basys3-fpga-portfolio",
+      "why": "PS/2 HID 드라이버 패턴 비교"
+    }
+  ],
+  "sources": {
+    "rtl": [
+      "rtl/ps2_rx.v",
+      "rtl/ps2_kbd.v",
+      "rtl/mmio_bus.v",
+      "rtl/gpio.v",
+      "rtl/uart_tx.v",
+      "rtl/demo_master.v",
+      "rtl/soc_top.v",
+      "rtl/basys3_top.v"
+    ],
+    "tb": [
+      "tb/tb_ps2_kbd.v"
+    ],
+    "constraints": [
+      "constr/basys3.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
+  },
+  "howto": [
+    {
+      "title": "시뮬레이션",
+      "steps": [
+        "iverilog, verilator, yosys 설치",
+        "make -C capstones/mmio-ps2-kbd-checker lint sim synth"
+      ]
+    },
+    {
+      "title": "Vivado 빌드 (Basys3)",
+      "steps": [
+        "새 RTL 프로젝트, 파트 xc7a35tcpg236-1",
+        "rtl/*.v 추가 (tb 제외), constr/basys3.xdc 추가, 최상위 basys3_top",
+        "Generate Bitstream 후 Program Device",
+        "USB 키보드를 Basys3 HID 포트에 연결",
+        "키를 누르면 LED 하위 8비트에 ASCII 코드가 표시됨",
+        "PC에서 115200 8N1 터미널을 열면 눌린 키의 ASCII 문자가 도착함",
+        "키를 떼면 (break 이벤트) LED가 꺼짐"
+      ]
+    }
+  ],
+  "verification": {
+    "lint": "not-run",
+    "sim": "not-run",
+    "synth": "not-run",
+    "board": "not-run",
+    "notes": "시뮬레이션·합성은 CI가 실행하면 자동으로 채워진다. 보드 동작은 수동 확인 후 board 값을 pass로 바꾸고 날짜를 notes에 적는다."
+  },
+  "risks": [
+    "PS/2 클럭 하강 에지 검출은 3-사이클 동기화(ps2_c3 & ~ps2_c2)를 쓰므로 타이밍 여유가 있지만, 100MHz보다 느린 클럭에서는 메타스태빌리티를 재검토해야 한다.",
+    "demo_master의 UART 바쁨 처리는 short idle 후 재시도이므로, 연속 키 입력 시 일부 문자가 손실될 수 있다.",
+    "Extended key(E0 접두어)는 무시하므로 화살표, Fn 키, Insert, Delete 등은 처리되지 않는다.",
+    "kbd_ready와 MMIO 읽기 클리어가 같은 클럭 에지에서 경합할 경우(rx_valid와 sel && ~we && off==0x04 동시), 읽기 클리어가 우선한다(always 블록 순서). 이 패키지에서는 demo_master가 단독 마스터이므로 경합이 없다.",
+    "xdc 핀 배치는 Digilent 마스터 XDC 2024.1을 참조했으나 보드 개정판에 따라 다를 수 있다."
+  ],
+  "external_parts": [
+    {
+      "id": "p_ps2",
+      "name": "USB HID 키보드 (PS/2 에뮬레이션)",
+      "block": "x_ps2",
+      "interface": "PS/2 CLK(C17) / DATA(B17), 풀업 내장",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": false,
+      "arduino_compatible": false,
+      "notes": "Basys3의 USB HID 포트가 PS/2 CLK/DATA로 에뮬레이션. 별도 레벨 변환 불필요(3.3V 직결)"
+    },
+    {
+      "id": "p_swled",
+      "name": "Basys3 슬라이드 스위치 16 / LED 16",
+      "block": "x_swled",
+      "interface": "GPIO 입출력",
+      "io_voltage": 3.3,
+      "qty": 32,
+      "board_resident": true,
+      "arduino_compatible": false,
+      "notes": "보드 내장"
+    },
+    {
+      "id": "p_uart",
+      "name": "Basys3 USB-UART (FTDI)",
+      "block": "x_uart",
+      "interface": "UART TX 115200 8N1 (A18)",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": true,
+      "arduino_compatible": false,
+      "notes": "보드 내장, PC 터미널 연결"
+    },
+    {
+      "id": "p_btn",
+      "name": "Basys3 푸시버튼 BTNC",
+      "block": "x_btnc",
+      "interface": "GPIO 입력 (U18)",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": true,
+      "arduino_compatible": false,
+      "notes": "BTNC=비동기 리셋"
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "외부 부품은 Basys3 보드 내장 장치(USB HID 포트, SW, LED, USB-UART)뿐이다. 별도 회로 연결이 없으므로 전기 회로도는 작성하지 않는다. 핀 배정은 constr/basys3.xdc를 따른다."
+  }
+}
