@@ -1249,3 +1249,25 @@
 - 새로움의 근거: 카탈로그에 Basys3 AXI CDMA 스캐터-개더 디스크립터 패턴 아이디어 없음. 기존 T3 패키지는 단순 폴링 전송까지만. S6 교훈(billauer Linux DMA 버그 경험)을 베어메탈 Vitis BSP로 옮겨 재현하는 접근 없음.
 - Basys3 적합성의 근거: AXI CDMA SG 모드는 DDR 없이 디스크립터를 BRAM에 직접 저장 가능. 디스크립터 체인 2~4개는 소량 BRAM(< 1블록). MicroBlaze V Vitis BSP `XAxiCdma_SgTransfer()` 사용 가능. free_slots 2슬롯 필요.
 - 난이도: 4 / 단계: T3 / 상태: raw
+
+## I-093 AXI4-Lite 타이머 IP + PWM 비교 출력 + 엔코더 캡처 통합 주변장치 (T2 SoC 접착)
+
+- 내 판단: EF_TCC32의 비교·캡처·인터럽트 3종 패턴을 참고해, AXI4-Lite 슬레이브 타이머 IP 하나에서 (1) 주기 오버플로 인터럽트, (2) PWM 비교 출력(모터 제어 가능), (3) 외부 엔코더 펄스 캡처 타임스탬프를 모두 처리하는 통합 카운터 IP를 Basys3 MicroBlaze V SoC에 연결하는 캡스톤. 하나의 32비트 카운터가 세 역할을 동시에 수행하는 최소 면적 설계.
+- id: I-093
+- 조합: [AXI4-Lite-timer, PWM-compare, encoder-capture, timer-irq, MicroBlaze-V]
+- 근거 카드: [efabless-ef-tcc32, mij001-axil-timer, zipcpu-ziptimer]
+- 근거 URL: [https://github.com/efabless/EF_TCC32, https://github.com/mij001/axil-timer]
+- 새로움의 근거: 카탈로그에 타이머·PWM·엔코더 캡처를 단일 AXI4-Lite IP에 통합한 Basys3 아이디어 없음. 기존 PWM 카드(element14-eoi-blog3)는 비교 출력만. 캡처+PWM+IRQ 3기능 조합은 모터 제어 사다리(§17.2 우선 주제)와 직결.
+- Basys3 적합성의 근거: 32비트 카운터 1개 + 비교 레지스터 1개 + 캡처 레지스터 1개 = LUT < 100개 예상. Pmod JA의 PWM 출력 핀과 엔코더 A/B 입력 핀 모두 3.3V. free_slots 1슬롯 (64KB).
+- 난이도: 3 / 단계: T2 / 상태: raw
+
+## I-094 주기 타이머 + 소프트웨어 카운터로 구현하는 다중 채널 타임아웃 감시자 (T2 MicroBlaze V 펌웨어 패턴)
+
+- 내 판단: 단일 하드웨어 타이머(mij001-axil-timer 패턴)를 주기 1ms로 설정하고, MicroBlaze V 펌웨어가 소프트웨어 카운터 배열로 4~8채널 독립 타임아웃을 관리하는 패턴. UART 수신 타임아웃, I2C 응답 감시, 워치독 소프트 타이머를 하나의 IP로 처리. 타이머 ISR에서 채널 카운터를 감산하고 만료 채널에 콜백 플래그 설정. MicroBlaze V 인터럽트 컨트롤러 1 슬롯 사용.
+- id: I-094
+- 조합: [AXI4-Lite-timer, software-multichannel-timeout, MicroBlaze-V-ISR, UART-timeout, I2C-watchdog]
+- 근거 카드: [mij001-axil-timer, zipcpu-ziptimer, digilent-basys-3-getting-started-microblaze]
+- 근거 URL: [https://github.com/mij001/axil-timer, https://zipcpu.com/zipcpu/2018/04/17/ziptimer.html]
+- 새로움의 근거: 카탈로그에 다중 채널 소프트 타이머 패턴 카드 없음. 하드 IP 1개 + 소프트 멀티플렉싱 패턴은 자원 절약 효과가 명확하며 T2 펌웨어 설계 패턴 사례로 가치 있음.
+- Basys3 적합성의 근거: 하드웨어 IP 1개(free_slots 1슬롯)로 모든 타임아웃 처리. BRAM 사용 없음. 채널 배열 크기 선택 자유.
+- 난이도: 2 / 단계: T2 / 상태: raw

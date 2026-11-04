@@ -219,3 +219,6 @@
 | [xilinx-xup-cdma-lab7](papers/xilinx-xup-cdma-lab7.md) | L2 | T3 | ZedBoard (Basys3 needs-port) | 2026-11-05 |
 | [digilent-forum-21706-basys3-mb-io](amd/digilent-forum-21706-basys3-mb-io.md) | L2 | T3 | Basys3 | 2026-11-05 |
 | [billauer-mb-dma-250mbps](embedded/billauer-mb-dma-250mbps.md) | L2 | T5 | 없음 (Basys3 needs-port) | 2026-11-05 |
+| [efabless-ef-tcc32](vendor-neutral/efabless-ef-tcc32.md) | L3 | T2 | 없음 (ASIC IP, Basys3 needs-port) | 2026-11-05 |
+| [zipcpu-ziptimer](vendor-neutral/zipcpu-ziptimer.md) | L3 | T1 | 없음 (ZipCPU 주변장치, Basys3 needs-port) | 2026-11-05 |
+| [mij001-axil-timer](vendor-neutral/mij001-axil-timer.md) | L3 | T2 | 없음 (시뮬레이션 전용, Basys3 needs-port) | 2026-11-05 |

@@ -517,3 +517,8 @@
 - https://docs.amd.com/api/khub/documents/RAPaQReDsI0b4Nt~EdoZOw/content | AMD AXI DMA Product Guide (PG021) 공식 문서 — 미열람(L1) | AXI DMA product guide AMD official PG021
 - https://forum.digilent.com/topic/16726-why-axi-dmareads-only-16-bit-from-ddr3-instead-of-32-bits-in-my-design/ | Digilent 포럼: AXI DMA DDR3에서 16비트만 읽히는 버그 (S6 실패 사례) — 미열람(L1) | AXI DMA 16-bit bug DDR3 Digilent forum failure
 - https://community.element14.com/technologies/fpga-group/b/blog/posts/working-with-dma-through-axi-between-ddr-and-pl-blockram | element14: AXI DMA를 통한 DDR↔PL BRAM 전송 패턴 블로그 — 미열람(L1) | AXI DMA DDR BRAM transfer element14 blog
+
+- https://github.com/Kyuhyeon34/FPGA_Timer_IP | Basys3 FSM 기반 하드웨어 타이머 IP RTL 설계·구현 (Verilog, Vivado) — 미열람 L1, 열람 시도 client_error 차단, 재시도 필요 | FPGA 타이머 IP Basys3 Verilog GitHub Korean | blocked: client_error
+- https://www.xilinx.com/support/documentation/ip_documentation/axi_timer/v2_0/pg079-axi-timer.pdf | AMD AXI Timer v2.0 PG079 공식 제품 가이드 (Generate/Capture/PWM/Cascade, TCSR0/TLR0/TCR0 레지스터) — 미열람 전체(L2: 일부 열람), 완전 L3 열람 필요 | AMD Xilinx AXI Timer peripheral guide MicroBlaze
+- https://github.com/AmoghvarshBhasme-11/axi4-lite-timer | AXI4-Lite 타이머 IP(SystemVerilog, 단순 카운터) — 미열람 L1, mij001과 비교 후보 | AXI4-Lite timer Verilog GitHub
+- https://zipcpu.com/zipcpu/2018/04/17/ziptimer.html | ZipCPU ziptimer 블로그 (형식 검증, 원샷/주기 타이머 설계 과정) — 열람 L3, zipcpu-ziptimer 카드 근거 | ZipCPU timer interrupt peripheral formal verification

@@ -105,7 +105,7 @@
 - [x] [B3] Basys3 7세그 멀티플렉서 고급 활용 (밝기 PWM 제어, 소수점, 깜박임, 자리별 독립 제어)
 - [x] [B3] Basys3 스위치/버튼 디바운스 FSM + 긴 누름 감지 + 멀티 클릭 패턴 — 2026-11-05 사이클: 카드 5건(L3: ecen220wiki Basys3 100MHz FSM·단발 에지, mg04 short/long press 50MHz→needs-port, doyk0215 Basys3 2D 미로 긴 누름, byu-ecen220 FSM+원샷 에지, nandland iCE40 카운터)
 - [x] [B3] Basys3 DMA 패턴 (BRAM 자동 전송, 인터럽트 없는 폴링, 스캐터-개더 기초) — 2026-11-05 05:18 사이클: 카드 3건(L2: xilinx-xup-cdma-lab7, digilent-forum-21706-basys3-mb-io, billauer-mb-dma-250mbps), 큐 10건, 아이디어 3건, S6 실패 사례(주)+S2 조합 탐색(보조)
-- [ ] [B3] Basys3 하드웨어 타이머 IP (비교 출력, 캡처 입력, 오버플로 인터럽트, 원샷·주기 모드)
+- [x] [B3] Basys3 하드웨어 타이머 IP (비교 출력, 캡처 입력, 오버플로 인터럽트, 원샷·주기 모드) — 2026-11-05 카드 3건(efabless-ef-tcc32 L3, zipcpu-ziptimer L3, mij001-axil-timer L3), 큐 4건, 아이디어 2건, S3 빈틈 추적(주)+S2 조합 탐색(보조)
 
 ## 통신 프로토콜 확장 (2026-11-04 추가)
 - [ ] [B3] SPI 슬레이브 모드 FSM (Basys3가 슬레이브로 동작, 마스터 시뮬레이터 테스트벤치)
