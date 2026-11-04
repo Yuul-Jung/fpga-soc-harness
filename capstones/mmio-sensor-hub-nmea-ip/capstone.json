@@ -211,7 +211,7 @@
   },
   "verification": {
     "board": "not-tested",
-    "notes": "S0: 작성됨, 미검증. CI lint/sim 통과 시 S1, 합성 성공 시 S2."
+    "notes": "S2: CI lint pass (경고 8건), iverilog 시뮬레이션 PASS, yosys 합성 LUT 254 FF 279. 2026-11-04 commit a4d868e."
   },
   "risks": [
     "I2C 슬레이브 장치가 없으면 ACK가 없어 무한 재시도 → scan_en=0으로 멈춤",
