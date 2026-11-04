@@ -112,8 +112,8 @@ task axi_read;
         araddr = addr; arvalid = 1'b1; rready = 1'b1;
         @(posedge clk); #1;
         arvalid = 1'b0;
-        // rvalid가 될 때까지 대기
-        @(posedge rvalid);
+        // rvalid가 1이 될 때까지 대기 (레벨 감지: NBA 이후 이미 1이면 즉시 통과)
+        wait(rvalid === 1'b1);
         rd_result = rdata;
         @(posedge clk); #1;
         rready = 1'b0;
