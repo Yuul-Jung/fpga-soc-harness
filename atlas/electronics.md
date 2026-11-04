@@ -1,6 +1,6 @@
 # 전자기술 도메인 종합 (전력전자·인버터·게이트 드라이버·XADC 아날로그 프런트엔드·PCB 설계)
 
-갱신: 2026-11-05 (/verify 12차). 카드 17건 기준. 전력전자·SPWM 인버터·게이트 드라이버·전원 설계·XADC 아날로그 프런트엔드 신호 처리·PCB 설계·신호 무결성.
+갱신: 2026-11-05 (/verify 13차). 카드 17건 기준. 전력전자·SPWM 인버터·게이트 드라이버·전원 설계·XADC 아날로그 프런트엔드 신호 처리·PCB 설계·신호 무결성.
 
 ---
 
@@ -115,6 +115,6 @@
 | I-079 SPWM+XADC 폐루프 변조지수 제어 | ready | arxiv-1002340-spartan3e-spwm-inverter, element14-cumps-deadtime-vhdl-pynqz2, industrialmonitordirect-igbt-shootthrough |
 | I-080 범용 디지털 LPF 라이브러리 블록 | ready | amd-ug480-xadc-external-inputs, applied-ee-analog-front-end |
 | I-081 XADC + ACS712 전류 측정 AXI IP | ready | sparkfun-acs712-current-sensor, xilinx-xapp795-driving-xadc, applied-ee-analog-front-end |
-| I-082 MicroBlaze V AXI4-Lite SPI Pmod PCB 확장 보드 | vetted(차단조건재심사 8점, 다음 사이클 1순위) | jlcpcb-decoupling-capacitor-guide, rfessentials-split-ground-plane-emi, ema-eda-fpga-pcb-design-guide |
-| I-083 모터 드라이버 보드 GND 분리 + 스타 접지 실습 | vetted(차단조건재심사 8점, 다음 사이클 2순위) | rfessentials-split-ground-plane-emi, jlcpcb-decoupling-capacitor-guide, industrialmonitordirect-irs2110-half-bridge |
-| I-084 FPGA SoC PCB 전원 무결성 검증 가이드 | vetted(차단조건재심사 8점, 다음 사이클 3순위) | jlcpcb-decoupling-capacitor-guide, ema-eda-fpga-pcb-design-guide, vishay-fpga-power-supply-consideration |
+| I-082 MicroBlaze V AXI4-Lite SPI Pmod PCB 확장 보드 | ready(13차 승격) | jlcpcb-decoupling-capacitor-guide, rfessentials-split-ground-plane-emi, ema-eda-fpga-pcb-design-guide |
+| I-083 모터 드라이버 보드 GND 분리 + 스타 접지 실습 | ready(13차 승격) | rfessentials-split-ground-plane-emi, jlcpcb-decoupling-capacitor-guide, industrialmonitordirect-irs2110-half-bridge |
+| I-084 FPGA SoC PCB 전원 무결성 검증 가이드 | vetted(차단조건재심사 8점, 다음 사이클 1순위) | jlcpcb-decoupling-capacitor-guide, ema-eda-fpga-pcb-design-guide, vishay-fpga-power-supply-consideration |

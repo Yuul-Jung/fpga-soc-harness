@@ -51,3 +51,4 @@ element14 커뮤니티 블로그 게시글. Arty S7(XC7S50) 보드에서 Pmod JD
 - `pulseDuration[3:0]` 15단계 밝기 제어 아이디어는 Basys3에서 충분히 이식 가능. 공통 애노드 반전만 적용하면 됨.
 - 소수점 독립 제어(`dotPoint`)를 `dp_in[3:0]` 비트 필드로 확장하면 BYU ECEN320(`byu-ecen320-seven-segment4`)의 blank+dp 구조와 결합 가능.
 - 개조: MicroBlaze V AXI4-Lite 슬레이브 IP로 통합 시 — `BRIGHTNESS`(오프셋 0x08, bit[3:0]=pulseDuration)와 `DIGIT_DATA`(bit[15:0]=4자리 BCD, bit[19:16]=dp_in, bit[23:20]=blank) 레지스터 2개 구조 제안. 옮길 수 없는 부분: 단일 자리 공통 캐소드 출력 → 공통 애노드 4자리 MUX로 재설계, Spartan-7 전용 IO 표준은 Artix-7로 교체.
+- 라이선스 확인 필요: license unknown이므로 아이디어·구조만 참고하고 코드를 저장소에 반입하지 않는다.

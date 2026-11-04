@@ -1,6 +1,6 @@
 # SoC 기술 트리 (단계별 카드 연결)
 
-갱신: 2026-11-05 (/verify 10차). 카드 200건 기준. 비 FPGA 도메인(STM32 18건·ESP32 14건·RPi·Arduino·임베디드·전자기술 14건·papers 포함). 10차: 전자기술 도메인 14건 추가(SPWM 인버터·게이트 드라이버·전원 설계·XADC 아날로그 프런트엔드). atlas/electronics.md 신설.
+갱신: 2026-11-05 (/verify 13차). 카드 200건 기준. 비 FPGA 도메인(STM32 18건·ESP32 14건·RPi·Arduino·임베디드·전자기술 14건·papers 포함). 10차: 전자기술 도메인 14건 추가(SPWM 인버터·게이트 드라이버·전원 설계·XADC 아날로그 프런트엔드). 13차: I-082·I-083 ready 승격(PCB 설계 체크리스트), 감사 경고 수정 3건(라이선스 주석 추가).
 
 ---
 
@@ -126,3 +126,6 @@ SPWM·게이트 드라이버·XADC 아날로그 프런트엔드 카드는 MicroB
 | T1 | epdtonthenet-xadc-digitally-enhanced-analogue (electronics) | 오프셋·게인 보정 RTL, 이동 평균 필터 → library/rtl/ 범용 LPF 블록 (I-080) |
 | T0 | vishay-fpga-power-supply-consideration (electronics) | FPGA 전원 순서화·디커플링 → 외부 보조 전원 보드 가이드 (I-076) |
 | T0 | wevolver-buck-converter-design-guide (electronics) | 벅 컨버터 설계·계산 → 외부 12V→5V 전원 보드 (I-076) |
+| T2 | ema-eda-fpga-pcb-design-guide (electronics) | 3W 규칙·차동 쌍·via-in-pad → Pmod 확장 보드 PCB 설계 체크리스트 (I-082 ready) |
+| T2 | rfessentials-split-ground-plane-emi (electronics) | 스타 접지·GND 분리 → H-브리지-FPGA 경계 PCB 설계 체크리스트 (I-082, I-083 ready) |
+| T2 | jlcpcb-decoupling-capacitor-guide (electronics) | 디커플링 계층(100nF/1µF/10µF) → Pmod·모터 드라이버 PCB (I-082, I-083, I-084 vetted) |

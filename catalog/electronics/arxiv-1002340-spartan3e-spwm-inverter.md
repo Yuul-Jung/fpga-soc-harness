@@ -49,3 +49,4 @@ Spartan-3E Starter Kit + ISE 9.2i 기반 태양광 가정용 인버터용 SPWM �
 
 풀브리지가 아닌 중간 탭 방식이므로 구조 직접 이식 불가. SPWM FSM 로직(반송파·기준파 비교, N 펄스 생성)과 THD–N 관계 분석 방법론을 참고한다.
 개조: MicroBlaze V SoC 적용 시 N을 AXI4-Lite 레지스터(PULSE_COUNT)로 소프트웨어에서 가변 조절 가능. 단, 현대 풀브리지 SPWM은 삼각파-기준파 비교 방식(이 논문의 FSM보다 단순)을 쓰므로 RTL 직접 차용보다 아이디어 출발점으로 쓴다. 내 판단: 교육·역사적 참조가치 있음. Basys3로 옮길 때 클럭 적합성은 확인 필요.
+라이선스 확인 필요: license unknown이므로 Appendix VHDL 코드를 저장소에 반입하지 않는다. FSM 설계 개념만 참조한다.
