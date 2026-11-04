@@ -877,7 +877,7 @@
 - Basys3 적합성 근거: logIP가 Basys3 직접 합성 스크립트 제공. 16채널 4096샘플 = BRAM 2개(72Kbit). Basys3 BRAM 50개 여유 충분.
 - 난이도: 3
 - 단계: T2
-- 상태: ready
+- 상태: used (패키지: mmio-sla-bram-capture, 2026-11-04)
 - 심사: 2026-11-04 /verify, 근거 0(meiniki-logip·lekgolo167-enxor-logic-analyzer·enjoy-digital-litescope 모두 rechecked_at 없음) + 새로움 2(AXI4-Lite 래퍼 + .vcd 직접 출력 조합 카드 없음; logIP SUMP·UART, enxor 자체 프로토콜·Tkinter를 MicroBlaze V 친화형으로 재설계하는 조합 없음) + 적합성 2(logIP Basys3 직접 합성 스크립트 제공, 16ch 4096샘플=BRAM 2개(72Kbit), Basys3 BRAM 50개 여유 충분) + 완결성 2(AXI4-Lite 슬레이브+BRAM 샘플 메모리+에지 트리거 FSM+UART .vcd 덤프 단일 IP 범위 명확) = 6점 → vetted. 보강: 근거 카드 rechecked_at 취득 필요.
 - 차단조건재심사: 2026-11-04 /verify(6차), 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(meiniki-logip, lekgolo167-enxor-logic-analyzer, enjoy-digital-litescope, rechecked_at 불문) → 근거 3 + 새로움 2(AXI4-Lite 래퍼 + .vcd 직접 출력 조합 카드 없음) + 적합성 2(logIP Basys3 직접 합성 스크립트, 16ch 4096샘플=BRAM 2개(72Kbit), BRAM 50개 여유) + 완결성 2(단일 IP 범위 명확, RTL+TB 작성 가능) = 9점 ≥ 7 → ready 승격. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
