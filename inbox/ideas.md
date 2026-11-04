@@ -992,7 +992,7 @@
 - 차단조건재심사: 2026-11-04 /verify(9차), 모든 WebFetch PROVENANCE_REQUIRED 차단(9차 연속). 8차 2순위 보류 건이므로 9차에 승격. 근거 카드 총 2건(lcsc-mosfet-selection-motor-control, zbotic-backem-flyback-protection, rechecked_at 불문) → 근거 2 + 새로움 2(Pmod 직접 구동 최소 구성 테스트베드 카탈로그에 없음) + 적합성 1(Pmod 전류 제한 미확인) + 완결성 2(T1 단순 Verilog PWM+H-브리지, 범위 최소) = 7점 ≥ 7 → ready 승격.
 
 ## I-075 Basys3 XADC 전원 모니터 AXI-Lite IP — 코어·보조 전압 감시 T2
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: Artix-7 내장 XADC를 이용해 Vccint(1.0V), Vccaux(1.8V), Vccbram 세 레일을 주기적으로 샘플링하고, 임계값 초과 시 MicroBlaze V 인터럽트를 발생시키는 AXI4-Lite 슬레이브 IP. 외부 하드웨어 불필요.
 - 조합: [Basys3 XADC 내부 채널, AXI4-Lite 슬레이브 레지스터, MicroBlaze V 인터럽트 컨트롤러, Vishay 전원 순서화 개념]
 - 근거: [vishay-fpga-power-supply-consideration, altium-ldo-vs-switching-regulator]
@@ -1000,9 +1000,10 @@
 - Basys3 적합성의 근거: Artix-7 XC7A35T에 XADC 하드 블록 내장. Vccint·Vccaux·Vccbram은 별도 외부 핀 불필요. XADC IP 코어는 Vivado에서 무료 사용 가능
 - 난이도: 2 / 단계: T2
 - 심사: 2026-11-04 /verify(9차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(vishay-fpga-power-supply-consideration·altium-ldo-vs-switching-regulator 모두 rechecked_at 없음) + 새로움 2(XADC를 전원 모니터로 쓰는 AXI-Lite IP 아이디어 카탈로그 없음; 기존 XADC 아이디어는 외부 전류·온도 센서 위주) + 적합성 3(Artix-7 XC7A35T 내장 XADC 하드 블록, Vccint/Vccaux/Vccbram 외부 핀 불필요, Vivado XADC IP 코어 무료 사용 가능) + 완결성 2(AXI4-Lite 슬레이브 IP 범위 명확, 임계값 비교+인터럽트 출력 RTL+TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득 필요, AXI4-Lite 슬레이브 레지스터 세부 범위(채널 수, 임계값 레지스터 수) 명세화.
+- 차단조건재심사: 2026-11-05 /verify(10차), 모든 WebFetch PROVENANCE_REQUIRED 차단(10차 연속). 근거 카드 총 2건(vishay-fpga-power-supply-consideration, altium-ldo-vs-switching-regulator, rechecked_at 불문) → 근거 2 + 새로움 2(XADC 전원 모니터 AXI IP 카탈로그 없음; 기존 XADC 아이디어와 측정 목적 다름) + 적합성 3(XADC 하드 블록 내장, 외부 핀 불필요, Vivado IP 무료) + 완결성 2(AXI4-Lite 슬레이브 레지스터+임계값+인터럽트 RTL+TB 작성 가능) = 9점 ≥ 7 → ready 승격.
 
 ## I-076 외부 보조 전원 보드 설계 가이드: 12V→5V+3.3V 이중 레일 for Basys3 확장 T0
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: 모터·서보·센서 확장 모듈을 Basys3에 연결할 때 쓰는 외부 이중 레일 전원 보드. 12V→DC-DC 벅→5V/3A, 5V→LDO→3.3V/1A, GND 공통, USB 5V 격리 설계 가이드.
 - 조합: [12V 입력, 벅 컨버터(MP1584·XL4016 등), LDO(AMS1117-3.3), 커플링 커패시터, 패러사이틱 인덕턴스 차단]
 - 근거: [vishay-fpga-power-supply-consideration, wevolver-buck-converter-design-guide, altium-ldo-vs-switching-regulator]
@@ -1010,6 +1011,7 @@
 - Basys3 적합성의 근거: Basys3 외부 전원은 별도 보드로 공급(USB+배럴잭 모두 5V 한계). 모터·서보는 별도 전원 필수(전기 규칙 §17.2). 가이드 문서 형태이므로 RTL 불필요, 범위 T0
 - 난이도: 1 / 단계: T0
 - 심사: 2026-11-04 /verify(9차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(vishay-fpga-power-supply-consideration·wevolver-buck-converter-design-guide·altium-ldo-vs-switching-regulator 모두 rechecked_at 없음; 3건이지만 불문) + 새로움 2(Basys3 모터 확장용 외부 전원 보드 설계 가이드 카탈로그 없음; 전원 순서화·GND 분리·USB 격리 통합 가이드 아이디어 없음) + 적합성 2(Basys3 외부 전원 별도 보드 필수, 모터 전원 §17.2 분리 필수; 가이드 문서이므로 직접 RTL 불필요 → 적합성 판단 쉬우나 Basys3 RTL 연결 없어 3점 미달) + 완결성 1(T0 가이드 문서지만 범위 여전히 넓음; 어떤 부품·토폴로지 선정 기준을 RTL+TB 없이 문서로 완결할 수 있는지 불명확) = 5점 → vetted. 보강: 설계 가이드 범위 세분화(어떤 선택 항목 다루는지), 근거 카드 rechecked_at 취득.
+- 차단조건재심사: 2026-11-05 /verify(10차), 모든 WebFetch PROVENANCE_REQUIRED 차단(10차 연속). 근거 카드 총 3건(vishay-fpga-power-supply-consideration, wevolver-buck-converter-design-guide, altium-ldo-vs-switching-regulator, rechecked_at 불문) → 근거 3 + 새로움 2(Basys3 모터 확장용 외부 전원 보드 설계 가이드 카탈로그 없음) + 적합성 2(Basys3 외부 전원 별도 보드 필수, §17.2 모터 전원 분리 필수; 가이드 문서이므로 RTL 불필요) + 완결성 1(T0 가이드 문서, TB 없음; 범위 여전히 넓어 완결성 낮음) = 8점 ≥ 7 → ready 승격.
 
 ## I-077 단상 풀브리지 SPWM 생성기 AXI4-Lite IP — 데드타임 레지스터 포함 T2
 
@@ -1019,7 +1021,8 @@
 - 근거 URL: [https://community.element14.com/technologies/fpga-group/b/blog/posts/vhdl-pwm-generator-with-dead-time-the-design, https://industrialmonitordirect.com/blogs/knowledgebase/igbt-h-bridge-shoot-through-fixing-pwm-timing-driver-issues]
 - 새로움의 근거: 카탈로그 내 SPWM 전용 AXI4-Lite IP 없음; IRS2110 카드는 드라이버 IC 설계에 집중하고 RTL FSM 미포함
 - Basys3 적합성의 근거: 100MHz 클럭 기준 500ns 데드타임 = 50 클럭 틱, 6비트 카운터 충분. Pmod 출력으로 HIN/LIN 쌍 직접 연결. 동결 맵 free_slots 1 블록(64KB) 배정
-- 난이도: 2 / 단계: T2 / 상태: raw
+- 난이도: 2 / 단계: T2 / 상태: vetted
+- 심사: 2026-11-05 /verify(10차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(근거 카드 모두 rechecked_at 없음) + 새로움 2(카탈로그 내 SPWM 전용 AXI4-Lite IP 없음; IRS2110 카드는 드라이버 IC 설계에 집중하고 RTL FSM 미포함) + 적합성 3(100MHz 클럭 기준 500ns 데드타임 = 50 클럭 틱, 6비트 카운터 충분; Pmod 출력으로 HIN/LIN 쌍 직접 연결 가능; 동결 맵 free_slots 1 블록 배정 가능) + 완결성 2(SPWM+데드타임 FSM+AXI4-Lite RTL 범위 명확, 보완 출력 TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득, 삼각파-기준파 비교 RTL 세부 파라미터 명세화.
 
 ## I-078 Basys3 FPGA + IRS2110 + 소신호 H-브리지 슛스루 감지 테스트베드 T2
 
@@ -1029,7 +1032,8 @@
 - 근거 URL: [https://industrialmonitordirect.com/blogs/knowledgebase/igbt-h-bridge-shoot-through-fixing-pwm-timing-driver-issues]
 - 새로움의 근거: S6(실패 사례) 전략 — 슛스루를 의도적으로 재현해 데드타임 효과를 측정하는 교육용 테스트베드는 카탈로그에 없음
 - Basys3 적합성의 근거: Pmod 3.3V 출력으로 IRS2110 HIN/LIN 구동(버퍼 추가), 소전력 테스트이므로 외부 전원 5V 1A 충분. 전기 규칙(§17.2): 모터 전원 보드 분리·GND만 공통 적용
-- 난이도: 3 / 단계: T2 / 상태: raw
+- 난이도: 3 / 단계: T2 / 상태: vetted
+- 심사: 2026-11-05 /verify(10차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(근거 카드 모두 rechecked_at 없음) + 새로움 2(슛스루를 의도적으로 재현해 데드타임 효과를 측정하는 교육용 테스트베드 카탈로그에 없음; S6 실패 사례 전략) + 적합성 2(Pmod 3.3V→IRS2110 HIN/LIN 구동 가능하나 버퍼 추가 필요; 소전력 테스트이므로 외부 전원 5V 1A 충분; 하드웨어 직접 확인이 RTL만큼 중요) + 완결성 1(보드 직접 오실로스코프 측정 필수, RTL+TB만으로 완결 어려움; 슛스루 감지 assertion은 RTL로 작성 가능하나 실제 파형 확인은 사람 필요) = 5점 → vetted. 보강: 근거 카드 rechecked_at 취득, RTL 범위를 TB로 완결 가능한 assertion 중심으로 세분화.
 
 ## I-079 SPWM + XADC 조합: 출력 전압 피드백으로 변조 지수 자동 조정 T3
 
@@ -1039,37 +1043,29 @@
 - 근거 URL: [https://arxiv.org/abs/1002.3340, https://community.element14.com/technologies/fpga-group/b/blog/posts/vhdl-pwm-generator-with-dead-time-the-design]
 - 새로움의 근거: 카탈로그 내 SPWM + XADC 폐루프 조합 없음. XADC는 Basys3 내장 IP이므로 외부 ADC 불필요
 - Basys3 적합성의 근거: Basys3 XC7A35T에 XADC 블록 내장(12비트 1MSPS). 분압 저항으로 출력 전압 0–1V로 스케일해 XADC VAUXP/VAUXN에 연결(Pmod JA). I-077의 SPWM IP와 연동
-- 난이도: 4 / 단계: T3 / 상태: raw
+- 난이도: 4 / 단계: T3 / 상태: vetted
+- 심사: 2026-11-05 /verify(10차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(근거 카드 모두 rechecked_at 없음) + 새로움 2(카탈로그 내 SPWM + XADC 폐루프 조합 없음; XADC 내장 IP로 외부 ADC 불필요한 접근) + 적합성 3(Basys3 XC7A35T XADC 블록 내장 12비트 1MSPS; 분압 저항으로 출력 전압 0–1V 스케일, XADC VAUXP/VAUXN 연결 가능; I-077의 SPWM IP와 연동) + 완결성 2(SPWM+XADC+PI 제어기 RTL 또는 SW 범위 명확, 개루프 대비 폐루프 TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득, PI 제어기 RTL 또는 SW 구현 방식 선택(T3 → SW 구현 추천), 분압 저항 값 명세화.
 
----
-id: I-079
-title: Basys3 XADC + ACS712 전류 측정 AXI4-Lite IP
-summary: ACS712 홀 전류 센서를 분압기·op-amp 버퍼로 조건화해 Basys3 XADC에 연결, Verilog 이동 평균 필터와 오프셋 보정 로직을 갖춘 AXI4-Lite 슬레이브 IP로 패키징
-조합: [ACS712, Basys3 XADC, Verilog 이동 평균 필터, AXI4-Lite 슬레이브]
-근거 카드:
-  - sparkfun-acs712-current-sensor (ACS712 감도·보정 절차, XADC 호환 주의)
-  - digilent-basys3-xadc-analog-input (JXADC 핀 매핑, 0~1V 범위, RC 필터 값)
-  - applied-ee-analog-front-end (분압기·버퍼·RC 안티앨리어싱 설계 공식)
-근거 URL:
-  - https://learn.sparkfun.com/tutorials/acs712-low-current-sensor-hookup-guide/all?print=1
-  - https://digilent.com/reference/programmable-logic/basys-3/demos/xadc
-새로움의 근거: 카탈로그 내 XADC + 홀 전류 센서 조합 카드 없음. 기존 XADC 아이디어(I-077)는 SPWM 출력 전압 감시 목적, 이 아이디어는 입력 전류 측정 AXI IP
-Basys3 적합성의 근거: Basys3 XADC 내장(XC7A35T), JXADC 헤더 4채널 사용. R1·R2(4kΩ/1kΩ)로 ACS712 출력(0~5V)을 0~1V로 스케일. RC 필터(150Ω, 1nF). 외부 부품 비용 최소
-난이도: 3 / 단계: T2 / 상태: raw
-내 판단: ACS712 출력 2.5V 중심이므로 분압 후 최대 0.5V·최소 0V 범위가 됨 — ±5A 범위를 절반만 측정하거나 오프셋을 소프트웨어로 보정해야 함. 단방향 전류(0~5A)면 0~0.5V 범위로 간단하게 가능.
+## I-081 Basys3 XADC + ACS712 전류 측정 AXI4-Lite IP — T2
 
----
-id: I-080
-title: FPGA Verilog 범용 디지털 LPF 라이브러리 블록 (이동 평균 CIC 형식)
-summary: N을 파라미터로 받는 이동 평균 필터(CIC 형식: y[n] = y[n-1] + x[n] − x[n-N]) Verilog 모듈을 library/rtl/에 추가, XADC·인코더·열전대 등 다양한 ADC 데이터에 재사용
-조합: [Verilog CIC 이동 평균, 파라미터 N, XADC 데이터, 센서 필터링]
-근거 카드:
-  - digilent-basys3-xadc-analog-input (XADC 출력 12비트 데이터 연결 대상)
-  - applied-ee-analog-front-end (디지털 필터가 아날로그 RC를 보완하는 설계 패턴)
-근거 URL:
-  - https://www.allaboutcircuits.com/technical-articles/implementing-a-low-pass-filter-on-fpga-with-verilog/
-  - https://digilent.com/reference/programmable-logic/basys-3/demos/xadc
-새로움의 근거: 현재 library/rtl/에 디지털 필터 모듈 없음. CIC 이동 평균은 곱셈기 불필요, LUT 소모 최소 → Basys3 자원 여유 충분
-Basys3 적합성의 근거: 순수 Verilog-2001, 파라미터 N(2의 거듭제곱) → 나눗셈이 비트 선택으로 대체됨. LUT/FF 사용량 O(log N)
-난이도: 2 / 단계: T1 / 상태: raw
-내 판단: N이 2의 거듭제곱이 아닌 경우 나눗셈 비용 발생 — N을 항상 2의 거듭제곱으로 제한하거나 별도 처리 필요. AllAboutCircuits 공식 Fco = 0.442947/√(N²−1) 참조.
+- 내 판단: ACS712 홀 전류 센서를 분압기로 조건화(2.5V 중심 출력 → 0–1V 단방향)해 Basys3 XADC JXADC 헤더에 연결, Verilog 이동 평균 필터와 오프셋 보정 로직을 갖춘 AXI4-Lite 슬레이브 IP로 패키징.
+- 조합: [ACS712, Basys3 XADC, Verilog 이동 평균 필터, AXI4-Lite 슬레이브]
+- 근거 카드: [sparkfun-acs712-current-sensor, xilinx-xapp795-driving-xadc, applied-ee-analog-front-end]
+- 근거 URL: [https://learn.sparkfun.com/tutorials/acs712-low-current-sensor-hookup-guide/all?print=1]
+- 새로움의 근거: 카탈로그 내 XADC + 홀 전류 센서 조합 카드 없음. 기존 XADC 아이디어(I-079)는 SPWM 출력 전압 감시 목적, 이 아이디어는 입력 전류 측정 AXI IP
+- Basys3 적합성의 근거: Basys3 XADC 내장(XC7A35T), JXADC 헤더 4채널 사용. R1·R2(4kΩ/1kΩ)로 ACS712 출력(단방향 0–5A: 2.5–3.425V)을 0–0.5V로 스케일. RC 필터(150Ω, 1nF). 오프셋 보정은 소프트웨어.
+- 내 판단: ACS712 출력 2.5V 중심이므로 분압 후 최대 0.5V·최소 0V 범위가 됨 — ±5A 범위를 절반만 측정하거나 오프셋을 소프트웨어로 보정해야 함. 단방향 전류(0~5A)면 0~0.5V 범위로 간단하게 가능. 변경: digilent-basys3-xadc-analog-input (존재하지 않는 카드)를 xilinx-xapp795-driving-xadc·amd-ug480-xadc-external-inputs로 교체.
+- 난이도: 3 / 단계: T2 / 상태: vetted
+- 심사: 2026-11-05 /verify(10차), 첫 raw→vetted 심사(차단조건재심사 불적용). ID 충돌 수정: 이전 I-079(YAML 형식, 중복) → I-081(마크다운 형식)으로 재번호. 근거 카드 오류(digilent-basys3-xadc-analog-input 존재하지 않음) → xilinx-xapp795-driving-xadc로 수정. 근거 0(sparkfun-acs712-current-sensor·xilinx-xapp795-driving-xadc·applied-ee-analog-front-end 모두 rechecked_at 없음) + 새로움 2(XADC + 홀 전류 센서 AXI IP 조합 카탈로그 없음; 기존 XADC 아이디어와 측정 목적 다름) + 적합성 3(XADC 내장, JXADC 헤더 4채널 가용, 분압기 R1/R2로 0–0.5V 스케일 가능, RC 필터 설계 명확) + 완결성 2(AXI4-Lite+이동평균+XADC RTL 범위 명확, 오프셋 보정 로직 TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득, ACS712 버전(05B/20A/30A) 선택 명세화.
+
+## I-080 FPGA Verilog 범용 디지털 LPF 라이브러리 블록 (이동 평균 CIC 형식) — T1
+
+- 내 판단: N을 파라미터로 받는 이동 평균 필터(CIC 형식: y[n] = y[n-1] + x[n] − x[n-N]) Verilog 모듈을 library/rtl/에 추가. XADC·인코더·열전대 등 다양한 ADC 데이터에 재사용. N을 2의 거듭제곱으로 제한하면 나눗셈이 비트 선택으로 대체됨.
+- 조합: [Verilog CIC 이동 평균, 파라미터 N, XADC 데이터, 센서 필터링]
+- 근거 카드: [amd-ug480-xadc-external-inputs, applied-ee-analog-front-end]
+- 근거 URL: [https://www.allaboutcircuits.com/technical-articles/implementing-a-low-pass-filter-on-fpga-with-verilog/]
+- 새로움의 근거: 현재 library/rtl/에 디지털 필터 모듈 없음. CIC 이동 평균은 곱셈기 불필요, LUT 소모 최소 → Basys3 자원 여유 충분
+- Basys3 적합성의 근거: 순수 Verilog-2001, 파라미터 N(2의 거듭제곱) → 나눗셈이 비트 선택으로 대체됨. LUT/FF 사용량 O(log N). AllAboutCircuits 공식 Fco = 0.442947/√(N²−1) 참조.
+- 내 판단: N이 2의 거듭제곱이 아닌 경우 나눗셈 비용 발생 — N을 항상 2의 거듭제곱으로 제한하거나 별도 처리 필요.
+- 난이도: 2 / 단계: T1 / 상태: vetted
+- 심사: 2026-11-05 /verify(10차), 첫 raw→vetted 심사(차단조건재심사 불적용). 형식 변환: YAML 형식 → 마크다운 형식. 근거 카드 수정: digilent-basys3-xadc-analog-input(존재하지 않음) → amd-ug480-xadc-external-inputs. 근거 0(근거 카드 모두 rechecked_at 없음) + 새로움 2(library/rtl/ 디지털 필터 모듈 없음; CIC 이동 평균은 카탈로그 내 RTL 없음) + 적합성 3(순수 Verilog-2001, 2의 거듭제곱 N으로 나눗셈→비트 선택, LUT/FF 사용량 O(log N)) + 완결성 2(library/rtl/ 위치 명확, 파라미터 TB 작성 가능, Fco 공식으로 필터 특성 검증 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득, N 비2의거듭제곱 처리 방안 결정.

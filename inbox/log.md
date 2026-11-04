@@ -145,3 +145,4 @@
 2026-11-04 23:27 | collect | 인버터 기초: 단상 풀브리지 SPWM, 게이트 격리 · S6+S3 | 카드 +3 | 아이디어 +3 | 큐 잔여 408 | blocked 1(wiwinhartini/spwm_fpga PROVENANCE_REQUIRED)
 2026-11-04 23:39 | verify | 재열람 0(차단: WebFetch PROVENANCE_REQUIRED 전면 차단 9차 연속) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +2(I-073·I-074, 차단조건재심사 9차: 7점·7점) | vetted +2(I-075 7점·I-076 5점, 첫 raw→vetted 심사)
 2026-11-05 00:19 | collect | 센서 신호 처리(ADC 필터링·홀 전류 센서·XADC 프런트엔드) · S1+S5 | 카드 +3 | 아이디어 +2 | 큐 잔여 444 | blocked 0
+2026-11-05 00:44 | verify | 재열람 0(차단: WebFetch PROVENANCE_REQUIRED 전면 차단 10차 연속) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +2(I-075·I-076, 차단조건재심사 10차: 9점·8점) | raw→vetted +5(I-077 7점·I-078 5점·I-079 7점·I-081 7점·I-080 7점) | I-079 ID 충돌 수정(YAML 중복 → I-081 마크다운) | 근거 카드 오류 수정(digilent-basys3-xadc-analog-input 존재하지 않음 → xilinx-xapp795-driving-xadc로 교체) | atlas 신설(electronics.md, 14건) | soc-map 갱신(200건)

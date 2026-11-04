@@ -1,6 +1,6 @@
 # SoC 기술 트리 (단계별 카드 연결)
 
-갱신: 2026-11-04 (/verify 8차). 카드 188건 기준. 비 FPGA 도메인(STM32 18건·ESP32 14건·RPi·Arduino·임베디드·전자기술·papers 포함). 8차: 라이선스 경고 카드 7건(embedded 4건·esp32 2건·rpi 1건) 재사용 메모 고지 보완.
+갱신: 2026-11-05 (/verify 10차). 카드 200건 기준. 비 FPGA 도메인(STM32 18건·ESP32 14건·RPi·Arduino·임베디드·전자기술 14건·papers 포함). 10차: 전자기술 도메인 14건 추가(SPWM 인버터·게이트 드라이버·전원 설계·XADC 아날로그 프런트엔드). atlas/electronics.md 신설.
 
 ---
 
@@ -106,3 +106,23 @@ FreeRTOS·Zephyr 비교 카드는 MicroBlaze V + AXI INTC RTOS 설계에 개조 
 - gap T3: EtherCAT 소프트 슬레이브 Basys3 MicroBlaze V 사례 없음; egerobotics-esp32s3-ethercat-soes 개조 경로 있으나 사이클 타임 미검증(I-066 dropped, 재등록 조건 필요).
 - gap T1: Basys3 MicroBlaze V에 연결된 AXI4-Lite 워치독 IP 카드 없음; rtime-cvut-openmsp430-watchdog 개조 경로 있음(I-070 vetted, 7점).
 - gap T2: Basys3 BRAM 명령 메모리 CRC 검사 AXI IP 카드 없음(I-071 vetted, 5점, I-070 선행 필요).
+- gap T2: 전자기술 도메인에 SPWM·XADC 카드가 14건 추가되었으나, Basys3+MicroBlaze V AXI4-Lite SPWM IP 카드 없음 — I-077(ready 후보)이 채울 예정.
+- gap T2: XADC 전원 모니터 AXI-Lite IP 카드 없음 — I-075(ready)가 채울 예정.
+
+---
+
+## 전자기술 도메인 단계 연결 (전력전자·XADC·전원, 개조 참고)
+
+SPWM·게이트 드라이버·XADC 아날로그 프런트엔드 카드는 MicroBlaze V + AXI4-Lite 전력전자 IP 개발에 개조 경로가 있다. 상세는 `atlas/electronics.md` 참조.
+
+| 단계 | 카드 | 개조 대상 |
+|---|---|---|
+| T2 | arxiv-1002340-spartan3e-spwm-inverter (electronics) | SPWM 삼각파-기준파 비교 RTL → AXI4-Lite 래퍼 추가, 데드타임 FSM 결합 (I-077) |
+| T2 | element14-cumps-deadtime-vhdl-pynqz2 (electronics) | 보완 출력·데드타임 삽입 FSM → Verilog 변환·Basys3 Pmod 핀 적용 (I-077, I-078) |
+| T2 | industrialmonitordirect-irs2110-half-bridge (electronics) | HIN/LIN 타이밍·부트스트랩 → Pmod 버퍼 추가 후 IRS2110 연결 (I-078) |
+| T2 | amd-ug480-xadc-external-inputs (electronics) | XADC 차동 입력 범위·RC 필터 → AXI4-Lite 슬레이브 IP (I-075, I-079, I-081) |
+| T2 | xilinx-xapp795-driving-xadc (electronics) | 소스 임피던스·앤티앨리어싱 → ACS712 신호 조건화 (I-081) |
+| T2 | sparkfun-acs712-current-sensor (electronics) | 감도·분압 → XADC 입력 조건화, 소프트웨어 오프셋 보정 (I-081) |
+| T1 | epdtonthenet-xadc-digitally-enhanced-analogue (electronics) | 오프셋·게인 보정 RTL, 이동 평균 필터 → library/rtl/ 범용 LPF 블록 (I-080) |
+| T0 | vishay-fpga-power-supply-consideration (electronics) | FPGA 전원 순서화·디커플링 → 외부 보조 전원 보드 가이드 (I-076) |
+| T0 | wevolver-buck-converter-design-guide (electronics) | 벅 컨버터 설계·계산 → 외부 12V→5V 전원 보드 (I-076) |
