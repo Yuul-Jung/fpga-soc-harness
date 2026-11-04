@@ -1155,10 +1155,11 @@
 - 새로움의 근거: 카탈로그에 RP2040 Pico를 Basys3 Pmod 호스트로 쓰는 AXI-Lite 단독 검증 아이디어 없음. 기존 아이디어(I-085)는 RPi4 Linux spidev 사용으로 경량 Pico 패턴과 구분.
 - Basys3 적합성의 근거: Basys3 Pmod 3.3V ↔ Pico GPIO 3.3V 직결 가능. spibone_gen.py --mode hybrid-axi-lite 출력은 LiteX 없이 순수 Verilog. SPIBone 9바이트 프레임은 단순해 Pico MicroPython에서 machine.SPI로 직접 구현 가능.
 - 내 판단: LiteX/iCEBreaker 환경을 Basys3+MicroBlaze V 환경으로 옮기는 개조 경로가 명확. Pico 대신 RPi4를 쓸 때는 spidev로 같은 9바이트 프레임 전송 가능(I-085와 상호 보완).
-- 난이도: 3 / 단계: T2-T3 / 상태: vetted
+- 난이도: 3 / 단계: T2-T3 / 상태: ready
 - 심사: 2026-11-05 /verify(12차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(enjoy-digital-litex-rp2040-pmod-test·airhdl-spi-to-axi-bridge 모두 rechecked_at 없음) + 새로움 2(RP2040 Pico를 Basys3 Pmod 호스트로 쓰는 AXI-Lite 단독 검증 카탈로그 없음; I-085와 호스트 MCU 다름) + 적합성 3(Basys3 Pmod 3.3V ↔ Pico GPIO 3.3V 직결 가능, spibone_gen.py --mode hybrid-axi-lite 순수 Verilog 출력, SPIBone 9바이트 프레임 단순·Pico MicroPython machine.SPI 직접 구현 가능) + 완결성 2(spibone_gen.py 출력→Basys3 배정→Pico MicroPython test 경로 명확, 개조 단계 세부화 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득, spibone_gen.py --mode hybrid-axi-lite Verilog AXI-Lite 호환성 검증, 대상 free_slot 선택.
 - 차단조건재심사: 2026-11-05 /verify(13차), 모든 WebFetch PROVENANCE_REQUIRED 차단(13차 연속). 근거 카드 총 2건(enjoy-digital-litex-rp2040-pmod-test, airhdl-spi-to-axi-bridge, rechecked_at 불문) → 근거 2 + 새로움 2(RP2040 Pico를 Basys3 Pmod 호스트로 쓰는 AXI-Lite 단독 검증 카탈로그 없음; I-085와 호스트 MCU 다름) + 적합성 3(Basys3 Pmod 3.3V ↔ Pico GPIO 3.3V 직결 가능, spibone_gen.py --mode hybrid-axi-lite 순수 Verilog 출력, SPIBone 9바이트 프레임 단순) + 완결성 2(spibone_gen.py 출력→Basys3 배정→Pico MicroPython test 경로 명확) = 9점 ≥ 7, 13차 2건 상한 초과로 보류 → vetted 유지. 다음 사이클 3순위.
 - 차단조건재심사: 2026-11-05 /verify(14차), 모든 WebFetch PROVENANCE_REQUIRED 차단(14차 연속). 근거 카드 총 2건(enjoy-digital-litex-rp2040-pmod-test, airhdl-spi-to-axi-bridge, rechecked_at 불문) → 근거 2 + 새로움 2 + 적합성 3 + 완결성 2 = 9점 ≥ 7, 14차 2건 상한 초과(I-084·I-085 선 승격) → vetted 유지. 다음 사이클 1순위.
+- 차단조건재심사: 2026-11-05 /verify(16차), 모든 WebFetch PROVENANCE_REQUIRED 차단(16차 연속). 근거 카드 총 2건(enjoy-digital-litex-rp2040-pmod-test, airhdl-spi-to-axi-bridge, rechecked_at 불문) → 근거 2 + 새로움 2 + 적합성 3 + 완결성 2 = 9점 ≥ 7, 16차 1번째 → ready 승격. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ---
 
@@ -1180,6 +1181,7 @@
 - 난이도: 2 / 단계: T1-T2 / 상태: used (mmio-7seg-adv-ip)
 - 심사: 2026-11-05 /verify(13차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(byu-ecen320-seven-segment4·element14-arty-s7-7seg-brightness 모두 rechecked_at 없음) + 새로움 2(카탈로그에 blank·dp·PWM 밝기를 AXI4-Lite 레지스터로 통합한 Basys3 IP 없음; 기존 7세그 카드들은 개별 기능만 다룸) + 적합성 3(Basys3 4자리 공통 애노드 7세그 직접 지원, REFRESH_RATE=200 → 100MHz 분주 충분, PWM 밝기 duty cycle 카운터 LUT 최소 소모) + 완결성 2(DIGIT_DATA+BRIGHTNESS 레지스터 2개 구조 제안, 범위 명확, RTL+TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득 후 ready 재심사.
 - 차단조건재심사: 2026-11-05 /verify(14차), 모든 WebFetch PROVENANCE_REQUIRED 차단(14차 연속). 근거 카드 총 2건(byu-ecen320-seven-segment4, element14-arty-s7-7seg-brightness, rechecked_at 불문) → 근거 2 + 새로움 2(카탈로그에 blank·dp·PWM 밝기를 AXI4-Lite 레지스터로 통합한 Basys3 IP 없음) + 적합성 3(Basys3 4자리 공통 애노드 7세그 직접 지원, REFRESH_RATE=200 → 100MHz 분주 충분, PWM 밝기 duty cycle 카운터 LUT 최소 소모) + 완결성 2(DIGIT_DATA+BRIGHTNESS 레지스터 2개 구조 제안, 범위 명확, RTL+TB 작성 가능) = 9점 ≥ 7, 14차 2건 상한 초과(I-084·I-085 선 승격) → vetted 유지. 다음 사이클 2순위.
+- 차단조건재심사: 2026-11-05 /verify(16차), 모든 WebFetch PROVENANCE_REQUIRED 차단(16차 연속). 근거 카드 총 2건(byu-ecen320-seven-segment4, element14-arty-s7-7seg-brightness, rechecked_at 불문) → 근거 2 + 새로움 2 + 적합성 3 + 완결성 2 = 9점 ≥ 7, 16차 2번째 → ready 승격. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 - 과제화: 2026-11-05 /capstone(자동), ready→used. 슬러그 mmio-7seg-adv-ip, free_slot [1F] 0x401F_0000, T2 단계.
 
 ## I-087 AXI4-Lite 멀티 버튼 IP — 디바운스+긴 누름+원샷 에지 검출 통합, 소프트웨어 가변 임계값 (T2)
@@ -1310,8 +1312,9 @@
 - 근거 URL: [https://github.com/alexforencich/verilog-i2c, https://github.com/hdl-util/i2c]
 - 새로움의 근거: 카탈로그에 멀티마스터 중재를 Basys3 7세그와 연동한 카드·패키지 없음.
 - Basys3 적합성의 근거: Pmod 핀 2개(SDA+SCL) + 외부 2.2kΩ 풀업. 7세그 보드 내장. 2개 마스터 FSM은 LUT 수백 개. free_slots 1칸(64KB) 사용.
-- 난이도: 3 / 단계: T2 / 상태: raw
+- 난이도: 3 / 단계: T2 / 상태: vetted
 - 심사: 2026-11-05 /harvest(S2+S7), 근거 0+새로움 2+적합성 2+완결성 1 = 5점. 보강: 근거 카드 L3 열람 1건 이상, 클럭 스트레칭 처리 방식 명세.
+- 2026-11-05 /verify(16차) 확인: 첫 raw→vetted 심사는 /harvest에서 완료(차단조건재심사 불적용. §14.2). 5점 → vetted. 보강: 근거 카드 L3 열람 1건 이상(WebFetch 차단 중), 클럭 스트레칭 처리 방식 명세.
 
 ## I-098 I2C 버스 충돌 주입 테스트벤치 (멀티마스터 시뮬레이션 사다리 T1→T2)
 - 내 판단: 단일 I2C 마스터 FSM(T1)과 멀티마스터 충돌 시뮬레이션(T2)을 한 테스트벤치로 묶는 패턴. 1단계: 단일 마스터 정상 동작. 2단계: 두 마스터가 동시에 START 발행, SDA 충돌 삽입, 중재 패배 FSM이 버스 양보 검증. 3단계: 클럭 스트레칭 확인. CI iverilog/verilator에서 PASS/FAIL 자동 검증. S7 전략의 직접 구현.
@@ -1321,5 +1324,6 @@
 - 근거 URL: [https://github.com/alexforencich/verilog-i2c, https://github.com/tom-urkin/I2C, https://github.com/hdl-util/i2c]
 - 새로움의 근거: 카탈로그에 "버스 충돌 주입" 테스트벤치를 단계별로 구성한 카드·패키지 없음.
 - Basys3 적합성의 근거: 테스트벤치 전용(합성 불필요). iverilog·verilator 모두 지원.
-- 난이도: 2 / 단계: T1 / 상태: raw
+- 난이도: 2 / 단계: T1 / 상태: vetted
 - 심사: 2026-11-05 /harvest(S7), 근거 0+새로움 2+적합성 2+완결성 2 = 6점. 보강: 근거 카드 rechecked_at 1건 이상.
+- 2026-11-05 /verify(16차) 확인: 첫 raw→vetted 심사는 /harvest에서 완료(차단조건재심사 불적용. §14.2). 6점 → vetted. 보강: 근거 카드 rechecked_at 1건 이상(WebFetch 차단 중).
