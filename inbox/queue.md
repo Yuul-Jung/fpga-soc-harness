@@ -314,3 +314,13 @@
 - https://esp32.com/viewtopic.php?p=31268 | ESP32 Task Watchdog Wi-Fi+BT 충돌 포럼 스레드, 봇 차단으로 L2 열람 불가 | ESP32 Task Watchdog WiFi BT 질의
 - https://microcontrollerslab.com/?p=25360 | ESP32 FreeRTOS 멀티코어 튜토리얼 (microcontrollerslab), L1(제목만) | ESP32 FreeRTOS 멀티코어 질의
 - https://www.teachmemicro.com/?p=7322 | ESP32 FreeRTOS 태스크 고급 활용, L1(제목만) | ESP32 FreeRTOS 멀티코어 질의
+- https://github.com/rzeldent/esp32cam-rtsp | ESP32-CAM RTSP 스트리머 (Arduino), blocked: raw.githubusercontent PROVENANCE_REQUIRED | ESP32-CAM OV2640 스트리밍 질의
+- https://github.com/Neumi/esp32_camera_webstream | Neumi ESP32 카메라 WebSocket 스트림 (Arduino+Python 클라이언트), 라이선스 불명(PROVENANCE_REQUIRED로 확인 불가) L2 | ESP32-CAM OV2640 스트리밍 질의
+- https://luisllamas.es/en/esp32-i2s/ | ESP32 I2S 튜토리얼: TX 모드에서 i2s_read_bytes() 호출하는 버그 사례(S6), L3 — 44100Hz 16비트 DMA 8×64 | ESP32 I2S 질의
+- https://randomnerdtutorials.com/esp32-cam-troubleshooting-guide/ | ESP32-CAM OV2640 트러블슈팅 가이드, L1 | ESP32-CAM 오류 사례 질의
+- https://randomnerdtutorials.com/esp32-cam-video-streaming-web-server/ | ESP32-CAM 연속 MJPEG 스트리밍 웹서버 튜토리얼, L1 | ESP32-CAM 스트리밍 질의
+- https://randomnerdtutorials.com/esp32-i2s-read-output-audio-data/ | ESP32 I2S 오디오 출력(MAX98357 앰프) 튜토리얼, L1 | ESP32 I2S 스피커 질의
+- https://github.com/miketeachman/micropython-esp32-i2s-examples | MicroPython ESP32 I2S 예제 모음, L1(제목만) | ESP32 I2S Python 질의
+- https://soldered.com/blogs/learn/stereo-i2s-audio-amplifier-max98357-professional-audio-for-your-diy-projects | Soldered MAX98357 스테레오 I2S 앰프 튜토리얼, L1 | ESP32 I2S MAX98357 질의
+- https://github.com/alanesq/esp32cam-demo | alanesq ESP32-CAM 종합 데모: 다중 카메라 전환·SD 저장·파일서버·텔레그램 봇 통합, L1(제목만) | ESP32-CAM 종합 데모 질의
+- https://mc.dfrobot.com.cn/article-314899.html | DFRobot ESP32-CAM OV2640 비디오 스트리밍 웹서버 중국어 사례, L1 | ESP32-CAM 中文 질의

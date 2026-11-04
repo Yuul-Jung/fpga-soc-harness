@@ -442,3 +442,45 @@
 - 난이도: 3
 - 단계: T2
 - 상태: vetted
+
+## I-042 ESP32-CAM → Basys3 단일 프레임 UART 브릿지: JPEG 캡처→전송→VGA 썸네일
+
+내 판단: ESP32-CAM OV2640이 JPEG 단일 프레임을 캡처해 UART로 Basys3 MicroBlaze V에 전송, SW에서 간이 RGB565 썸네일로 변환 후 BRAM 기반 VGA로 표시하는 카메라+FPGA 조합. 연속 스트리밍 없이 명령-응답(단일 캡처) 방식으로 대역폭 제약을 우회한다.
+
+- id: I-042
+- 조합: [camera(OV2640), comm-uart, video-vga, MicroBlaze V SW JPEG 디코더 간이]
+- 근거 카드: [[espressif-esp32-camera]], [[nopnop2002-esp-idf-websocket-camera]]
+- 근거 URL: https://components.espressif.com/components/espressif/esp32-camera/versions/2.0.0/readme, https://github.com/nopnop2002/esp-idf-websocket-camera
+- 새로움 근거: 기존 카드 kwondo99-fpga-vga-photobooth-project는 OV7670을 FPGA에 직접 연결. 본 아이디어는 ESP32가 카메라 초기화·JPEG 압축을 담당하고 FPGA는 수신·디코딩·VGA 출력에 집중하는 역할 분리 구조로 카탈로그에 없음.
+- Basys3 적합성 근거: Basys3 USB-UART 사용, MicroBlaze V가 AXI-UARTLITE로 수신; QQVGA(160×120) JPEG는 ~3KB로 921600bps UART에서 약 30ms 전송(내 계산). BRAM 용량 한계로 320×240 이상은 어려움.
+- 난이도: 4
+- 단계: T3
+- 상태: raw
+
+## I-043 INMP441 I2S 마이크 → Basys3 AXI I2S RX IP + LED 볼륨 미터
+
+내 판단: 3.3V 호환 INMP441 I2S 마이크를 Basys3 Pmod(BCLK·LRCLK·DOUT 3핀)에 직접 연결하고, 커스텀 AXI4-Lite I2S RX IP로 32비트 슬롯을 받아 24비트 PCM을 추출, MicroBlaze V에서 peak 계산 후 10개 LED 볼륨 미터로 표시. 테스트벤치는 I2S 마스터 클럭 발생기 모델로 프레임을 주입해 PASS/FAIL 검증.
+
+- id: I-043
+- 조합: [sensor(INMP441 I2S 마이크), comm-i2c(I2S 버스), 7-segment/LED, AXI4-Lite]
+- 근거 카드: [[randomnerdtutorials-esp32-inmp441-i2s]], [[digilent-forum-pmodamp3-basys3-i2s]]
+- 근거 URL: https://randomnerdtutorials.com/esp32-inmp441-i2s-microphone-arduino/
+- 새로움 근거: 기존 digilent-forum-pmodamp3-basys3-i2s 카드는 Pmod AMP3(I2S DAC 출력) 사례. INMP441 I2S 마이크 입력(RX) AXI IP는 카탈로그에 없음. ESP32 소프트웨어 패턴을 FPGA RTL로 이식하는 S1 적용.
+- Basys3 적합성 근거: INMP441은 3.3V 직접 연결(레벨 변환 불필요), 신호 3개는 Pmod 범위. 16kHz 샘플에서 BCLK=512kHz(내 계산: 16000×32), Basys3 100MHz 분주 가능. BRAM 불필요(스트리밍 처리). 실측 없음.
+- 난이도: 3
+- 단계: T2
+- 상태: raw
+
+## I-044 OV2640 직접 SCCB 초기화 + QQVGA AXI-Stream 캡처 IP (ESP32 드라이버 레지스터 테이블 참고)
+
+내 판단: OV2640 카메라를 Basys3 Pmod(AXI-IIC로 SCCB 초기화, 병렬 D[7:0]+PCLK/HSYNC/VSYNC로 픽셀 캡처)에 직접 연결. espressif-esp32-camera의 센서 초기화 레지스터 테이블(Apache-2.0, 사양 추출 허용)을 참고해 BROM 형태로 RTL에 내장. OV7670 사례(I-006) 대비 OV2640은 JPEG HW 압축 내장이 차별점이나 Basys3에서는 RAW 모드만 활용.
+
+- id: I-044
+- 조합: [camera(OV2640), comm-i2c(SCCB), AXI4-Lite, sensor]
+- 근거 카드: [[espressif-esp32-camera]], [[columbia-4840-cameracontrol]]
+- 근거 URL: https://components.espressif.com/components/espressif/esp32-camera/versions/2.0.0/readme
+- 새로움 근거: I-006(OV7670 SCCB)과 유사하나 OV2640 전용 레지스터 맵은 다르며, Apache-2.0 소스의 초기화 순서를 BROM으로 직접 참조할 수 있는 근거가 추가됨. 다른 차별점: OV2640은 JPEG 압축 HW 내장이라 RAW vs JPEG 모드 선택 레지스터 고려 필요.
+- Basys3 적합성 근거: OV2640 3.3V 동작 가능(데이터시트 미열람, 추정). SCCB는 I2C 호환 2선. 병렬 픽셀버스 D[7:0]+3제어는 Pmod 2개(11핀). QQVGA 160×120이면 BRAM 1개(2KB/라인버퍼) 가능. 실측 없음.
+- 난이도: 4
+- 단계: T2-T3
+- 상태: raw

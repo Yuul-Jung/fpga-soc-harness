@@ -143,3 +143,6 @@
 | [espressif-idf-freertos-smp-multicore](esp32/espressif-idf-freertos-smp-multicore.md) | L3 | T2 | ESP32 듀얼코어 (Basys3 needs-port) | 2026-11-04 |
 | [espressif-idf-ringbuf-ipc](esp32/espressif-idf-ringbuf-ipc.md) | L3 | T2 | ESP32 듀얼코어 (Basys3 needs-port) | 2026-11-04 |
 | [espressif-idf-watchdog-timers](esp32/espressif-idf-watchdog-timers.md) | L3 | T1 | ESP32 전 계열 (Basys3 needs-port) | 2026-11-04 |
+| [espressif-esp32-camera](esp32/espressif-esp32-camera.md) | L3 | T2 | ESP32/S2/S3 (Basys3 needs-port) | 2026-11-04 |
+| [nopnop2002-esp-idf-websocket-camera](esp32/nopnop2002-esp-idf-websocket-camera.md) | L3 | T2 | AI-Thinker ESP32-CAM, Freenove ESP32-S3 (Basys3 needs-port) | 2026-11-04 |
+| [randomnerdtutorials-esp32-inmp441-i2s](esp32/randomnerdtutorials-esp32-inmp441-i2s.md) | L3 | T1 | ESP32-S3, ESP32 DevKit V1 (Basys3 needs-port) | 2026-11-04 |
