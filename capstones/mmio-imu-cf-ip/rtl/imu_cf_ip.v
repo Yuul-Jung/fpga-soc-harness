@@ -51,6 +51,7 @@ localparam ST_CORD_PITCH   = 3'd3;  // atan2(ax, -az) 시작
 localparam ST_WAIT_PITCH   = 3'd4;  // CORDIC 완료 대기
 localparam ST_BLEND        = 3'd5;  // 상보 필터 혼합
 localparam ST_DONE         = 3'd6;
+localparam ST_OUTPUT       = 3'd7;  // 혼합 결과 >> 16 → 출력
 
 reg [2:0] state;
 
@@ -129,28 +130,30 @@ always @(posedge clk or posedge rst) begin
             if (cord_done) begin
                 accel_pitch <= cord_angle;
                 state       <= ST_BLEND;
-                // 상보 필터 계수 준비
-                // one_minus_alpha: 65536 - alpha (alpha는 0~65535)
-                // alpha가 0이면 65536인데, 16비트에 담을 수 없으나
-                // alpha=0 → 순수 가속도계, (1-alpha)=1.0=65536
-                // 18비트 부호로 충분 (최대 65536 = 17비트)
+                // 상보 필터 계수: (65536-alpha), 최대 65536 → 18비트 부호로 충분
                 one_minus_alpha_18 <= 18'sd65536 - {{2{1'b0}}, alpha};
-                // blend 계산 준비 (alpha * gyro_roll, 비부호*부호 = 부호)
-                blend_a <= $signed({{2{1'b0}}, alpha}) * $signed(roll + gx_del);
-                blend_b <= $signed(18'sd65536 - {{2{1'b0}}, alpha}) * $signed(cord_angle);
             end
         end
 
-        // ── 상보 필터 혼합 ────────────────────────────────────────────────
-        // blend_a, blend_b는 아직 이전 값(피치 CORDIC 중 계산됨)
-        // 여기서 다시 계산해서 최신 accel_roll/pitch 반영
+        // ── 상보 필터 혼합: 36비트 곱셈으로 오버플로 방지 ────────────────
+        // alpha(16비트 비부호)→ 36비트 영확장, 각도(18비트 부호)→ 36비트 부호확장
+        // 곱셈 결과 최대: 65536×92160 = 6.04×10⁹ < 2³³ → 36비트에 적합
         ST_BLEND: begin
-            // 롤: alpha*gyro_roll + (65536-alpha)*accel_roll, >> 16
-            roll  <= (($signed({{2{1'b0}},alpha}) * $signed(gyro_roll))
-                    + ($signed(one_minus_alpha_18) * $signed(accel_roll))) >>> 16;
-            // 피치: alpha*gyro_pitch + (65536-alpha)*accel_pitch, >> 16
-            pitch <= (($signed({{2{1'b0}},alpha}) * $signed(gyro_pitch))
-                    + ($signed(one_minus_alpha_18) * $signed(accel_pitch))) >>> 16;
+            blend_a <= $signed({{20{1'b0}}, alpha})
+                           * $signed({{18{gyro_roll[17]}}, gyro_roll})
+                     + $signed({{18{one_minus_alpha_18[17]}}, one_minus_alpha_18})
+                           * $signed({{18{accel_roll[17]}}, accel_roll});
+            blend_b <= $signed({{20{1'b0}}, alpha})
+                           * $signed({{18{gyro_pitch[17]}}, gyro_pitch})
+                     + $signed({{18{one_minus_alpha_18[17]}}, one_minus_alpha_18})
+                           * $signed({{18{accel_pitch[17]}}, accel_pitch});
+            state <= ST_OUTPUT;
+        end
+        // ── 혼합 결과 >> 16 → 18비트 출력 ───────────────────────────────
+        // blend_a[33:16] = $signed(blend_a) >>> 16 의 하위 18비트와 동일
+        ST_OUTPUT: begin
+            roll  <= blend_a[33:16];
+            pitch <= blend_b[33:16];
             state <= ST_DONE;
         end
 
