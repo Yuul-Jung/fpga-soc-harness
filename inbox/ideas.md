@@ -59,7 +59,7 @@
 - 차단조건재심사: 2026-11-04, 근거 2(카드 2건, rechecked_at 불문) + 새로움 2 + 적합성 1(Basys3 VGA·BRAM 카드 없음) + 완결성 1(SD+VGA 범위 큼) = 6점 → 7점 미달, vetted 유지
 
 ## I-005 프레임 버퍼 없는 색 추적: 9분할 카운트 → 레인/점프 신호 (합성 픽셀 스트림 테스트벤치)
-- 상태: ready
+- 상태: used (패키지: mmio-color-lane-detect, 2026-11-04)
 - 요약: 내 판단: RGB565 픽셀 스트림(HREF/VSYNC/PCLK)을 받아 녹색 임계 후 화면 9분할 픽셀 수를 세고, 2비트 레인 + 1비트 점프를 내는 스트리밍 파이프라인. 테스트벤치가 합성 카메라 모델로 프레임을 만들어 PASS/FAIL로 검증하고, 출력은 LED·7세그에 표시하는 T4 패키지.
 - 조합: [camera, 7-segment/LED]
 - 근거: [mit-6111-2021-team04-temple-run, columbia-4840-cameracontrol, shubhayu-das-vl504-project]
