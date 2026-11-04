@@ -70,7 +70,7 @@
 - 심사: 2026-11-04 /verify, 근거 3(카메라 카드 3건 rechecked_at 보유: mit-6111-2021-team04-temple-run, columbia-4840-cameracontrol, shubhayu-das-vl504-project) + 새로움 2(카탈로그에 카메라+LED 조합 패키지 없음) + 적합성 2(스트리밍 파이프라인 BRAM 불필요, 카메라 신호 Pmod 범위) + 완결성 2 = 9점 → ready
 
 ## I-006 OV7670 SCCB 설정 송신기 + 캡처 프런트엔드 자체 점검 (카메라 모델)
-- 상태: ready
+- 상태: used (패키지: mmio-ov7670-sccb-capture, 2026-11-04)
 - 요약: 내 판단: 설정 ROM을 SCCB로 순서대로 쓰는 송신기와 PCLK 도메인 캡처 모듈을 쓰고, 테스트벤치의 SCCB 슬레이브 모델이 ACK/레지스터 기록을 검사하며 이어서 픽셀 바이트 쌍 결합과 프레임 완료 신호를 검사하는 T2 패키지. 클럭 도메인을 PCLK/시스템 2개로 줄여 Columbia 보고서의 실패 요인을 피한다.
 - 조합: [camera, comm-i2c(SCCB)]
 - 근거: [shubhayu-das-vl504-project, columbia-4840-cameracontrol, mit-6111-2021-team04-temple-run]
