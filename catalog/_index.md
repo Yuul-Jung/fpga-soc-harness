@@ -152,3 +152,6 @@
 | [zediot-esp32-s3-tflite-wake-word](esp32/zediot-esp32-s3-tflite-wake-word.md) | L3 | T3 | ESP32-S3 (Basys3 no) | 2026-11-04 |
 | [alibukharai-esp-dl-gesture](esp32/alibukharai-esp-dl-gesture.md) | L3 | T3 | ESP32-S3 (Basys3 no) | 2026-11-04 |
 | [espressif-esp-tflite-micro](esp32/espressif-esp-tflite-micro.md) | L3 | T3 | ESP32-S3/P4/C3 (Basys3 no) | 2026-11-04 |
+| [doceme-py-spidev](rpi/doceme-py-spidev.md) | L3 | T2 | RPi (Basys3 needs-port) | 2026-11-04 |
+| [zbotic-rpi-gpio-stack-guide](rpi/zbotic-rpi-gpio-stack-guide.md) | L3 | T2 | RPi (Basys3 needs-port) | 2026-11-04 |
+| [abelectronics-rpi-spi-tutorial](rpi/abelectronics-rpi-spi-tutorial.md) | L3 | T2 | RPi (Basys3 needs-port) | 2026-11-04 |

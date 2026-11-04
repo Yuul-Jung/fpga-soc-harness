@@ -334,3 +334,14 @@
 - https://dev.to/zediot/esp32-s3-tensorflow-lite-micro-a-practical-guide-to-local-wake-word-edge-ai-inference-5540 | ESP32-S3 TFLite Micro wake word 실용 가이드(블로그, int8 CNN, 50~60ms 추론), L2 | ESP32 TFLite 엣지 AI 질의
 - https://hackster.io/projects/tags/tinyml?by=1year | Hackster.io TinyML 최신 프로젝트 목록(ESP32 포함), L1 | ESP32 TFLite Edge Impulse Hackster 질의
 - https://osrtos.com/projects/gesture-detecting-macro-keyboard | jakkra Gesture-Detecting Macro Keyboard 소개(RTOS 관점), L1 | gesture detecting macro keyboard osrtos 질의
+
+- https://abyz.me.uk/rpi/pigpio/python.html | pigpio 공식 Python API 레퍼런스 — 미열람(blocked: PROVENANCE_REQUIRED), 데몬 아키텍처·비트뱅킹 SPI/I2C 세부 | pigpio Python API Raspberry Pi
+- https://pypi.org/project/smbus2/ | smbus2 PyPI 페이지, Python I2C/SMBus 라이브러리 — 미열람(blocked: PROVENANCE_REQUIRED), I2C 레지스터 R/W API | smbus2 Python I2C Raspberry Pi
+- https://pypi.org/project/lgpio/ | lgpio PyPI 페이지, Pi 5 권장 GPIO 라이브러리 — 미열람(blocked: PROVENANCE_REQUIRED) | lgpio Raspberry Pi 5 GPIO library
+- https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#gpio | RPi 공식 GPIO 하드웨어 문서 — 미열람(L1), 핀맵·전압 사양 근거 | Raspberry Pi GPIO hardware documentation official
+- https://pypi.org/project/RPi.GPIO/ | RPi.GPIO PyPI — 미열람(blocked: PROVENANCE_REQUIRED), 기존 GPIO 라이브러리 비교 근거 | RPi.GPIO Python library PyPI
+- https://gpiozero.readthedocs.io/en/stable/api_pins.html | gpiozero 핀 팩토리 API 문서 — 미열람(blocked: PROVENANCE_REQUIRED), 핀 추상화 패턴 근거 | gpiozero pin factory API documentation
+- https://www.instructables.com/Raspberry-Pi-SPI-and-I2C-Tutorial/ | Raspberry Pi SPI/I2C 활성화 튜토리얼(Instructables) — 미열람(L1) | Raspberry Pi SPI I2C tutorial enable
+- https://www.kernel.org/doc/html/latest/driver-api/spi.html | Linux 커널 SPI 서브시스템 문서 — 미열람(L1), spidev 커널 드라이버 원리 근거 | Linux kernel SPI subsystem spidev documentation
+- https://pinout.xyz/ | RPi GPIO 핀배치 시각화(pinout.xyz) — 미열람(L1), SPI/I2C 핀 번호 확인 | Raspberry Pi GPIO pinout SPI I2C
+- https://www.rmedium.com/raspberry-pi-spi-master-to-fpga-slave | RPi SPI → FPGA SPI 슬레이브 연결 사례(미확인 출처) — 미열람(L1), RPi→FPGA 직접 연결 근거 | Raspberry Pi SPI master FPGA slave

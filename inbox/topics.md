@@ -65,7 +65,7 @@
 - [x] ESP32 엣지 AI: TFLite Micro 제스처·키워드 인식, ESP-IDF AI 예제 캡스톤 — 2026-11-04 10시대 사이클: 카드 3건(L3: zediot 키워드, alibukharai ESP-DL 제스처, espressif-esp-tflite-micro), 소스 코드 없는 기사 위주라 정량 수치 미검증, 실시간 추론 사례 없음
 
 ## Raspberry Pi 도메인 (2026-11-03 추가, 위에서부터 소비)
-- [ ] RPi GPIO: pigpio/gpiozero 기초, SPI/I2C 커널 드라이버와 Python 바인딩
+- [x] RPi GPIO: pigpio/gpiozero 기초, SPI/I2C 커널 드라이버와 Python 바인딩 — 2026-11-04 11시대 사이클: 카드 3건(L3: doceme-py-spidev, zbotic 스택 가이드, abelectronics SPI 튜토리얼), pigpio 공식 문서·gpiozero GitHub는 PROVENANCE_REQUIRED로 열람 불가, 아이디어 3건(I-048~I-050, raw)
 - [ ] RPi 카메라 파이프라인: Picamera2 + libcamera, OpenCV 실시간 영상 처리
 - [ ] RPi 실시간성: PREEMPT_RT 패치, isolcpus, 사이클릭 테스트 (모터 제어 목표)
 - [ ] RPi FPGA 연동: RPi SPI/I2C로 FPGA 제어, AXI 스트림 데이터 전송 사례

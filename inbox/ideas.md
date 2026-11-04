@@ -537,3 +537,45 @@
 - 단계: T4
 - 상태: vetted
 - 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(soc-map T4 ML 추론 가속기 빈틈) + 적합성 2(DSP48 90개, BRAM 50개, 가중치 소규모 int8 양자화 시 수 KB) + 완결성 1(HLS vs RTL 선택 미정, 비교 지표 미확정) = 5점. 보강: 근거 카드 rechecked_at 추가, HLS vs RTL 선택 명시.
+
+## I-048 RPi SPI 마스터 → Basys3 AXI SPI 슬레이브 IP 테스트 하네스 (S7 난이도 사다리 1단)
+
+내 판단: Raspberry Pi의 Python spidev로 Basys3 Pmod에 연결된 AXI4-Lite SPI 슬레이브 IP를 외부 테스트 호스트로 검증하는 하드웨어-인-더-루프 하네스. RPi가 SPI 마스터로 레지스터 쓰기/읽기를 반복하고 결과를 비교해 Basys3 IP의 동작을 보드에서 확인한다.
+
+- id: I-048
+- 조합: [comm-spi(RPi spidev 마스터), comm-spi(Basys3 SPI 슬레이브), AXI4-Lite, debug]
+- 근거 카드: [[doceme-py-spidev]], [[zbotic-rpi-gpio-stack-guide]]
+- 근거 URL: https://github.com/doceme/py-spidev, https://www.zbotic.in/raspberry-pi-gpio-advanced-guide/
+- 새로움 근거: 카탈로그에 RPi를 SPI 테스트 호스트로 쓰는 Basys3 IP 검증 사례 없음. I-038(Arduino SPI 브리지)은 Arduino가 테스트 호스트이고 Basys3 측이 슬레이브인 구조지만 RPi+Python spidev를 테스트 스크립트로 활용하는 패턴은 없음.
+- Basys3 적합성 근거: Basys3 Pmod 1개(SS, MOSI, MISO, SCK 4핀), RPi GPIO에 직접 연결 가능(3.3V 로직 공통). Python spidev로 임의 레지스터 주소에 write 후 readback 비교 스크립트 10줄이면 충분. 클럭은 RPi spidev 기본 500 kHz에서 시작(내 판단, 실측 없음).
+- 난이도: 2
+- 단계: T2
+- 상태: raw
+
+## I-049 pigpio 비트뱅킹 → Basys3 비표준 프로토콜 IP 타이밍 검증 (S7 난이도 사다리 2단)
+
+내 판단: pigpio의 마이크로초 단위 GPIO 파형 발생 기능으로 Basys3 커스텀 프로토콜 IP(예: 1-Wire, SPI-불규칙 CS)에 비표준 타이밍 신호를 주입해 엣지 케이스 동작을 검증하는 테스트 하네스. RPi가 "고정밀 신호 발생기"로 동작하고 Basys3 RTL의 타이밍 한계를 보드에서 찾는다.
+
+- id: I-049
+- 조합: [comm-spi(pigpio 비트뱅킹), comm-i2c(pigpio 비트뱅킹), debug, AXI4-Lite]
+- 근거 카드: [[zbotic-rpi-gpio-stack-guide]], [[doceme-py-spidev]]
+- 근거 URL: https://www.zbotic.in/raspberry-pi-gpio-advanced-guide/, https://abyz.me.uk/rpi/pigpio/
+- 새로움 근거: 카탈로그에 pigpio 비트뱅킹을 타이밍 테스트 도구로 쓰는 사례 없음. 하드웨어 테스트벤치로 RPi pigpio를 활용하는 패턴은 iverilog/verilator 기반 소프트웨어 테스트벤치와 구분되는 보드 레벨 검증 경로.
+- Basys3 적합성 근거: RPi GPIO와 Basys3 Pmod 간 3.3V 직접 연결 가능. pigpio의 100 µs 단위 타이밍은 Basys3 10 ns 클럭 기준으로 10,000배 느려 타이밍 제약 없음. I-048의 단순 SPI 테스트에서 비표준 타이밍 주입으로 한 단계 올라간 패턴 (내 판단).
+- 난이도: 3
+- 단계: T2
+- 상태: raw
+
+## I-050 gpiozero 디바이스 추상화 패턴 → MicroBlaze V C 드라이버 API 설계 참조 (S7 난이도 사다리 3단)
+
+내 판단: gpiozero의 고수준 디바이스 클래스(LED, Button, Motor, Servo, MCP3008 등)가 하위 핀 팩토리를 교체해도 같은 API를 제공하는 추상화 패턴을 MicroBlaze V BSP C 드라이버 아키텍처 설계 참조로 삼는 연구형 과제. gpiozero의 `source/values` 연결 흐름과 핀 팩토리 플러그인 구조를 AXI IP 종류별 드라이버 교체 가능한 HAL 설계 패턴으로 문서화한다.
+
+- id: I-050
+- 조합: [AXI4-Lite(HAL 참조 설계), comm-spi, comm-i2c, actuator-servo, sensor]
+- 근거 카드: [[zbotic-rpi-gpio-stack-guide]], [[abelectronics-rpi-spi-tutorial]]
+- 근거 URL: https://www.zbotic.in/raspberry-pi-gpio-advanced-guide/, https://gpiozero.readthedocs.io/en/stable/api_pins.html
+- 새로움 근거: 카탈로그에 gpiozero 패턴을 Basys3 C 드라이버 설계에 적용한 카드·패키지 없음. Xilinx BSP 드라이버 구조(XSpi_Initialize / XSpi_Transfer)는 존재하지만, gpiozero의 `source/values` 비동기 데이터 흐름 패턴을 MicroBlaze V 센서→제어 루프에 적용한 사례는 없음.
+- Basys3 적합성 근거: 소프트웨어 아키텍처 연구 과제라 FPGA 자원 없음. MicroBlaze V C BSP 위에 gpiozero 스타일 HAL 레이어를 C로 작성하는 설계 문서 형태. 실행 소스는 Verilog 없이 C 드라이버 + 테스트 스텁만으로 가능.
+- 난이도: 2
+- 단계: T3
+- 상태: raw
