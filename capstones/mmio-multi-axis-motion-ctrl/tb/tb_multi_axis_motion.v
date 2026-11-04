@@ -241,9 +241,9 @@ module tb_multi_axis_motion;
         $finish;
     end
 
-    // 타임아웃 (10 µs)
+    // 타임아웃 (50 µs — 7개 TC × 최대 300클럭 × 10ns + 여유)
     initial begin
-        #10000;
+        #50000;
         $display("FAIL: 시뮬레이션 타임아웃");
         $finish;
     end
