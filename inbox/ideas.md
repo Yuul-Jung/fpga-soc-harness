@@ -1204,3 +1204,36 @@
 - 내 판단: S4 제약 역전 사례 — FPGA는 세 모듈이 동일 클럭에서 병렬 동작하므로 비교 테스트벤치 작성이 MCU에서보다 훨씬 간단. 디바운스 방식 선택의 근거를 실측 사이클 수로 보여주는 교육 가치가 높음(내 판단). 하네스 CI의 iverilog에서 바로 실행 가능.
 - 난이도: 2 / 단계: T0-T1 / 상태: vetted
 - 심사: 2026-11-05 /verify(14차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(nandland-project4-debounce-switch·byu-ecen220-lab08-debounce-basys3 모두 rechecked_at 없음) + 새로움 2(디바운스 3방식을 같은 테스트벤치로 비교하는 아이디어 카탈로그 없음; 기존 카드들은 각자 단일 방식만 다룸) + 적합성 3(순수 Verilog 시뮬레이션으로 보드 없이 iverilog/verilator 검증 가능, RTL ~200줄 이내, 하네스 CI 직접 실행 가능) + 완결성 2(3방식 모듈 + 단일 테스트벤치 범위 명확, 10ms 채터→15ms 안정→1ms 추가 채터 패턴 명세, $display 사이클 수 비교 출력 TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득, SR래치 방식 RTL 상세 명세화.
+
+## I-090 BRAM 더블 버퍼 DMA + VGA 라인 스트리밍 (S2 조합: DMA + 디스플레이)
+
+- 내 판단: Basys3 BRAM 2개를 핑퐁(더블 버퍼)으로 쓰고, AXI CDMA가 한쪽 BRAM에 픽셀 데이터를 채우는 동안 VGA 스캔라인 컨트롤러가 반대쪽 BRAM에서 읽는 구조. MicroBlaze V는 CDMA를 버퍼 번갈아가며 트리거만 하면 테어링 없는 프레임 출력이 가능.
+- id: I-090
+- 조합: [AXI-CDMA, BRAM-double-buffer, video-vga, AXI4-Lite]
+- 근거 카드: [xilinx-xup-cdma-lab7, digilent-forum-21706-basys3-mb-io]
+- 근거 URL: [https://xilinx.github.io/xup_embedded_system_design_flow/lab7.html]
+- 새로움의 근거: 카탈로그에 AXI CDMA + VGA 더블 버퍼 조합 아이디어 없음. 기존 VGA 카드들은 BRAM 단일 버퍼 또는 OV7670 직결 방식이고, CDMA 하드웨어 블록 복사를 VGA 파이프라인에 연결하는 패턴 없음.
+- Basys3 적합성의 근거: Basys3 BRAM 50블록 × 18Kb = 225Kb 가용. 320×240 1bpp 흑백 = 9.375Kb(1블록 미만), 320×240 8bpp = 75Kb(5블록). AXI CDMA는 DDR 없이 BRAM-to-BRAM 전송 가능(free_slots 2슬롯). VGA 타이밍 카운터는 T2 수준 기존 RTL 재사용.
+- 난이도: 3 / 단계: T3 / 상태: raw
+
+## I-091 인터럽트 없는 폴링 DMA 엔진 순수 FSM — CPU 오프로드 블록 복사 (S2 조합: DMA + 베어메탈)
+
+- 내 판단: MicroBlaze V BSP의 `XAxiDma_SimpleTransfer()` 폴링 루프를 커스텀 AXI4-Lite FSM으로 대체. 소스 주소·목적 주소·바이트 수 레지스터를 소프트웨어가 쓰면 FSM이 AXI 버스트 전송 후 DONE 플래그를 올린다. 인터럽트 없이 폴링만으로 MicroBlaze V CPU를 DMA 완료 대기에서 해방시키는 최소 구현.
+- id: I-091
+- 조합: [AXI4-Lite, BRAM, custom-DMA-FSM, comm-uart(디버그)]
+- 근거 카드: [digilent-forum-21706-basys3-mb-io, billauer-mb-dma-250mbps, xilinx-xup-cdma-lab7]
+- 근거 URL: [https://billauer.co.il/blog/?p=1898]
+- 새로움의 근거: 카탈로그에 커스텀 DMA FSM(IP 없이 순수 RTL) 아이디어 없음. billauer 블로그의 Linux AXI DMA 버그 경험을 베어메탈 FSM으로 단순화해 재현 가능한 T3 패턴을 만드는 접근(S6 교훈 역용).
+- Basys3 적합성의 근거: AXI4-Lite 슬레이브 FSM + BRAM-to-BRAM 버스트(16워드 고정). DDR 불필요. 소스·목적 주소는 동결 맵 `free_slots` 범위 내 선택. free_slots 2슬롯(소스 BRAM 1 + 목적 BRAM 1). XC7A35T LUT 여유 충분(추정).
+- 난이도: 3 / 단계: T3 / 상태: raw
+
+## I-092 AXI CDMA BRAM-to-BRAM 스캐터-개더 패턴 MicroBlaze V 골격 (S6 교훈 → T3 캡스톤)
+
+- 내 판단: billauer.co.il의 MicroBlaze+Linux 250 MB/s DMA 실패·성공 패턴을 역이용해, Basys3 베어메탈에서 AXI CDMA 스캐터-개더 디스크립터 체인을 Vitis BSP로 구현하는 T3 골격. 디스크립터 2개(소스 BRAM-A → 목적 BRAM-B → 다시 소스 BRAM-A 순환)로 연속 전송을 테스트. MicroBlaze V 콘솔에 "CDMA SG PASS/FAIL" 출력.
+- id: I-092
+- 조합: [AXI-CDMA, BRAM-scatter-gather, MicroBlaze-V, AXI4-Lite]
+- 근거 카드: [billauer-mb-dma-250mbps, xilinx-xup-cdma-lab7, digilent-forum-21706-basys3-mb-io]
+- 근거 URL: [https://billauer.co.il/blog/?p=1898, https://xilinx.github.io/xup_embedded_system_design_flow/lab7.html]
+- 새로움의 근거: 카탈로그에 Basys3 AXI CDMA 스캐터-개더 디스크립터 패턴 아이디어 없음. 기존 T3 패키지는 단순 폴링 전송까지만. S6 교훈(billauer Linux DMA 버그 경험)을 베어메탈 Vitis BSP로 옮겨 재현하는 접근 없음.
+- Basys3 적합성의 근거: AXI CDMA SG 모드는 DDR 없이 디스크립터를 BRAM에 직접 저장 가능. 디스크립터 체인 2~4개는 소량 BRAM(< 1블록). MicroBlaze V Vitis BSP `XAxiCdma_SgTransfer()` 사용 가능. free_slots 2슬롯 필요.
+- 난이도: 4 / 단계: T3 / 상태: raw

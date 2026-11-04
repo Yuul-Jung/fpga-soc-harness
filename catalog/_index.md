@@ -216,3 +216,6 @@
 | [doyk0215-2d-labyrinth-on-fpga](amd/doyk0215-2d-labyrinth-on-fpga.md) | L3 | T4 | Basys3 | 2026-11-05 |
 | [byu-ecen220-lab08-debounce-basys3](papers/byu-ecen220-lab08-debounce-basys3.md) | L3 | T0 | Basys3 | 2026-11-05 |
 | [nandland-project4-debounce-switch](vendor-neutral/nandland-project4-debounce-switch.md) | L3 | T0 | NandLand Go Board (Basys3 needs-port) | 2026-11-05 |
+| [xilinx-xup-cdma-lab7](papers/xilinx-xup-cdma-lab7.md) | L2 | T3 | ZedBoard (Basys3 needs-port) | 2026-11-05 |
+| [digilent-forum-21706-basys3-mb-io](amd/digilent-forum-21706-basys3-mb-io.md) | L2 | T3 | Basys3 | 2026-11-05 |
+| [billauer-mb-dma-250mbps](embedded/billauer-mb-dma-250mbps.md) | L2 | T5 | 없음 (Basys3 needs-port) | 2026-11-05 |

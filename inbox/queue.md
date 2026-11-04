@@ -505,3 +505,15 @@
 - https://electronics.stackexchange.com/questions/177834/button-debounce-on-fpga | EE StackExchange: FPGA 버튼 디바운스 질답, FF 동기화+카운터 비교 — 미열람(L1) | FPGA button debounce FF synchronizer counter stackexchange
 - https://github.com/YSYouJack/FPGA_Button_Multi_Click_Detection | YSYouJack/FPGA_Button_Multi_Click_Detection: 멀티 클릭 감지 모듈 (더블/트리플 클릭), Verilog — 미열람(L1) | FPGA button multi click detection Verilog double triple
 - https://hackaday.com/2015/12/09/embed-with-elliot-debounce-your-noisy-buttons-part-i/ | Hackaday Embed with Elliot: 버튼 디바운스 원리 시리즈 파트 1, MCU→FPGA 비교 포함 — 미열람(L1) | debounce button Hackaday MCU FPGA comparison
+
+# 2026-11-05 Basys3 DMA 패턴 수집 (S6+S2)
+- https://github.com/ae-96/DMA | ae-96/DMA: Verilog DMA 컨트롤러 구현, AXI 버스 가능성 — 미열람(L1) | DMA controller Verilog AXI GitHub
+- https://github.com/AmrElsersy/DMA | AmrElsersy/DMA: DMA 컨트롤러 (ae-96 기반 추정), 단순 버스트 전송 — 미열람(L1) | DMA controller Verilog simple burst transfer
+- https://medium.com/@kavinduvsomadasa/axi-dma-in-scatter-gather-mode | Medium: AXI DMA 스캐터-개더 모드 단계별 가이드 — 미열람(L1) | AXI DMA scatter-gather mode guide
+- https://xilinx-wiki.atlassian.net/wiki/x/MIHNRQ | AMD/Xilinx Wiki: AXI DMA Standalone Driver 공식 가이드 — 미열람(L1) | AXI DMA standalone driver Xilinx wiki
+- https://www.physics.umd.edu/hep/drew/xilinx/dma.html | UMD 물리학과: MicroBlaze AXI DMA 튜토리얼, 폴링 방식 예제 — 미열람(L1) | MicroBlaze AXI DMA tutorial university
+- https://repost.aws/questions/QUtNVybi1ASK2YtTuULF0lmw/xdma-transfer-fails-when-writing-to-bram-peek-poke-also-not-functional | AWS re:Post: XDMA→BRAM 전송 실패 사례, peek/poke 불가 — 미열람(L1, S6 실패 사례) | XDMA BRAM transfer failure failure case AXI
+- https://github.com/bobnewgard/axidmacheck | bobnewgard/axidmacheck: AXI DMA 검증 도구, BRAM 대상 테스트 — 미열람(L1) | AXI DMA check BRAM validation Verilog
+- https://docs.amd.com/api/khub/documents/RAPaQReDsI0b4Nt~EdoZOw/content | AMD AXI DMA Product Guide (PG021) 공식 문서 — 미열람(L1) | AXI DMA product guide AMD official PG021
+- https://forum.digilent.com/topic/16726-why-axi-dmareads-only-16-bit-from-ddr3-instead-of-32-bits-in-my-design/ | Digilent 포럼: AXI DMA DDR3에서 16비트만 읽히는 버그 (S6 실패 사례) — 미열람(L1) | AXI DMA 16-bit bug DDR3 Digilent forum failure
+- https://community.element14.com/technologies/fpga-group/b/blog/posts/working-with-dma-through-axi-between-ddr-and-pl-blockram | element14: AXI DMA를 통한 DDR↔PL BRAM 전송 패턴 블로그 — 미열람(L1) | AXI DMA DDR BRAM transfer element14 blog
