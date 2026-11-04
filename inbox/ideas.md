@@ -417,14 +417,14 @@
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(SPI 슬레이브→AXI-Lite 마스터 브리지 없음) + 적합성 2(Pmod 1개·BRAM 불필요·LUT 소량 추정) + 완결성 2(쓰기 후 읽기 왕복·잘못된 주소 응답 테스트벤치 명확) = 6점. 보강: 근거 카드 rechecked_at 1건.
 
 ## I-039 제어 루프 지터 측정 IP: 주기 타임스탬프 min/max/평균과 오버런 카운터를 AXI4-Lite로 노출
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: 제어 루프 시작 펄스(예: 1 kHz 틱)마다 자유 실행 카운터로 주기를 재서 최소·최대·직전 주기와 기준 초과(오버런) 횟수를 레지스터로 보여 주는 소형 IP. 인터럽트는 오버런 시 발생. 테스트벤치는 일부러 주기를 늘린 틱 열로 min/max/오버런 값을 PASS/FAIL 점검.
 - 조합: [틱 입력, 주기 카운터, min/max 레지스터, 오버런 임계 비교기, AXI4-Lite 레지스터·인터럽트]
 - 근거: [circuitdigest-feroflyf405-open-source-fc, pinkfluffyunic0rn-stm32flight, https://discuss.ardupilot.org/t/fast-loop-timing-jitter/54486, https://github.com/Visaging/Pulse-Flight-Controller]
 - 새로움의 근거: 근거 자료의 지터 진단은 소프트웨어 스케줄러 로그(SCHED_DEBUG가 어느 작업이 넘쳤는지만 보이고 빈도는 못 본다는 스레드 서술)에 의존한다. 하드웨어 카운터로 빈도·분포를 보는 IP는 카탈로그에 없다(내 판단).
 - Basys3 적합성의 근거: 32비트 카운터 몇 개와 비교기뿐이라 LUT 소량, BRAM·핀 불필요(내부 신호). 1 kHz 틱은 100 MHz에서 100,000 클럭(내 계산).
 - 난이도: 2 / 단계: T2
-- 심사: 2026-11-04 /verify, 근거 1(pinkfluffyunic0rn-stm32flight) + 새로움 2(하드웨어 지터 측정 IP 없음) + 적합성 3(내부 신호만, 핀·BRAM 불필요, 1 kHz 100K 클럭 계산 명확) + 완결성 2(min/max/오버런 테스트벤치 범위 명확) = 8점. 근거<3이라 ready 미달 → vetted. 보강: 근거 카드 2건 추가.
+- 심사: 2026-11-04 /verify, 근거 1(pinkfluffyunic0rn-stm32flight) + 새로움 2(하드웨어 지터 측정 IP 없음) + 적합성 3(내부 신호만, 핀·BRAM 불필요, 1 kHz 100K 클럭 계산 명확) + 완결성 2(min/max/오버런 테스트벤치 범위 명확) = 8점. 근거<3이라 ready 미달 → vetted. 보강: 근거 카드 2건 추가. 차단조건재심사: 2026-11-04 /verify(12:37), 모든 WebFetch PROVENANCE_REQUIRED, 근거 카드 총 2건 → 차단 근거 2 + 새로움 2 + 적합성 3 + 완결성 2 = 9점 ≥ 7 → ready 승격.
 
 ## I-040 BLE 비콘→UART→FPGA 삼변측량 IP: ESP32 비콘 RSSI 수신 + AXI4-Lite 고정소수점 삼변측량 가속기
 - 상태: vetted
@@ -448,7 +448,8 @@
 - Basys3 적합성 근거: Basys3 Pmod SPI 슬레이브 IP([[hideakitai-esp32spislave]], needs-port)가 이미 카탈로그에 있고, AXI4-Lite SPI 슬레이브는 free_slot에 배정 가능.
 - 난이도: 3
 - 단계: T2
-- 상태: vetted
+- 상태: ready
+- 심사: 2026-11-04 /verify(12:37), 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(듀얼코어 역할 분리+Ring Buffer+FPGA SPI 슬레이브 조합 없음) + 적합성 2(Basys3 Pmod SPI 슬레이브 가능, AXI4-Lite free_slot 배정) + 완결성 2(Core1=SPI poll, Ring Buffer IPC, Core0=MQTT 흐름 명확) = 6점. 보강: 근거 카드 rechecked_at 추가. 차단조건재심사: 2026-11-04 /verify(12:37), 모든 WebFetch PROVENANCE_REQUIRED, 근거 카드 총 3건 → 차단 근거 3 + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7 → ready 승격.
 
 ## I-042 ESP32-CAM → Basys3 단일 프레임 UART 브릿지: JPEG 캡처→전송→VGA 썸네일
 
@@ -552,7 +553,8 @@
 - Basys3 적합성 근거: Basys3 Pmod 1개(SS, MOSI, MISO, SCK 4핀), RPi GPIO에 직접 연결 가능(3.3V 로직 공통). Python spidev로 임의 레지스터 주소에 write 후 readback 비교 스크립트 10줄이면 충분. 클럭은 RPi spidev 기본 500 kHz에서 시작(내 판단, 실측 없음).
 - 난이도: 2
 - 단계: T2
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-04 /verify(12:37), 근거 0(doceme-py-spidev·zbotic-rpi-gpio-stack-guide rechecked_at 없음) + 새로움 2(RPi를 SPI 테스트 호스트로 쓰는 Basys3 IP 검증 사례 없음) + 적합성 2(Basys3 Pmod 1개(SS·MOSI·MISO·SCK), RPi 3.3V 직결 가능) + 완결성 1(RTL 없이 테스트 하네스만이라 계통도·TB 범위 불명확) = 5점. 보강: 근거 카드 rechecked_at 추가.
 
 ## I-049 pigpio 비트뱅킹 → Basys3 비표준 프로토콜 IP 타이밍 검증 (S7 난이도 사다리 2단)
 
@@ -566,7 +568,8 @@
 - Basys3 적합성 근거: RPi GPIO와 Basys3 Pmod 간 3.3V 직접 연결 가능. pigpio의 100 µs 단위 타이밍은 Basys3 10 ns 클럭 기준으로 10,000배 느려 타이밍 제약 없음. I-048의 단순 SPI 테스트에서 비표준 타이밍 주입으로 한 단계 올라간 패턴 (내 판단).
 - 난이도: 3
 - 단계: T2
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-04 /verify(12:37), 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(pigpio 비트뱅킹 타이밍 테스트 도구 사례 없음) + 적합성 2(RPi GPIO ↔ Basys3 Pmod 3.3V 직결, pigpio 100 µs 단위로 Basys3 10 ns 타이밍 제약 없음) + 완결성 1(대상 비표준 프로토콜 범위 미정) = 5점. 보강: 대상 프로토콜 범위 명시.
 
 ## I-050 gpiozero 디바이스 추상화 패턴 → MicroBlaze V C 드라이버 API 설계 참조 (S7 난이도 사다리 3단)
 
@@ -580,7 +583,8 @@
 - Basys3 적합성 근거: 소프트웨어 아키텍처 연구 과제라 FPGA 자원 없음. MicroBlaze V C BSP 위에 gpiozero 스타일 HAL 레이어를 C로 작성하는 설계 문서 형태. 실행 소스는 Verilog 없이 C 드라이버 + 테스트 스텁만으로 가능.
 - 난이도: 2
 - 단계: T3
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-04 /verify(12:37), 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(gpiozero 패턴→Basys3 C 드라이버 설계 적용 카드·패키지 없음) + 적합성 3(소프트웨어 아키텍처 연구라 FPGA 자원 없음, C 드라이버+테스트 스텁만으로 가능) + 완결성 1(설계 문서형 과제라 RTL 없어도 되지만 계통도·TB 범위 불명확) = 6점. 보강: 근거 카드 rechecked_at 추가, C 드라이버 API 범위 명시.
 
 ## I-051 openeye-CamSI 착안 no-D-PHY Artix-7 ISERDES 라인 버퍼 IP (S4 제약 역전)
 내 판단: chili-chips-ba openeye-CamSI의 핵심 혁신(D-PHY 칩 없이 IBUFDS+IDELAY2+ISERDES2 프리미티브로 MIPI CSI-2 수신)을 Basys3 XC7A35T에서 재현하되, 카메라 입력을 MIPI CSI-2 대신 OV7670 병렬 픽셀 버스(8비트 RGB565 + PCLK/HSYNC/VSYNC)로 교체한 AXI-Stream ISP 사다리 T2→T4 패키지. 프레임 버퍼 없이 라인 단위 AsyncFIFO CDC 패턴을 그대로 활용해 BRAM 한계를 역이용한다.
