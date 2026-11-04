@@ -35,32 +35,6 @@ module nmea_uart_rx #(
     end
 
     // -----------------------------------------------------------------------
-    // Baud rate generator: half-bit and full-bit periods
-    // -----------------------------------------------------------------------
-    reg [15:0] baud_cnt;
-    reg        baud_tick;       // full-bit tick
-    reg        baud_half;       // half-bit tick (sample point)
-
-    always @(posedge clk) begin
-        if (!rst_n || !en) begin
-            baud_cnt  <= 16'd0;
-            baud_tick <= 1'b0;
-            baud_half <= 1'b0;
-        end else begin
-            baud_tick <= 1'b0;
-            baud_half <= 1'b0;
-            if (baud_cnt >= baud_div) begin
-                baud_cnt  <= 16'd0;
-                baud_tick <= 1'b1;
-            end else begin
-                baud_cnt <= baud_cnt + 1'b1;
-                if (baud_cnt == (baud_div >> 1))
-                    baud_half <= 1'b1;
-            end
-        end
-    end
-
-    // -----------------------------------------------------------------------
     // UART receive FSM
     // -----------------------------------------------------------------------
     localparam [2:0]

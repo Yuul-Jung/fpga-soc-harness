@@ -138,7 +138,6 @@ module tb_i2c_nmea_hub;
 
             @(posedge clk);
             while (!arready) @(posedge clk);
-            @(posedge clk);
             arvalid = 1'b0;
 
             while (!rrvalid) @(posedge clk);
@@ -219,7 +218,7 @@ module tb_i2c_nmea_hub;
         // Enable hub (ctrl_en=1, ie=0)
         axi_write(8'h04, 32'h1);
         // Wait for at least one I2C cycle to complete (period + FSM overhead)
-        repeat (I2C_PERIOD_SIM * 10 + 5000) @(posedge clk);
+        repeat (100_000) @(posedge clk);  // i2c_cycle_fsm bit-phase=250 cycles → full txn ≈84k cycles
         // Check FIFO has at least 1 entry
         axi_read(8'h08, rd_val);
         // fifo_cnt should be >= 1 (at least one I2C device was polled)
