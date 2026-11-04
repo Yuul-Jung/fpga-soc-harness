@@ -117,3 +117,4 @@
 2026-11-04 16:39 | verify | 재열람 0(차단: WebFetch PROVENANCE_REQUIRED 전면 차단) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +2(I-055·I-058, 차단조건재심사: 9점·10점) | raw 심사 +3(I-061 vetted 6점, I-062 vetted 6점, I-063 dropped 4점) | atlas/soc-map 갱신(embedded RTOS 카드 3건) | check 통과(170건)
 2026-11-04 17:04 | capstone-ci | mmio-uart-axilite-bridge | 등급 S2 달성 (CI run 4, SHA 4b8fb00) | lint=pass sim=pass synth=pass | fix: uart_rx.v cnt 초기값 HALF→INIT_CNT(BAUD_DIV+HALF-2) — 스타트비트 중간 대신 데이터비트0 중간 샘플
 2026-11-04 17:18 | collect | 프로토콜 심화: CAN FD·MODBUS RTU·EtherCAT · S5 비정형 출처(주)+S7 난이도 사다리(보조) | 카드 +3(L3×2·L2×1) | 아이디어 +3(I-064~I-066 raw) | 큐 잔여 400 | blocked 1(hbdeng FreeModbus ASCII only)
+2026-11-04 17:39 | capstone | mmio-vga-tilemap-dashboard (I-027) · 차단조건재심사 10점 → ready → used | S2 | 패키지 +1 | 아이디어 used +1 | 큐 잔여 400 | fix 1회(tb_tilemap @posedge→wait 타임아웃 버그)
