@@ -141,16 +141,19 @@ initial begin
     check_range(roll, 18'sd23040, "TC4 roll(alpha=0, accel only)");
 
     // ── TC5: 자이로 드리프트 → 상보 필터 보정 (alpha=0.98) ───────────────────
-    // 초기: ay=0, az=1g → roll=0°. 자이로 증분=+1° → 상보 필터 후 ≈+0.02°
-    // (1-alpha)*0° + alpha*(0°+1°) = 0.98*512 ≈ 501 (≈0.98°)
+    // TC4가 roll≈45°를 남긴다. alpha=0 초기화 스텝으로 roll을 0°로 맞춘다.
+    // 그 후 alpha=0.98, gx_del=+1°를 적용: blend → ≈0.98° ≈ 501 단위
     $display("TC5: gyro drift correction (alpha=64225/65536≈0.98)");
     ay     = 16'sh0000;
     az     = 16'sh4000;
+    gx_del = 18'sd0;
+    alpha  = 16'd0;      // 순수 가속도계: roll → atan2(0, 1g) ≈ 0°
+    run_step;            // 초기화 스텝 (roll ← 0)
+
+    // 이제 alpha=0.98, gx_del=+1°로 상보 필터 테스트
     gx_del = 18'sd512;  // +1° 자이로 증분
     alpha  = 16'd64225; // 0.98*65536
-
-    // 처음 한 스텝 (prev_roll=0에서 시작)
-    // 예상: alpha*1° + (1-alpha)*0° = 0.98° ≈ 502 (units)
+    // 예상: alpha*(0°+1°) + (1-alpha)*0° = 0.98*512 ≈ 501 (≈0.98°)
     run_step;
     // 넓은 허용: 0.5°~1.5° 범위 (256~768)
     if (roll < 18'sd256 || roll > 18'sd768) begin
