@@ -5,6 +5,7 @@
 - verify: `YYYY-MM-DD HH:MM | verify | 재열람 N | 수정 M | 불일치 K | 승격 L2→L3 P | ready +R`
 - capstone: `YYYY-MM-DD HH:MM | capstone | <slug> | 등급 S0~S2` 또는 `... | skip: <사유>`
 
+2026-11-05 07:59 | capstone | mmio-relay-autotune-ip (I-022, ready→used) | 등급 S0 (로컬 iverilog 없음; Gate 1 fix: mmio-xadc-pwr-mon ctrl_en 상승에지 감지 커밋 b340b7e, CI 대기중) | 릴레이 FSM(IDLE→RUN→DONE)+교차 카운터+주기·진폭 레지스터+W1C IRQ, 1차+지연 모터 모델 TB(TC1~TC5) | 큐 잔여 492
 2026-11-05 06:21 | collect | Basys3 하드웨어 타이머 IP · S3 빈틈 추적(주)+S2 조합 탐색(보조) | 카드 +3 (efabless-ef-tcc32 L3, zipcpu-ziptimer L3, mij001-axil-timer L3) | 아이디어 +2 (I-093 타이머+PWM+캡처, I-094 소프트 멀티채널 타임아웃) | 큐 잔여 492 | blocked 1 (Kyuhyeon34/FPGA_Timer_IP client_error)
 2026-11-05 05:43 | verify | 재열람 0(WebFetch 전면 차단으로 재열람 불가) | 수정 2(capstone.json 명세 버그: references 키 name/reason→card/why, hierarchy 배열→딕셔너리) | 불일치 2 | 승격 L2→L3 0 | ready +2 (I-022·I-023, 차단조건재심사 8점) | 차단조건재심사 완료: I-010(6점 vetted), I-024·I-028~I-031·I-033~I-035·I-038(8~9점, 사이클 상한 도달) | tools/check.py 통과(217건) | WebFetch 15차 연속 차단
 2026-11-05 05:41 | capstone | mmio-sensor-hub-nmea-ip (I-036) | 등급 S2 (attempt 2: uart baud타이밍·nmea_line_rdy else-if·ts_latch·i2c_gap·wstrb 수정, CI lint+sim PASS+synth LUT254 FF279)

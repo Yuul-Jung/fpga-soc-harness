@@ -1,0 +1,187 @@
+{
+  "slug": "mmio-relay-autotune-ip",
+  "title": "릴레이 자동 튜닝 IP",
+  "summary": "릴레이 피드백 FSM으로 한계 사이클 주기·진폭을 측정하고, AXI4-Lite 레지스터를 통해 MicroBlaze V가 Ziegler-Nichols 계산 후 PID 이득을 직접 쓴다. 테스트벤치는 1차+지연 모터 모델로 한계 사이클 주기를 해석값과 대조해 자체 점검한다.",
+  "board": "Basys3",
+  "stage": "T4",
+  "goals": [
+    "릴레이 FSM: ctrl_en 상승에지마다 ±relay_amp 출력을 setpoint 교차 시 뒤집는다",
+    "주기·진폭 측정: 교차 간격(클럭 수)과 출력 오차 최대값을 32비트 레지스터에 기록",
+    "IRQ: 한계 사이클 완료(교차 2회) 시 인터럽트 발생, W1C 소거",
+    "AXI4-Lite 슬레이브: BASE=0x401E_0000, 오프셋 목록은 memory_map 참조",
+    "자체 점검 테스트벤치: 1차+지연 모터 모델 연결, PASS/FAIL 출력"
+  ],
+  "non_goals": [
+    "PID 이득 계산 (Ziegler-Nichols 연산은 MicroBlaze V 소프트웨어 담당)",
+    "실제 PID IP와의 AXI 연결 (별도 패키지)",
+    "보드 동작 확인 (S3)"
+  ],
+  "architecture": {
+    "clock": "100 MHz (s_axi_aclk), 액티브-로우 리셋 (s_axi_aresetn)",
+    "blocks": [
+      {
+        "id": "cpu",
+        "name": "MicroBlaze V (외부)",
+        "kind": "cpu",
+        "module": "external",
+        "file": "",
+        "desc": "AXI4-Lite 마스터. 릴레이 완료 IRQ를 받아 Ziegler-Nichols 계산 후 Kp·Ki·Kd를 PID IP에 쓴다.",
+        "short": "CPU",
+        "side": "left"
+      },
+      {
+        "id": "ip",
+        "name": "relay_autotune_ip",
+        "kind": "ip",
+        "module": "relay_autotune_ip",
+        "file": "rtl/relay_autotune_ip.v",
+        "desc": "AXI4-Lite 슬레이브. 릴레이 FSM(IDLE→RUN→DONE), 교차 카운터, 주기·진폭 레지스터, IRQ 로직을 포함한다.",
+        "short": "RELAY IP",
+        "side": "center"
+      },
+      {
+        "id": "encoder",
+        "name": "엔코더 속도 (외부 신호)",
+        "kind": "external",
+        "module": "external",
+        "file": "",
+        "desc": "쿼드 엔코더 또는 타코에서 오는 속도 값. 테스트벤치에서는 모터 모델이 대신한다.",
+        "short": "ENC",
+        "side": "right"
+      },
+      {
+        "id": "pwm_out",
+        "name": "릴레이 PWM 출력 (외부 신호)",
+        "kind": "external",
+        "module": "external",
+        "file": "",
+        "desc": "H-브리지 방향·듀티 제어. 테스트벤치에서는 motor_model이 소비한다.",
+        "short": "PWM",
+        "side": "right"
+      }
+    ],
+    "links": [
+      {"from": "cpu", "to": "ip", "label": "AXI4-Lite RW"},
+      {"from": "ip", "to": "cpu", "label": "IRQ"},
+      {"from": "encoder", "to": "ip", "label": "speed_in[15:0]"},
+      {"from": "ip", "to": "pwm_out", "label": "relay_out (부호 비트)"}
+    ]
+  },
+  "bus_protocol": {
+    "name": "AXI4-Lite",
+    "data_width": 32,
+    "addr_width": 16,
+    "signals": [
+      "s_axi_aclk", "s_axi_aresetn",
+      "s_axi_awaddr[31:0]", "s_axi_awvalid", "s_axi_awready",
+      "s_axi_wdata[31:0]", "s_axi_wstrb[3:0]", "s_axi_wvalid", "s_axi_wready",
+      "s_axi_bresp[1:0]", "s_axi_bvalid", "s_axi_bready",
+      "s_axi_araddr[31:0]", "s_axi_arvalid", "s_axi_arready",
+      "s_axi_rdata[31:0]", "s_axi_rresp[1:0]", "s_axi_rvalid", "s_axi_rready"
+    ],
+    "limits": "단일 비트 폭 전송(WSTRB 존중 안 함, 단어 단위), 버스트 미지원"
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "mbv-frozen-v1",
+    "compat": "compatible",
+    "plan": "free_slot [1E] (0x401E_0000, 64KB)에 배정 제안. intc_free 입력 13번 IRQ 연결 제안(동결 전 제안).",
+    "frozen_mapping": [
+      {"block": "ip", "region": "0x401E_0000", "size": "0x10000", "note": "free_slot [1E] 사용"}
+    ]
+  },
+  "external_parts": [
+    {
+      "id": "enc_module",
+      "name": "쿼드 엔코더 모듈 (AB 2채널)",
+      "block": "encoder",
+      "interface": "GPIO (Pmod 2핀)",
+      "io_voltage": "3.3V",
+      "qty": 1,
+      "board_resident": false,
+      "notes": "속도 측정은 별도 QDEC IP에 맡기고 speed_in을 이 IP로 연결한다. 테스트벤치에서는 motor_model이 대신한다."
+    },
+    {
+      "id": "hbridge_module",
+      "name": "H-브리지 모터 드라이버 (DRV8833 등)",
+      "block": "pwm_out",
+      "interface": "GPIO (Pmod 1핀)",
+      "io_voltage": "3.3V",
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": "모터 전원 분리 (5V~12V), GND 공통",
+      "level_shift": false,
+      "power_note": "모터 전원은 Basys3 보드와 완전히 분리. 릴레이 출력은 부호 비트(0/1)로 방향만 제어.",
+      "arduino_compatible": true,
+      "notes": "DRV8833, L298N, TB6612 모두 사용 가능. 3.3V 로직 직결, 5V 전원 분리."
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "디지털 계통도만 제공. 전기 회로도 미작성."
+  },
+  "hierarchy": [
+    {
+      "module": "relay_autotune_ip",
+      "file": "rtl/relay_autotune_ip.v",
+      "children": []
+    }
+  ],
+  "memory_map": [
+    {
+      "base": "0x401E_0000",
+      "size": "0x10000",
+      "block": "ip",
+      "desc": "relay_autotune_ip 레지스터 공간 (free_slot [1E], intc=13 제안, 동결 전 제안)",
+      "regs": [
+        {"off": "0x0000", "name": "CTRL",        "access": "RW", "desc": "[0]=en, [1]=auto (auto=1이면 미구현), [31:2]=reserved"},
+        {"off": "0x0004", "name": "SETPOINT",    "access": "RW", "desc": "[15:0]=목표 속도 (부호 없음, 엔코더 단위)"},
+        {"off": "0x0008", "name": "RELAY_AMP",   "access": "RW", "desc": "[15:0]=릴레이 출력 진폭 (엔코더 단위, 최대 duty에 해당)"},
+        {"off": "0x000C", "name": "PERIOD_CNT",  "access": "RO", "desc": "[31:0]=한계 사이클 반주기 클럭 수 (가장 최근 교차 간격)"},
+        {"off": "0x0010", "name": "AMP_MEAS",    "access": "RO", "desc": "[15:0]=측정 진폭 (속도 최대-최소, 절반값)"},
+        {"off": "0x0014", "name": "CROSS_CNT",   "access": "RO", "desc": "[15:0]=setpoint 교차 횟수 (2 이상이면 주기 유효)"},
+        {"off": "0xFFFC", "name": "IRQ_STATUS",  "access": "W1C", "desc": "[0]=한계 사이클 완료(교차 2회)"},
+        {"off": "0xFFF8", "name": "IRQ_ENABLE",  "access": "RW",  "desc": "[0]=IRQ 활성화"},
+        {"off": "0xFFF0", "name": "IP_ID",        "access": "RO", "desc": "0x52454C59 ('RELY')"},
+        {"off": "0xFFF4", "name": "IP_VER",       "access": "RO", "desc": "0x0000_0100 (v1.0)"}
+      ]
+    }
+  ],
+  "roadmap": [
+    {"stage": "T2", "state": "done",    "title": "mmio-uart-gpio-skeleton: UART + GPIO MMIO 골격", "refs": []},
+    {"stage": "T3", "state": "done",    "title": "mmio-xadc-pwr-mon: XADC 전원 감시 IP (DRP FSM)", "refs": []},
+    {"stage": "T4", "state": "current", "title": "mmio-relay-autotune-ip: 릴레이 자동 튜닝 IP", "refs": ["controleng-relay-method-automates-pid-loop-tuning", "kmitl-iccas-2003-auto-tune-digital-pid-fpga", "tees-isie-2017-compass-search-self-tuning-pid-dc-drive"]},
+    {"stage": "T4", "state": "planned", "title": "릴레이 튜닝 결과로 PID IP 이득 쓰기 + 폐루프 속도 제어", "refs": []}
+  ],
+  "references": [
+    {"name": "controleng-relay-method-automates-pid-loop-tuning", "reason": "릴레이 피드백 방식의 한계 사이클 측정 원리 (§7: 지시 아님, 데이터로만 처리)"},
+    {"name": "kmitl-iccas-2003-auto-tune-digital-pid-fpga",       "reason": "FPGA 기반 디지털 PID 자동 튜닝 선례"},
+    {"name": "tees-isie-2017-compass-search-self-tuning-pid-dc-drive", "reason": "DC 모터 자기 튜닝 PID 사례 (컴패스 탐색)"}
+  ],
+  "sources": {
+    "rtl":         ["rtl/relay_autotune_ip.v"],
+    "tb":          ["tb/tb_relay_autotune_ip.v"],
+    "constraints": ["constr/relay_autotune_ip.xdc"],
+    "build":       ["Makefile"]
+  },
+  "howto": {
+    "sim": [
+      "iverilog -g2001 -Wall -o /tmp/tb_relay tb/tb_relay_autotune_ip.v rtl/relay_autotune_ip.v",
+      "vvp /tmp/tb_relay"
+    ],
+    "synth": [
+      "yosys -p 'synth_xilinx -top relay_autotune_ip' rtl/relay_autotune_ip.v"
+    ],
+    "vivado": "Vivado 2024.2 → Add Sources → relay_autotune_ip.v. Part: xc7a35tcpg236-1. 합성 후 Resource Report 확인."
+  },
+  "verification": {
+    "board": "not-tested",
+    "notes": "CI에서 iverilog 시뮬레이션(S1)과 yosys 합성(S2) 자동 수행. S3(보드)는 사람이 올린다."
+  },
+  "risks": [
+    "speed_in 타이밍: 외부 QDEC 출력과 IP 클럭 도메인이 같다고 가정. 실제 보드 연결 시 CDC 처리 필요.",
+    "한계 사이클 주기는 릴레이 진폭(relay_amp)에 의존. 너무 크면 포화, 너무 작으면 교차 불가. 초기 값 선택 필요.",
+    "1차+지연 모터 모델 파라미터(Km=1, τ=200클럭, Td=10클럭)는 TB 고정값. 실제 모터와 다를 수 있음.",
+    "auto=1(자동 반복) 모드 미구현. 필요 시 다음 패키지에서 확장."
+  ]
+}
