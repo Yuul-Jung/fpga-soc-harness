@@ -159,7 +159,7 @@
 - 변경: 2026-11-04 /verify — 패키지 생성(mmio-speed-pi-checker) 후 상태 미갱신 불일치 수정 (ready → used)
 
 ## I-014 모터 안전 래퍼 IP: 과전류 입력·데드타임·활성화 게이트를 PWM 출력 앞에 두는 보호 블록 자체 점검
-- 상태: ready
+- 상태: used (패키지: mmio-motor-safety-wrapper, 2026-11-04)
 - 요약: 내 판단: PWM 출력 앞단에서 H-브리지 상보 신호에 데드타임을 넣고, 외부 과전류 입력이 걸리면 활성화를 끄고 래치된 상태 비트로 남기는 IP. 테스트벤치는 상·하 스위치가 동시에 켜지지 않는지(슛스루 없음)와 과전류 시 출력 차단을 PASS/FAIL로 검사하는 T2
 - 조합: [PWM(actuator), 과전류 센서 입력(sensor), 데드타임 FSM]
 - 근거: [embeddedts-fpga-pwm-hbridge-quadrature, tinredmc-ultralitebldc, lange-fpga-foc-motor-control-hackaday, ti-drv8833-datasheet, toshiba-tb6612fng-datasheet, markdannemiller-ttu-lab1-bc5-hardware-guide]

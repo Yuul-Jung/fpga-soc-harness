@@ -117,8 +117,6 @@
 2026-11-04 16:39 | verify | 재열람 0(차단: WebFetch PROVENANCE_REQUIRED 전면 차단) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +2(I-055·I-058, 차단조건재심사: 9점·10점) | raw 심사 +3(I-061 vetted 6점, I-062 vetted 6점, I-063 dropped 4점) | atlas/soc-map 갱신(embedded RTOS 카드 3건) | check 통과(170건)
 2026-11-04 17:04 | capstone-ci | mmio-uart-axilite-bridge | 등급 S2 달성 (CI run 4, SHA 4b8fb00) | lint=pass sim=pass synth=pass | fix: uart_rx.v cnt 초기값 HALF→INIT_CNT(BAUD_DIV+HALF-2) — 스타트비트 중간 대신 데이터비트0 중간 샘플
 2026-11-04 17:18 | collect | 프로토콜 심화: CAN FD·MODBUS RTU·EtherCAT · S5 비정형 출처(주)+S7 난이도 사다리(보조) | 카드 +3(L3×2·L2×1) | 아이디어 +3(I-064~I-066 raw) | 큐 잔여 400 | blocked 1(hbdeng FreeModbus ASCII only)
-<<<<<<< Updated upstream
 2026-11-04 17:39 | capstone | mmio-vga-tilemap-dashboard (I-027) · 차단조건재심사 10점 → ready → used | S2 | 패키지 +1 | 아이디어 used +1 | 큐 잔여 400 | fix 1회(tb_tilemap @posedge→wait 타임아웃 버그)
-=======
 2026-11-04 17:41 | verify | 재열람 0(차단: WebFetch PROVENANCE_REQUIRED 전면 차단) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +2(I-015·I-036, 차단조건재심사: 7점·8점) | raw 심사 +3(I-064 vetted 8점·I-065 vetted 6점·I-066 dropped 4점) | atlas 신설(fieldbus-protocols.md, 카드 8건)·soc-map 갱신(필드버스 도메인 연결 추가, gap 3건 추가) | check 통과(176건)
->>>>>>> Stashed changes
+2026-11-04 17:59 | capstone | mmio-motor-safety-wrapper (I-014) · 차단조건재심사 9점 → ready → used | S0 (iverilog/verilator/yosys 없음, CI에서 S1/S2 결정) | 패키지 +1 | 아이디어 used +1 | 큐 잔여 400 | motor_safety_ip.v(슛스루 차단+데드타임 FSM+OC 래치, IP 표준 Rev.1 관리 레지스터) + deadtime_ch(채널별 2상태 FSM) + tb(TC1~TC6, 슛스루·데드타임·OC 래치·해제·bypass 점검) | 슬롯 [18]=0x4018_0000 제안

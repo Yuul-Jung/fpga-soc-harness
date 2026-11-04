@@ -1,0 +1,237 @@
+{
+  "slug": "mmio-motor-safety-wrapper",
+  "title": "MMIO H-브리지 모터 안전 래퍼 자체 점검",
+  "summary": "PWM 출력 앞단에서 H-브리지 상보 신호에 데드타임을 삽입하고, 외부 과전류 입력 시 출력을 차단·래치하는 motor_safety_ip를 단일 IP로 구현한다. MMIO-lite 버스, IP 표준 Rev.1 관리 레지스터 포함. 슛스루 차단·과전류 래치를 PASS/FAIL 테스트벤치로 자체 점검한다.",
+  "board": "Basys3",
+  "stage": "T2",
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 Verilog-2001 원본이며 외부 코드를 포함하지 않는다. 시뮬레이션·합성 결과는 CI가 기록한다. 아이디어 I-014 (ready, 차단조건재심사 9점)으로 생성됨 (2026-11-04).",
+  "goals": [
+    "IP 표준 Rev.1(관리 레지스터 0xFFF0~FFFC)을 따르는 motor_safety_ip 단일 IP 설계: 2채널 H-브리지 상보 신호에 프로그래머블 데드타임 삽입, 외부 과전류 입력 시 출력 래치·차단",
+    "MMIO-lite 버스 주소 디코더로 GPIO/UART/MOTOR_SAFETY 3개 슬레이브 연결",
+    "슛스루 차단(AH·AL 동시 ON 불가), 과전류 래치·해제를 PASS/FAIL 테스트벤치로 자체 점검",
+    "yosys 합성 성공, iverilog 시뮬레이션 PASS 확인(S2)"
+  ],
+  "non_goals": [
+    "실제 H-브리지·모터·전류 센서 하드웨어 연결(S3는 사람이 한다)",
+    "속도·위치 제어(PI/PID) — 이 패키지는 출력 보호 레이어만 구현",
+    "다채널(3채널 이상) 3상 인버터 — 이 패키지는 2채널(A/B 각 상보 1쌍) 구현",
+    "AXI4-Lite 완전 핸드셰이크(이 패키지는 mmio-lite 사용)",
+    "동적 데드타임 적응(이 패키지는 레지스터로 고정 설정)"
+  ],
+  "architecture": {
+    "clock": "100 MHz (시뮬레이션에서는 10 ns 클럭)",
+    "reset": "rst, active high, 동기",
+    "blocks": [
+      {
+        "id": "top",
+        "name": "basys3_top",
+        "kind": "board-wrapper",
+        "module": "basys3_top",
+        "file": "rtl/basys3_top.v",
+        "desc": "Basys3 보드 최상위 래퍼. 클럭 버퍼, 리셋 버튼(btnC), LED/SW/BTN, PWM 출력 핀(JA Pmod), 과전류 입력 핀(JB Pmod[0])",
+        "short": "Board wrapper",
+        "side": "top"
+      },
+      {
+        "id": "soc",
+        "name": "soc_top",
+        "kind": "soc-core",
+        "module": "soc_top",
+        "file": "rtl/soc_top.v",
+        "desc": "SoC 코어. MMIO 버스와 슬레이브 3개를 연결. 마스터 포트 노출(CPU 교체 지점)",
+        "short": "SoC core",
+        "side": "core"
+      },
+      {
+        "id": "bus",
+        "name": "mmio_bus",
+        "kind": "bus-decoder",
+        "module": "mmio_bus",
+        "file": "rtl/mmio_bus.v",
+        "desc": "addr[31:16] 기준 3개 슬레이브 선택. ready=1 사이클 고정",
+        "short": "MMIO decoder",
+        "side": "core"
+      },
+      {
+        "id": "gpio",
+        "name": "gpio",
+        "kind": "peripheral",
+        "module": "gpio",
+        "file": "rtl/gpio.v",
+        "desc": "16-bit LED(RW, off=0x00), 16-bit SW(RO, 2단 동기화, off=0x04)",
+        "short": "GPIO LED/SW",
+        "side": "peripheral"
+      },
+      {
+        "id": "uart",
+        "name": "uart_tx",
+        "kind": "peripheral",
+        "module": "uart_tx",
+        "file": "rtl/uart_tx.v",
+        "desc": "UART 8N1 송신 전용. 0x00 DATA(WO), 0x04 STATUS(RO, bit0=busy)",
+        "short": "UART TX",
+        "side": "peripheral"
+      },
+      {
+        "id": "safety",
+        "name": "motor_safety_ip",
+        "kind": "peripheral",
+        "module": "motor_safety_ip",
+        "file": "rtl/motor_safety_ip.v",
+        "desc": "모터 안전 IP. 2채널 H-브리지 상보 신호 데드타임 삽입, 외부 과전류 입력 래치·차단, IP 표준 Rev.1 관리 레지스터 포함",
+        "short": "Motor Safety",
+        "side": "peripheral"
+      },
+      {
+        "id": "master",
+        "name": "demo_master",
+        "kind": "sim-master",
+        "module": "demo_master",
+        "file": "rtl/demo_master.v",
+        "desc": "합성용 데모 마스터 FSM. MMIO 버스에 초기화 시퀀스를 발행하고 PWM 패턴을 출력",
+        "short": "Demo master",
+        "side": "sim"
+      }
+    ],
+    "links": [
+      {"from": "top", "to": "soc", "label": "clk/rst/io"},
+      {"from": "soc", "to": "bus", "label": "mmio-lite"},
+      {"from": "bus", "to": "gpio", "label": "sel_gpio"},
+      {"from": "bus", "to": "uart", "label": "sel_uart"},
+      {"from": "bus", "to": "safety", "label": "sel_safety"},
+      {"from": "master", "to": "bus", "label": "sim drive (tb only)"}
+    ]
+  },
+  "bus_protocol": {
+    "name": "mmio-lite",
+    "signals": [
+      {"name": "valid", "dir": "M→S", "width": 1,  "desc": "트랜잭션 유효"},
+      {"name": "we",    "dir": "M→S", "width": 1,  "desc": "쓰기=1, 읽기=0"},
+      {"name": "addr",  "dir": "M→S", "width": 32, "desc": "바이트 주소"},
+      {"name": "wdata", "dir": "M→S", "width": 32, "desc": "쓰기 데이터"},
+      {"name": "rdata", "dir": "S→M", "width": 32, "desc": "읽기 데이터 (버스 MUX 출력)"},
+      {"name": "ready", "dir": "S→M", "width": 1,  "desc": "항상 1 (1사이클 응답)"}
+    ],
+    "note": "back-pressure 없음. valid 사이클에 always 응답. AXI4-Lite 비호환"
+  },
+  "integration": {
+    "bus": "mmio-lite",
+    "address_map": "custom",
+    "compat": "incompatible",
+    "target_map": "mbv-frozen-v2",
+    "plan": "mbv-frozen-v2 맵으로 이전 시 motor_safety=[18]=0x4018_0000 슬롯 사용(free_slots 제안). 이 패키지는 시뮬레이션 전용 주소(0x1000~0x1002 세그먼트)를 사용하므로 compat=incompatible. IRQ는 slot 13(free_slots 첫 번째)을 제안.",
+    "frozen_mapping": [
+      {"block": "safety", "region": "motor_safety", "base": "0x4018_0000", "intc": 13}
+    ]
+  },
+  "external_parts": [],
+  "schematic": {
+    "state": "not-written",
+    "note": "이 패키지는 시뮬레이션 전용이며 외부 부품이 없어 회로도 미작성. 실제 사용 시 H-브리지(TB6612FNG 또는 DRV8833), 전류 센서, 레벨 변환 회로 필요."
+  },
+  "hierarchy": {
+    "module": "basys3_top",
+    "file": "rtl/basys3_top.v",
+    "children": [
+      {"module": "demo_master", "file": "rtl/demo_master.v"},
+      {
+        "module": "soc_top",
+        "file": "rtl/soc_top.v",
+        "children": [
+          {"module": "mmio_bus",        "file": "rtl/mmio_bus.v"},
+          {"module": "gpio",            "file": "rtl/gpio.v"},
+          {"module": "uart_tx",         "file": "rtl/uart_tx.v"},
+          {"module": "motor_safety_ip", "file": "rtl/motor_safety_ip.v"}
+        ]
+      }
+    ]
+  },
+  "memory_map": [
+    {
+      "base": "0x1000_0000", "size": "0x10000", "block": "gpio", "desc": "GPIO LED/SW",
+      "regs": [
+        {"off": "0x00", "name": "LED", "access": "RW", "desc": "LED[15:0]"},
+        {"off": "0x04", "name": "SW",  "access": "RO", "desc": "SW[15:0] (2단 동기화)"}
+      ]
+    },
+    {
+      "base": "0x1001_0000", "size": "0x10000", "block": "uart", "desc": "UART TX",
+      "regs": [
+        {"off": "0x00", "name": "DATA",   "access": "WO", "desc": "송신 바이트 [7:0]"},
+        {"off": "0x04", "name": "STATUS", "access": "RO", "desc": "bit0=busy"}
+      ]
+    },
+    {
+      "base": "0x1002_0000", "size": "0x10000", "block": "safety", "desc": "모터 안전 래퍼",
+      "regs": [
+        {"off": "0x00",   "name": "CTRL",       "access": "RW",   "desc": "bit0=enable, bit1=oc_clear(자동 소거), bit2=dt_bypass"},
+        {"off": "0x04",   "name": "DT_CYCLES",  "access": "RW",   "desc": "[15:0] 데드타임 클럭 사이클 수 (기본값=10)"},
+        {"off": "0x08",   "name": "STATUS",     "access": "RO",   "desc": "bit0=oc_latched, bit1=active(enable&!oc_latched)"},
+        {"off": "0x0C",   "name": "PWM_IN",     "access": "RW",   "desc": "[3:0]={BL_in,BH_in,AL_in,AH_in} — CPU 또는 외부 PWM 소스"},
+        {"off": "0x10",   "name": "PWM_OUT",    "access": "RO",   "desc": "[3:0]={BL_out,BH_out,AL_out,AH_out} — 보호 적용 후 출력"},
+        {"off": "0xFFF0", "name": "ID",         "access": "RO",   "desc": "0x4D535731 (MSW1)"},
+        {"off": "0xFFF4", "name": "VER",        "access": "RO",   "desc": "0x01000001"},
+        {"off": "0xFFF8", "name": "IRQ_STATUS", "access": "RW1C", "desc": "bit0=oc_event (과전류 발생 시 셋)"},
+        {"off": "0xFFFC", "name": "IRQ_ENABLE", "access": "RW",   "desc": "bit0=oc_irq_en"}
+      ]
+    }
+  ],
+  "roadmap": [
+    {"stage": "T1", "state": "done",    "title": "mmio-uart-gpio-skeleton",   "refs": []},
+    {"stage": "T2", "state": "done",    "title": "mmio-pwm-qenc-checker",     "refs": []},
+    {"stage": "T2", "state": "done",    "title": "mmio-speed-pi-checker",     "refs": []},
+    {"stage": "T2", "state": "current", "title": "mmio-motor-safety-wrapper (이 패키지)", "refs": ["embeddedts-fpga-pwm-hbridge-quadrature", "ti-drv8833-datasheet", "toshiba-tb6612fng-datasheet"]},
+    {"stage": "T3", "state": "planned", "title": "mmio-multiaxis-pid-checker (I-015)", "refs": []}
+  ],
+  "references": [
+    {"card": "embeddedts-fpga-pwm-hbridge-quadrature", "why": "FPGA H-브리지 PWM 데드타임 삽입과 슛스루 방지 FSM 패턴 근거"},
+    {"card": "ti-drv8833-datasheet",                   "why": "DRV8833 최소 데드타임 요구사항(≥100 ns) 근거 — 10사이클@100MHz = 100 ns"},
+    {"card": "toshiba-tb6612fng-datasheet",            "why": "TB6612FNG 과전류 감지 및 STBY 핀 동작 — 소프트웨어 래치 설계 근거"},
+    {"card": "lange-fpga-foc-motor-control-hackaday",  "why": "FPGA FOC에서 데드타임 삽입과 과전류 보호 FSM 접근 참고"},
+    {"card": "1988kramer-motor-control",               "why": "PID 이산화 및 보호 로직 설계 패턴 참고"}
+  ],
+  "sources": {
+    "rtl": [
+      "rtl/basys3_top.v",
+      "rtl/soc_top.v",
+      "rtl/mmio_bus.v",
+      "rtl/gpio.v",
+      "rtl/uart_tx.v",
+      "rtl/motor_safety_ip.v",
+      "rtl/demo_master.v"
+    ],
+    "tb": ["tb/tb_motor_safety.v"],
+    "constraints": ["constr/basys3.xdc"],
+    "build": ["Makefile"]
+  },
+  "howto": [
+    {
+      "title": "시뮬레이션",
+      "steps": [
+        "iverilog, verilator, yosys 설치",
+        "make -C capstones/mmio-motor-safety-wrapper lint sim synth",
+        "build/sim.log에서 PASS 확인"
+      ]
+    },
+    {
+      "title": "Vivado 빌드 (Basys3)",
+      "steps": [
+        "새 RTL 프로젝트, 파트 xc7a35tcpg236-1",
+        "rtl/*.v 추가 (tb/, demo_master.v 제외), constr/basys3.xdc 추가, 최상위 basys3_top",
+        "Generate Bitstream 후 Program Device",
+        "JA Pmod으로 출력 파형 확인(오실로스코프): 데드타임 삽입 여부, JB[0]에 OC 신호 인가 시 출력 차단 확인"
+      ]
+    }
+  ],
+  "verification": {
+    "board": "not-tested",
+    "notes": "S3는 사람이 Basys3에서 직접 확인해야 한다. CI가 S1(린트+시뮬)과 S2(합성)를 기록한다."
+  },
+  "risks": [
+    "DT_CYCLES=10(100 ns@100MHz)은 DRV8833/TB6612FNG 최소 요구(100 ns)와 일치하나, 선로 지연이 큰 경우 더 늘릴 것 (Vivado 실측 필요)",
+    "OC 입력이 외부 아날로그 비교기에서 오므로 2단 동기화 필요 — 현재 motor_safety_ip 내에서 처리",
+    "dt_bypass=1 설정 시 슛스루 하드웨어 방지 없음 — 디버그 전용",
+    "PWM_IN 레지스터를 CPU가 쓸 때 MSB 부정확성 없음 확인 (1사이클 쓰기, 즉각 적용)",
+    "yosys 자원 추정은 Vivado와 다를 수 있음 (Vivado 미검증)"
+  ]
+}
