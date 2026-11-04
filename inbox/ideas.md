@@ -875,3 +875,35 @@
 - 난이도: 3
 - 단계: T2
 - 상태: raw
+
+---
+
+## I-068 MicroBlaze V SoC 외부 SPI Flash OTA 부트로더 (overwrite-only)
+
+내 판단: MCUboot의 overwrite-only 모드 패턴을 Basys3 MicroBlaze V SoC에 이식하는 T3 캡스톤. Pmod 포트에 W25Q64 SPI Flash 모듈 연결, BRAM이 1차 슬롯(실행 이미지), SPI Flash 상위 절반이 2차 슬롯(업데이트 이미지). MicroBlaze V 부트로더 C 코드가 2차 슬롯의 이미지 헤더(magic+버전+SHA256 TLV)를 검증하고 BRAM에 복사 후 점프. imgtool.py로 이미지 서명 헤더 생성.
+
+- id: I-068
+- 조합: [AXI Quad SPI IP(comm-spi), W25Q64 외부 플래시(storage), SHA256 소프트웨어 모듈(C, MicroBlaze V), 부트로더 FSM(T3), imgtool.py 이미지 형식]
+- 근거 카드: [[memfault-interrupt-mcuboot-overview]], [[cnxsoft-arduino-mcuboot-stm32h7]], [[hubble-ble-ota-dfu-zephyr-mcuboot]]
+- 근거 URL: https://interrupt.memfault.com/blog/mcuboot-overview, https://www.cnx-software.com/2022/04/13/arduino-mcuboot-secure-bootloader/
+- 새로움 근거: 카탈로그에 FPGA SoC OTA 부트로더 카드 없음. SPI Flash 2슬롯 OTA를 Basys3 MicroBlaze V에 적용한 사례 없음(카드 미존재). MCUboot 패턴을 FPGA 소프트 CPU에 이식한 조합 새로움 — 내 판단.
+- Basys3 적합성 근거: Basys3의 Pmod JA~JD로 W25Q64 SPI 연결 가능(SPI MOSI/MISO/CLK/CS). AXI Quad SPI IP는 MIG 없이 BRAM 50개 여유에서 실행. SHA256 소프트웨어 구현 약 2kB C 코드. BRAM 100kB 여유(T3 단계 이미지 크기 내).
+- 난이도: 4
+- 단계: T3
+- 상태: raw
+
+---
+
+## I-069 imgtool 서명 검증 테스트베드: MicroBlaze V 에서 ECDSA-256 이미지 인증
+
+내 판단: S2 조합 탐색 — MCUboot imgtool.py가 생성하는 이미지 헤더(ECDSA-256 TLV)를 MicroBlaze V C 코드에서 Mbed TLS로 검증하는 T3~T4 캡스톤. I-068의 "서명 없음" 버전 대비 보안 강화 단계. 부팅 시간 측정(100MHz MicroBlaze V에서 1KB 이미지 검증 ≈ 수 초 예상)과 최적화(사전 계산 테이블 사용)를 포함.
+
+- id: I-069
+- 조합: [Mbed TLS ECDSA-256(C, MicroBlaze V), imgtool.py 서명(Python 호스트), AXI BRAM Controller(storage), UART 직렬 디버그(comm-uart)]
+- 근거 카드: [[memfault-interrupt-mcuboot-overview]], [[cnxsoft-arduino-mcuboot-stm32h7]]
+- 근거 URL: https://interrupt.memfault.com/blog/mcuboot-overview
+- 새로움 근거: 카탈로그에 ECDSA 서명 검증 MicroBlaze V 사례 없음. FPGA 소프트 CPU에서 공개키 검증 타이밍 측정 카드 미존재.
+- Basys3 적합성 근거: Mbed TLS는 C 라이브러리로 MicroBlaze V에서 빌드 가능. 단, BRAM/캐시 없는 환경에서 타이밍이 길어질 수 있음(I-068 선행 필요).
+- 난이도: 5
+- 단계: T3
+- 상태: raw

@@ -408,3 +408,11 @@
 - https://github.com/jandecaluwe/ipcore-logic-analyzer | ipcore logic analyzer: MyHDL 기반, UART — 미열람(L1) | MyHDL logic analyzer FPGA UART
 - https://openocd.org/doc/html/Debug-Adapter-Hardware.html | OpenOCD 지원 디버그 어댑터 목록 — 미열람(L1), FPGA 경계 스캔 어댑터 참고 | OpenOCD JTAG adapter hardware list
 - blocked: https://github.com/jtagulator/JTAGulator | JTAGulator: 하드웨어 JTAG 핀 탐색기 — 하드웨어 전용, FPGA RTL 직접 연관 없음, 카드 작성 불필요
+
+## 2026-11-04 펌웨어 OTA: MCUboot 부트로더 사이클 (S3 빈틈 추적 + S2 조합 탐색)
+- https://github.com/mcu-tools/mcuboot | MCUboot 공식 저장소: 멀티 플랫폼 보안 OTA 부트로더 — 열람 불가(PROVENANCE_REQUIRED) | MCUboot secure bootloader STM32 nRF Zephyr OTA dual slot
+- https://github.com/TSMotter/zdfu | TSMotter/zdfu: Zephyr DFU/MCUboot STM32+ESP32 탐색 프로젝트 (4★, 4커밋) — 미열람(L1, README PROVENANCE_REQUIRED) | Zephyr MCUboot DFU STM32 ESP32 exploration
+- https://github.com/arduino/mcuboot-arduino-stm32h7 | arduino/mcuboot-arduino-stm32h7: Arduino Portenta H7 MCUboot 포팅 — 열람 불가(PROVENANCE_REQUIRED) | Arduino MCUboot STM32H7 secure bootloader
+- https://docs.zephyrproject.org/latest/services/device_mgmt/dfu.html | Zephyr 공식 DFU 문서: MCUboot 연동, flash partition 설정 — 미열람(PROVENANCE_REQUIRED) | Zephyr DFU MCUboot Kconfig partition
+- https://academy.nordicsemi.com/courses/nrf-connect-sdk-intermediate/lessons/lesson-9-bootloaders-and-dfu-fota/ | Nordic Academy: NCS Lesson 9 MCUboot FOTA BLE — 미열람(L1) | Nordic nRF52 MCUboot FOTA BLE NCS lesson
+- https://hubble.com/community/guides/zephyr-dfu-and-mcuboot-over-the-air-updates-with-rollback-protection/ | Hubble: Zephyr DFU + MCUboot 롤백 보호(2026-03) — 미열람(L2 본문 잘림) | Zephyr MCUboot rollback OTA DFU

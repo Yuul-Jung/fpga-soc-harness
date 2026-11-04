@@ -181,3 +181,6 @@
 | [meiniki-logip](embedded/meiniki-logip.md) | L3 | T2 | Basys3 | 2026-11-04 |
 | [lekgolo167-enxor-logic-analyzer](embedded/lekgolo167-enxor-logic-analyzer.md) | L3 | T2 | Artix-7 xc7a35t (Basys3 yes) | 2026-11-04 |
 | [enjoy-digital-litescope](embedded/enjoy-digital-litescope.md) | L2 | T3 | LiteX SoC (Basys3 needs-port) | 2026-11-04 |
+| [memfault-interrupt-mcuboot-overview](embedded/memfault-interrupt-mcuboot-overview.md) | L3 | T3 | nRF52840-DK (Basys3 needs-port) | 2026-11-04 |
+| [cnxsoft-arduino-mcuboot-stm32h7](embedded/cnxsoft-arduino-mcuboot-stm32h7.md) | L3 | T3 | Arduino Portenta H7 STM32H7 (Basys3 needs-port) | 2026-11-04 |
+| [hubble-ble-ota-dfu-zephyr-mcuboot](embedded/hubble-ble-ota-dfu-zephyr-mcuboot.md) | L2 | T3 | nRF52840-DK (Basys3 needs-port) | 2026-11-04 |
