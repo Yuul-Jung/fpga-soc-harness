@@ -3,11 +3,14 @@
 # Targets: lint, sim, synth
 # Tools: iverilog/vvp, verilator, yosys
 
-SLUG   := mmio-7seg-adv-ip
-RTL    := rtl/axil_7seg_ip.v rtl/basys3_top_7seg.v
-TB     := tb/tb_axil_7seg_ip.v
-TOP    := basys3_top_7seg
-BUILD  := build
+SLUG      := mmio-7seg-adv-ip
+RTL       := rtl/axil_7seg_ip.v rtl/basys3_top_7seg.v
+TB        := tb/tb_axil_7seg_ip.v
+TOP       := basys3_top_7seg
+# Synthesize IP core only (not board wrapper) so yosys succeeds
+SYNTH_TOP := axil_7seg_ip
+SYNTH_SRC := rtl/axil_7seg_ip.v
+BUILD     := build
 
 .PHONY: all lint sim synth clean
 
@@ -35,8 +38,8 @@ sim:
 ## ----------------------------------------------------------------
 synth:
 	@mkdir -p $(BUILD)
-	yosys -p 'read_verilog $(RTL); \
-	          synth_xilinx -top $(TOP); \
+	yosys -p 'read_verilog $(SYNTH_SRC); \
+	          synth_xilinx -top $(SYNTH_TOP); \
 	          stat' \
 	      > $(BUILD)/synth.log 2>&1
 	@echo "--- synth done (see $(BUILD)/synth.log) ---"

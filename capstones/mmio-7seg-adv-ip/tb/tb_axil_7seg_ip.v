@@ -237,15 +237,22 @@ module tb_axil_7seg_ip;
         end
 
         // ============================================================
-        // T3: Blank digit 0 → an stays 1111 during digit 0 slot
+        // T3: Blank digit 0 → an[0] never goes low for one full mux cycle
+        //   blank[0]=1 means digit 0 slot: anode never goes low.
+        //   Strategy: scan 4*MUX_DIV cycles and confirm an[0] stays high.
+        //   Then verify digit 1 (non-blanked) still shows normally.
         // ============================================================
         axil_write(8'h04, 32'h0000_1F01, 4'hF); // blank[0]=1, rest same
-        wait_digit(2'd0);
-        if (an !== 4'b1111) begin
-            $display("FAIL: T3 blank digit0 an expected 1111, got %b", an);
-            fail_count = fail_count + 1;
+        // Scan one full mux cycle to confirm an[0] never goes low
+        for (i = 0; i < 4*MUX_DIV; i = i+1) begin
+            @(posedge aclk);
+            if (an[0] === 1'b0) begin
+                $display("FAIL: T3 blank digit0 an[0] went low (expected never), an=%b", an);
+                fail_count = fail_count + 1;
+                i = 4*MUX_DIV; // break on first failure
+            end
         end
-        // Digit 1 should still show
+        // Digit 1 should still show (non-blanked)
         wait_digit(2'd1);
         if (an !== 4'b1101) begin
             $display("FAIL: T3 digit1 (non-blanked) an expected 1101, got %b", an);
@@ -318,12 +325,13 @@ module tb_axil_7seg_ip;
     end
 
     // ---------------------------------------------------------------
-    // Timeout guard (10 ms sim = 1,000,000 cycles @ 100 MHz)
-    // The test needs ~4 * 100000 * 4 = 1.6M cycles for mux waits
-    // Allow 7M cycles
+    // Timeout guard
+    // T2: 2×4×MUX_DIV=800k, T3: 4×MUX_DIV+4×MUX_DIV=800k scan+wait,
+    // T4: 2×4×MUX_DIV=800k, T5: 2×MUX_DIV=200k → ~2.6M cycles total
+    // Allow 10M cycles (100 ms)
     // ---------------------------------------------------------------
     initial begin
-        #70_000_000; // 70 ms sim time
+        #100_000_000; // 100 ms sim time
         $display("FAIL: simulation timeout");
         $finish;
     end
