@@ -5,6 +5,7 @@
 - verify: `YYYY-MM-DD HH:MM | verify | 재열람 N | 수정 M | 불일치 K | 승격 L2→L3 P | ready +R`
 - capstone: `YYYY-MM-DD HH:MM | capstone | <slug> | 등급 S0~S2` 또는 `... | skip: <사유>`
 
+2026-11-04 22:09 | capstone | mmio-sla-bram-capture (I-067) | 등급 S2 (CI 통과: lint pass, sim PASS 7/7, synth success; 1회차 CI 실패→trig_req 래치 추가로 수정) | 큐 잔여 418
 2026-11-04 21:18 | capstone | mmio-sla-bram-capture (I-067) | 등급 S0 (로컬 도구 없음; CI에서 S1/S2 결정 예정) | 큐 잔여 418
 2026-11-04 20:27 | capstone | mmio-imu-cf-ip (I-019) | 등급 S0 (로컬 도구 없음; CI에서 S1/S2 결정 예정) | 큐 잔여 418
 2026-11-04 11:36 | collect | RPi GPIO: pigpio/gpiozero/spidev/smbus2 · S7 난이도 사다리(주)+S5 비정형 출처(보조) | 카드 +3 | 아이디어 +3 | 큐 잔여 317 | blocked 4(pigpio 공식·gpiozero GitHub·gpiozero readthedocs·PyPI PROVENANCE_REQUIRED)
