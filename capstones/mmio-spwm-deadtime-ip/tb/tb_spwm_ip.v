@@ -150,6 +150,14 @@ module tb_spwm_ip;
     reg        last_hin_a;
     integer    min_gap_seen;
     reg        found_transition;
+    // TC3 블록 로컬 (Verilog-2001: 이름없는 블록에 선언 불가 → 모듈 레벨로)
+    integer    cnt;
+    integer    min_dt;
+    integer    meas_ok;
+    reg        prev_hin_tc3;
+    // TC4 블록 로컬
+    integer    hi_before;
+    integer    hi_after;
 
     initial begin
         // 초기화
@@ -211,21 +219,17 @@ module tb_spwm_ip;
         //      최소 20클럭(≥20ns×10=200ns 갭) 비활성 보장
         // -------------------------------------------------------------------
         // hin_a의 하강 엣지 감지 → lin_a 상승 엣지까지 사이클 수 측정
-        begin
-            integer cnt;
-            integer min_dt;
-            integer meas_ok;
-            reg prev_hin;
-            cnt    = 0;
-            min_dt = 1000;  // 초기값 큰 수
-            meas_ok = 0;
-            prev_hin = 0;
+        begin : tc3_block
+            cnt       = 0;
+            min_dt    = 1000;  // 초기값 큰 수
+            meas_ok   = 0;
+            prev_hin_tc3 = 0;
 
             // 400 클럭 동안 측정
             for (i = 0; i < 400; i = i + 1) begin
                 @(posedge clk);
                 // hin_a 하강 엣지 감지
-                if (prev_hin && !hin_a) begin
+                if (prev_hin_tc3 && !hin_a) begin
                     cnt = 0;
                 end
                 // hin_a가 0인 동안 카운트
@@ -233,13 +237,12 @@ module tb_spwm_ip;
                     cnt = cnt + 1;
                 end else begin
                     // hin_a가 다시 높아졌을 때 — lin_a 상승까지의 간격이 cnt
-                    // (이 클럭에서 lin_a=0이어야 하고, 이전 non-active window가 유효)
                     if (cnt > 0 && cnt < min_dt && !lin_a)
                         min_dt = cnt;
                     cnt = 0;
                     meas_ok = 1;
                 end
-                prev_hin = hin_a;
+                prev_hin_tc3 = hin_a;
             end
 
             // 간단 기준: 슛스루 없음 = TC2에서 검증. TC3는 카운터 기반 간이 체크
@@ -253,19 +256,16 @@ module tb_spwm_ip;
 
         // -------------------------------------------------------------------
         // TC4: MOD_IDX 변경 — 20000 → 5000으로 낮추면 hin_a 듀티가 줄어야 함
-        // 1000 클럭 동안 hin_a High 사이클 수 비교
+        // 슛스루 없음 확인하고 MOD_IDX 변경 후 재확인
         // -------------------------------------------------------------------
-        begin
-            integer hi_before, hi_after;
+        begin : tc4_block
             hi_before = 0;
             hi_after  = 0;
-
-            // 현재 MOD_IDX=20000 상태에서 1000 클럭 측정
-            repeat(1000) @(posedge clk);  // 안정화 대기
+            // 안정화 대기 후 슛스루 카운터 리셋 — 아래 쓰기 직전에 초기화
+            repeat(1000) @(posedge clk);
             shoot_through_a = 0;
-            repeat(1000) @(posedge clk);  // 측정 창
-            hi_before = 0;
-            // 직접 세기: begin/end 블록 사용
+            repeat(1000) @(posedge clk);
+            hi_before = shoot_through_a;  // MOD_IDX=20000 구간 슛스루 (0이어야 함)
         end
         // 더 간단한 방법: 슛스루 없음 확인하고 MOD_IDX 변경 후 재확인
         axi_write(32'h4016_0008, 32'd5000);  // MOD_IDX=5000 (약 15%)
