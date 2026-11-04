@@ -57,8 +57,8 @@ module tb_xadc_pwr_mon;
     wire        drp_den, drp_dwe;
     wire [6:0]  drp_daddr;
     wire [15:0] drp_di;
-    reg  [15:0] drp_do;
-    reg         drp_drdy;
+    wire [15:0] drp_do;    // wire: 모의 모델 출력에 연결
+    wire        drp_drdy;  // wire: 모의 모델 출력에 연결
 
     wire irq;
 

@@ -1,8 +1,9 @@
 // tb_xadc_drp_ctrl.v
 // xadc_drp_ctrl 단위 테스트
 // - DRP 모의 모델(xadc_drp_model)로 EOC·drdy 신호 생성
-// - 4채널 순차 읽기 후 raw_ch와 valid 확인
+// - 4채널 순차 읽기 후 raw_ch0..3 와 valid 확인
 // 통과: "PASS: drp_ctrl" / 실패: "FAIL: drp_ctrl"
+// Verilog-2001 호환 (iverilog/verilator/yosys). 개별 wire 사용.
 
 `timescale 1ns/1ps
 
@@ -12,7 +13,12 @@ module tb_xadc_drp_ctrl;
     wire        eoc, den, drdy;
     wire [6:0]  daddr;
     wire [15:0] dout;
-    wire [11:0] raw_ch [0:3];
+
+    // 채널별 출력 — 개별 wire (Verilog-2001 호환)
+    wire [11:0] raw_ch0;
+    wire [11:0] raw_ch1;
+    wire [11:0] raw_ch2;
+    wire [11:0] raw_ch3;
     wire [3:0]  valid;
 
     // --- DUT ---
@@ -25,7 +31,10 @@ module tb_xadc_drp_ctrl;
         .daddr   (daddr),
         .drdy    (drdy),
         .dout    (dout),
-        .raw_ch  (raw_ch),
+        .raw_ch0 (raw_ch0),
+        .raw_ch1 (raw_ch1),
+        .raw_ch2 (raw_ch2),
+        .raw_ch3 (raw_ch3),
         .valid   (valid)
     );
 
@@ -46,8 +55,6 @@ module tb_xadc_drp_ctrl;
 
     // 테스트 카운터
     integer fail_cnt;
-    integer i;
-    reg [11:0] expected [0:3];
 
     initial begin
         $dumpfile("tb_xadc_drp_ctrl.vcd");
@@ -65,19 +72,44 @@ module tb_xadc_drp_ctrl;
         // 모의 모델이 4채널 완료할 때까지 대기 (최대 200클럭)
         repeat (200) @(posedge clk);
 
-        // valid가 올라온 적 있는지 확인
-        // (valid는 1클럭 펄스이므로 모델 내에서 별도 추적)
-        // raw_ch가 0이 아닌지 확인
-        for (i = 0; i < 4; i = i+1) begin
-            if (raw_ch[i] === 12'bx || raw_ch[i] === 12'bz) begin
-                $display("FAIL: drp_ctrl ch%0d = X/Z", i);
-                fail_cnt = fail_cnt + 1;
-            end else if (raw_ch[i] == 12'd0) begin
-                // 모의 모델이 0을 반환할 수도 있으므로 경고만
-                $display("WARN: drp_ctrl ch%0d = 0 (모의 모델 기본값일 수 있음)", i);
-            end else begin
-                $display("OK: drp_ctrl ch%0d = 0x%03X", i, raw_ch[i]);
-            end
+        // 채널 0 (DRP 0x14 → 모의값 0xABC0 → raw=0xABC)
+        if (raw_ch0 === 12'bx || raw_ch0 === 12'bz) begin
+            $display("FAIL: drp_ctrl ch0 = X/Z");
+            fail_cnt = fail_cnt + 1;
+        end else if (raw_ch0 == 12'd0) begin
+            $display("WARN: drp_ctrl ch0 = 0 (모의 모델 기본값일 수 있음)");
+        end else begin
+            $display("OK: drp_ctrl ch0 = 0x%03X", raw_ch0);
+        end
+
+        // 채널 1 (DRP 0x15 → 모의값 0xDEF0 → raw=0xDEF)
+        if (raw_ch1 === 12'bx || raw_ch1 === 12'bz) begin
+            $display("FAIL: drp_ctrl ch1 = X/Z");
+            fail_cnt = fail_cnt + 1;
+        end else if (raw_ch1 == 12'd0) begin
+            $display("WARN: drp_ctrl ch1 = 0 (모의 모델 기본값일 수 있음)");
+        end else begin
+            $display("OK: drp_ctrl ch1 = 0x%03X", raw_ch1);
+        end
+
+        // 채널 2 (DRP 0x1C → 모의값 0x1230 → raw=0x123)
+        if (raw_ch2 === 12'bx || raw_ch2 === 12'bz) begin
+            $display("FAIL: drp_ctrl ch2 = X/Z");
+            fail_cnt = fail_cnt + 1;
+        end else if (raw_ch2 == 12'd0) begin
+            $display("WARN: drp_ctrl ch2 = 0 (모의 모델 기본값일 수 있음)");
+        end else begin
+            $display("OK: drp_ctrl ch2 = 0x%03X", raw_ch2);
+        end
+
+        // 채널 3 (DRP 0x1D → 모의값 0x4560 → raw=0x456)
+        if (raw_ch3 === 12'bx || raw_ch3 === 12'bz) begin
+            $display("FAIL: drp_ctrl ch3 = X/Z");
+            fail_cnt = fail_cnt + 1;
+        end else if (raw_ch3 == 12'd0) begin
+            $display("WARN: drp_ctrl ch3 = 0 (모의 모델 기본값일 수 있음)");
+        end else begin
+            $display("OK: drp_ctrl ch3 = 0x%03X", raw_ch3);
         end
 
         // 두 번째 스캔: scan_en 유지, 추가 200클럭

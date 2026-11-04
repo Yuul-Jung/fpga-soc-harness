@@ -63,9 +63,10 @@ module tb_sccb_tx;
             start = 1'b1;
             @(posedge clk); #1;
             start = 1'b0;
-            // done 대기 (최대 10000 클럭)
+            // done 대기 (최대 50000 클럭)
+            // CLK_HZ=10MHz, SCCB_KHZ=10 → HALF_CNT=500, 3바이트×18×500≈27000 클럭 필요
             got_done = 0;
-            timeout  = 10000;
+            timeout  = 50000;
             while (!got_done && timeout > 0) begin
                 @(posedge clk); #1;
                 if (done) got_done = 1;

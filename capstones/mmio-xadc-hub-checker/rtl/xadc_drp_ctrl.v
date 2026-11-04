@@ -2,7 +2,7 @@
 // XADC DRP 채널 순회 FSM
 // 4개 보조 채널(VAUXP/N 4,5,12,13)을 순서대로 읽어 raw_data, valid를 올린다.
 // XADC가 EOC를 올리면 DRP den+daddr로 순서대로 읽는다.
-// 시뮬레이션: `ifdef SIMULATION 으로 xadc_drp_model을 사용.
+// Verilog-2001 호환 (iverilog/verilator/yosys). 개별 출력 포트 사용.
 
 module xadc_drp_ctrl (
     input  wire        clk,
@@ -16,13 +16,13 @@ module xadc_drp_ctrl (
     input  wire        drdy,          // DRP data ready
     input  wire [15:0] dout,          // DRP data out
 
-    // 출력 (채널별 12비트 원시값)
-    output reg  [11:0] raw_ch [0:3],  // 채널 0..3
+    // 출력 (채널별 12비트 원시값 — 개별 포트, Verilog-2001 호환)
+    output reg  [11:0] raw_ch0,  // VAUXP/N[4]  (DRP 0x14)
+    output reg  [11:0] raw_ch1,  // VAUXP/N[5]  (DRP 0x15)
+    output reg  [11:0] raw_ch2,  // VAUXP/N[12] (DRP 0x1C)
+    output reg  [11:0] raw_ch3,  // VAUXP/N[13] (DRP 0x1D)
     output reg  [3:0]  valid          // 갱신 펄스 (1클럭)
 );
-
-    // DRP 주소: VAUXP/N[4]=0x14, [5]=0x15, [12]=0x1C, [13]=0x1D
-    localparam [6:0] CH_ADDR [0:3] = '{7'h14, 7'h15, 7'h1C, 7'h1D};
 
     // FSM 상태
     localparam S_IDLE  = 3'd0;
@@ -34,17 +34,30 @@ module xadc_drp_ctrl (
     reg [2:0] state;
     reg [1:0] ch_idx; // 현재 채널 인덱스 0..3
 
-    integer i;
+    // 채널 인덱스에서 DRP 주소를 반환하는 함수
+    // VAUXP/N[4]=0x14, [5]=0x15, [12]=0x1C, [13]=0x1D
+    function [6:0] ch_addr;
+        input [1:0] idx;
+        case (idx)
+            2'd0: ch_addr = 7'h14;
+            2'd1: ch_addr = 7'h15;
+            2'd2: ch_addr = 7'h1C;
+            2'd3: ch_addr = 7'h1D;
+            default: ch_addr = 7'h00;
+        endcase
+    endfunction
 
     always @(posedge clk or posedge rst) begin
         if (rst) begin
-            state  <= S_WAIT;
-            ch_idx <= 2'd0;
-            den    <= 1'b0;
-            daddr  <= 7'h00;
-            valid  <= 4'b0;
-            for (i = 0; i < 4; i = i + 1)
-                raw_ch[i] <= 12'd0;
+            state   <= S_WAIT;
+            ch_idx  <= 2'd0;
+            den     <= 1'b0;
+            daddr   <= 7'h00;
+            valid   <= 4'b0;
+            raw_ch0 <= 12'd0;
+            raw_ch1 <= 12'd0;
+            raw_ch2 <= 12'd0;
+            raw_ch3 <= 12'd0;
         end else begin
             den   <= 1'b0;
             valid <= 4'b0;
@@ -59,14 +72,20 @@ module xadc_drp_ctrl (
 
                 S_READ: begin
                     den   <= 1'b1;
-                    daddr <= CH_ADDR[ch_idx];
+                    daddr <= ch_addr(ch_idx);
                     state <= S_DRDY;
                 end
 
                 S_DRDY: begin
                     if (drdy) begin
-                        raw_ch[ch_idx] <= dout[15:4]; // 상위 12비트
-                        valid[ch_idx]  <= 1'b1;
+                        // 채널별 12비트 원시값 저장 (상위 12비트)
+                        case (ch_idx)
+                            2'd0: begin raw_ch0 <= dout[15:4]; valid[0] <= 1'b1; end
+                            2'd1: begin raw_ch1 <= dout[15:4]; valid[1] <= 1'b1; end
+                            2'd2: begin raw_ch2 <= dout[15:4]; valid[2] <= 1'b1; end
+                            2'd3: begin raw_ch3 <= dout[15:4]; valid[3] <= 1'b1; end
+                            default: ;
+                        endcase
                         state <= S_NEXT;
                     end
                 end

@@ -55,6 +55,7 @@ module axil_stepper (
     reg [1:0]  r_mode;        // MODE[1:0]
     reg        r_irq_en;      // IRQ_ENABLE[0]
     reg        r_irq_status;  // IRQ_STATUS[0] (W1C)
+    reg        core_done_d;   // done 상승 엣지 검출용
 
     // ── step_ramp_core 연결 ──────────────────────────────────────
     wire       core_step_pulse;
@@ -98,17 +99,6 @@ module axil_stepper (
     // ── IRQ ──────────────────────────────────────────────────────
     assign irq = r_irq_status & r_irq_en;
 
-    // ── done 래치 → IRQ_STATUS ───────────────────────────────────
-    always @(posedge clk) begin
-        if (rst)
-            r_irq_status <= 1'b0;
-        else begin
-            if (core_done)
-                r_irq_status <= 1'b1;
-            // W1C는 쓰기 처리 블록에서 클리어
-        end
-    end
-
     // ── 임시 버퍼(write 주소/데이터 비동기 도착 대응) ────────────
     reg [15:0] aw_buf;
     reg        aw_got;
@@ -135,10 +125,21 @@ module axil_stepper (
             r_delta       <= 16'd100;
             r_mode        <= 2'b00;
             r_irq_en      <= 1'b0;
+            r_irq_status  <= 1'b0;
+            core_done_d   <= 1'b0;
         end else begin
             core_start <= 1'b0;
             core_stop  <= 1'b0;
             wr_fire    <= 1'b0;
+
+            // done 상승 엣지 검출
+            core_done_d <= core_done;
+
+            // IRQ_STATUS: W1C 우선, 그 다음 done 상승 엣지에서 set
+            if (aw_got && w_got && (aw_buf == A_IRQ_STATUS) && w_buf[0])
+                r_irq_status <= 1'b0;  // W1C 우선
+            else if (core_done && !core_done_d)
+                r_irq_status <= 1'b1;  // 상승 엣지에서만 set
 
             // 주소 수신
             if (s_awvalid && s_awready) begin
@@ -174,9 +175,6 @@ module axil_stepper (
                 A_MAX_PERIOD: r_max_period <= w_buf[23:0];
                 A_DELTA:      r_delta      <= w_buf[15:0];
                 A_MODE:       r_mode       <= w_buf[1:0];
-                A_IRQ_STATUS: begin
-                    if (w_buf[0]) r_irq_status <= 1'b0; // W1C
-                end
                 A_IRQ_ENABLE: r_irq_en <= w_buf[0];
                 default: ; // 없는 주소: 무시
                 endcase
