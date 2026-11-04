@@ -366,3 +366,12 @@
 - https://hackweek.opensuse.org/projects/learn-real-time-linux-on-raspberry-pi-aarch64-and-build-4wd-robot | openSUSE Hackweek RPi aarch64 RT Linux + 4WD 로봇 프로젝트 — 미열람(L1) | openSUSE raspberry pi realtime 4WD robot
 - https://behai-nguyen.github.io/2025/02/18/linuxcnc-05-pi-4b-preempt-rt-revisited.html | LinuxCNC RPi4B PREEMPT_RT 재검토 블로그(2025-02) — 미열람(L1) | LinuxCNC Raspberry Pi 4 PREEMPT_RT revisited
 - https://www.markaicode.com/realtime-linux-kernel-robotics/ | markaicode RT Linux 커널 로보틱스 90분 가이드 (patch-6.6.15-rt22, isolcpus 2,3, 50µs 목표) — L3 열람 완료, 카드 미작성(잠정) | PREEMPT_RT 6.6.15-rt22 kernel robotics guide
+
+## 2026-11-04 14시대 수집 — RPi FPGA 연동 (S2 조합 탐색 + S6 실패 사례)
+- https://github.com/Wissance/QuickSPI | QuickSPI: Verilog SPI 마스터, AXI Full 인터페이스 지원 — 미열람(L1) | QuickSPI Verilog SPI master AXI Full interface
+- https://github.com/daxzio/verilog-i2c | daxzio/verilog-i2c: alexforencich I2C 포크, AXI 인터페이스 — 미열람(L1) | verilog-i2c fork AXI interface FPGA
+- https://github.com/tirfil/VhdI2CSlave | VHDL I2C 슬레이브 구현 (tirfil) — 미열람(L1) | VHDL I2C slave FPGA
+- https://github.com/gmcastil/basys3 | gmcastil/basys3: Basys3 주변장치 집합(SPI/UART 포함 가능성) — 미열람(L1) | basys3 peripheral collection SPI UART
+- https://learn.adafruit.com/raspberry-pi-i2c-clock-stretching-fixes/overview | RPi I2C 클럭 스트레칭 버그 해결(Adafruit) — L2 열람 완료: BCM 하드웨어 버그, 슬로 클럭 또는 소프트 I2C로 우회 필요; FPGA I2C 슬레이브 설계 시 클럭 스트레칭 의존 금지 근거 | Raspberry Pi I2C clock stretching hardware bug workaround
+- https://hackaday.io/project/16424/log/164753 | Hackaday 프로젝트 로그: RPi-FPGA 인터페이스 관련(내용 미확인) — 미열람(L1) | Hackaday RPi FPGA interface project log
+- https://github.com/cp024s/I2C | cp024s/I2C: I2C 마스터·슬레이브 Verilog, AXI-Lite — 미열람(L1) | I2C master slave Verilog AXI-Lite

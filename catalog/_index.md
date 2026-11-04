@@ -163,3 +163,6 @@
 | [obuda-preempt-rt-latency-tutorial](rpi/obuda-preempt-rt-latency-tutorial.md) | L3 | T1 | RPi4 (Basys3 needs-port) | 2026-11-04 |
 | [applied-ee-rpi-realtime-linux](rpi/applied-ee-rpi-realtime-linux.md) | L3 | T2 | RPi4/RPi5 (Basys3 needs-port) | 2026-11-04 |
 | [ppisa-rpi-rt-control](rpi/ppisa-rpi-rt-control.md) | L2 | T2 | RPi (Basys3 needs-port) | 2026-11-04 |
+| [lightside-instruments-ice4pi](rpi/lightside-instruments-ice4pi.md) | L2 | T2 | iCE40HX-1K RPi HAT (Basys3 needs-port) | 2026-11-04 |
+| [michalstc-rpi-zero-fpga-spi-wishbone](rpi/michalstc-rpi-zero-fpga-spi-wishbone.md) | L2 | T2 | Vivado FPGA + RPi Zero (Basys3 needs-port) | 2026-11-04 |
+| [jakubcabal-spi-fpga](vendor-neutral/jakubcabal-spi-fpga.md) | L3 | T1 | CYC1000 · EP4CE6 (Basys3 needs-port) | 2026-11-04 |

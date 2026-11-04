@@ -635,3 +635,57 @@
 - 난이도: 3
 - 단계: T3
 - 상태: raw
+
+---
+
+## I-055
+
+**id**: I-055
+**제목**: RPi SPI 디버그 콘솔 — MicroBlaze V 레지스터 R/W 창구
+**상태**: raw
+**요약**: RPi를 SPI 마스터로 사용해 Basys3 FPGA의 MicroBlaze V 주변장치 레지스터를 직접 읽고 쓰는 디버그 창구 IP 설계. JTAG 없이 현장 레지스터 덤프·주입 가능.
+**조합**: SPI-slave(FPGA) + AXI4-Lite 브리지(FPGA) + spidev(RPi) + Python 디버그 스크립트
+**근거**:
+- [michalstc-rpi-zero-fpga-spi-wishbone](../catalog/rpi/michalstc-rpi-zero-fpga-spi-wishbone.md): SPI→Wishbone R/W 패턴 실증
+- [jakubcabal-spi-fpga](../catalog/vendor-neutral/jakubcabal-spi-fpga.md): MIT SPI 슬레이브 IP 재활용 가능
+- [doceme-py-spidev](../catalog/rpi/doceme-py-spidev.md): RPi spidev Python API 근거
+**새로움 근거**: 카탈로그에 RPi→FPGA 레지스터 R/W용 AXI4-Lite SPI 브리지 카드 없음; Wishbone 기반 선례를 AXI4-Lite로 개조하는 첫 카드가 됨
+**Basys3 적합성 근거**: SPI 슬레이브 FSM은 약 200 LUT 추정, 동결 맵 free_slot 하나로 64KB 배정 가능; RPi 3.3V ↔ Basys3 Pmod 3.3V 레벨 변환 불필요
+**난이도**: 3
+**단계**: T2
+
+---
+
+## I-056
+
+**id**: I-056
+**제목**: RPi I2C 클럭 스트레칭 버그 → FPGA I2C 슬레이브 무클럭스트레칭 설계 패턴
+**상태**: raw
+**요약**: RPi의 BCM I2C 하드웨어 버그(클럭 스트레칭 미지원)를 전제로, FPGA I2C 슬레이브를 클럭 스트레칭 없이 설계하는 패턴 카드 및 Basys3 Pmod I2C 연결 예제.
+**조합**: RPi I2C-master(spidev 아닌 i2c-dev) + FPGA I2C-slave(no-stretch) + AXI4-Lite 브리지
+**근거**:
+- [angelojacobo-fpga-i2c-implementation](../catalog/vendor-neutral/angelojacobo-fpga-i2c-implementation.md): FPGA I2C 슬레이브 구현 근거
+- 내 판단: Adafruit learn 페이지 열람(L2)으로 RPi 클럭 스트레칭 버그 확인
+- [abelectronics-rpi-spi-tutorial](../catalog/rpi/abelectronics-rpi-spi-tutorial.md): RPi SPI 활성화 근거 (I2C 유사 절차)
+**새로움 근거**: 기존 카드들은 I2C 슬레이브 구현 자체만 다룸; RPi 호스트 한계를 명시적으로 전제한 설계 패턴은 없음
+**Basys3 적합성 근거**: I2C 슬레이브 FSM은 ~100 LUT, RPi 3.3V ↔ Basys3 Pmod 3.3V 직결 가능
+**난이도**: 2
+**단계**: T2
+
+---
+
+## I-057
+
+**id**: I-057
+**제목**: RPi → FPGA SPI 이미지 스트리밍 + VGA 출력 (S2: 카메라 파이프라인 조합)
+**상태**: raw
+**요약**: RPi 카메라로 캡처한 썸네일을 SPI로 Basys3 FPGA에 전송, FPGA에서 VGA 출력. RPi를 프리프로세서, FPGA를 디스플레이 엔진으로 분리하는 조합.
+**조합**: RPi camera(libcamera) + SPI-DMA + FPGA SPI-slave + 라인 버퍼 VGA 컨트롤러
+**근거**:
+- [rpshredow-fpga-raspberry-image-display](../catalog/rpi/rpshredow-fpga-raspberry-image-display.md): DE0+RPi SPI 이미지 전송→VGA 선례(L2)
+- [lightside-instruments-ice4pi](../catalog/rpi/lightside-instruments-ice4pi.md): SPI 슬레이브+RPi HAT 근거
+- [jakubcabal-spi-fpga](../catalog/vendor-neutral/jakubcabal-spi-fpga.md): SPI 슬레이브 IP 근거
+**새로움 근거**: rpshredow 카드와 유사하나 VGA 타이밍 라인 버퍼 스트리밍(no BRAM 프레임버퍼)으로 Basys3 BRAM 제약을 돌아가는 S4 역전 접근이 차별점
+**Basys3 적합성 근거**: 320×240@60Hz 라인 버퍼 2행 → 약 40KB BRAM, Basys3 36Kb×5=180Kb 이내. SPI 클럭 10MHz 목표로 한 행(320바이트) 전송 약 256µs, 라인 주기 63.5µs보다 느려 2배속 DMA + 더블버퍼 필요
+**난이도**: 4
+**단계**: T3

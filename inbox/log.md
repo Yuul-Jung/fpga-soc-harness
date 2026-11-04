@@ -106,3 +106,4 @@
 2026-11-04 13:38 | verify | 재열람 0(차단: WebFetch PROVENANCE_REQUIRED 전면 차단) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +2(I-027·I-037, 차단조건재심사: 10점·9점) | raw 심사 +3(I-051 vetted 5점, I-052 vetted 6점, I-053 dropped 2점) | check 통과(158건)
 
 2026-11-04 14:03 | capstone | mmio-loop-jitter-mon (I-039, 차단조건재심사 ready) | 등급 S0 (로컬 iverilog 없음; CI 대기) | check 오류 0 / build.py 경고 2(예상됨) | 선택 경로: §13.7 차단조건재심사(근거2+새로움2+적합성3+완결성2=9점≥7) | 지터 측정 IP: tick 주기 32비트 카운터·min/max/오버런·IP표준 rev.1 관리레지스터 T2 패키지
+2026-11-04 14:27 | collect | RPi FPGA 연동 (SPI/I2C→FPGA 제어) · S2 조합 탐색 + S6 실패 사례 | 카드 +3 | 아이디어 +3 | 큐 잔여 367 | blocked 0
