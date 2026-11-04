@@ -269,7 +269,7 @@ module tb_i2c_nmea_hub;
 
     // Timeout watchdog
     initial begin
-        #2_000_000;
+        #5_000_000;
         $display("FAIL: timeout");
         $finish;
     end

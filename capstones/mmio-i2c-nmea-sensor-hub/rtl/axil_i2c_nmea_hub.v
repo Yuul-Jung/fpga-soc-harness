@@ -123,9 +123,7 @@ module axil_i2c_nmea_hub #(
     // ---------------------------------------------------------------
     // Sub-module instantiations
     // ---------------------------------------------------------------
-    i2c_cycle_fsm #(
-        .DEFAULT_PERIOD(I2C_PERIOD)
-    ) u_i2c (
+    i2c_cycle_fsm u_i2c (
         .clk            (clk),
         .rst_n          (rst_n),
         .en             (ctrl_en),
@@ -141,9 +139,7 @@ module axil_i2c_nmea_hub #(
         .sample_valid   (i2c_sample_valid)
     );
 
-    nmea_uart_rx #(
-        .DEFAULT_BAUD_DIV(BAUD_DIV)
-    ) u_uart (
+    nmea_uart_rx u_uart (
         .clk            (clk),
         .rst_n          (rst_n),
         .en             (ctrl_en),
@@ -172,8 +168,6 @@ module axil_i2c_nmea_hub #(
     // FIFO push logic
     // ---------------------------------------------------------------
     always @(posedge clk) begin
-        ctrl_fifo_clr <= 1'b0; // auto-clear
-
         if (!rst_n) begin
             fifo_push <= 1'b0;
             fifo_din  <= 72'd0;
@@ -209,17 +203,20 @@ module axil_i2c_nmea_hub #(
     // ---------------------------------------------------------------
     always @(posedge clk) begin
         if (!rst_n) begin
-            s_awready  <= 1'b0;
-            s_wready   <= 1'b0;
-            s_bvalid   <= 1'b0;
-            s_bresp    <= 2'b00;
-            waddr_lat  <= {ADDR_W{1'b0}};
-            waddr_valid<= 1'b0;
-            ctrl_en    <= 1'b0;
-            ctrl_ie    <= 1'b0;
-            i2c_cfg    <= I2C_PERIOD;
-            uart_cfg   <= BAUD_DIV;
+            s_awready    <= 1'b0;
+            s_wready     <= 1'b0;
+            s_bvalid     <= 1'b0;
+            s_bresp      <= 2'b00;
+            waddr_lat    <= {ADDR_W{1'b0}};
+            waddr_valid  <= 1'b0;
+            ctrl_en      <= 1'b0;
+            ctrl_ie      <= 1'b0;
+            ctrl_fifo_clr<= 1'b0;
+            i2c_cfg      <= I2C_PERIOD;
+            uart_cfg     <= BAUD_DIV;
         end else begin
+            // auto-clear fifo_clr after one cycle
+            ctrl_fifo_clr <= 1'b0;
             // latch write address
             s_awready <= 1'b0;
             if (s_awvalid && !waddr_valid) begin

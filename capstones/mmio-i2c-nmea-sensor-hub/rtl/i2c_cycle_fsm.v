@@ -7,9 +7,7 @@
 
 `timescale 1ns/1ps
 
-module i2c_cycle_fsm #(
-    parameter DEFAULT_PERIOD = 32'd10_000_000 // 100 ms cycle period
-) (
+module i2c_cycle_fsm (
     input  wire        clk,
     input  wire        rst_n,
     input  wire        en,
@@ -85,19 +83,7 @@ module i2c_cycle_fsm #(
         endcase
     end
 
-    // Phase counter drives SCL
-    always @(posedge clk) begin
-        if (!rst_n) begin
-            phase_cnt <= 10'd0;
-            phase     <= 2'd0;
-            scl_o     <= 1'b1;
-            scl_oe    <= 1'b0;
-            sda_o     <= 1'b1;
-            sda_oe    <= 1'b0;
-        end
-    end
-
-    // Main FSM
+    // Main FSM (drives SCL/SDA open-drain)
     always @(posedge clk) begin
         if (!rst_n) begin
             state        <= S_IDLE;
@@ -114,7 +100,9 @@ module i2c_cycle_fsm #(
             data_buf     <= 48'd0;
             tx_byte      <= 8'd0;
             rx_byte      <= 8'd0;
+            scl_o        <= 1'b1;
             scl_oe       <= 1'b0;
+            sda_o        <= 1'b1;
             sda_oe       <= 1'b0;
         end else begin
             sample_valid <= 1'b0;

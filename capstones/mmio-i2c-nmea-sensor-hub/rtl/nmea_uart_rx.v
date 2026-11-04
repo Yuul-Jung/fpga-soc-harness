@@ -6,9 +6,7 @@
 
 `timescale 1ns/1ps
 
-module nmea_uart_rx #(
-    parameter DEFAULT_BAUD_DIV = 16'd10417  // 9600 baud @ 100 MHz
-) (
+module nmea_uart_rx (
     input  wire        clk,
     input  wire        rst_n,
     input  wire        en,
