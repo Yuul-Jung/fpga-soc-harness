@@ -78,7 +78,8 @@ module sensor_hub_top #(
     //=========================================================
     // 64비트 타임스탬프
     //=========================================================
-    reg [63:0] ts_ctr, ts_latch;
+    reg [63:0] ts_ctr;
+    reg [31:0] ts_latch;
     always @(posedge aclk) begin
         if (!aresetn) ts_ctr <= 64'd0;
         else          ts_ctr <= ts_ctr + 64'd1;
@@ -198,7 +199,6 @@ module sensor_hub_top #(
     reg [1:0]  i2c_dev;     // 현재 장치 (0,1,2)
     reg [7:0]  i2c_snd;     // 송신 시프트
     reg [7:0]  i2c_rcv;     // 수신 시프트
-    reg [15:0] i2c_gap;     // GAP 카운터
     reg [6:0]  i2c_cur_addr;
     reg [7:0]  i2c_cur_reg;
 
@@ -231,7 +231,6 @@ module sensor_hub_top #(
             i2c_scl_o <= 1'b1; i2c_scl_t <= 1'b1;
             i2c_sda_o <= 1'b1; i2c_sda_t <= 1'b1;
             i2c_busy  <= 1'b0; i2c_dev   <= 2'd0;
-            i2c_gap   <= 16'd0;
         end else begin
             // 반주기 카운터
             if (i2c_div == 21'd0) i2c_div <= I2C_HALF[20:0];
@@ -431,7 +430,7 @@ module sensor_hub_top #(
                         s_rdata <= {24'd0, nmea_buf[nmea_rp]};
                         if (nmea_rp < nmea_len) nmea_rp <= nmea_rp + 7'd1;
                     end
-                    A_TSHI:  begin ts_latch <= ts_ctr; s_rdata <= ts_ctr[63:32]; end
+                    A_TSHI:  begin ts_latch <= ts_ctr[31:0]; s_rdata <= ts_ctr[63:32]; end
                     A_TSLO:  s_rdata <= ts_latch[31:0];
                     A_IP_ID: s_rdata <= 32'h534E5348;
                     A_IP_VER:s_rdata <= 32'h0000_0100;

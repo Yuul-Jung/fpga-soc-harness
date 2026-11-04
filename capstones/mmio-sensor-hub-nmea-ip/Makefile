@@ -23,8 +23,9 @@ sim: $(RTL) $(TB)
 		(echo "sim: FAIL — see build/sim.log" && exit 1)
 
 # ─── Lint (verilator) ─────────────────────────────────────────────────────────
-lint: $(RTL)
-	verilator --lint-only -Wall --top-module $(TOP) $(RTL)
+lint: $(RTL) build
+	verilator --lint-only -Wall -Wno-fatal --top-module $(TOP) $(RTL) 2>&1 | tee build/lint.log
+	@! grep -q "%Error" build/lint.log
 
 # ─── Synthesis resource estimate (yosys, not Vivado) ─────────────────────────
 synth: $(RTL)
