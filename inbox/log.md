@@ -5,7 +5,7 @@
 - verify: `YYYY-MM-DD HH:MM | verify | 재열람 N | 수정 M | 불일치 K | 승격 L2→L3 P | ready +R`
 - capstone: `YYYY-MM-DD HH:MM | capstone | <slug> | 등급 S0~S2` 또는 `... | skip: <사유>`
 
-2026-11-04 23:03 | capstone | mmio-lqr-ctrl-ip (I-021) | 등급 S0(pending CI) | 아이디어 선택: ready(차단조건재심사 8점≥7, LQR 상태 되먹임 Q8.8 MAC FSM) | 큐 잔여 418
+2026-11-04 23:03 | capstone | mmio-lqr-ctrl-ip (I-021) | 등급 S2 (CI 1회차 통과: lint pass, sim PASS 5/5, synth LUT 904·FF 448 yosys 추정) | 아이디어 선택: ready(차단조건재심사 8점≥7, LQR 상태 되먹임 Q8.8 MAC FSM) | 큐 잔여 418
 2026-11-04 22:21 | capstone | mmio-wdt-tier1 (I-070) | 등급 S2 (CI 1회차 통과: lint pass, sim PASS 11/11, synth success yosys) | 아이디어 선택: ready(10점, AXI4-Lite 워치독 IP T1 기본 카운터) | 큐 잔여 418
 2026-11-04 22:09 | capstone | mmio-sla-bram-capture (I-067) | 등급 S2 (CI 통과: lint pass, sim PASS 7/7, synth success; 1회차 CI 실패→trig_req 래치 추가로 수정) | 큐 잔여 418
 2026-11-04 20:27 | capstone | mmio-imu-cf-ip (I-019) | 등급 S0 (로컬 도구 없음; CI에서 S1/S2 결정 예정) | 큐 잔여 418
