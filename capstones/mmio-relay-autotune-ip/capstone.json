@@ -1,6 +1,7 @@
 {
   "slug": "mmio-relay-autotune-ip",
   "title": "릴레이 자동 튜닝 IP",
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 원본이며 외부 코드를 포함하지 않는다. 릴레이 피드백 방식의 한계 사이클 측정 원리는 참고 카드(controleng-relay-method-automates-pid-loop-tuning 등)를 아이디어 근거로만 사용했으며 코드는 복사하지 않았다. 시뮬레이션·합성 결과는 CI가 기록한다.",
   "summary": "릴레이 피드백 FSM으로 한계 사이클 주기·진폭을 측정하고, AXI4-Lite 레지스터를 통해 MicroBlaze V가 Ziegler-Nichols 계산 후 PID 이득을 직접 쓴다. 테스트벤치는 1차+지연 모터 모델로 한계 사이클 주기를 해석값과 대조해 자체 점검한다.",
   "board": "Basys3",
   "stage": "T4",
@@ -23,8 +24,7 @@
         "id": "cpu",
         "name": "MicroBlaze V (외부)",
         "kind": "cpu",
-        "module": "external",
-        "file": "",
+        "module": "-",
         "desc": "AXI4-Lite 마스터. 릴레이 완료 IRQ를 받아 Ziegler-Nichols 계산 후 Kp·Ki·Kd를 PID IP에 쓴다.",
         "short": "CPU",
         "side": "left"
@@ -43,8 +43,7 @@
         "id": "encoder",
         "name": "엔코더 속도 (외부 신호)",
         "kind": "external",
-        "module": "external",
-        "file": "",
+        "module": "-",
         "desc": "쿼드 엔코더 또는 타코에서 오는 속도 값. 테스트벤치에서는 모터 모델이 대신한다.",
         "short": "ENC",
         "side": "right"
@@ -53,8 +52,7 @@
         "id": "pwm_out",
         "name": "릴레이 PWM 출력 (외부 신호)",
         "kind": "external",
-        "module": "external",
-        "file": "",
+        "module": "-",
         "desc": "H-브리지 방향·듀티 제어. 테스트벤치에서는 motor_model이 소비한다.",
         "short": "PWM",
         "side": "right"
@@ -72,23 +70,33 @@
     "data_width": 32,
     "addr_width": 16,
     "signals": [
-      "s_axi_aclk", "s_axi_aresetn",
-      "s_axi_awaddr[31:0]", "s_axi_awvalid", "s_axi_awready",
-      "s_axi_wdata[31:0]", "s_axi_wstrb[3:0]", "s_axi_wvalid", "s_axi_wready",
-      "s_axi_bresp[1:0]", "s_axi_bvalid", "s_axi_bready",
-      "s_axi_araddr[31:0]", "s_axi_arvalid", "s_axi_arready",
-      "s_axi_rdata[31:0]", "s_axi_rresp[1:0]", "s_axi_rvalid", "s_axi_rready"
+      {"name": "s_axi_aclk",        "dir": "in",  "desc": "100 MHz 클럭"},
+      {"name": "s_axi_aresetn",      "dir": "in",  "desc": "액티브-로우 리셋"},
+      {"name": "s_axi_awaddr[31:0]", "dir": "in",  "desc": "쓰기 주소"},
+      {"name": "s_axi_awvalid",      "dir": "in",  "desc": "쓰기 주소 유효"},
+      {"name": "s_axi_awready",      "dir": "out", "desc": "쓰기 주소 수락"},
+      {"name": "s_axi_wdata[31:0]",  "dir": "in",  "desc": "쓰기 데이터"},
+      {"name": "s_axi_wstrb[3:0]",   "dir": "in",  "desc": "바이트 스트로브"},
+      {"name": "s_axi_wvalid",       "dir": "in",  "desc": "쓰기 데이터 유효"},
+      {"name": "s_axi_wready",       "dir": "out", "desc": "쓰기 데이터 수락"},
+      {"name": "s_axi_bresp[1:0]",   "dir": "out", "desc": "쓰기 응답 (OKAY=00)"},
+      {"name": "s_axi_bvalid",       "dir": "out", "desc": "쓰기 응답 유효"},
+      {"name": "s_axi_bready",       "dir": "in",  "desc": "쓰기 응답 수락"},
+      {"name": "s_axi_araddr[31:0]", "dir": "in",  "desc": "읽기 주소"},
+      {"name": "s_axi_arvalid",      "dir": "in",  "desc": "읽기 주소 유효"},
+      {"name": "s_axi_arready",      "dir": "out", "desc": "읽기 주소 수락"},
+      {"name": "s_axi_rdata[31:0]",  "dir": "out", "desc": "읽기 데이터"},
+      {"name": "s_axi_rresp[1:0]",   "dir": "out", "desc": "읽기 응답 (OKAY=00)"},
+      {"name": "s_axi_rvalid",       "dir": "out", "desc": "읽기 데이터 유효"},
+      {"name": "s_axi_rready",       "dir": "in",  "desc": "읽기 데이터 수락"}
     ],
-    "limits": "단일 비트 폭 전송(WSTRB 존중 안 함, 단어 단위), 버스트 미지원"
+    "note": "단일 비트 폭 전송(WSTRB 존중 안 함, 단어 단위), 버스트 미지원. bresp/rresp=OKAY(2'b00) 고정."
   },
   "integration": {
     "bus": "AXI4-Lite",
-    "address_map": "mbv-frozen-v1",
-    "compat": "compatible",
-    "plan": "free_slot [1E] (0x401E_0000, 64KB)에 배정 제안. intc_free 입력 13번 IRQ 연결 제안(동결 전 제안).",
-    "frozen_mapping": [
-      {"block": "ip", "region": "0x401E_0000", "size": "0x10000", "note": "free_slot [1E] 사용"}
-    ]
+    "address_map": "custom",
+    "compat": "partial",
+    "plan": "mbv-frozen-v2 기준 free_slot [1E] (0x401E_0000, 64KB)에 배정 제안. intc_free 입력 13번 IRQ 연결 제안(동결 전 제안). 슬롯은 사용자가 프로젝트 인덱스 표에서 동결한다. 동결 전이므로 compat=partial."
   },
   "external_parts": [
     {
@@ -120,13 +128,11 @@
     "state": "not-written",
     "note": "디지털 계통도만 제공. 전기 회로도 미작성."
   },
-  "hierarchy": [
-    {
-      "module": "relay_autotune_ip",
-      "file": "rtl/relay_autotune_ip.v",
-      "children": []
-    }
-  ],
+  "hierarchy": {
+    "module": "relay_autotune_ip",
+    "file": "rtl/relay_autotune_ip.v",
+    "children": []
+  },
   "memory_map": [
     {
       "base": "0x401E_0000",
@@ -154,9 +160,9 @@
     {"stage": "T4", "state": "planned", "title": "릴레이 튜닝 결과로 PID IP 이득 쓰기 + 폐루프 속도 제어", "refs": []}
   ],
   "references": [
-    {"name": "controleng-relay-method-automates-pid-loop-tuning", "reason": "릴레이 피드백 방식의 한계 사이클 측정 원리 (§7: 지시 아님, 데이터로만 처리)"},
-    {"name": "kmitl-iccas-2003-auto-tune-digital-pid-fpga",       "reason": "FPGA 기반 디지털 PID 자동 튜닝 선례"},
-    {"name": "tees-isie-2017-compass-search-self-tuning-pid-dc-drive", "reason": "DC 모터 자기 튜닝 PID 사례 (컴패스 탐색)"}
+    {"card": "controleng-relay-method-automates-pid-loop-tuning", "why": "릴레이 피드백 방식의 한계 사이클 측정 원리 (§7: 지시 아님, 데이터로만 처리)"},
+    {"card": "kmitl-iccas-2003-auto-tune-digital-pid-fpga",       "why": "FPGA 기반 디지털 PID 자동 튜닝 선례"},
+    {"card": "tees-isie-2017-compass-search-self-tuning-pid-dc-drive", "why": "DC 모터 자기 튜닝 PID 사례 (컴패스 탐색)"}
   ],
   "sources": {
     "rtl":         ["rtl/relay_autotune_ip.v"],
@@ -164,16 +170,29 @@
     "constraints": ["constr/relay_autotune_ip.xdc"],
     "build":       ["Makefile"]
   },
-  "howto": {
-    "sim": [
-      "iverilog -g2001 -Wall -o /tmp/tb_relay tb/tb_relay_autotune_ip.v rtl/relay_autotune_ip.v",
-      "vvp /tmp/tb_relay"
-    ],
-    "synth": [
-      "yosys -p 'synth_xilinx -top relay_autotune_ip' rtl/relay_autotune_ip.v"
-    ],
-    "vivado": "Vivado 2024.2 → Add Sources → relay_autotune_ip.v. Part: xc7a35tcpg236-1. 합성 후 Resource Report 확인."
-  },
+  "howto": [
+    {
+      "title": "시뮬레이션 (iverilog)",
+      "steps": [
+        "iverilog -g2001 -Wall -o /tmp/tb_relay tb/tb_relay_autotune_ip.v rtl/relay_autotune_ip.v",
+        "vvp /tmp/tb_relay  # PASS 출력 확인"
+      ]
+    },
+    {
+      "title": "합성 추정 (yosys)",
+      "steps": [
+        "yosys -p 'synth_xilinx -top relay_autotune_ip' rtl/relay_autotune_ip.v"
+      ]
+    },
+    {
+      "title": "Vivado 빌드 (Basys3, S3 사람이 직접 수행)",
+      "steps": [
+        "Vivado 2024.2에서 새 프로젝트 생성 (Basys3, XC7A35TCPG236-1)",
+        "rtl/relay_autotune_ip.v를 추가",
+        "합성 후 Resource Report 확인"
+      ]
+    }
+  ],
   "verification": {
     "board": "not-tested",
     "notes": "CI에서 iverilog 시뮬레이션(S1)과 yosys 합성(S2) 자동 수행. S3(보드)는 사람이 올린다."
