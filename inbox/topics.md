@@ -69,7 +69,7 @@
 - [x] RPi 카메라 파이프라인: Picamera2 + libcamera, OpenCV 실시간 영상 처리 — 2026-11-04 12시대 사이클: 카드 3건(L3: automaticdai-rpi-object-detection, fpgadeveloper-rpi-camera-fmc, chili-chips-ba-openeye-camsi), Picamera2 공식 PDF·libcamera API 가이드는 큐에 남김, 아이디어 3건(I-051~I-053)
 - [x] RPi 실시간성: PREEMPT_RT 패치, isolcpus, 사이클릭 테스트 (모터 제어 목표) — 2026-11-04 13시대 사이클: 카드 3건(L3 2, L2 1), ppisa README 열람 불가(blocked), CVUT rtime.ciirc 페이지 blocked
 - [x] RPi FPGA 연동: RPi SPI/I2C로 FPGA 제어, AXI 스트림 데이터 전송 사례 — 2026-11-04 14시대 사이클: 카드 3건(L3 1, L2 2), RPi→FPGA SPI 직접 사례(ice4pi, hackster), SPI IP 라이브러리, 아이디어 3건
-- [ ] RPi OS 프로젝트: Buildroot 최소 이미지, 부트 시간 최적화, 임베디드 배포
+- [x] RPi OS 프로젝트: Buildroot 최소 이미지, 부트 시간 최적화, 임베디드 배포 — 2026-11-04 15시대 사이클: 카드 3건(L3: sujan-coder-buildroot-linux-rpi3·obuda-buildroot-mini-linux-tutorial·smartmechatronics-embedded-linux-boot-time-reduction), romainreignier/minimal_raspberrypi_buildroot blocked(PROVENANCE_REQUIRED), 아이디어 3건(I-058~I-060)
 
 ## 임베디드 공통 도메인 (2026-11-03 추가, 위에서부터 소비)
 - [ ] RTOS 비교: FreeRTOS vs Zephyr vs ThreadX — 태스크 모델·메모리·포팅 난이도

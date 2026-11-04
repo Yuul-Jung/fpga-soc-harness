@@ -692,3 +692,51 @@
 **Basys3 적합성 근거**: 320×240@60Hz 라인 버퍼 2행 → 약 40KB BRAM, Basys3 36Kb×5=180Kb 이내. SPI 클럭 10MHz 목표로 한 행(320바이트) 전송 약 256µs, 라인 주기 63.5µs보다 느려 2배속 DMA + 더블버퍼 필요
 **난이도**: 4
 **단계**: T3
+
+---
+
+## I-058 Buildroot 최소 이미지(dropbear SSH) RPi 검증 호스트 — Basys3 SPI/UART IP 테스트 환경 (S1 인접 도메인 이식)
+
+내 판단: obuda-buildroot-mini-linux-tutorial·sujan-coder-buildroot-linux-rpi3의 Buildroot 최소 이미지(3~10 s 부트, 5~10개 서비스, 30~100 MB)를 Basys3 IP 검증 호스트로 특화해 구성하는 가이드 패키지. dropbear SSH로 원격 접근을 유지하면서, spidev·i2c-dev 커널 드라이버와 Python 테스트 스크립트만 추가한 최소 이미지를 Buildroot 외부 패키지 레이어로 관리한다.
+
+- id: I-058
+- 조합: [Buildroot(RPi4), dropbear SSH, spidev/i2c-dev 커널 모듈, Python 테스트 스크립트, comm-spi(Basys3 슬레이브)]
+- 근거 카드: [[obuda-buildroot-mini-linux-tutorial]], [[sujan-coder-buildroot-linux-rpi3]], [[doceme-py-spidev]]
+- 근거 URL: https://www.aut.uni-obuda.hu/es/Linux%20in%20Embedded%20Systems/Tutorials/buildroot-mini-linux, https://github.com/sujan-coder/Buildroot-Linux-for-Raspberry-Pi-3
+- 새로움 근거: 카탈로그에 Buildroot RPi 이미지를 Basys3 IP 외부 검증 호스트로 특화한 카드·패키지 없음. I-048·I-049는 RPi를 테스트 호스트로 쓰지만 OS 이미지 최소화는 다루지 않는다.
+- Basys3 적합성 근거: Buildroot 이미지에 spidev·i2c-dev 추가는 `make menuconfig`로 가능. dropbear로 SSH 접근 유지. 부트 3~10 s는 SD 카드 삽입 후 빠른 테스트 반복에 적합. RPi 3.3V ↔ Basys3 Pmod 직결.
+- 난이도: 2
+- 단계: T2
+- 상태: raw
+
+---
+
+## I-059 U-Boot 딜레이 제거·SD 직접 로드 스크립트 → FPGA SoC LiteX Linux 부트 최적화 패턴 (S1 이식)
+
+내 판단: smartmechatronics-embedded-linux-boot-time-reduction의 부트로더 최적화 기법(U-Boot 딜레이 제거 약 2.4 s, SD 직접 로드 스크립트, USB·네트워크 부팅 모듈 제거)을 MicroBlaze V 위의 LiteX Linux 환경에 이식하는 방법론 카드 및 Basys3 테스트 패키지. 측정 도구(Grabserial, bootgraph.pl) 적용 절차도 함께 기술한다.
+
+- id: I-059
+- 조합: [U-Boot(LiteX), Grabserial(측정), SD 직접 로드 스크립트, AXI4-Lite(LiteX SoC)]
+- 근거 카드: [[smartmechatronics-embedded-linux-boot-time-reduction]], [[sujan-coder-buildroot-linux-rpi3]]
+- 근거 URL: https://medium.com/smartmechatronics/embedded-linux-boot-time-reduction-eda5f5b4c014
+- 새로움 근거: 카탈로그에 LiteX/MicroBlaze V U-Boot 부트 최적화 카드 없음. RPi Yocto 사례를 Basys3 LiteX 환경으로 이식하는 첫 패턴.
+- Basys3 적합성 근거: LiteX는 U-Boot를 부트로더로 사용. U-Boot 딜레이 제거·SD 로드 스크립트는 소스 패치 수준이며 BRAM/LUT 불필요. BRAM 제한 Basys3에서 커널 모듈화(지연 로드)가 특히 유효(smartmechatronics: 커널 1.3 s 단축).
+- 난이도: 3
+- 단계: T3
+- 상태: raw
+
+---
+
+## I-060 BusyBox init + 최소 init 스크립트 → BRAM 제한 FPGA SoC Linux 부트 가속 (S4 제약 역전)
+
+내 판단: smartmechatronics-embedded-linux-boot-time-reduction의 사용자 공간 최적화(systemd 제거→최소 init 스크립트, 3.56 s→0.55 s)와 sujan-coder-buildroot-linux-rpi3의 BusyBox init 순서(sysfs/proc 마운트→모듈 로드→앱 실행)를 조합해, BRAM 제한 Basys3 FPGA SoC 위의 소프트코어 Linux 부트 최소화 패턴 카드를 작성한다. 커널 크기 축소(미완성 과제로 명시된 항목)를 Basys3 BRAM 한계 대응 첫 번째 과제로 삼는다.
+
+- id: I-060
+- 조합: [BusyBox init, 최소 init 스크립트, 커널 menuconfig(모듈화), Buildroot(LiteX 대상)]
+- 근거 카드: [[smartmechatronics-embedded-linux-boot-time-reduction]], [[sujan-coder-buildroot-linux-rpi3]], [[obuda-buildroot-mini-linux-tutorial]]
+- 근거 URL: https://medium.com/smartmechatronics/embedded-linux-boot-time-reduction-eda5f5b4c014, https://github.com/sujan-coder/Buildroot-Linux-for-Raspberry-Pi-3
+- 새로움 근거: 카탈로그에 BRAM 제한 FPGA SoC에서 BusyBox init + 최소 init 스크립트로 부트를 최소화한 카드 없음. S4 제약 역전: BRAM 한계를 커널 최소화 동기로 쓴다.
+- Basys3 적합성 근거: LiteX Linux는 initramfs 기반으로 BusyBox 적용 가능. 커널 menuconfig로 비필수 드라이버 모듈화는 obuda 튜토리얼의 접근법과 같다. BRAM 제한 Basys3에서 커널 이미지 크기 축소는 필수 과제(smartmechatronics 미완성 항목, Basys3에서 특히 중요라는 재사용 메모 참조).
+- 난이도: 3
+- 단계: T3
+- 상태: raw

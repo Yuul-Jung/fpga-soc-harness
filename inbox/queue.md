@@ -375,3 +375,10 @@
 - https://learn.adafruit.com/raspberry-pi-i2c-clock-stretching-fixes/overview | RPi I2C 클럭 스트레칭 버그 해결(Adafruit) — L2 열람 완료: BCM 하드웨어 버그, 슬로 클럭 또는 소프트 I2C로 우회 필요; FPGA I2C 슬레이브 설계 시 클럭 스트레칭 의존 금지 근거 | Raspberry Pi I2C clock stretching hardware bug workaround
 - https://hackaday.io/project/16424/log/164753 | Hackaday 프로젝트 로그: RPi-FPGA 인터페이스 관련(내용 미확인) — 미열람(L1) | Hackaday RPi FPGA interface project log
 - https://github.com/cp024s/I2C | cp024s/I2C: I2C 마스터·슬레이브 Verilog, AXI-Lite — 미열람(L1) | I2C master slave Verilog AXI-Lite
+
+## 2026-11-04 15시대 수집 — RPi OS 프로젝트: Buildroot 최소 이미지·부트 최적화 (S1 인접 도메인 이식 + S5 비정형 출처)
+- https://github.com/romainreignier/minimal_raspberrypi_buildroot | romainreignier/minimal_raspberrypi_buildroot: Buildroot 최소 RPi 이미지(GitHub, 커밋 다수) — blocked: PROVENANCE_REQUIRED (두 번째 시도도 차단) | minimal raspberry pi buildroot image
+- https://buildroot.org/downloads/manual/manual.html | Buildroot 공식 매뉴얼 — 미열람(L1), 개요 참조용 | Buildroot manual embedded Linux build
+- https://github.com/petrkucerak/buildroot-rpi4-rt | petrkucerak/buildroot-rpi4-rt: Buildroot + PREEMPT_RT RPi4 — 미열람(L1) | buildroot raspberry pi 4 real time PREEMPT_RT
+- https://www.bootlin.com/training/buildroot/ | Bootlin Buildroot 교육 자료(전문 임베디드 교육업체) — 미열람(L1) | Bootlin Buildroot training embedded Linux
+- https://www.yoctoproject.org/development/technical-overview/ | Yocto Project 기술 개요(Yocto vs Buildroot 비교용) — 미열람(L1) | Yocto project technical overview comparison Buildroot

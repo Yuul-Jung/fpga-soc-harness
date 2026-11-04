@@ -166,3 +166,6 @@
 | [lightside-instruments-ice4pi](rpi/lightside-instruments-ice4pi.md) | L2 | T2 | iCE40HX-1K RPi HAT (Basys3 needs-port) | 2026-11-04 |
 | [michalstc-rpi-zero-fpga-spi-wishbone](rpi/michalstc-rpi-zero-fpga-spi-wishbone.md) | L2 | T2 | Vivado FPGA + RPi Zero (Basys3 needs-port) | 2026-11-04 |
 | [jakubcabal-spi-fpga](vendor-neutral/jakubcabal-spi-fpga.md) | L3 | T1 | CYC1000 · EP4CE6 (Basys3 needs-port) | 2026-11-04 |
+| [sujan-coder-buildroot-linux-rpi3](rpi/sujan-coder-buildroot-linux-rpi3.md) | L3 | T0 | Raspberry Pi 3 (Basys3 needs-port) | 2026-11-04 |
+| [obuda-buildroot-mini-linux-tutorial](rpi/obuda-buildroot-mini-linux-tutorial.md) | L3 | T0 | Raspberry Pi 4 (Basys3 needs-port) | 2026-11-04 |
+| [smartmechatronics-embedded-linux-boot-time-reduction](rpi/smartmechatronics-embedded-linux-boot-time-reduction.md) | L3 | T1 | Raspberry Pi 4 (Basys3 needs-port) | 2026-11-04 |
