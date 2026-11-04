@@ -10,7 +10,7 @@
 module tb_ps2_mouse_cursor;
 
 // ─── 파라미터 ────────────────────────────────────────────
-parameter INHIBIT = 50;      // 짧은 인히빗 (시뮬레이션 가속)
+parameter INHIBIT = 200;     // 인히빗: ps2_send 종료 후 600ns 갭을 커버 (200×10ns=2000ns)
 parameter CLK_HALF = 5;      // 100 MHz 클럭 반주기 (5ns)
 parameter PS2_HALF = 100;    // PS/2 CLK 반주기 (100ns = 10MHz, 시뮬용)
 
