@@ -170,7 +170,8 @@
 - 차단조건재심사: 2026-11-04 /verify, 근거 3(embeddedts-fpga-pwm-hbridge-quadrature, tinredmc-ultralitebldc, lange-fpga-foc-motor-control-hackaday 외 ti-drv8833-datasheet 등, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 → ready. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-015 다축 모션 제어 IP: 채널당 엔코더·PID·PWM 한 벌 + 공통 제어 주기 트리거 자체 점검
-- 상태: ready
+- 상태: used
+- 패키지: mmio-multi-axis-motion-ctrl, 2026-11-04
 - 요약: 내 판단: 2채널 속도 PID를 공통 1 kHz 트리거로 동기시키는 IP를 자체 RTL로 쓰고, 모델 모터 테스트벤치로 채널 간 지터와 출력 포화를 점검한다.
 - 조합: [직교 엔코더(sensor), PWM(actuator), PID FSM, 공통 트리거]
 - 근거: [iccas-2003-general-purpose-pid-motion-controller-fpga, ieek-2009-dc-servo-speed-control-fpga, deepc94-pid-fpga-vhdl, columbia-4840-dc-motor-controller]
