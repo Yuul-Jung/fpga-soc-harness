@@ -124,7 +124,7 @@ module axil_sla_wrap #(
             ctrl_srst  <= 1'b0;
 
             // awready 핸드셰이크
-            if (s_awvalid && !aw_pend) begin
+            if (s_awvalid && !aw_pend && !s_bvalid) begin
                 s_awready <= 1'b1;
                 aw_pend   <= 1'b1;
                 aw_addr_r <= s_awaddr;
@@ -133,7 +133,7 @@ module axil_sla_wrap #(
             end
 
             // wready 핸드셰이크
-            if (s_wvalid && !w_pend) begin
+            if (s_wvalid && !w_pend && !s_bvalid) begin
                 s_wready <= 1'b1;
                 w_pend   <= 1'b1;
                 w_data_r <= s_wdata;

@@ -80,13 +80,11 @@ module tb_axil_sla_wrap;
             @(posedge aclk); #1;
             s_awaddr = addr; s_awvalid = 1;
             s_wdata  = data; s_wvalid  = 1; s_wstrb = 4'hF;
-            wait(s_awready); @(posedge aclk); #1;
-            s_awvalid = 0;
-            wait(s_wready);  @(posedge aclk); #1;
-            s_wvalid  = 0;
             s_bready = 1;
-            wait(s_bvalid);  @(posedge aclk); #1;
-            s_bready = 0;
+            wait(s_bvalid); @(posedge aclk); #1;
+            s_awvalid = 0;
+            s_wvalid  = 0;
+            s_bready  = 0;
         end
     endtask
 
