@@ -14,9 +14,12 @@ module uart_rx #(
     output reg  [7:0] data,
     output reg        valid
 );
-    localparam HALF = BAUD_DIV / 2;
+    localparam HALF     = BAUD_DIV / 2;
+    // 스타트 비트 감지 후 첫 샘플까지 대기: BAUD_DIV + HALF - 2
+    // = 1비트(스타트 완료) + 반비트(데이터 비트 0 중간) - 2클럭(감지+1사이클)
+    localparam INIT_CNT = BAUD_DIV + HALF - 2;
 
-    reg [10:0] cnt;      // 보율 카운터 (868 < 2^11)
+    reg [10:0] cnt;      // 보율 카운터 (1300 < 2^11)
     reg [3:0]  bit_idx;  // 수신 비트 인덱스 (0..7 = 데이터, 8 = 스톱)
     reg [7:0]  shift;
     reg        active;
@@ -35,7 +38,7 @@ module uart_rx #(
                 // 스타트 비트 하강 에지 감지
                 if (!rx) begin
                     active  <= 1'b1;
-                    cnt     <= HALF[10:0];   // 중간 샘플을 위해 절반 대기
+                    cnt     <= INIT_CNT[10:0]; // 데이터 비트 0 중간 샘플 위치까지 대기
                     bit_idx <= 4'd0;
                 end
             end else begin

@@ -172,3 +172,6 @@
 | [beningo-freertos-to-zephyr-migration](embedded/beningo-freertos-to-zephyr-migration.md) | L3 | T2 | 없음(MCU 임베디드) | 2026-11-04 |
 | [ezurio-freertos-vs-zephyr-benchmark](embedded/ezurio-freertos-vs-zephyr-benchmark.md) | L3 | T2 | 없음(MCU 임베디드) | 2026-11-04 |
 | [freertos-org-faq-memory](embedded/freertos-org-faq-memory.md) | L3 | T2 | 없음(MCU 임베디드) | 2026-11-04 |
+| [ezurio-rtos-freertos-zephyr-comparison](embedded/ezurio-rtos-freertos-zephyr-comparison.md) | L3 | T0 | 없음(MCU 임베디드) | 2026-11-04 |
+| [iiot-world-freertos-threadx-zephyr-open-source](embedded/iiot-world-freertos-threadx-zephyr-open-source.md) | L3 | T0 | 없음(MCU 임베디드) | 2026-11-04 |
+| [promwad-rtos-freertos-zephyr-threadx-comparison](embedded/promwad-rtos-freertos-zephyr-threadx-comparison.md) | L3 | T0 | 없음(MCU 임베디드) | 2026-11-04 |
