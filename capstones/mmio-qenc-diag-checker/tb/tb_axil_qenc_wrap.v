@@ -8,10 +8,20 @@
 // 테스트 케이스:
 //   TC1: 정방향 4스텝 → POSITION == 4, DIR == 0
 //   TC2: 역방향 4스텝 → POSITION == 0, DIR == 1
-//   TC3: 불가능 전이(글리치 주입) → ERROR_CNT >= 1, ERR_LATCH == 1
+//   TC3: 불가능 전이(글리치 주입 00→11) → ERROR_CNT >= 1, ERR_LATCH == 1
 //   TC4: 소프트 리셋 → POSITION == 0, ERROR_CNT == 0
 //   TC5: 창 속도 (WINDOW_EN=1, 2펄스 → VELOCITY >= 1)
-//        테스트용 WINDOW_CYCLES=20으로 짧게 설정
+//        테스트용 WINDOW_CYCLES=100으로 설정
+//
+// 설계 메모:
+//   enc_fwd_step / enc_rev_step = 1전이(1카운트). Gray 위상을 enc_state로 추적.
+//   4번 호출 = 1 기계 사이클 (00→10→11→01→00).
+//   2단 FF 전파를 위해 상태마다 클럭 4개를 대기.
+//
+//   TC5 타이밍 (WINDOW_CYCLES=100):
+//     1) WINDOW_EN 쓰기 후 105클럭 대기 → 첫 창 완료, 새 창 시작 보장
+//     2) enc_fwd_step × 2 (8클럭, << 100클럭 창)
+//     3) 105클럭 대기 → 해당 창 완료 → VELOCITY = 2
 
 `timescale 1ns/1ps
 `default_nettype none
@@ -45,9 +55,13 @@ module tb_axil_qenc_wrap;
     reg         enc_a;
     reg         enc_b;
 
-    // ── DUT 인스턴스 (WINDOW_CYCLES=20 짧게) ─────────────
+    // ── 엔코더 위상 추적 (enc_fwd_step / enc_rev_step 공유) ─
+    // {enc_a, enc_b}의 현재 Gray 위상
+    reg [1:0] enc_state;
+
+    // ── DUT 인스턴스 (WINDOW_CYCLES=100 짧게) ────────────
     axil_qenc_wrap #(
-        .WINDOW_CYCLES(20)
+        .WINDOW_CYCLES(100)
     ) dut (
         .aclk      (aclk),
         .aresetn   (aresetn),
@@ -112,27 +126,37 @@ module tb_axil_qenc_wrap;
         end
     endtask
 
-    // ── 엔코더 정방향 1스텝 (Gray: 00→10→11→01→00 반복) ─
-    // 한 스텝 = 1/4 turn. 초기 상태: {A,B}=00
-    // 정방향 순서: 00→10→11→01→00
+    // ── 엔코더 정방향 1전이 ──────────────────────────────
+    // Gray 정방향: 00→10→11→01→00. 한 번 호출 = 카운트 +1.
+    // 4번 호출하면 1 기계 사이클 완성 (enc_state가 00으로 복귀).
+    // 2단 FF 전파를 위해 클럭 4개 대기.
     task enc_fwd_step;
-        // 2단 FF 전파를 위해 클럭 3개 이상 대기
         begin
-            enc_a = 1; enc_b = 0; repeat(4) @(posedge aclk);
-            enc_a = 1; enc_b = 1; repeat(4) @(posedge aclk);
-            enc_a = 0; enc_b = 1; repeat(4) @(posedge aclk);
-            enc_a = 0; enc_b = 0; repeat(4) @(posedge aclk);
+            case (enc_state)
+                2'b00: enc_state = 2'b10;
+                2'b10: enc_state = 2'b11;
+                2'b11: enc_state = 2'b01;
+                2'b01: enc_state = 2'b00;
+            endcase
+            enc_a = enc_state[1];
+            enc_b = enc_state[0];
+            repeat(4) @(posedge aclk);
         end
     endtask
 
-    // ── 엔코더 역방향 1스텝 ──────────────────────────────
-    // 역방향 순서: 00→01→11→10→00
+    // ── 엔코더 역방향 1전이 ──────────────────────────────
+    // Gray 역방향: 00→01→11→10→00. 한 번 호출 = 카운트 -1.
     task enc_rev_step;
         begin
-            enc_a = 0; enc_b = 1; repeat(4) @(posedge aclk);
-            enc_a = 1; enc_b = 1; repeat(4) @(posedge aclk);
-            enc_a = 1; enc_b = 0; repeat(4) @(posedge aclk);
-            enc_a = 0; enc_b = 0; repeat(4) @(posedge aclk);
+            case (enc_state)
+                2'b00: enc_state = 2'b01;
+                2'b01: enc_state = 2'b11;
+                2'b11: enc_state = 2'b10;
+                2'b10: enc_state = 2'b00;
+            endcase
+            enc_a = enc_state[1];
+            enc_b = enc_state[0];
+            repeat(4) @(posedge aclk);
         end
     endtask
 
@@ -157,8 +181,12 @@ module tb_axil_qenc_wrap;
         input [31:0]  threshold;
         begin
             if (got < threshold) begin
-                $display("FAIL %0s: got=%0h < threshold=%0h", name, got, threshold);
-                fail_cnt = fail_cnt + 1;
+                if (got < threshold) begin
+                    $display("FAIL %0s: got=%0h < threshold=%0h", name, got, threshold);
+                    fail_cnt = fail_cnt + 1;
+                end else begin
+                    $display("pass %0s: got=%0h >= %0h", name, got, threshold);
+                end
             end else begin
                 $display("pass %0s: got=%0h >= %0h", name, got, threshold);
             end
@@ -172,6 +200,7 @@ module tb_axil_qenc_wrap;
     initial begin
         // 초기화
         fail_cnt  = 0;
+        enc_state = 2'b00;
         aresetn   = 0;
         s_awvalid = 0; s_wvalid = 0; s_bready = 0;
         s_arvalid = 0; s_rready = 0;
@@ -188,6 +217,8 @@ module tb_axil_qenc_wrap;
 
         // ────────────────────────────────────────────────
         // TC1: 정방향 4스텝 → POSITION == 4, DIR == 0
+        // 각 enc_fwd_step = 1전이 = 카운트 +1
+        // 4회 호출: 00→10→11→01→00, POSITION = 4
         // ────────────────────────────────────────────────
         $display("=== TC1: 정방향 4스텝 ===");
         for (i = 0; i < 4; i = i + 1)
@@ -199,6 +230,7 @@ module tb_axil_qenc_wrap;
 
         // ────────────────────────────────────────────────
         // TC2: 역방향 4스텝 → POSITION == 0, DIR == 1
+        // TC1 종료 후 enc_state=00. 역방향 4전이로 복귀.
         // ────────────────────────────────────────────────
         $display("=== TC2: 역방향 4스텝 ===");
         for (i = 0; i < 4; i = i + 1)
@@ -210,6 +242,7 @@ module tb_axil_qenc_wrap;
 
         // ────────────────────────────────────────────────
         // TC3: 글리치 주입 (불가능 전이 00→11)
+        // TC2 종료 후 enc_state=00. 직접 신호 조작.
         // ────────────────────────────────────────────────
         $display("=== TC3: 글리치 주입 ===");
         enc_a = 0; enc_b = 0; repeat(4) @(posedge aclk);
@@ -236,14 +269,21 @@ module tb_axil_qenc_wrap;
 
         // ────────────────────────────────────────────────
         // TC5: 창 속도 (WINDOW_EN=1, 2펄스 발생, 창 완료 후 VELOCITY>=1)
+        //
+        // WINDOW_CYCLES=100 타이밍:
+        //   1) WINDOW_EN 쓰기 후 105클럭 대기 → 첫 창 완료, 새 창 시작 보장
+        //   2) enc_fwd_step × 2 (8클럭, << 100클럭 창)
+        //   3) 105클럭 대기 → 해당 창 완료 → VELOCITY = 2 (안전 여유 92클럭)
         // ────────────────────────────────────────────────
         $display("=== TC5: 창 속도 ===");
         axil_write(8'h00, 32'h5);  // EN=1, WINDOW_EN=1
-        repeat(3) @(posedge aclk);
+        // 창 경계 동기화: 첫 창이 완료되고 새 창이 시작될 때까지 기다린다
+        repeat(105) @(posedge aclk);
+        // 새 창 안에 2펄스를 넣는다 (8클럭 << 100클럭 창)
         enc_fwd_step;
         enc_fwd_step;
-        // WINDOW_CYCLES=20이므로 창 완료를 기다린다
-        repeat(60) @(posedge aclk);
+        // 이 창이 완료될 때까지 기다린다
+        repeat(105) @(posedge aclk);
         axil_read(8'h08, rd); check_ge("TC5:VELOCITY", rd & 32'hFFFF, 32'd1);
 
         // ────────────────────────────────────────────────
