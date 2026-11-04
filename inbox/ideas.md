@@ -274,7 +274,7 @@
 
 
 ## I-025 CTRL/DATA형 I2C 마스터 IP: NEORV32 TWI 레지스터 배치 착안 + MPU-6050 읽기 시험 모델 테스트벤치
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: 분주·START·STOP·ACK·BUSY를 CTRL 하나, 송수신 바이트를 DATA 하나에 둔 AXI4-Lite I2C 마스터 IP를 자체 RTL로 새로 쓴다. 바이트 완료를 인터럽트 1비트로 내보내 INTC 빈 입력에 배정을 제안한다. 테스트벤치는 가짜 MPU-6050(주소 0x68) 슬레이브 모델로 레지스터 읽기 시퀀스를 점검한다.
 - 조합: [I2C 마스터, MPU-6050 IMU, AXI4-Lite 레지스터, INTC 입력]
 - 근거: [stnolting-neorv32, ammar-bin-amir-arty-a7-i2c-mpu-6050, yosyshq-picorv32]
@@ -282,9 +282,10 @@
 - Basys3 적합성의 근거: I2C는 Pmod 핀 2개(SDA 개방 드레인, 풀업 필요), 3.3V 모듈(MPU-6050 GY-521은 보드에 따라 레벨 확인 필요). 자원은 FSM과 분주기 수준으로 작을 것으로 추정(내 추정, 수치 없음).
 - 난이도: 3 / 단계: T2
 - 심사: 2026-11-04 /verify, 근거 1(ammar-bin-amir-arty-a7-i2c-mpu-6050) + 새로움 2(CPU 중립 CTRL/DATA I2C IP 없음) + 적합성 2(I2C 2핀 Pmod, 풀업 필요) + 완결성 2(CTRL/DATA 레지스터·MPU-6050 슬레이브 모델 범위 명확) = 7점. 보강: 근거 카드 2건 추가.
+- 차단조건재심사: 2026-11-04, 근거 3(stnolting-neorv32·ammar-bin-amir-arty-a7-i2c-mpu-6050·yosyshq-picorv32, rechecked_at 불문) + 새로움 2(CPU 중립 CTRL/DATA I2C IP 없음) + 적합성 2(I2C 2핀 Pmod, 풀업 필요) + 완결성 2(CTRL/DATA 레지스터·MPU-6050 슬레이브 모델 범위 명확) = 9점 → ready 승격. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-026 UDP 텔레메트리 송신 IP: W5500 SPI 초기화 ROM + BRAM 송수신 창, 레지스터 응답 모델 테스트벤치
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: 범용 SPI 전송 FSM과 W5500 초기화 시퀀스(ROM)를 분리하고, IP/MAC/PORT 설정, TX 길이, 데이터 창, 수신 완료 인터럽트를 AXI4-Lite 레지스터로 노출한다. 제어 루프(PID/IMU)의 값을 UDP로 PC에 보내는 텔레메트리 용도. 테스트벤치는 W5500 레지스터 응답 모델로 초기화 순서와 SEND 명령 후 버퍼 내용을 점검한다.
 - 조합: [W5500 이더넷 SPI, AXI4-Lite 레지스터, BRAM 버퍼, INTC 입력]
 - 근거: [wiznet-makers-gavinchang-w5500-udp-loopback, digilent-pmod-nic100-reference-manual, digilent-forum-basys3-ethernet-ipv4-udp]
@@ -292,6 +293,7 @@
 - Basys3 적합성의 근거: SPI 4핀(Pmod 1개), 3.3V 모듈. 로직은 FSM+BRAM 1~2개로 작을 것으로 추정(내 추정, 자원 수치 없음). W5500 모듈의 전원·SPI 모드는 모듈 데이터시트 확인 필요(unverified).
 - 난이도: 3 / 단계: T2
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(이더넷 IP + 모터 텔레메트리 없음) + 적합성 1(W5500 SPI 모드·전원 미확인, unverified) + 완결성 2(UDP TX 초기화+SEND 명령 범위 명확) = 5점. 보강: 근거 카드 rechecked_at 1건, W5500 Pmod 적합성 확인.
+- 차단조건재심사: 2026-11-04, 근거 3(wiznet-makers-gavinchang-w5500-udp-loopback·digilent-pmod-nic100-reference-manual·digilent-forum-basys3-ethernet-ipv4-udp, rechecked_at 불문) + 새로움 2(이더넷 IP + 모터 텔레메트리 없음) + 적합성 1(W5500 SPI 모드·전원 미확인, unverified) + 완결성 2(UDP TX 초기화+SEND 명령 범위 명확) = 8점 → ready 승격. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-027 제어 루프 계기판 IP: 타일맵 VGA에 모터 속도·PID 값을 글자와 막대로 표시 (프레임 버퍼 없음)
 - 상태: ready
@@ -634,7 +636,8 @@
 - Basys3 적합성 근거: Pmod JA/JB via UART(내 판단: 115200bps로 1kHz 패킷 가능)·SPI Pmod. mmio-pwm-qenc-checker(S2) 패키지가 T2 내부 루프 RTL을 이미 제공. RPi4 PREEMPT_RT Pi OS apt 커널 존재.
 - 난이도: 3
 - 단계: T3
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-04 /verify, 근거 0(applied-ee-rpi-realtime-linux·ppisa-rpi-rt-control rechecked_at 없음; mmio-pwm-qenc-checker는 카탈로그 카드 아닌 패키지) + 새로움 2(RPi PREEMPT_RT + Basys3 FPGA 이중 도메인 모터 제어 카드·패키지 없음) + 적합성 2(Pmod UART/SPI, mmio-pwm-qenc-checker T2 RTL 존재, AXI-UART Lite 경로 명확) + 완결성 2(RPi=1kHz 외부 PID, Basys3=100kHz 내부 PWM+엔코더 역할 분리 명확, 단일 캡스톤 범위) = 6점 → vetted. 보강: applied-ee-rpi-realtime-linux·ppisa-rpi-rt-control rechecked_at 취득 필요(근거 → 2 이상).
 
 ---
 
