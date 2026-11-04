@@ -346,7 +346,7 @@
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(HC-05 AT 분리+모델 시험 없음) + 적합성 2(Pmod 1개·3.3V·9600 bps 분주 명확) + 완결성 2(프레임 송수신 모델 범위 명확) = 6점. 보강: 근거 카드 rechecked_at 1건.
 
 ## I-032 아날로그 입력 허브 IP: XADC 4채널(JXADC) 스캔 + 채널별 스케일·평균 레지스터, 모의 ADC 모델 테스트벤치
-- 상태: ready
+- 상태: used (mmio-xadc-hub-checker, 2026-11-04)
 - 요약: 내 판단: XADC 프리미티브를 래퍼 안에 숨기고 채널별 12비트 값, 샘플 주기, 이동 평균 길이, 변환 완료 인터럽트를 AXI4-Lite 레지스터로 노출한다. 가변저항·조이스틱·전류 센서 값을 제어 루프의 지령/되먹임으로 쓰는 공통 입력 IP. 테스트벤치는 DRP 응답을 흉내 내는 모의 모델로 시험한다(XADC 프리미티브 자체는 시뮬레이터에 없음).
 - 조합: [XADC(JXADC 4채널), AXI4-Lite 레지스터, 완료 인터럽트, 서보/PWM 지령]
 - 근거: [digilent-basys-3-xadc-demo, umd-phys495-basys3-xadc-voltmeter, unilim-vahid-xadc-basys3-vhdl, shashankr-basys3-fpga-robotic-arm]

@@ -158,3 +158,5 @@
 | [automaticdai-rpi-object-detection](rpi/automaticdai-rpi-object-detection.md) | L3 | T3 | RPi CM4/CM5 (Basys3 needs-port) | 2026-11-04 |
 | [fpgadeveloper-rpi-camera-fmc](amd/fpgadeveloper-rpi-camera-fmc.md) | L3 | T4 | Zynq US+/Versal (Basys3 no) | 2026-11-04 |
 | [chili-chips-ba-openeye-camsi](vendor-neutral/chili-chips-ba-openeye-camsi.md) | L3 | T4 | Artix-7 XC7A35T / Trenz TE0711-01 (Basys3 needs-port) | 2026-11-04 |
+| [qengineering-libcamera-opencv-rpi-bullseye-64os](rpi/qengineering-libcamera-opencv-rpi-bullseye-64os.md) | L2 | T3 | RPi4 (Basys3 needs-port) | 2026-11-04 |
+| [rpshredow-fpga-raspberry-image-display](rpi/rpshredow-fpga-raspberry-image-display.md) | L2 | T2 | DE0 (Basys3 needs-port) | 2026-11-04 |

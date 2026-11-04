@@ -353,3 +353,9 @@
 - https://wikidocs.net/336295 | 한국어 libcamera/Picamera2 가이드 1편(이전 사이클 차단됨; 재시도 대상) — blocked: PROVENANCE_REQUIRED, 재열람 필요 | 한국어 libcamera picamera2 가이드
 - https://github.com/chili-chips-ba/openeye-CamSI/tree/main/0.hw | openeye-CamSI 하드웨어 폴더(IMX219 커넥터·IBUFDS 핀맵 세부 — 루트 열람으로 미확인) — 재열람 필요 | openeye CamSI hardware IMX219 connector pinmap
 - https://github.com/nicowillis/raspberry-pi-picamera2-h264-stream | RPi Picamera2 H.264 HW 인코더 — 미열람(L1) | picamera2 h264 stream hardware encoder
+- https://github.com/automaticdai/rpi-object-detection | RPi3/4/5 카메라 + OpenCV + YOLO/TFLite 실시간 객체 탐지 (MIT) — L3 카드 작성 완료 | Raspberry Pi camera OpenCV object detection real-time
+- https://github.com/qengineering/libcamera-opencv-rpi-bullseye-64os | libcamera + OpenCV C++ RPi4 64-bit (BSD-3-Clause) — L2 카드 작성 완료 | libcamera OpenCV Raspberry Pi camera pipeline
+- https://github.com/rpshredow/FPGA-Raspberry-Image-Display | DE0 FPGA + RPi SPI 이미지 전송→VGA 표시 (라이선스 없음) — L2 카드 작성 완료 | FPGA Raspberry Pi SPI image display VGA
+- https://github.com/arducam/libcamera | Arducam libcamera 포크 — 미열람(L1), 다양한 카메라 모듈 지원 | arducam libcamera fork camera modules
+- https://github.com/cetex/camera-streamer | camera-streamer: libcamera GStreamer 카메라 스트리밍 도구 — 미열람(L1) | camera streamer libcamera GStreamer Raspberry Pi
+- https://github.com/Qengineering/OpenCV-Livecam-Raspberry-Pi | Qengineering OpenCV 라이브캠 RPi — 미열람(blocked: PROVENANCE_REQUIRED) | OpenCV live camera Raspberry Pi
