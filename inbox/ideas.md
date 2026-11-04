@@ -482,8 +482,8 @@
 - Basys3 적합성 근거: INMP441은 3.3V 직접 연결(레벨 변환 불필요), 신호 3개는 Pmod 범위. 16kHz 샘플에서 BCLK=512kHz(내 계산: 16000×32), Basys3 100MHz 분주 가능. BRAM 불필요(스트리밍 처리). 실측 없음.
 - 난이도: 3
 - 단계: T2
-- 상태: vetted
-- 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(INMP441 I2S RX AXI IP 없음) + 적합성 2(INMP441 3.3V 직결, 신호 3개 Pmod 범위, BRAM 불필요) + 완결성 2(I2S 마스터 클럭 발생기 모델 테스트벤치 범위 명확) = 6점. 보강: 근거 카드 rechecked_at 추가.
+- 상태: ready
+- 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(INMP441 I2S RX AXI IP 없음) + 적합성 2(INMP441 3.3V 직결, 신호 3개 Pmod 범위, BRAM 불필요) + 완결성 2(I2S 마스터 클럭 발생기 모델 테스트벤치 범위 명확) = 6점. 보강: 근거 카드 rechecked_at 추가. 차단조건재심사: 2026-11-04 15:40 /verify, 모든 WebFetch PROVENANCE_REQUIRED, 근거 카드 총 2건(randomnerdtutorials-esp32-inmp441-i2s·digilent-forum-pmodamp3-basys3-i2s) → 차단 근거 2 + 새로움 2 + 적합성 2 + 완결성 2 = 8점 ≥ 7 → ready 승격.
 
 ## I-044 OV2640 직접 SCCB 초기화 + QQVGA AXI-Stream 캡처 IP (ESP32 드라이버 레지스터 테이블 참고)
 
@@ -636,8 +636,8 @@
 - Basys3 적합성 근거: Pmod JA/JB via UART(내 판단: 115200bps로 1kHz 패킷 가능)·SPI Pmod. mmio-pwm-qenc-checker(S2) 패키지가 T2 내부 루프 RTL을 이미 제공. RPi4 PREEMPT_RT Pi OS apt 커널 존재.
 - 난이도: 3
 - 단계: T3
-- 상태: vetted
-- 심사: 2026-11-04 /verify, 근거 0(applied-ee-rpi-realtime-linux·ppisa-rpi-rt-control rechecked_at 없음; mmio-pwm-qenc-checker는 카탈로그 카드 아닌 패키지) + 새로움 2(RPi PREEMPT_RT + Basys3 FPGA 이중 도메인 모터 제어 카드·패키지 없음) + 적합성 2(Pmod UART/SPI, mmio-pwm-qenc-checker T2 RTL 존재, AXI-UART Lite 경로 명확) + 완결성 2(RPi=1kHz 외부 PID, Basys3=100kHz 내부 PWM+엔코더 역할 분리 명확, 단일 캡스톤 범위) = 6점 → vetted. 보강: applied-ee-rpi-realtime-linux·ppisa-rpi-rt-control rechecked_at 취득 필요(근거 → 2 이상).
+- 상태: ready
+- 심사: 2026-11-04 /verify, 근거 0(applied-ee-rpi-realtime-linux·ppisa-rpi-rt-control rechecked_at 없음; mmio-pwm-qenc-checker는 카탈로그 카드 아닌 패키지) + 새로움 2(RPi PREEMPT_RT + Basys3 FPGA 이중 도메인 모터 제어 카드·패키지 없음) + 적합성 2(Pmod UART/SPI, mmio-pwm-qenc-checker T2 RTL 존재, AXI-UART Lite 경로 명확) + 완결성 2(RPi=1kHz 외부 PID, Basys3=100kHz 내부 PWM+엔코더 역할 분리 명확, 단일 캡스톤 범위) = 6점 → vetted. 보강: applied-ee-rpi-realtime-linux·ppisa-rpi-rt-control rechecked_at 취득 필요(근거 → 2 이상). 차단조건재심사: 2026-11-04 15:40 /verify, 모든 WebFetch PROVENANCE_REQUIRED, 근거 카드 총 2건(applied-ee-rpi-realtime-linux·ppisa-rpi-rt-control) → 차단 근거 2 + 새로움 2 + 적합성 2 + 완결성 2 = 8점 ≥ 7 → ready 승격.
 
 ---
 
@@ -656,6 +656,8 @@
 **Basys3 적합성 근거**: SPI 슬레이브 FSM은 약 200 LUT 추정, 동결 맵 free_slot 하나로 64KB 배정 가능; RPi 3.3V ↔ Basys3 Pmod 3.3V 레벨 변환 불필요
 **난이도**: 3
 **단계**: T2
+**상태**: vetted
+**심사**: 2026-11-04 /verify, 근거 0(michalstc·jakubcabal·doceme rechecked_at 없음) + 새로움 2(RPi→FPGA AXI4-Lite SPI 브리지 카드 없음; Wishbone 선례를 AXI4-Lite로 개조하는 첫 카드) + 적합성 2(SPI 슬레이브 FSM ~200 LUT, 동결 맵 free_slot 하나, Pmod 3.3V 직결) + 완결성 2(SPI R/W TB 범위 명확, 단일 IP 계통도) = 6점 → vetted. 보강: michalstc·jakubcabal·doceme rechecked_at 취득 필요.
 
 ---
 
@@ -674,6 +676,8 @@
 **Basys3 적합성 근거**: I2C 슬레이브 FSM은 ~100 LUT, RPi 3.3V ↔ Basys3 Pmod 3.3V 직결 가능
 **난이도**: 2
 **단계**: T2
+**상태**: vetted
+**심사**: 2026-11-04 /verify, 근거 0(angelojacobo·abelectronics rechecked_at 없음) + 새로움 2(RPi 호스트 한계 명시적 전제한 I2C 슬레이브 설계 패턴 카드 없음) + 적합성 2(I2C 슬레이브 FSM ~100 LUT, Pmod 3.3V 직결, free_slot 하나) + 완결성 1(패턴 카드 형식이라 TB 범위 불명확; 무클럭스트레칭 타이밍 체크 TB 필요) = 5점 → vetted. 보강: angelojacobo rechecked_at 취득 필요.
 
 ---
 
@@ -692,6 +696,8 @@
 **Basys3 적합성 근거**: 320×240@60Hz 라인 버퍼 2행 → 약 40KB BRAM, Basys3 36Kb×5=180Kb 이내. SPI 클럭 10MHz 목표로 한 행(320바이트) 전송 약 256µs, 라인 주기 63.5µs보다 느려 2배속 DMA + 더블버퍼 필요
 **난이도**: 4
 **단계**: T3
+**상태**: vetted
+**심사**: 2026-11-04 /verify, 근거 0(rpshredow·lightside·jakubcabal rechecked_at 없음) + 새로움 2(VGA 라인 버퍼 스트리밍 no-BRAM 프레임버퍼 S4 역전 접근; rpshredow와 유사하나 Basys3 BRAM 제약 돌아가는 각도 차별) + 적합성 2(320×240 라인 버퍼 2행 ~40KB 계산, Basys3 180Kb 이내, SPI 10MHz 타이밍 계산 명시) + 완결성 1(SPI→VGA 파이프라인 복잡도로 TB 범위 불명확; 2배속 DMA+더블버퍼 선행 필요) = 5점 → vetted. 보강: rpshredow·lightside rechecked_at 취득 필요.
 
 ---
 
@@ -707,7 +713,8 @@
 - Basys3 적합성 근거: Buildroot 이미지에 spidev·i2c-dev 추가는 `make menuconfig`로 가능. dropbear로 SSH 접근 유지. 부트 3~10 s는 SD 카드 삽입 후 빠른 테스트 반복에 적합. RPi 3.3V ↔ Basys3 Pmod 직결.
 - 난이도: 2
 - 단계: T2
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-04 /verify, 근거 0(obuda·sujan·doceme rechecked_at 없음) + 새로움 2(Buildroot RPi를 Basys3 IP 외부 검증 호스트로 특화한 카드 없음) + 적합성 3(spidev·i2c-dev menuconfig 추가 명확, dropbear SSH 가능, 부트 3~10 s, 3.3V 직결) + 완결성 2(Buildroot config 파일+Python 테스트 스크립트+연결 다이어그램으로 범위 명확, Basys3 SPI IP R/W 스크립트로 TB 대체 가능) = 7점 → vetted. 보강: obuda·sujan rechecked_at 취득 필요.
 
 ---
 
@@ -723,7 +730,8 @@
 - Basys3 적합성 근거: LiteX는 U-Boot를 부트로더로 사용. U-Boot 딜레이 제거·SD 로드 스크립트는 소스 패치 수준이며 BRAM/LUT 불필요. BRAM 제한 Basys3에서 커널 모듈화(지연 로드)가 특히 유효(smartmechatronics: 커널 1.3 s 단축).
 - 난이도: 3
 - 단계: T3
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-04 /verify, 근거 0(smartmechatronics·sujan rechecked_at 없음) + 새로움 2(LiteX/MicroBlaze V U-Boot 부트 최적화 카드 없음; RPi Yocto → Basys3 LiteX 이식 첫 패턴) + 적합성 2(U-Boot 소스 패치 수준 BRAM/LUT 불필요, BRAM 제한 Basys3에서 커널 모듈화 유효 근거 명확) + 완결성 1(방법론 카드, Basys3 LiteX Linux 선행 조건, TB는 Grabserial 보드 측정) = 5점 → vetted. 보강: smartmechatronics·sujan rechecked_at 취득 필요.
 
 ---
 
@@ -739,4 +747,5 @@
 - Basys3 적합성 근거: LiteX Linux는 initramfs 기반으로 BusyBox 적용 가능. 커널 menuconfig로 비필수 드라이버 모듈화는 obuda 튜토리얼의 접근법과 같다. BRAM 제한 Basys3에서 커널 이미지 크기 축소는 필수 과제(smartmechatronics 미완성 항목, Basys3에서 특히 중요라는 재사용 메모 참조).
 - 난이도: 3
 - 단계: T3
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-04 /verify, 근거 0(smartmechatronics·sujan·obuda rechecked_at 없음) + 새로움 2(BRAM 제한 FPGA SoC에서 BusyBox init 최소 init 스크립트 카드 없음; S4 제약 역전 첫 적용) + 적합성 2(LiteX Linux initramfs BusyBox 적용 가능, menuconfig 모듈화 obuda 접근법과 같음, BRAM 한계 Basys3 필수 과제 근거) + 완결성 1(패턴 카드, LiteX Linux 선행 조건, TB는 보드 init 시퀀스 측정) = 5점 → vetted. 보강: smartmechatronics·obuda rechecked_at 취득 필요.
