@@ -93,7 +93,7 @@ module sensor_hub_top #(
     wire fifo_empty = (fifo_wp == fifo_rp);
     wire fifo_full  = (fifo_wp[FIFO_AW-1:0] == fifo_rp[FIFO_AW-1:0]) &&
                       (fifo_wp[FIFO_AW]     != fifo_rp[FIFO_AW]);
-    reg [31:0] rd_data_lat, rd_meta_lat;
+    reg [31:0] rd_meta_lat;
 
     always @(posedge aclk) begin
         if (!aresetn || ctrl_fifo_rst) begin
@@ -217,11 +217,13 @@ module sensor_hub_top #(
     // 단계 경계 플래그
     wire i2c_tick = (i2c_div == 21'd0);
 
-    // 단계 내 bit 위치 (3-20, 22-39, 44-61, 62-79)
+    // 단계 내 bit 위치 (3-20, 22-39, 44-61, 62-79) — bit[0]만 사용
+    /* verilator lint_off UNUSEDSIGNAL */
     wire [4:0] bit_in_snd1 = (i2c_step - 7'd3);   // ADDR+W  비트 위치
     wire [4:0] bit_in_snd2 = (i2c_step - 7'd22);  // REG     비트 위치
     wire [4:0] bit_in_snd3 = (i2c_step - 7'd44);  // ADDR+R  비트 위치
     wire [4:0] bit_in_rcv  = (i2c_step - 7'd62);  // DATA    비트 위치
+    /* verilator lint_on UNUSEDSIGNAL */
 
     always @(posedge aclk) begin
         if (!aresetn || !ctrl_scan_en) begin
@@ -416,11 +418,12 @@ module sensor_hub_top #(
                     A_STAT:  s_rdata <= {28'd0,nmea_line_rdy,i2c_busy,fifo_full,fifo_empty};
                     A_FDATA: begin
                         if (!fifo_empty) begin
-                            rd_data_lat <= fifo_d[fifo_rp[FIFO_AW-1:0]];
+                            s_rdata     <= fifo_d[fifo_rp[FIFO_AW-1:0]];
                             rd_meta_lat <= fifo_m[fifo_rp[FIFO_AW-1:0]];
                             fifo_rp <= fifo_rp + 1;
+                        end else begin
+                            s_rdata <= 32'd0;
                         end
-                        s_rdata <= rd_data_lat;
                     end
                     A_FMETA: s_rdata <= rd_meta_lat;
                     A_NLEN:  s_rdata <= {25'd0, nmea_len};
