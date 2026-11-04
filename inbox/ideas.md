@@ -992,7 +992,7 @@
 - 차단조건재심사: 2026-11-04 /verify(9차), 모든 WebFetch PROVENANCE_REQUIRED 차단(9차 연속). 8차 2순위 보류 건이므로 9차에 승격. 근거 카드 총 2건(lcsc-mosfet-selection-motor-control, zbotic-backem-flyback-protection, rechecked_at 불문) → 근거 2 + 새로움 2(Pmod 직접 구동 최소 구성 테스트베드 카탈로그에 없음) + 적합성 1(Pmod 전류 제한 미확인) + 완결성 2(T1 단순 Verilog PWM+H-브리지, 범위 최소) = 7점 ≥ 7 → ready 승격.
 
 ## I-075 Basys3 XADC 전원 모니터 AXI-Lite IP — 코어·보조 전압 감시 T2
-- 상태: ready
+- 상태: used: mmio-xadc-pwr-mon
 - 요약: 내 판단: Artix-7 내장 XADC를 이용해 Vccint(1.0V), Vccaux(1.8V), Vccbram 세 레일을 주기적으로 샘플링하고, 임계값 초과 시 MicroBlaze V 인터럽트를 발생시키는 AXI4-Lite 슬레이브 IP. 외부 하드웨어 불필요.
 - 조합: [Basys3 XADC 내부 채널, AXI4-Lite 슬레이브 레지스터, MicroBlaze V 인터럽트 컨트롤러, Vishay 전원 순서화 개념]
 - 근거: [vishay-fpga-power-supply-consideration, altium-ldo-vs-switching-regulator]
