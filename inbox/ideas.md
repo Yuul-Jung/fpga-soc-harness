@@ -181,7 +181,7 @@
 - 심사: 2026-11-04 /verify, 근거 1(iccas-2003-general-purpose-pid-motion-controller-fpga) + 새로움 2(단일 채널 대비 다채널 공통 트리거 없음) + 적합성 1(채널 증가 시 자원 추정 없음) + 완결성 1(채널 간 지터·포화 범위 미정) = 5점. 보강: 근거 카드 추가, 범위 2채널로 고정.
 
 ## I-016 엔코더 난이도 사다리: 손 엔코더 → 4체배 속도 IP → 불가능 전이 진단
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: 하나의 4체배 디코더 RTL에 방향·위치·고정 창 속도·불가능 전이 오류 카운터를 담고, 슬라이드 스위치 모사 테스트벤치로 정/역방향과 글리치 주입을 자체 점검하는 IP를 만든다.
 - 조합: [직교 엔코더(sensor), 7세그 표시, AXI4-Lite 카운터 레지스터]
 - 근거: [element14-arty-s7-artybot-axi-speed-sensing-ip, wdevore-tinyfpga-quadrature-decoder-gist, ubc-elex2117-lab6-quadrature-encoder, deepbluembedded-stm32-timer-encoder-mode, stm32-community-encoder-rollover-management]
@@ -190,6 +190,7 @@
 - Basys3 적합성의 근거: 카운터 몇 개 수준(내 추정, 자원 수치 없음). 엔코더 2핀은 Pmod JA에서 3.3V로 가능, 5V 엔코더는 레벨 변환 필요.
 - 난이도: 2 / 단계: T2
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(오류 전이 진단 레지스터 없음) + 적합성 2(카운터 소량, Pmod 1~2개) + 완결성 2(방향·위치·속도·오류 카운터 범위 명확) = 6점. 보강: 근거 카드 rechecked_at 1건 추가.
+- 차단조건재심사: 2026-11-04 /verify, 근거 3(element14-arty-s7-artybot-axi-speed-sensing-ip, wdevore-tinyfpga-quadrature-decoder-gist, ubc-elex2117-lab6-quadrature-encoder, deepbluembedded-stm32-timer-encoder-mode, stm32-community-encoder-rollover-management, 5건 rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 → ready. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-017 PID 계단 응답 캡처·이득 조정 IP: 레지스터로 이득 쓰기 + 응답 로그 BRAM 캡처 + 와인드업 보호 자체 점검
 - 상태: vetted
@@ -345,7 +346,7 @@
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(HC-05 AT 분리+모델 시험 없음) + 적합성 2(Pmod 1개·3.3V·9600 bps 분주 명확) + 완결성 2(프레임 송수신 모델 범위 명확) = 6점. 보강: 근거 카드 rechecked_at 1건.
 
 ## I-032 아날로그 입력 허브 IP: XADC 4채널(JXADC) 스캔 + 채널별 스케일·평균 레지스터, 모의 ADC 모델 테스트벤치
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: XADC 프리미티브를 래퍼 안에 숨기고 채널별 12비트 값, 샘플 주기, 이동 평균 길이, 변환 완료 인터럽트를 AXI4-Lite 레지스터로 노출한다. 가변저항·조이스틱·전류 센서 값을 제어 루프의 지령/되먹임으로 쓰는 공통 입력 IP. 테스트벤치는 DRP 응답을 흉내 내는 모의 모델로 시험한다(XADC 프리미티브 자체는 시뮬레이터에 없음).
 - 조합: [XADC(JXADC 4채널), AXI4-Lite 레지스터, 완료 인터럽트, 서보/PWM 지령]
 - 근거: [digilent-basys-3-xadc-demo, umd-phys495-basys3-xadc-voltmeter, unilim-vahid-xadc-basys3-vhdl, shashankr-basys3-fpga-robotic-arm]
@@ -353,6 +354,7 @@
 - Basys3 적합성의 근거: JXADC 4쌍이 보드에 이미 연결되어 있고(공식 데모 표기) BRAM 불필요. 입력은 0~1 V 앞단(분압)이 필요하다. 이동 평균 길이 16이면 누산기 16비트(내 계산: 12비트×16=16비트).
 - 난이도: 2 / 단계: T2
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(XADC 채널 스캔+인터럽트 IP 없음) + 적합성 3(JXADC 보드 내장·4채널 연결 확인·BRAM 불필요) + 완결성 2(채널별 평균·인터럽트 DRP 모델 범위 명확) = 7점. 보강: 근거 카드 rechecked_at 1건.
+- 차단조건재심사: 2026-11-04 /verify, 근거 3(digilent-basys-3-xadc-demo, umd-phys495-basys3-xadc-voltmeter, unilim-vahid-xadc-basys3-vhdl, shashankr-basys3-fpga-robotic-arm, 4건 rechecked_at 불문) + 새로움 2 + 적합성 3(JXADC 보드 내장) + 완결성 2 = 10점 → ready. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-033 시각·로그 IP: DS3231 시각 레지스터 + 24LC EEPROM 로그, 초 롤오버 재읽기 규칙, 두 칩 모델 테스트벤치
 - 상태: vetted
