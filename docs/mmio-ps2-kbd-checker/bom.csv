@@ -1,0 +1,5 @@
+id,name,interface,io_voltage_V,supply_V,qty,board_resident,arduino_compatible,level_shift,notes
+p_ps2,USB HID 키보드 (PS/2 에뮬레이션),"PS/2 CLK(C17) / DATA(B17), 풀업 내장",3.3,,1,false,false,,Basys3의 USB HID 포트가 PS/2 CLK/DATA로 에뮬레이션. 별도 레벨 변환 불필요(3.3V 직결)
+p_swled,Basys3 슬라이드 스위치 16 / LED 16,GPIO 입출력,3.3,,32,true,false,,보드 내장
+p_uart,Basys3 USB-UART (FTDI),UART TX 115200 8N1 (A18),3.3,,1,true,false,,"보드 내장, PC 터미널 연결"
+p_btn,Basys3 푸시버튼 BTNC,GPIO 입력 (U18),3.3,,1,true,false,,BTNC=비동기 리셋

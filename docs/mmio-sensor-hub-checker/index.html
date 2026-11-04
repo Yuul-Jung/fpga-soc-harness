@@ -1,0 +1,2115 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>센서 허브 IP 자체 점검: HC-SR04 초음파 + DHT11 온습도 + I2C(MPU-6050) 모델 테스트벤치</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+
+.colhead{font:600 11px sans-serif;fill:var(--muted)}
+.link{fill:none;stroke:var(--line);stroke-width:1.5}.arrow{fill:var(--line)}
+.lbl{font:11px sans-serif;fill:var(--muted)}
+.bname{font:600 13px sans-serif;fill:var(--text)}.bdesc{font:11px sans-serif;fill:var(--muted)}
+.k-cpu rect{fill:var(--c-cpu);stroke:var(--c-cpu-s)}.k-bus rect{fill:var(--c-bus);stroke:var(--c-bus-s)}
+.k-periph rect,.k-memory rect{fill:var(--c-per);stroke:var(--c-per-s)}
+.k-external rect{fill:var(--c-ext);stroke:var(--c-ext-s);stroke-dasharray:4 3}
+.k-clock rect{fill:var(--c-clk);stroke:var(--c-clk-s)}
+</style></head><body><header class="top"><a class="brand" href="../hub.html">FPGA SoC 하네스</a><a href="../hub.html">메인</a><a href="../hub.html#capstones">캡스톤</a><a href="../soc-map/tech-tree.html">기술 트리</a><a href="../catalog/index.html">카탈로그</a><a href="../inbox/ideas.html">아이디어</a><a href="../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main>
+<p class="muted">캡스톤 패키지 · Digilent Basys3 (XC7A35T) · 단계 T2</p>
+<h1>센서 허브 IP 자체 점검: HC-SR04 초음파 + DHT11 온습도 + I2C(MPU-6050) 모델 테스트벤치</h1><p>세 종류 센서 프로토콜(HC-SR04 에코 타이밍, DHT11 단선 40비트, I2C 레지스터 읽기)을 하나의 MMIO 창에 묶은 센서 허브 IP. 초음파·온습도·가속도계 모델 테스트벤치가 각 센서의 프로토콜을 흉내 내어 허브 레지스터 값을 PASS/FAIL로 검사한다. 하드웨어 없이 시뮬레이션만으로 세 FSM의 타이밍 정확성을 확인하는 T2 패키지.</p>
+<div class="badges"><span class="badge b-not-run">린트: 미실행</span><span class="badge b-not-run">시뮬레이션: 미실행</span><span class="badge b-not-run">합성: 미실행</span><span class="badge b-not-tested">보드: not-tested</span></div>
+<p class="muted">검증 상태는 실행 기록이 있을 때만 표시한다. 기록이 없으면 '미실행'이다.</p>
+<nav><a href="#goal">목표</a><a href="#arch">계통도</a><a href="#hier">모듈 계층</a><a href="#map">메모리맵</a><a href="#ext">외부 부품·전기</a><a href="#road">기술 트리</a><a href="#src">실행 소스</a><a href="#verify">검증</a><a href="#ref">참고·위험</a></nav>
+<h2 id="goal">1. 목표와 범위</h2><h3>목표</h3><ul><li>HC-SR04 초음파 거리 측정 FSM(트리거 10 μs, 에코 타임 → 거리 cm)</li><li>DHT11 단선 프로토콜 FSM(시작 신호 18 ms, 40비트 수신, 체크섬 검증)</li><li>I2C 마스터 FSM으로 MPU-6050 단일 레지스터 읽기</li><li>세 센서를 단일 MMIO 창(0x1002_0000)에 통합하고 레지스터로 제어·조회</li><li>각 프로토콜 모델 테스트벤치로 PASS/FAIL 자체 점검</li></ul><h3>범위 밖</h3><ul><li>실제 하드웨어 센서 구동(S3 보드 검증은 사용자가 수행)</li><li>다중 I2C 슬레이브 중재</li><li>DHT22 호환성</li><li>DMA 또는 인터럽트 기반 판독</li></ul><p class="muted">I-009 아이디어(2026-11-04 /verify ready 승격). 선택 경로: §13.6 (ready 직접).</p>
+<h2 id="arch">2. 계통도</h2><p>클럭: 100 MHz (Basys3 W5)</p><div class="panel"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 974 700" role="img" aria-label="블록 다이어그램">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arrow"/></marker></defs>
+<text x="24" y="16" class="colhead">클럭·입력·마스터</text>
+<text x="274" y="16" class="colhead">버스</text>
+<text x="524" y="16" class="colhead">주변장치</text>
+<text x="774" y="16" class="colhead">외부</text>
+<path d="M200,63.0 C362.0,63.0 362.0,637.0 524,637.0" class="link" marker-end="url(#ar)"/>
+<text x="362.0" y="343.0" class="lbl" text-anchor="middle">clk</text>
+<path d="M612.0,666 L612.0,526" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="596.0" class="lbl" text-anchor="middle">clk/rst_n</text>
+<path d="M524,555.0 C464,90 260,90 200,145.0" class="link" marker-end="url(#ar)"/>
+<text x="362.0" y="98" class="lbl" text-anchor="middle">mmio</text>
+<path d="M200,145.0 C237.0,145.0 237.0,63.0 274,63.0" class="link" marker-end="url(#ar)"/>
+<text x="237.0" y="97.0" class="lbl" text-anchor="middle">addr/wdata/we/rdata</text>
+<path d="M450,63.0 C487.0,63.0 487.0,391.0 524,391.0" class="link" marker-end="url(#ar)"/>
+<text x="487.0" y="220.0" class="lbl" text-anchor="middle">sel_gpio</text>
+<path d="M450,63.0 C487.0,63.0 487.0,473.0 524,473.0" class="link" marker-end="url(#ar)"/>
+<text x="487.0" y="261.0" class="lbl" text-anchor="middle">sel_uart</text>
+<path d="M450,63.0 C487.0,63.0 487.0,309.0 524,309.0" class="link" marker-end="url(#ar)"/>
+<text x="487.0" y="179.0" class="lbl" text-anchor="middle">sel_hub</text>
+<path d="M612.0,338 L612.0,34" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="186.0" class="lbl" text-anchor="middle">ctrl/status</text>
+<path d="M612.0,338 L612.0,116" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="227.0" class="lbl" text-anchor="middle">ctrl/status</text>
+<path d="M612.0,338 L612.0,198" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="268.0" class="lbl" text-anchor="middle">cmd/data/status</text>
+<path d="M700,63.0 C737.0,63.0 737.0,63.0 774,63.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="56.0" class="lbl" text-anchor="middle">trig_o</text>
+<path d="M774,145.0 C714,8 760,8 700,63.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="16" class="lbl" text-anchor="middle">echo_i</text>
+<path d="M700,145.0 C737.0,145.0 737.0,227.0 774,227.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="179.0" class="lbl" text-anchor="middle">dht_io(tri)</text>
+<path d="M700,227.0 C737.0,227.0 737.0,309.0 774,309.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="261.0" class="lbl" text-anchor="middle">sda_io(tri)</text>
+<path d="M700,227.0 C737.0,227.0 737.0,391.0 774,391.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="302.0" class="lbl" text-anchor="middle">scl_o</text>
+<path d="M700,391.0 C737.0,391.0 737.0,473.0 774,473.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="425.0" class="lbl" text-anchor="middle">led/sw</text>
+<path d="M700,473.0 C737.0,473.0 737.0,555.0 774,555.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="507.0" class="lbl" text-anchor="middle">RsTx</text>
+<g class="k-clock"><rect x="24" y="34" width="176" height="58" rx="8"/><text x="112.0" y="58" text-anchor="middle" class="bname">CLK_100 100MHz</text><text x="112.0" y="76" text-anchor="middle" class="bdesc">CLK</text></g>
+<g class="k-external"><rect x="774" y="34" width="176" height="58" rx="8"/><text x="862.0" y="58" text-anchor="middle" class="bname">HC-SR04 TRIG(Pmod)</text><text x="862.0" y="76" text-anchor="middle" class="bdesc">TRIG</text></g>
+<g class="k-external"><rect x="774" y="116" width="176" height="58" rx="8"/><text x="862.0" y="140" text-anchor="middle" class="bname">HC-SR04 ECHO(Pmod)</text><text x="862.0" y="158" text-anchor="middle" class="bdesc">ECHO</text></g>
+<g class="k-external"><rect x="774" y="198" width="176" height="58" rx="8"/><text x="862.0" y="222" text-anchor="middle" class="bname">DHT11 DATA(Pmod)</text><text x="862.0" y="240" text-anchor="middle" class="bdesc">DHT</text></g>
+<g class="k-external"><rect x="774" y="280" width="176" height="58" rx="8"/><text x="862.0" y="304" text-anchor="middle" class="bname">I2C SDA(Pmod)</text><text x="862.0" y="322" text-anchor="middle" class="bdesc">SDA</text></g>
+<g class="k-external"><rect x="774" y="362" width="176" height="58" rx="8"/><text x="862.0" y="386" text-anchor="middle" class="bname">I2C SCL(Pmod)</text><text x="862.0" y="404" text-anchor="middle" class="bdesc">SCL</text></g>
+<g class="k-external"><rect x="774" y="444" width="176" height="58" rx="8"/><text x="862.0" y="468" text-anchor="middle" class="bname">SW / LED</text><text x="862.0" y="486" text-anchor="middle" class="bdesc">SW/LED</text></g>
+<g class="k-external"><rect x="774" y="526" width="176" height="58" rx="8"/><text x="862.0" y="550" text-anchor="middle" class="bname">RsTx (USB-UART)</text><text x="862.0" y="568" text-anchor="middle" class="bdesc">RsTx</text></g>
+<g class="k-periph"><rect x="524" y="34" width="176" height="58" rx="8"/><text x="612.0" y="58" text-anchor="middle" class="bname">hcsr04_ctrl</text><text x="612.0" y="76" text-anchor="middle" class="bdesc">HCSR04</text></g>
+<g class="k-periph"><rect x="524" y="116" width="176" height="58" rx="8"/><text x="612.0" y="140" text-anchor="middle" class="bname">dht11_ctrl</text><text x="612.0" y="158" text-anchor="middle" class="bdesc">DHT11</text></g>
+<g class="k-periph"><rect x="524" y="198" width="176" height="58" rx="8"/><text x="612.0" y="222" text-anchor="middle" class="bname">i2c_master</text><text x="612.0" y="240" text-anchor="middle" class="bdesc">I2CM</text></g>
+<g class="k-periph"><rect x="524" y="280" width="176" height="58" rx="8"/><text x="612.0" y="304" text-anchor="middle" class="bname">sensor_hub_top</text><text x="612.0" y="322" text-anchor="middle" class="bdesc">HUB</text></g>
+<g class="k-periph"><rect x="524" y="362" width="176" height="58" rx="8"/><text x="612.0" y="386" text-anchor="middle" class="bname">gpio</text><text x="612.0" y="404" text-anchor="middle" class="bdesc">GPIO</text></g>
+<g class="k-periph"><rect x="524" y="444" width="176" height="58" rx="8"/><text x="612.0" y="468" text-anchor="middle" class="bname">uart_tx</text><text x="612.0" y="486" text-anchor="middle" class="bdesc">UART</text></g>
+<g class="k-bus"><rect x="274" y="34" width="176" height="58" rx="8"/><text x="362.0" y="58" text-anchor="middle" class="bname">mmio_bus</text><text x="362.0" y="76" text-anchor="middle" class="bdesc">BUS</text></g>
+<g class="k-cpu"><rect x="24" y="116" width="176" height="58" rx="8"/><text x="112.0" y="140" text-anchor="middle" class="bname">demo_master</text><text x="112.0" y="158" text-anchor="middle" class="bdesc">MASTER</text></g>
+<g class="k-periph"><rect x="524" y="526" width="176" height="58" rx="8"/><text x="612.0" y="550" text-anchor="middle" class="bname">soc_top</text><text x="612.0" y="568" text-anchor="middle" class="bdesc">SOC</text></g>
+<g class="k-periph"><rect x="524" y="608" width="176" height="58" rx="8"/><text x="612.0" y="632" text-anchor="middle" class="bname">basys3_top</text><text x="612.0" y="650" text-anchor="middle" class="bdesc">TOP</text></g>
+</svg></div>
+<p class="muted"><a href="diagram.svg">diagram.svg</a>로 따로 받을 수 있다.</p>
+<h3>버스 규약: mmio-lite</h3><div class="panel"><table><tr><th>신호</th><th>방향</th><th>설명</th></tr><tr><td><code>addr[31:0]</code></td><td>master→slave</td><td>바이트 주소, 4바이트 정렬</td></tr><tr><td><code>wdata[31:0]</code></td><td>master→slave</td><td>쓰기 데이터</td></tr><tr><td><code>we</code></td><td>master→slave</td><td>1이면 쓰기</td></tr><tr><td><code>sel</code></td><td>master→slave</td><td>1이면 이 사이클에 접근</td></tr><tr><td><code>rdata[31:0]</code></td><td>slave→master</td><td>읽기 데이터 (조합 경로)</td></tr></table></div><p>단순 단일 사이클 버스. 실제 AXI4-Lite로 교체 시 integration.plan 참조.</p>
+<h3>통합 선언 (SoC 적합성)</h3><p class="badge b-fail">이 패키지는 MicroBlaze V 동결 주소맵과 호환되지 않는다 (파일럿). 아래 이식 계획을 따라야 SoC에 합칠 수 있다.</p><div class="panel"><table><tr><th style="white-space:nowrap">버스</th><td><code>mmio-lite (자체, 단독 실행용)</code></td></tr><tr><th style="white-space:nowrap">주소맵</th><td><code>custom</code> → 동결 맵 <code>mbv-frozen-v2</code> 적합 여부: <b>적합하지 않음</b></td></tr><tr><th style="white-space:nowrap">이식 계획</th><td>이 패키지는 단독 시뮬레이션·보드 확인용으로 자체 mmio-lite 버스(0x1000_xxxx~0x1002_xxxx)를 쓴다. 동결 맵(mbv-frozen-v2) 이식 계획: (1) GPIO·UART는 동결 맵 [00]/[02] AMD IP를 그대로 쓰고 드라이버를 맞춘다. (2) sensor_hub는 동결 맵 [16](0x4016_0000)에 IP 표준(64KB 창, 0xFFF0 ID/VER)으로 감싸서 AXI4-Lite 슬레이브로 등록한다. (3) demo_master 대신 MicroBlaze V + 폴링 드라이버(C) 또는 인터럽트(irq→INTC)로 교체한다. HC-SR04 ECHO 5V→3.3V 레벨 변환 필수. DHT11·SDA·SCL 풀업 4.7 kΩ 필요.</td></tr></table></div>
+<h2 id="hier">3. 모듈 계층</h2><div class="panel"><ul class="tree"><li><code>basys3_top</code> <span class="muted">(rtl/basys3_top.v)</span><ul><li><code>soc_top</code> <span class="muted">(rtl/soc_top.v)</span><ul><li><code>demo_master</code> <span class="muted">(rtl/demo_master.v)</span></li><li><code>mmio_bus</code> <span class="muted">(rtl/mmio_bus.v)</span></li><li><code>gpio</code> <span class="muted">(rtl/gpio.v)</span></li><li><code>uart_tx</code> <span class="muted">(rtl/uart_tx.v)</span></li><li><code>sensor_hub_top</code> <span class="muted">(rtl/sensor_hub_top.v)</span><ul><li><code>hcsr04_ctrl</code> <span class="muted">(rtl/hcsr04_ctrl.v)</span></li><li><code>dht11_ctrl</code> <span class="muted">(rtl/dht11_ctrl.v)</span></li><li><code>i2c_master</code> <span class="muted">(rtl/i2c_master.v)</span></li></ul></li></ul></li></ul></li></ul></div>
+<h2 id="map">4. 메모리맵</h2><h3>gpio <code>0x1000_0000</code> <span class="muted">크기 0x10000</span></h3><div class="panel"><table><tr><th>오프셋</th><th>이름</th><th>접근</th><th>설명</th></tr><tr><td><code>0x00</code></td><td>LED</td><td>RW</td><td>하위 16비트 LED</td></tr><tr><td><code>0x04</code></td><td>SW</td><td>RO</td><td>하위 16비트 스위치 (2단 동기화)</td></tr></table></div><h3>uart_tx <code>0x1001_0000</code> <span class="muted">크기 0x10000</span></h3><div class="panel"><table><tr><th>오프셋</th><th>이름</th><th>접근</th><th>설명</th></tr><tr><td><code>0x00</code></td><td>DATA</td><td>WO</td><td>송신 바이트 [7:0]</td></tr><tr><td><code>0x04</code></td><td>STATUS</td><td>RO</td><td>bit0=busy</td></tr></table></div><h3>sensor_hub_top <code>0x1002_0000</code> <span class="muted">크기 0x10000</span></h3><div class="panel"><table><tr><th>오프셋</th><th>이름</th><th>접근</th><th>설명</th></tr><tr><td><code>0x00</code></td><td>HCSR04_CTRL</td><td>WO</td><td>bit0=start (1 클럭 쓰면 트리거 발생)</td></tr><tr><td><code>0x04</code></td><td>HCSR04_STATUS</td><td>RO</td><td>bit0=busy, bit1=done, bit2=timeout</td></tr><tr><td><code>0x08</code></td><td>HCSR04_DIST</td><td>RO</td><td>측정 거리 cm [15:0] (최대 400)</td></tr><tr><td><code>0x10</code></td><td>DHT11_CTRL</td><td>WO</td><td>bit0=start</td></tr><tr><td><code>0x14</code></td><td>DHT11_STATUS</td><td>RO</td><td>bit0=busy, bit1=done, bit2=checksum_ok</td></tr><tr><td><code>0x18</code></td><td>DHT11_HUMID</td><td>RO</td><td>습도 정수부 [7:0]</td></tr><tr><td><code>0x1C</code></td><td>DHT11_TEMP</td><td>RO</td><td>온도 정수부 [7:0]</td></tr><tr><td><code>0x20</code></td><td>I2C_CMD</td><td>WO</td><td>bit0=start, bit[7:1]=dev_addr[6:0], bit[15:8]=reg_addr[7:0]</td></tr><tr><td><code>0x24</code></td><td>I2C_STATUS</td><td>RO</td><td>bit0=busy, bit1=done, bit2=error (NACK)</td></tr><tr><td><code>0x28</code></td><td>I2C_RDATA</td><td>RO</td><td>읽은 바이트 [7:0]</td></tr></table></div>
+<h2 id="ext">5. 외부 부품과 전기 회로도</h2><p class="muted">2절의 계통도는 <b>디지털 모듈 연결도</b>다. 전압, 풀업, 커넥터 배선 같은 전기 사항은 이 절에서 따로 다룬다. 기계가 읽는 사본: <a href="bom.csv">bom.csv</a> · <a href="connections.json">connections.json</a></p><p class="badge b-skipped">전기 회로도: 미작성</p><p class="muted">레벨 변환 회로(HC-SR04 ECHO 5V→3.3V), 풀업 저항(DHT11 Data, I2C SDA/SCL) 회로도 미작성. 외부 부품 절에 텍스트로 명시.</p><div class="panel"><table><tr><th>id</th><th>부품</th><th>인터페이스</th><th>신호 전압</th><th>구분</th><th>레벨 변환</th><th>비고</th></tr><tr><td><code>hcsr04_part</code></td><td>HC-SR04 초음파 거리 센서</td><td>TRIG(out) + ECHO(in)</td><td style="white-space:nowrap">5V V</td><td style="white-space:nowrap">외부 모듈</td><td>필요 (저항 분압 1kΩ/2kΩ 또는 레벨 시프터)</td><td>측정 범위 2~400 cm, 최소 측정 간격 60 ms. 연속 트리거 시 간섭 위험.</td></tr><tr><td><code>dht11_part</code></td><td>DHT11 온습도 센서</td><td>단선 양방향(DATA)</td><td style="white-space:nowrap">3.3V V</td><td style="white-space:nowrap">외부 모듈</td><td>불필요 (3.3V)</td><td>측정 간격 최소 1초. 체크섬(하위 8비트 합)으로 오류 감지.</td></tr><tr><td><code>mpu6050_part</code></td><td>MPU-6050 6축 IMU (I2C)</td><td>I2C (SDA + SCL)</td><td style="white-space:nowrap">3.3V V</td><td style="white-space:nowrap">외부 모듈</td><td>불필요 (3.3V)</td><td>I2C 주소 0x68 (AD0=GND) 또는 0x69 (AD0=3.3V). 이 패키지는 0x68 고정.</td></tr></table></div><p class="muted">Basys3 FPGA 핀은 3.3V 신호만 직접 받는다. 5V·12V·모터·릴레이는 직결하지 않는다.</p>
+<h2 id="road">6. 기술 트리 (이 캡스톤의 확장 경로)</h2><div class="panel"><ul style="list-style:none;padding:0"><li class="step"><span class="tag s-done">T1</span><span>UART + GPIO 스켈레톤 <span class='muted'>참고: <code>mmio-uart-gpio-skeleton</code></span></span></li><li class="step"><span class="tag s-current">T2</span><span>센서 허브 IP (HC-SR04+DHT11+I2C)</span></li><li class="step"><span class="tag s-planned">T3</span><span>MicroBlaze V + FreeRTOS 드라이버로 센서 주기 폴링</span></li></ul></div>
+<h2 id="src">7. 실행 소스</h2><p>저장소의 <code>capstones/mmio-sensor-hub-checker/</code>에 있는 파일 그대로다. 이 문서는 파일에서 읽어 넣은 것이므로 항상 일치한다. <a href="mmio-sensor-hub-checker.zip">소스 전체 내려받기 (.zip)</a> · <a href="https://github.com/Yuul-Jung/fpga-soc-harness/tree/main/capstones/mmio-sensor-hub-checker">GitHub에서 보기</a></p><details><summary><code>rtl/hcsr04_ctrl.v</code> <span class="muted">111줄</span></summary><pre>// hcsr04_ctrl.v — HC-SR04 초음파 거리 센서 FSM
+// 출처: mmio-sensor-hub-checker 캡스톤 자체 RTL (Verilog-2001)
+// 100 MHz 기준: TRIG 10 μs = 1000 cycles, 거리(cm) = echo_cycles / 5800
+// ECHO 핀 5V 출력 → Basys3 Pmod 3.3V 레벨 변환 필수
+
+`timescale 1ns/1ps
+module hcsr04_ctrl #(
+    parameter CLK_HZ     = 100_000_000,
+    parameter TRIG_CYC   = 1000,          // 10 μs
+    parameter TIMEOUT_CYC= 3_800_000      // 38 ms max echo
+)(
+    input  wire       clk,
+    input  wire       rst_n,
+    // MMIO 제어
+    input  wire       start,              // 1-cycle 펄스
+    // 센서 핀
+    output reg        trig_o,
+    input  wire       echo_i,             // 레벨 변환 후 입력
+    // 결과
+    output reg  [15:0] dist_cm,
+    output reg        busy,
+    output reg        done,
+    output reg        timeout
+);
+
+    // 에코 카운터 비트 폭: log2(TIMEOUT_CYC) ≈ 22비트
+    reg [22:0] cnt;
+    reg [22:0] echo_cnt;
+
+    // FSM 상태
+    localparam S_IDLE    = 3&#x27;d0,
+               S_TRIG    = 3&#x27;d1,
+               S_WAIT_HI = 3&#x27;d2,   // 에코 High 대기
+               S_MEASURE = 3&#x27;d3,   // 에코 High 구간 계측
+               S_DONE    = 3&#x27;d4;
+
+    reg [2:0] state;
+
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            state    &lt;= S_IDLE;
+            trig_o   &lt;= 1&#x27;b0;
+            busy     &lt;= 1&#x27;b0;
+            done     &lt;= 1&#x27;b0;
+            timeout  &lt;= 1&#x27;b0;
+            dist_cm  &lt;= 16&#x27;d0;
+            cnt      &lt;= 23&#x27;d0;
+            echo_cnt &lt;= 23&#x27;d0;
+        end else begin
+            done &lt;= 1&#x27;b0; // 1-cycle 펄스
+
+            case (state)
+                S_IDLE: begin
+                    trig_o  &lt;= 1&#x27;b0;
+                    busy    &lt;= 1&#x27;b0;
+                    if (start) begin
+                        trig_o  &lt;= 1&#x27;b1;
+                        busy    &lt;= 1&#x27;b1;
+                        timeout &lt;= 1&#x27;b0;
+                        cnt     &lt;= 23&#x27;d0;
+                        state   &lt;= S_TRIG;
+                    end
+                end
+
+                S_TRIG: begin
+                    if (cnt == TRIG_CYC - 1) begin
+                        trig_o &lt;= 1&#x27;b0;
+                        cnt    &lt;= 23&#x27;d0;
+                        state  &lt;= S_WAIT_HI;
+                    end else begin
+                        cnt &lt;= cnt + 1&#x27;b1;
+                    end
+                end
+
+                S_WAIT_HI: begin
+                    if (echo_i) begin
+                        echo_cnt &lt;= 23&#x27;d0;
+                        state    &lt;= S_MEASURE;
+                    end else if (cnt == TIMEOUT_CYC - 1) begin
+                        timeout &lt;= 1&#x27;b1;
+                        state   &lt;= S_DONE;
+                    end else begin
+                        cnt &lt;= cnt + 1&#x27;b1;
+                    end
+                end
+
+                S_MEASURE: begin
+                    if (!echo_i) begin
+                        // 에코 종료 → 거리 계산
+                        dist_cm &lt;= echo_cnt[22:0] / 5800;
+                        state   &lt;= S_DONE;
+                    end else if (echo_cnt == TIMEOUT_CYC - 1) begin
+                        timeout &lt;= 1&#x27;b1;
+                        state   &lt;= S_DONE;
+                    end else begin
+                        echo_cnt &lt;= echo_cnt + 1&#x27;b1;
+                    end
+                end
+
+                S_DONE: begin
+                    done  &lt;= 1&#x27;b1;
+                    busy  &lt;= 1&#x27;b0;
+                    state &lt;= S_IDLE;
+                end
+
+                default: state &lt;= S_IDLE;
+            endcase
+        end
+    end
+
+endmodule
+</pre></details><details><summary><code>rtl/dht11_ctrl.v</code> <span class="muted">168줄</span></summary><pre>// dht11_ctrl.v — DHT11 온습도 센서 단선 FSM
+// 출처: mmio-sensor-hub-checker 캡스톤 자체 RTL (Verilog-2001)
+// 100 MHz 기준: 18 ms start = 1_800_000 cycles
+// 비트 판별: 50 μs Low 후 High 구간 &lt; 40 μs → 0, &gt; 40 μs → 1
+// (100 MHz: 40 μs = 4000 cycles 임계값)
+
+`timescale 1ns/1ps
+module dht11_ctrl #(
+    parameter START_CYC    = 1_800_000,   // 18 ms
+    parameter RELEASE_CYC  =    50_000,   // 0.5 ms pull-up wait
+    parameter BIT_THRESH   =     4_000    // 40 μs threshold
+)(
+    input  wire       clk,
+    input  wire       rst_n,
+    input  wire       start,
+    // 단선 IO (tri-state: oe=1이면 출력 0, oe=0이면 입력)
+    output wire       dht_oe,   // 1: drive low
+    input  wire       dht_in,   // 풀업 후 입력
+    // 결과
+    output reg  [7:0] humidity,
+    output reg  [7:0] temperature,
+    output reg        busy,
+    output reg        done,
+    output reg        chk_ok
+);
+
+    reg [20:0] cnt;
+    reg [5:0]  bit_idx;   // 0..39
+    reg [39:0] shift_reg;
+    reg [15:0] hi_cnt;
+    reg [8:0]  chksum;
+
+    // FSM
+    localparam S_IDLE      = 4&#x27;d0,
+               S_START_LOW = 4&#x27;d1,
+               S_RELEASE   = 4&#x27;d2,
+               S_RESP_LOW  = 4&#x27;d3,  // DHT11 응답 Low(80 μs)
+               S_RESP_HIGH = 4&#x27;d4,  // DHT11 응답 High(80 μs)
+               S_BIT_LOW   = 4&#x27;d5,  // 각 비트 시작 Low(50 μs)
+               S_BIT_HIGH  = 4&#x27;d6,  // 비트 High 구간 계측
+               S_DONE      = 4&#x27;d7,
+               S_ERROR     = 4&#x27;d8;
+
+    reg [3:0] state;
+    reg       driving_low;  // oe 레지스터
+
+    assign dht_oe = driving_low;
+
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            state       &lt;= S_IDLE;
+            driving_low &lt;= 1&#x27;b0;
+            busy        &lt;= 1&#x27;b0;
+            done        &lt;= 1&#x27;b0;
+            chk_ok      &lt;= 1&#x27;b0;
+            humidity    &lt;= 8&#x27;d0;
+            temperature &lt;= 8&#x27;d0;
+            cnt         &lt;= 21&#x27;d0;
+            bit_idx     &lt;= 6&#x27;d0;
+            shift_reg   &lt;= 40&#x27;d0;
+            hi_cnt      &lt;= 16&#x27;d0;
+        end else begin
+            done &lt;= 1&#x27;b0;
+
+            case (state)
+                S_IDLE: begin
+                    driving_low &lt;= 1&#x27;b0;
+                    busy        &lt;= 1&#x27;b0;
+                    if (start) begin
+                        driving_low &lt;= 1&#x27;b1;
+                        busy        &lt;= 1&#x27;b1;
+                        cnt         &lt;= 21&#x27;d0;
+                        state       &lt;= S_START_LOW;
+                    end
+                end
+
+                S_START_LOW: begin
+                    if (cnt == START_CYC - 1) begin
+                        driving_low &lt;= 1&#x27;b0;
+                        cnt         &lt;= 21&#x27;d0;
+                        state       &lt;= S_RELEASE;
+                    end else
+                        cnt &lt;= cnt + 1&#x27;b1;
+                end
+
+                S_RELEASE: begin
+                    if (cnt == RELEASE_CYC - 1) begin
+                        cnt   &lt;= 21&#x27;d0;
+                        state &lt;= S_RESP_LOW;
+                    end else
+                        cnt &lt;= cnt + 1&#x27;b1;
+                end
+
+                S_RESP_LOW: begin
+                    // DHT11이 Low를 내림: 최대 100 μs 기다림
+                    if (!dht_in) begin
+                        cnt   &lt;= 21&#x27;d0;
+                        state &lt;= S_RESP_HIGH;
+                    end else if (cnt == 10_000) begin
+                        state &lt;= S_ERROR;
+                    end else
+                        cnt &lt;= cnt + 1&#x27;b1;
+                end
+
+                S_RESP_HIGH: begin
+                    // DHT11이 High: 80 μs 후 떨어짐
+                    if (dht_in) begin
+                        cnt   &lt;= 21&#x27;d0;
+                        state &lt;= S_BIT_LOW;
+                        bit_idx &lt;= 6&#x27;d0;
+                    end else
+                        cnt &lt;= cnt + 1&#x27;b1;
+                end
+
+                S_BIT_LOW: begin
+                    // 비트 시작 Low(50 μs)
+                    if (dht_in) begin
+                        hi_cnt &lt;= 16&#x27;d0;
+                        state  &lt;= S_BIT_HIGH;
+                    end else if (cnt == 10_000) begin
+                        state &lt;= S_ERROR;
+                    end else
+                        cnt &lt;= cnt + 1&#x27;b1;
+                end
+
+                S_BIT_HIGH: begin
+                    if (!dht_in) begin
+                        // High 구간 종료
+                        shift_reg &lt;= {shift_reg[38:0],
+                                      (hi_cnt &gt; BIT_THRESH) ? 1&#x27;b1 : 1&#x27;b0};
+                        bit_idx   &lt;= bit_idx + 1&#x27;b1;
+                        cnt       &lt;= 21&#x27;d0;
+                        if (bit_idx == 6&#x27;d39)
+                            state &lt;= S_DONE;
+                        else
+                            state &lt;= S_BIT_LOW;
+                    end else begin
+                        hi_cnt &lt;= hi_cnt + 1&#x27;b1;
+                        if (hi_cnt == 16&#x27;hFFFF)
+                            state &lt;= S_ERROR;
+                    end
+                end
+
+                S_DONE: begin
+                    // 체크섬: 하위 8비트 합
+                    chksum = shift_reg[39:32] + shift_reg[31:24] +
+                             shift_reg[23:16] + shift_reg[15:8];
+                    chk_ok &lt;= (chksum[7:0] == shift_reg[7:0]);
+                    humidity    &lt;= shift_reg[39:32];
+                    temperature &lt;= shift_reg[23:16];
+                    done        &lt;= 1&#x27;b1;
+                    busy        &lt;= 1&#x27;b0;
+                    state       &lt;= S_IDLE;
+                end
+
+                S_ERROR: begin
+                    chk_ok  &lt;= 1&#x27;b0;
+                    done    &lt;= 1&#x27;b1;
+                    busy    &lt;= 1&#x27;b0;
+                    state   &lt;= S_IDLE;
+                end
+
+                default: state &lt;= S_IDLE;
+            endcase
+        end
+    end
+
+endmodule
+</pre></details><details><summary><code>rtl/i2c_master.v</code> <span class="muted">281줄</span></summary><pre>// i2c_master.v — I2C 마스터 FSM (단일 레지스터 읽기)
+// 출처: mmio-sensor-hub-checker 캡스톤 자체 RTL (Verilog-2001)
+// 100 MHz, 400 kHz = 250 cycles / 비트. half = 125 cycles
+// 동작: START → ADDR(W)+ACK → REG_ADDR+ACK → RESTART → ADDR(R)+ACK → DATA+NACK → STOP
+
+`timescale 1ns/1ps
+module i2c_master #(
+    parameter CLK_DIV = 125    // 100 MHz / 400 kHz / 2
+)(
+    input  wire       clk,
+    input  wire       rst_n,
+    // MMIO 제어
+    input  wire       start,       // 1-cycle 펄스
+    input  wire [6:0] dev_addr,    // 7비트 슬레이브 주소
+    input  wire [7:0] reg_addr,    // 읽을 레지스터 주소
+    // I2C 핀 (오픈 드레인: oe=1 → SDA/SCL = 0)
+    output reg        scl_oe,
+    output reg        sda_oe,
+    input  wire       sda_in,
+    // 결과
+    output reg  [7:0] rdata,
+    output reg        busy,
+    output reg        done,
+    output reg        error
+);
+
+    // SCL 반주기 카운터
+    reg [7:0]  clk_cnt;
+    reg        scl_phase;    // 0=low, 1=high
+
+    // 비트 시프트 레지스터와 비트 카운터
+    reg [7:0]  tx_byte;
+    reg [2:0]  bit_cnt;
+    reg        ack_bit;
+
+    // FSM 상태
+    localparam S_IDLE      = 5&#x27;d0,
+               S_START1    = 5&#x27;d1,  // SDA low
+               S_START2    = 5&#x27;d2,  // SCL low
+               S_ADDR_W    = 5&#x27;d3,  // ADDR(W) 8비트 (addr&lt;&lt;1 | 0)
+               S_ACK1      = 5&#x27;d4,
+               S_REG       = 5&#x27;d5,  // REG_ADDR 8비트
+               S_ACK2      = 5&#x27;d6,
+               S_RESTART1  = 5&#x27;d7,  // SCL high
+               S_RESTART2  = 5&#x27;d8,  // SDA high
+               S_RESTART3  = 5&#x27;d9,  // SDA low (START)
+               S_RESTART4  = 5&#x27;d10, // SCL low
+               S_ADDR_R    = 5&#x27;d11, // ADDR(R) 8비트 (addr&lt;&lt;1 | 1)
+               S_ACK3      = 5&#x27;d12,
+               S_DATA      = 5&#x27;d13, // DATA 8비트 읽기
+               S_NACK      = 5&#x27;d14, // 마스터 NACK
+               S_STOP1     = 5&#x27;d15, // SCL high
+               S_STOP2     = 5&#x27;d16, // SDA high
+               S_DONE      = 5&#x27;d17,
+               S_ERROR     = 5&#x27;d18;
+
+    reg [4:0] state;
+
+    // SCL 토글 도우미: clk_cnt가 CLK_DIV에 도달하면 1 반주기 완료
+    wire half_done = (clk_cnt == CLK_DIV - 1);
+
+    task next_bit;
+        input [4:0] next_state;
+        begin
+            bit_cnt &lt;= bit_cnt - 1&#x27;b1;
+            if (bit_cnt == 3&#x27;d0)
+                state &lt;= next_state;
+        end
+    endtask
+
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            state     &lt;= S_IDLE;
+            scl_oe    &lt;= 1&#x27;b0;  // SCL high (open drain released)
+            sda_oe    &lt;= 1&#x27;b0;  // SDA high
+            busy      &lt;= 1&#x27;b0;
+            done      &lt;= 1&#x27;b0;
+            error     &lt;= 1&#x27;b0;
+            rdata     &lt;= 8&#x27;d0;
+            clk_cnt   &lt;= 8&#x27;d0;
+            scl_phase &lt;= 1&#x27;b0;
+            bit_cnt   &lt;= 3&#x27;d7;
+            tx_byte   &lt;= 8&#x27;d0;
+            ack_bit   &lt;= 1&#x27;b0;
+        end else begin
+            done &lt;= 1&#x27;b0;
+
+            case (state)
+                S_IDLE: begin
+                    scl_oe &lt;= 1&#x27;b0; sda_oe &lt;= 1&#x27;b0;
+                    busy   &lt;= 1&#x27;b0;
+                    if (start) begin
+                        busy    &lt;= 1&#x27;b1;
+                        error   &lt;= 1&#x27;b0;
+                        clk_cnt &lt;= 8&#x27;d0;
+                        state   &lt;= S_START1;
+                    end
+                end
+
+                // START: SDA low while SCL high
+                S_START1: begin
+                    sda_oe &lt;= 1&#x27;b1;  // SDA = 0
+                    if (half_done) begin clk_cnt &lt;= 8&#x27;d0; state &lt;= S_START2; end
+                    else clk_cnt &lt;= clk_cnt + 1&#x27;b1;
+                end
+                S_START2: begin
+                    scl_oe &lt;= 1&#x27;b1;  // SCL = 0
+                    if (half_done) begin
+                        clk_cnt &lt;= 8&#x27;d0;
+                        tx_byte &lt;= {dev_addr, 1&#x27;b0};  // WRITE
+                        bit_cnt &lt;= 3&#x27;d7;
+                        state   &lt;= S_ADDR_W;
+                    end else clk_cnt &lt;= clk_cnt + 1&#x27;b1;
+                end
+
+                // 8비트 전송 (MSB first): SCL low→high→low 1 cycle = 2 half_done
+                S_ADDR_W, S_REG, S_ADDR_R: begin
+                    if (!scl_phase) begin
+                        // SCL low 구간: SDA 세팅
+                        sda_oe &lt;= ~tx_byte[7];
+                        if (half_done) begin
+                            scl_oe    &lt;= 1&#x27;b0;  // SCL high
+                            scl_phase &lt;= 1&#x27;b1;
+                            clk_cnt   &lt;= 8&#x27;d0;
+                        end else clk_cnt &lt;= clk_cnt + 1&#x27;b1;
+                    end else begin
+                        // SCL high 구간: SDA 유지
+                        if (half_done) begin
+                            scl_oe    &lt;= 1&#x27;b1;  // SCL low
+                            scl_phase &lt;= 1&#x27;b0;
+                            tx_byte   &lt;= {tx_byte[6:0], 1&#x27;b0};
+                            if (bit_cnt == 3&#x27;d0) begin
+                                sda_oe  &lt;= 1&#x27;b0;  // SDA 해제 (ACK 수신용)
+                                bit_cnt &lt;= 3&#x27;d7;
+                                state   &lt;= (state == S_ADDR_W) ? S_ACK1 :
+                                           (state == S_REG   ) ? S_ACK2 : S_ACK3;
+                            end else
+                                bit_cnt &lt;= bit_cnt - 1&#x27;b1;
+                            clk_cnt &lt;= 8&#x27;d0;
+                        end else clk_cnt &lt;= clk_cnt + 1&#x27;b1;
+                    end
+                end
+
+                // ACK 수신: SCL high 중에 SDA 읽기
+                S_ACK1, S_ACK2, S_ACK3: begin
+                    if (!scl_phase) begin
+                        if (half_done) begin
+                            scl_oe    &lt;= 1&#x27;b0;
+                            scl_phase &lt;= 1&#x27;b1;
+                            clk_cnt   &lt;= 8&#x27;d0;
+                        end else clk_cnt &lt;= clk_cnt + 1&#x27;b1;
+                    end else begin
+                        ack_bit &lt;= sda_in;  // 0=ACK, 1=NACK
+                        if (half_done) begin
+                            scl_oe    &lt;= 1&#x27;b1;
+                            scl_phase &lt;= 1&#x27;b0;
+                            clk_cnt   &lt;= 8&#x27;d0;
+                            if (sda_in) begin
+                                state &lt;= S_ERROR;  // NACK
+                            end else begin
+                                case (state)
+                                    S_ACK1: begin
+                                        tx_byte &lt;= reg_addr;
+                                        state   &lt;= S_REG;
+                                    end
+                                    S_ACK2: state &lt;= S_RESTART1;
+                                    S_ACK3: begin
+                                        rdata   &lt;= 8&#x27;d0;
+                                        bit_cnt &lt;= 3&#x27;d7;
+                                        sda_oe  &lt;= 1&#x27;b0;  // 입력 모드
+                                        state   &lt;= S_DATA;
+                                    end
+                                    default: state &lt;= S_ERROR;
+                                endcase
+                            end
+                        end else clk_cnt &lt;= clk_cnt + 1&#x27;b1;
+                    end
+                end
+
+                // RESTART: SCL high → SDA high → SDA low → SCL low
+                S_RESTART1: begin
+                    scl_oe &lt;= 1&#x27;b0;
+                    if (half_done) begin clk_cnt &lt;= 8&#x27;d0; state &lt;= S_RESTART2; end
+                    else clk_cnt &lt;= clk_cnt + 1&#x27;b1;
+                end
+                S_RESTART2: begin
+                    sda_oe &lt;= 1&#x27;b0;
+                    if (half_done) begin clk_cnt &lt;= 8&#x27;d0; state &lt;= S_RESTART3; end
+                    else clk_cnt &lt;= clk_cnt + 1&#x27;b1;
+                end
+                S_RESTART3: begin
+                    sda_oe &lt;= 1&#x27;b1;  // SDA low
+                    if (half_done) begin clk_cnt &lt;= 8&#x27;d0; state &lt;= S_RESTART4; end
+                    else clk_cnt &lt;= clk_cnt + 1&#x27;b1;
+                end
+                S_RESTART4: begin
+                    scl_oe &lt;= 1&#x27;b1;  // SCL low
+                    if (half_done) begin
+                        clk_cnt &lt;= 8&#x27;d0;
+                        tx_byte &lt;= {dev_addr, 1&#x27;b1};  // READ
+                        bit_cnt &lt;= 3&#x27;d7;
+                        state   &lt;= S_ADDR_R;
+                    end else clk_cnt &lt;= clk_cnt + 1&#x27;b1;
+                end
+
+                // DATA 읽기 8비트 MSB first
+                S_DATA: begin
+                    if (!scl_phase) begin
+                        if (half_done) begin
+                            scl_oe    &lt;= 1&#x27;b0;
+                            scl_phase &lt;= 1&#x27;b1;
+                            clk_cnt   &lt;= 8&#x27;d0;
+                        end else clk_cnt &lt;= clk_cnt + 1&#x27;b1;
+                    end else begin
+                        rdata &lt;= {rdata[6:0], sda_in};  // MSB first shift
+                        if (half_done) begin
+                            scl_oe    &lt;= 1&#x27;b1;
+                            scl_phase &lt;= 1&#x27;b0;
+                            clk_cnt   &lt;= 8&#x27;d0;
+                            if (bit_cnt == 3&#x27;d0) begin
+                                sda_oe  &lt;= 1&#x27;b1;  // NACK: SDA high
+                                state   &lt;= S_NACK;
+                            end else
+                                bit_cnt &lt;= bit_cnt - 1&#x27;b1;
+                        end else clk_cnt &lt;= clk_cnt + 1&#x27;b1;
+                    end
+                end
+
+                // NACK: SCL high 한 사이클
+                S_NACK: begin
+                    if (!scl_phase) begin
+                        if (half_done) begin
+                            scl_oe    &lt;= 1&#x27;b0;
+                            scl_phase &lt;= 1&#x27;b1;
+                            clk_cnt   &lt;= 8&#x27;d0;
+                        end else clk_cnt &lt;= clk_cnt + 1&#x27;b1;
+                    end else begin
+                        if (half_done) begin
+                            scl_oe    &lt;= 1&#x27;b1;
+                            scl_phase &lt;= 1&#x27;b0;
+                            sda_oe    &lt;= 1&#x27;b1;  // SDA low for STOP prep
+                            clk_cnt   &lt;= 8&#x27;d0;
+                            state     &lt;= S_STOP1;
+                        end else clk_cnt &lt;= clk_cnt + 1&#x27;b1;
+                    end
+                end
+
+                // STOP: SCL high → SDA high
+                S_STOP1: begin
+                    scl_oe &lt;= 1&#x27;b0;  // SCL high
+                    if (half_done) begin clk_cnt &lt;= 8&#x27;d0; state &lt;= S_STOP2; end
+                    else clk_cnt &lt;= clk_cnt + 1&#x27;b1;
+                end
+                S_STOP2: begin
+                    sda_oe &lt;= 1&#x27;b0;  // SDA high
+                    if (half_done) begin clk_cnt &lt;= 8&#x27;d0; state &lt;= S_DONE; end
+                    else clk_cnt &lt;= clk_cnt + 1&#x27;b1;
+                end
+
+                S_DONE: begin
+                    done  &lt;= 1&#x27;b1;
+                    busy  &lt;= 1&#x27;b0;
+                    state &lt;= S_IDLE;
+                end
+
+                S_ERROR: begin
+                    // STOP 시도 후 오류 반환
+                    scl_oe &lt;= 1&#x27;b0;
+                    sda_oe &lt;= 1&#x27;b0;
+                    error  &lt;= 1&#x27;b1;
+                    done   &lt;= 1&#x27;b1;
+                    busy   &lt;= 1&#x27;b0;
+                    state  &lt;= S_IDLE;
+                end
+
+                default: state &lt;= S_IDLE;
+            endcase
+        end
+    end
+
+endmodule
+</pre></details><details><summary><code>rtl/sensor_hub_top.v</code> <span class="muted">154줄</span></summary><pre>// sensor_hub_top.v — 센서 허브 최상위: HC-SR04 + DHT11 + I2C Master MMIO 통합
+// 출처: mmio-sensor-hub-checker 캡스톤 자체 RTL (Verilog-2001)
+//
+// 레지스터 맵 (base 0x1002_0000):
+//   0x00: HCSR04_CTRL  WO [0]=start
+//   0x04: HCSR04_STATUS RO [0]=busy [1]=done [2]=timeout
+//   0x08: HCSR04_DIST   RO [15:0]=cm
+//   0x10: DHT11_CTRL   WO [0]=start
+//   0x14: DHT11_STATUS  RO [0]=busy [1]=done [2]=chk_ok
+//   0x18: DHT11_HUMID   RO [7:0]
+//   0x1C: DHT11_TEMP    RO [7:0]
+//   0x20: I2C_CMD      WO [0]=start [7:1]=dev_addr [15:8]=reg_addr
+//   0x24: I2C_STATUS    RO [0]=busy [1]=done [2]=error
+//   0x28: I2C_RDATA     RO [7:0]
+
+`timescale 1ns/1ps
+module sensor_hub_top (
+    input  wire        clk,
+    input  wire        rst_n,
+    // MMIO-lite 슬레이브 인터페이스
+    input  wire [31:0] addr,
+    input  wire [31:0] wdata,
+    input  wire        we,
+    input  wire        sel,
+    output reg  [31:0] rdata,
+    // HC-SR04
+    output wire        trig_o,
+    input  wire        echo_i,
+    // DHT11
+    output wire        dht_oe,
+    input  wire        dht_in,
+    // I2C
+    output wire        scl_oe,
+    output wire        sda_oe,
+    input  wire        sda_in
+);
+
+    // ---- HC-SR04 신호 ----
+    wire        hc_start = sel &amp;&amp; we &amp;&amp; (addr[7:0] == 8&#x27;h00) &amp;&amp; wdata[0];
+    wire [15:0] hc_dist;
+    wire        hc_busy, hc_done, hc_timeout;
+    reg         hc_done_lat, hc_timeout_lat;
+
+    // ---- DHT11 신호 ----
+    wire        dht_start = sel &amp;&amp; we &amp;&amp; (addr[7:0] == 8&#x27;h10) &amp;&amp; wdata[0];
+    wire [7:0]  dht_humid, dht_temp;
+    wire        dht_busy, dht_done, dht_chk;
+    reg         dht_done_lat, dht_chk_lat;
+
+    // ---- I2C 신호 ----
+    wire        i2c_start = sel &amp;&amp; we &amp;&amp; (addr[7:0] == 8&#x27;h20) &amp;&amp; wdata[0];
+    wire [6:0]  i2c_addr  = wdata[7:1];
+    wire [7:0]  i2c_reg   = wdata[15:8];
+    wire [7:0]  i2c_rdata;
+    wire        i2c_busy, i2c_done, i2c_error;
+    reg         i2c_done_lat, i2c_error_lat;
+    reg  [7:0]  i2c_rdata_lat;
+    reg  [6:0]  i2c_addr_lat;
+    reg  [7:0]  i2c_reg_lat;
+
+    // I2C CMD 래치 (start 시에 addr/reg 저장)
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            i2c_addr_lat &lt;= 7&#x27;d0;
+            i2c_reg_lat  &lt;= 8&#x27;d0;
+        end else if (i2c_start) begin
+            i2c_addr_lat &lt;= wdata[7:1];
+            i2c_reg_lat  &lt;= wdata[15:8];
+        end
+    end
+
+    // 완료 플래그 래치 (done 1-cycle 펄스 → 레지스터 유지)
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            hc_done_lat  &lt;= 1&#x27;b0; hc_timeout_lat &lt;= 1&#x27;b0;
+            dht_done_lat &lt;= 1&#x27;b0; dht_chk_lat    &lt;= 1&#x27;b0;
+            i2c_done_lat &lt;= 1&#x27;b0; i2c_error_lat  &lt;= 1&#x27;b0;
+            i2c_rdata_lat&lt;= 8&#x27;d0;
+        end else begin
+            if (hc_done)  begin hc_done_lat  &lt;= 1&#x27;b1; hc_timeout_lat &lt;= hc_timeout; end
+            if (hc_start) begin hc_done_lat  &lt;= 1&#x27;b0; hc_timeout_lat &lt;= 1&#x27;b0; end
+            if (dht_done) begin dht_done_lat &lt;= 1&#x27;b1; dht_chk_lat    &lt;= dht_chk; end
+            if (dht_start)begin dht_done_lat &lt;= 1&#x27;b0; end
+            if (i2c_done) begin
+                i2c_done_lat  &lt;= 1&#x27;b1;
+                i2c_error_lat &lt;= i2c_error;
+                i2c_rdata_lat &lt;= i2c_rdata;
+            end
+            if (i2c_start) begin i2c_done_lat &lt;= 1&#x27;b0; i2c_error_lat &lt;= 1&#x27;b0; end
+        end
+    end
+
+    // ---- 읽기 멀티플렉서 ----
+    always @(*) begin
+        rdata = 32&#x27;d0;
+        if (sel) begin
+            case (addr[7:0])
+                8&#x27;h00: rdata = 32&#x27;d0;
+                8&#x27;h04: rdata = {29&#x27;d0, hc_timeout_lat, hc_done_lat, hc_busy};
+                8&#x27;h08: rdata = {16&#x27;d0, hc_dist};
+                8&#x27;h10: rdata = 32&#x27;d0;
+                8&#x27;h14: rdata = {29&#x27;d0, dht_chk_lat, dht_done_lat, dht_busy};
+                8&#x27;h18: rdata = {24&#x27;d0, dht_humid};
+                8&#x27;h1C: rdata = {24&#x27;d0, dht_temp};
+                8&#x27;h20: rdata = 32&#x27;d0;
+                8&#x27;h24: rdata = {29&#x27;d0, i2c_error_lat, i2c_done_lat, i2c_busy};
+                8&#x27;h28: rdata = {24&#x27;d0, i2c_rdata_lat};
+                default: rdata = 32&#x27;d0;
+            endcase
+        end
+    end
+
+    // ---- 서브모듈 인스턴스 ----
+    hcsr04_ctrl u_hcsr04 (
+        .clk     (clk),
+        .rst_n   (rst_n),
+        .start   (hc_start),
+        .trig_o  (trig_o),
+        .echo_i  (echo_i),
+        .dist_cm (hc_dist),
+        .busy    (hc_busy),
+        .done    (hc_done),
+        .timeout (hc_timeout)
+    );
+
+    dht11_ctrl u_dht11 (
+        .clk        (clk),
+        .rst_n      (rst_n),
+        .start      (dht_start),
+        .dht_oe     (dht_oe),
+        .dht_in     (dht_in),
+        .humidity   (dht_humid),
+        .temperature(dht_temp),
+        .busy       (dht_busy),
+        .done       (dht_done),
+        .chk_ok     (dht_chk)
+    );
+
+    i2c_master u_i2c (
+        .clk      (clk),
+        .rst_n    (rst_n),
+        .start    (i2c_start),
+        .dev_addr (i2c_addr_lat),
+        .reg_addr (i2c_reg_lat),
+        .scl_oe   (scl_oe),
+        .sda_oe   (sda_oe),
+        .sda_in   (sda_in),
+        .rdata    (i2c_rdata),
+        .busy     (i2c_busy),
+        .done     (i2c_done),
+        .error    (i2c_error)
+    );
+
+endmodule
+</pre></details><details><summary><code>rtl/gpio.v</code> <span class="muted">49줄</span></summary><pre>// gpio.v — LED RW / SW RO (2단 동기화)
+// 출처: mmio-sensor-hub-checker 캡스톤 자체 RTL (Verilog-2001)
+// 레지스터: 0x00 LED(RW), 0x04 SW(RO)
+
+`timescale 1ns/1ps
+module gpio (
+    input  wire        clk,
+    input  wire        rst_n,
+    // MMIO-lite
+    input  wire [31:0] addr,
+    input  wire [31:0] wdata,
+    input  wire        we,
+    input  wire        sel,
+    output reg  [31:0] rdata,
+    // 핀
+    output reg  [15:0] led,
+    input  wire [15:0] sw
+);
+
+    // 2단 동기화
+    reg [15:0] sw_s1, sw_s2;
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            sw_s1 &lt;= 16&#x27;d0; sw_s2 &lt;= 16&#x27;d0;
+        end else begin
+            sw_s1 &lt;= sw; sw_s2 &lt;= sw_s1;
+        end
+    end
+
+    // 쓰기
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) led &lt;= 16&#x27;d0;
+        else if (sel &amp;&amp; we &amp;&amp; addr[3:0] == 4&#x27;h0)
+            led &lt;= wdata[15:0];
+    end
+
+    // 읽기
+    always @(*) begin
+        rdata = 32&#x27;d0;
+        if (sel) begin
+            case (addr[3:0])
+                4&#x27;h0: rdata = {16&#x27;d0, led};
+                4&#x27;h4: rdata = {16&#x27;d0, sw_s2};
+                default: rdata = 32&#x27;d0;
+            endcase
+        end
+    end
+
+endmodule
+</pre></details><details><summary><code>rtl/uart_tx.v</code> <span class="muted">67줄</span></summary><pre>// uart_tx.v — 115200 baud 송신 전용, FIFO 없음
+// 출처: mmio-sensor-hub-checker 캡스톤 자체 RTL (Verilog-2001)
+// 100 MHz / 115200 ≈ 868 cycles/bit
+// 레지스터: 0x00 DATA(WO) [7:0], 0x04 STATUS(RO) [0]=busy
+
+`timescale 1ns/1ps
+module uart_tx #(
+    parameter CLK_DIV = 868
+)(
+    input  wire        clk,
+    input  wire        rst_n,
+    // MMIO-lite
+    input  wire [31:0] addr,
+    input  wire [31:0] wdata,
+    input  wire        we,
+    input  wire        sel,
+    output reg  [31:0] rdata,
+    // UART 핀
+    output reg         tx
+);
+
+    reg [9:0]  shift;   // start + 8data + stop
+    reg [3:0]  bit_cnt;
+    reg [9:0]  clk_cnt;
+    reg        busy;
+
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            tx      &lt;= 1&#x27;b1;
+            busy    &lt;= 1&#x27;b0;
+            bit_cnt &lt;= 4&#x27;d0;
+            clk_cnt &lt;= 10&#x27;d0;
+            shift   &lt;= 10&#x27;h3FF;
+        end else begin
+            if (!busy) begin
+                tx &lt;= 1&#x27;b1;
+                if (sel &amp;&amp; we &amp;&amp; addr[3:0] == 4&#x27;h0) begin
+                    shift   &lt;= {1&#x27;b1, wdata[7:0], 1&#x27;b0}; // stop, data, start
+                    bit_cnt &lt;= 4&#x27;d10;
+                    clk_cnt &lt;= 10&#x27;d0;
+                    busy    &lt;= 1&#x27;b1;
+                end
+            end else begin
+                if (clk_cnt == CLK_DIV - 1) begin
+                    clk_cnt &lt;= 10&#x27;d0;
+                    tx      &lt;= shift[0];
+                    shift   &lt;= {1&#x27;b1, shift[9:1]};
+                    bit_cnt &lt;= bit_cnt - 1&#x27;b1;
+                    if (bit_cnt == 4&#x27;d1) busy &lt;= 1&#x27;b0;
+                end else begin
+                    clk_cnt &lt;= clk_cnt + 1&#x27;b1;
+                end
+            end
+        end
+    end
+
+    always @(*) begin
+        rdata = 32&#x27;d0;
+        if (sel) begin
+            case (addr[3:0])
+                4&#x27;h4: rdata = {31&#x27;d0, busy};
+                default: rdata = 32&#x27;d0;
+            endcase
+        end
+    end
+
+endmodule
+</pre></details><details><summary><code>rtl/mmio_bus.v</code> <span class="muted">36줄</span></summary><pre>// mmio_bus.v — 32비트 MMIO 주소 디코더 (단일 사이클 버스)
+// 출처: mmio-sensor-hub-checker 캡스톤 자체 RTL (Verilog-2001)
+// 세그먼트:
+//   0x1000_0000 ~ 0x1000_FFFF → GPIO
+//   0x1001_0000 ~ 0x1001_FFFF → UART
+//   0x1002_0000 ~ 0x1002_FFFF → Sensor Hub
+
+`timescale 1ns/1ps
+module mmio_bus (
+    // 마스터 → 버스
+    input  wire [31:0] addr,
+    input  wire [31:0] wdata,
+    input  wire        we,
+    // 버스 → 마스터
+    output reg  [31:0] rdata,
+    // 슬레이브 sel / rdata
+    output wire        sel_gpio,
+    output wire        sel_uart,
+    output wire        sel_hub,
+    input  wire [31:0] rdata_gpio,
+    input  wire [31:0] rdata_uart,
+    input  wire [31:0] rdata_hub
+);
+
+    assign sel_gpio = (addr[31:16] == 16&#x27;h1000);
+    assign sel_uart = (addr[31:16] == 16&#x27;h1001);
+    assign sel_hub  = (addr[31:16] == 16&#x27;h1002);
+
+    always @(*) begin
+        if      (sel_gpio) rdata = rdata_gpio;
+        else if (sel_uart) rdata = rdata_uart;
+        else if (sel_hub)  rdata = rdata_hub;
+        else               rdata = 32&#x27;hDEAD_BEEF;
+    end
+
+endmodule
+</pre></details><details><summary><code>rtl/demo_master.v</code> <span class="muted">158줄</span></summary><pre>// demo_master.v — CPU 없이 사이클 카운터로 세 센서를 순차 트리거
+// 출처: mmio-sensor-hub-checker 캡스톤 자체 RTL (Verilog-2001)
+//
+// 순서: HC-SR04 트리거 → 완료 대기 → LED 갱신/UART 출력
+//       DHT11 트리거 → 완료 대기 → LED 갱신/UART 출력
+//       I2C 트리거   → 완료 대기 → LED 갱신/UART 출력
+//       100 ms 대기  → 반복
+//
+// UART 출력은 단순히 1바이트(결과 하위 8비트)를 보낸다.
+
+`timescale 1ns/1ps
+module demo_master (
+    input  wire        clk,
+    input  wire        rst_n,
+    // MMIO 마스터 포트
+    output reg  [31:0] addr,
+    output reg  [31:0] wdata,
+    output reg         we,
+    input  wire [31:0] rdata
+);
+
+    // 주소 상수
+    localparam A_LED      = 32&#x27;h1000_0000,
+               A_SW       = 32&#x27;h1000_0004,
+               A_UART_D   = 32&#x27;h1001_0000,
+               A_UART_ST  = 32&#x27;h1001_0004,
+               A_HC_CTRL  = 32&#x27;h1002_0000,
+               A_HC_STAT  = 32&#x27;h1002_0004,
+               A_HC_DIST  = 32&#x27;h1002_0008,
+               A_DHT_CTRL = 32&#x27;h1002_0010,
+               A_DHT_STAT = 32&#x27;h1002_0014,
+               A_DHT_HUM  = 32&#x27;h1002_0018,
+               A_I2C_CMD  = 32&#x27;h1002_0020,
+               A_I2C_STAT = 32&#x27;h1002_0024,
+               A_I2C_DATA = 32&#x27;h1002_0028;
+
+    // MPU-6050: dev_addr=0x68, reg_addr=0x3B (ACCEL_XOUT_H)
+    localparam I2C_CMD_VAL = 32&#x27;h3B_D1; // [15:8]=reg 0x3B, [7:1]=0x68&lt;&lt;1=0xD0, [0]=1(start)
+
+    // 100 ms = 10,000,000 cycles
+    localparam WAIT_CYC = 10_000_000;
+
+    reg [23:0] wait_cnt;
+
+    // FSM
+    localparam S_HC_START  = 4&#x27;d0,
+               S_HC_WAIT   = 4&#x27;d1,
+               S_HC_READ   = 4&#x27;d2,
+               S_DHT_START = 4&#x27;d3,
+               S_DHT_WAIT  = 4&#x27;d4,
+               S_DHT_READ  = 4&#x27;d5,
+               S_I2C_START = 4&#x27;d6,
+               S_I2C_WAIT  = 4&#x27;d7,
+               S_I2C_READ  = 4&#x27;d8,
+               S_UART_BUSY = 4&#x27;d9,
+               S_PAUSE     = 4&#x27;d10;
+
+    reg [3:0] state;
+    reg [7:0] uart_byte;
+
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            state    &lt;= S_HC_START;
+            addr     &lt;= A_HC_CTRL;
+            wdata    &lt;= 32&#x27;d1;
+            we       &lt;= 1&#x27;b0;
+            wait_cnt &lt;= 24&#x27;d0;
+            uart_byte&lt;= 8&#x27;d0;
+        end else begin
+            we &lt;= 1&#x27;b0;  // 기본: 읽기
+
+            case (state)
+                // ---- HC-SR04 ----
+                S_HC_START: begin
+                    addr  &lt;= A_HC_CTRL;
+                    wdata &lt;= 32&#x27;d1;
+                    we    &lt;= 1&#x27;b1;
+                    state &lt;= S_HC_WAIT;
+                end
+                S_HC_WAIT: begin
+                    addr  &lt;= A_HC_STAT;
+                    we    &lt;= 1&#x27;b0;
+                    // rdata[1]=done
+                    if (rdata[1]) state &lt;= S_HC_READ;
+                end
+                S_HC_READ: begin
+                    addr  &lt;= A_HC_DIST;
+                    we    &lt;= 1&#x27;b0;
+                    // 다음 사이클에 rdata에 거리 값 옴
+                    // LED[7:0] = 거리 하위 8비트
+                    state &lt;= S_DHT_START;
+                    // LED 갱신은 DHT START 전에
+                    addr  &lt;= A_LED;
+                    wdata &lt;= {24&#x27;d0, rdata[7:0]};
+                    we    &lt;= 1&#x27;b1;
+                end
+
+                // ---- DHT11 ----
+                S_DHT_START: begin
+                    addr  &lt;= A_DHT_CTRL;
+                    wdata &lt;= 32&#x27;d1;
+                    we    &lt;= 1&#x27;b1;
+                    state &lt;= S_DHT_WAIT;
+                end
+                S_DHT_WAIT: begin
+                    addr  &lt;= A_DHT_STAT;
+                    we    &lt;= 1&#x27;b0;
+                    if (rdata[1]) state &lt;= S_DHT_READ;
+                end
+                S_DHT_READ: begin
+                    addr  &lt;= A_DHT_HUM;
+                    we    &lt;= 1&#x27;b0;
+                    uart_byte &lt;= rdata[7:0]; // 습도 출력
+                    state &lt;= S_I2C_START;
+                end
+
+                // ---- I2C ----
+                S_I2C_START: begin
+                    addr  &lt;= A_I2C_CMD;
+                    wdata &lt;= I2C_CMD_VAL;
+                    we    &lt;= 1&#x27;b1;
+                    state &lt;= S_I2C_WAIT;
+                end
+                S_I2C_WAIT: begin
+                    addr  &lt;= A_I2C_STAT;
+                    we    &lt;= 1&#x27;b0;
+                    if (rdata[1]) state &lt;= S_I2C_READ;
+                end
+                S_I2C_READ: begin
+                    addr      &lt;= A_I2C_DATA;
+                    we        &lt;= 1&#x27;b0;
+                    uart_byte &lt;= rdata[7:0];
+                    // UART 전송
+                    state &lt;= S_UART_BUSY;
+                end
+
+                S_UART_BUSY: begin
+                    addr  &lt;= A_UART_D;
+                    wdata &lt;= {24&#x27;d0, uart_byte};
+                    we    &lt;= 1&#x27;b1;
+                    state &lt;= S_PAUSE;
+                end
+
+                S_PAUSE: begin
+                    we &lt;= 1&#x27;b0;
+                    if (wait_cnt == WAIT_CYC - 1) begin
+                        wait_cnt &lt;= 24&#x27;d0;
+                        state    &lt;= S_HC_START;
+                    end else
+                        wait_cnt &lt;= wait_cnt + 1&#x27;b1;
+                end
+
+                default: state &lt;= S_HC_START;
+            endcase
+        end
+    end
+
+endmodule
+</pre></details><details><summary><code>rtl/soc_top.v</code> <span class="muted">99줄</span></summary><pre>// soc_top.v — demo_master + mmio_bus + 모든 IP 연결
+// 출처: mmio-sensor-hub-checker 캡스톤 자체 RTL (Verilog-2001)
+
+`timescale 1ns/1ps
+module soc_top (
+    input  wire        clk,
+    input  wire        rst_n,
+    // GPIO
+    output wire [15:0] led,
+    input  wire [15:0] sw,
+    // UART
+    output wire        uart_tx,
+    // HC-SR04
+    output wire        hc_trig,
+    input  wire        hc_echo,
+    // DHT11
+    output wire        dht_oe,
+    input  wire        dht_in,
+    // I2C
+    output wire        i2c_scl_oe,
+    output wire        i2c_sda_oe,
+    input  wire        i2c_sda_in
+);
+
+    wire [31:0] m_addr, m_wdata, m_rdata;
+    wire        m_we;
+
+    wire [31:0] rdata_gpio, rdata_uart, rdata_hub;
+
+    // 마스터
+    demo_master u_master (
+        .clk   (clk),
+        .rst_n (rst_n),
+        .addr  (m_addr),
+        .wdata (m_wdata),
+        .we    (m_we),
+        .rdata (m_rdata)
+    );
+
+    // 버스
+    mmio_bus u_bus (
+        .addr      (m_addr),
+        .wdata     (m_wdata),
+        .we        (m_we),
+        .rdata     (m_rdata),
+        .sel_gpio  (sel_gpio),
+        .sel_uart  (sel_uart),
+        .sel_hub   (sel_hub),
+        .rdata_gpio(rdata_gpio),
+        .rdata_uart(rdata_uart),
+        .rdata_hub (rdata_hub)
+    );
+
+    wire sel_gpio, sel_uart, sel_hub;
+
+    // GPIO
+    gpio u_gpio (
+        .clk   (clk),
+        .rst_n (rst_n),
+        .addr  (m_addr),
+        .wdata (m_wdata),
+        .we    (m_we),
+        .sel   (sel_gpio),
+        .rdata (rdata_gpio),
+        .led   (led),
+        .sw    (sw)
+    );
+
+    // UART TX
+    uart_tx u_uart (
+        .clk   (clk),
+        .rst_n (rst_n),
+        .addr  (m_addr),
+        .wdata (m_wdata),
+        .we    (m_we),
+        .sel   (sel_uart),
+        .rdata (rdata_uart),
+        .tx    (uart_tx)
+    );
+
+    // Sensor Hub
+    sensor_hub_top u_hub (
+        .clk     (clk),
+        .rst_n   (rst_n),
+        .addr    (m_addr),
+        .wdata   (m_wdata),
+        .we      (m_we),
+        .sel     (sel_hub),
+        .rdata   (rdata_hub),
+        .trig_o  (hc_trig),
+        .echo_i  (hc_echo),
+        .dht_oe  (dht_oe),
+        .dht_in  (dht_in),
+        .scl_oe  (i2c_scl_oe),
+        .sda_oe  (i2c_sda_oe),
+        .sda_in  (i2c_sda_in)
+    );
+
+endmodule
+</pre></details><details><summary><code>rtl/basys3_top.v</code> <span class="muted">45줄</span></summary><pre>// basys3_top.v — Basys3 보드 최상위 (MMCM 없이 100 MHz 직결)
+// 출처: mmio-sensor-hub-checker 캡스톤 자체 RTL (Verilog-2001)
+// ECHO 핀: 5V→3.3V 레벨 변환 후 연결 필수 (Pmod JA 3번 예시)
+// DHT11 DATA: 풀업 4.7 kΩ to 3.3V
+// I2C SDA/SCL: 오픈 드레인 풀업 4.7 kΩ to 3.3V
+
+`timescale 1ns/1ps
+module basys3_top (
+    input  wire        clk,        // W5: 100 MHz
+    input  wire        btnC,       // 리셋 (active high)
+    // GPIO
+    output wire [15:0] led,
+    input  wire [15:0] sw,
+    // UART (USB-UART)
+    output wire        RsTx,
+    // HC-SR04 (Pmod JA)
+    output wire        ja1,        // TRIG
+    input  wire        ja2,        // ECHO (레벨 변환 후)
+    // DHT11 (Pmod JB)
+    output wire        jb1_oe,     // DHT_OE → 외부 N-FET 게이트 또는 tri
+    input  wire        jb1_in,     // DHT DATA 입력
+    // I2C (Pmod JC)
+    output wire        jc1_scl_oe, // SCL_OE → N-FET
+    output wire        jc2_sda_oe, // SDA_OE → N-FET
+    input  wire        jc2_sda_in  // SDA 입력
+);
+
+    wire rst_n = ~btnC;
+
+    soc_top u_soc (
+        .clk        (clk),
+        .rst_n      (rst_n),
+        .led        (led),
+        .sw         (sw),
+        .uart_tx    (RsTx),
+        .hc_trig    (ja1),
+        .hc_echo    (ja2),
+        .dht_oe     (jb1_oe),
+        .dht_in     (jb1_in),
+        .i2c_scl_oe (jc1_scl_oe),
+        .i2c_sda_oe (jc2_sda_oe),
+        .i2c_sda_in (jc2_sda_in)
+    );
+
+endmodule
+</pre></details><details><summary><code>tb/tb_hcsr04.v</code> <span class="muted">104줄</span></summary><pre>// tb_hcsr04.v — HC-SR04 FSM 자체 점검 테스트벤치
+// 출처: mmio-sensor-hub-checker 캡스톤 자체 RTL (Verilog-2001)
+// 테스트:
+//   T1: 에코 1,750 μs → 기대 거리 = 1,750,000 ns / 580 ns = 30 cm (1750000/5800=301 ≈ 30cm)
+//       실제: echo_cycles = 1750 * 100 = 175,000. 175000/5800 = 30 cm (정수 나눗셈)
+//   T2: 에코 없음(타임아웃) → timeout=1
+
+`timescale 1ns/1ps
+module tb_hcsr04;
+
+    reg clk, rst_n, start, echo_i;
+    wire trig_o;
+    wire [15:0] dist_cm;
+    wire busy, done, timeout;
+
+    hcsr04_ctrl #(
+        .CLK_HZ      (100_000_000),
+        .TRIG_CYC    (1000),
+        .TIMEOUT_CYC (3_800_000)
+    ) dut (
+        .clk     (clk),
+        .rst_n   (rst_n),
+        .start   (start),
+        .trig_o  (trig_o),
+        .echo_i  (echo_i),
+        .dist_cm (dist_cm),
+        .busy    (busy),
+        .done    (done),
+        .timeout (timeout)
+    );
+
+    // 100 MHz
+    initial clk = 0;
+    always #5 clk = ~clk;
+
+    integer fail = 0;
+
+    task check_eq;
+        input [31:0] got;
+        input [31:0] exp;
+        input [127:0] tag;
+        begin
+            if (got !== exp) begin
+                $display(&quot;FAIL %s: got=%0d exp=%0d&quot;, tag, got, exp);
+                fail = fail + 1;
+            end
+        end
+    endtask
+
+    // ---- T1: 30 cm 에코 ----
+    initial begin
+        rst_n = 0; start = 0; echo_i = 0;
+        @(posedge clk); @(posedge clk);
+        rst_n = 1;
+
+        // --- T1: 에코 175000 cycles → 30 cm ---
+        @(posedge clk);
+        start = 1; @(posedge clk); start = 0;
+
+        // TRIG 종료 대기 (1000 cycles)
+        repeat(1050) @(posedge clk);
+
+        // WAIT_HI: echo_i = 1 (에코 시작)
+        echo_i = 1;
+        // 에코 175000 cycles 유지
+        repeat(175000) @(posedge clk);
+        echo_i = 0;
+
+        // done 대기
+        wait(done === 1&#x27;b1);
+        @(posedge clk);
+
+        check_eq(dist_cm, 30, &quot;T1_dist_cm&quot;);
+        check_eq(timeout,  0, &quot;T1_timeout&quot;);
+        check_eq(busy,     0, &quot;T1_busy&quot;);
+
+        // --- T2: 타임아웃 ---
+        @(posedge clk);
+        start = 1; @(posedge clk); start = 0;
+
+        // echo_i = 0 유지 → 타임아웃
+        echo_i = 0;
+        wait(done === 1&#x27;b1);
+        @(posedge clk);
+
+        check_eq(timeout, 1, &quot;T2_timeout&quot;);
+        check_eq(busy,    0, &quot;T2_busy&quot;);
+
+        if (fail == 0)
+            $display(&quot;PASS tb_hcsr04: T1(30cm) T2(timeout) all checks OK&quot;);
+        else
+            $display(&quot;FAIL tb_hcsr04: %0d check(s) failed&quot;, fail);
+
+        $finish;
+    end
+
+    // 최대 실행 시간 (타임아웃 사이클을 훨씬 넘음)
+    initial begin
+        #500_000_000;
+        $display(&quot;FAIL tb_hcsr04: simulation timeout&quot;);
+        $finish;
+    end
+
+endmodule
+</pre></details><details><summary><code>tb/tb_dht11.v</code> <span class="muted">141줄</span></summary><pre>// tb_dht11.v — DHT11 FSM 자체 점검 테스트벤치
+// 출처: mmio-sensor-hub-checker 캡스톤 자체 RTL (Verilog-2001)
+// 테스트:
+//   T1: 정상 40비트 수신 (습도 60%, 온도 25°C, 올바른 체크섬) → chk_ok=1
+//   T2: 체크섬 오류 → chk_ok=0
+
+`timescale 1ns/1ps
+module tb_dht11;
+
+    reg clk, rst_n, start;
+    wire dht_oe;
+    reg  dht_model;   // 모델이 DHT11을 흉내 냄
+    wire dht_in = dht_oe ? 1&#x27;b0 : dht_model;  // oe=1이면 DUT가 low 구동
+
+    wire [7:0] humidity, temperature;
+    wire busy, done, chk_ok;
+
+    dht11_ctrl #(
+        .START_CYC   (1_800_000),
+        .RELEASE_CYC (    50_000),
+        .BIT_THRESH  (     4_000)
+    ) dut (
+        .clk        (clk),
+        .rst_n      (rst_n),
+        .start      (start),
+        .dht_oe     (dht_oe),
+        .dht_in     (dht_in),
+        .humidity   (humidity),
+        .temperature(temperature),
+        .busy       (busy),
+        .done       (done),
+        .chk_ok     (chk_ok)
+    );
+
+    initial clk = 0;
+    always #5 clk = ~clk;
+
+    integer fail = 0;
+
+    task check_eq;
+        input [31:0] got;
+        input [31:0] exp;
+        input [127:0] tag;
+        begin
+            if (got !== exp) begin
+                $display(&quot;FAIL %s: got=%0d exp=%0d&quot;, tag, got, exp);
+                fail = fail + 1;
+            end
+        end
+    endtask
+
+    // DHT11 프로토콜 모델: 40비트를 보낸다
+    // bit_data[39:0]: MSB first
+    task send_dht11_bits;
+        input [39:0] bit_data;
+        integer i;
+        begin
+            // 응답 Low 80 μs = 8000 cycles
+            dht_model = 0;
+            repeat(8000) @(posedge clk);
+            // 응답 High 80 μs
+            dht_model = 1;
+            repeat(8000) @(posedge clk);
+
+            for (i = 39; i &gt;= 0; i = i - 1) begin
+                // 비트 Low 50 μs = 5000 cycles
+                dht_model = 0;
+                repeat(5000) @(posedge clk);
+                // 비트 High: 0 → 28 μs = 2800 cycles, 1 → 70 μs = 7000 cycles
+                dht_model = 1;
+                if (bit_data[i])
+                    repeat(7000) @(posedge clk);
+                else
+                    repeat(2800) @(posedge clk);
+            end
+            dht_model = 0;
+        end
+    endtask
+
+    // ---- T1: 올바른 데이터 ----
+    // humid_int=60, humid_dec=0, temp_int=25, temp_dec=0, chk=85 (60+0+25+0=85)
+    initial begin
+        dht_model = 1;  // 풀업 상태
+        rst_n = 0; start = 0;
+        @(posedge clk); @(posedge clk);
+        rst_n = 1;
+
+        // --- T1 ---
+        @(posedge clk);
+        start = 1; @(posedge clk); start = 0;
+
+        // START_LOW(1,800,000) + RELEASE(50,000) 대기
+        // DUT가 LOW를 내리는 동안 dht_model=1 유지
+        wait(dht_oe === 1&#x27;b0);  // DUT가 release
+        // 짧게 대기 후 응답 시작
+        repeat(100) @(posedge clk);
+
+        fork
+            send_dht11_bits(40&#x27;h3C_00_19_00_55);
+            // 60=0x3C, 0=0x00, 25=0x19, 0=0x00, chk=0x3C+0x00+0x19+0x00=0x55
+        join
+
+        wait(done === 1&#x27;b1);
+        @(posedge clk);
+
+        check_eq(humidity,    60, &quot;T1_humidity&quot;);
+        check_eq(temperature, 25, &quot;T1_temperature&quot;);
+        check_eq(chk_ok,       1, &quot;T1_chk_ok&quot;);
+
+        // --- T2: 체크섬 오류 ---
+        dht_model = 1;
+        @(posedge clk); @(posedge clk);
+        start = 1; @(posedge clk); start = 0;
+
+        wait(dht_oe === 1&#x27;b0);
+        repeat(100) @(posedge clk);
+
+        fork
+            send_dht11_bits(40&#x27;h3C_00_19_00_AA); // chk 오류: 0xAA ≠ 0x55
+        join
+
+        wait(done === 1&#x27;b1);
+        @(posedge clk);
+
+        check_eq(chk_ok, 0, &quot;T2_chk_error&quot;);
+
+        if (fail == 0)
+            $display(&quot;PASS tb_dht11: T1(normal) T2(checksum_err) all checks OK&quot;);
+        else
+            $display(&quot;FAIL tb_dht11: %0d check(s) failed&quot;, fail);
+
+        $finish;
+    end
+
+    initial begin
+        #600_000_000;
+        $display(&quot;FAIL tb_dht11: simulation timeout&quot;);
+        $finish;
+    end
+
+endmodule
+</pre></details><details><summary><code>tb/tb_i2c_master.v</code> <span class="muted">173줄</span></summary><pre>// tb_i2c_master.v — I2C 마스터 FSM 자체 점검 테스트벤치
+// 출처: mmio-sensor-hub-checker 캡스톤 자체 RTL (Verilog-2001)
+// 테스트:
+//   T1: MPU-6050(0x68) 레지스터 0x3B 읽기, 슬레이브가 0xAB로 응답 → rdata=0xAB, error=0
+//   T2: 슬레이브 NACK → error=1
+
+`timescale 1ns/1ps
+module tb_i2c_master;
+
+    reg clk, rst_n, start;
+    reg [6:0] dev_addr;
+    reg [7:0] reg_addr;
+    wire       scl_oe, sda_oe;
+    wire       scl = ~scl_oe;  // open-drain: oe=1→0, oe=0→1
+    // SDA: DUT가 sda_oe=1이면 0, 슬레이브도 연결
+    reg        slave_sda;      // 슬레이브 출력
+    wire       sda_bus = (~sda_oe) &amp; slave_sda;  // wired-AND
+    wire       sda_in = sda_bus;
+
+    wire [7:0] rdata;
+    wire       busy, done, error;
+
+    i2c_master #(
+        .CLK_DIV(125)
+    ) dut (
+        .clk      (clk),
+        .rst_n    (rst_n),
+        .start    (start),
+        .dev_addr (dev_addr),
+        .reg_addr (reg_addr),
+        .scl_oe   (scl_oe),
+        .sda_oe   (sda_oe),
+        .sda_in   (sda_in),
+        .rdata    (rdata),
+        .busy     (busy),
+        .done     (done),
+        .error    (error)
+    );
+
+    initial clk = 0;
+    always #5 clk = ~clk;
+
+    integer fail = 0;
+
+    task check_eq;
+        input [31:0] got;
+        input [31:0] exp;
+        input [127:0] tag;
+        begin
+            if (got !== exp) begin
+                $display(&quot;FAIL %s: got=%0d exp=%0d&quot;, tag, got, exp);
+                fail = fail + 1;
+            end
+        end
+    endtask
+
+    // 슬레이브 모델: I2C 비트 스트림을 ACK/NACK 패턴으로 처리
+    // 간단 모델: SCL 상승 엣지를 세어 ACK 위치에서 SDA를 내린다
+    // T1: 모든 ACK=0 (ACK), 데이터 바이트 0xAB
+    // T2: 첫 번째 ACK=1 (NACK)
+    reg [7:0]  slave_data;   // 슬레이브가 보낼 바이트
+    reg        slave_nack;   // T2용
+
+    integer scl_edge_cnt;
+
+    always @(posedge clk) begin
+        if (!rst_n) begin
+            slave_sda     &lt;= 1&#x27;b1;
+            scl_edge_cnt  &lt;= 0;
+        end else begin
+            // SCL 상승 엣지 감지 (DUT가 SCL 해제 = scl_oe=0)
+        end
+    end
+
+    // 슬레이브 비트 스트림 모델
+    // SCL high 구간마다 비트를 세어, ACK 위치(9번째 비트)에 반응
+    reg prev_scl;
+    reg [3:0] bit_in_byte;
+    reg [1:0] byte_phase;   // 0=ADDR_W, 1=REG, 2=ADDR_R, 3=DATA
+    reg [7:0] data_shift;
+    reg       in_data_phase;
+
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            prev_scl     &lt;= 1&#x27;b1;
+            bit_in_byte  &lt;= 4&#x27;d0;
+            byte_phase   &lt;= 2&#x27;d0;
+            slave_sda    &lt;= 1&#x27;b1;
+            data_shift   &lt;= 8&#x27;d0;
+            in_data_phase&lt;= 1&#x27;b0;
+        end else begin
+            prev_scl &lt;= scl;
+
+            if (!prev_scl &amp;&amp; scl) begin
+                // SCL 상승 엣지
+                if (bit_in_byte == 4&#x27;d8) begin
+                    // ACK 위치
+                    if (slave_nack &amp;&amp; byte_phase == 2&#x27;d0)
+                        slave_sda &lt;= 1&#x27;b1;  // NACK
+                    else if (in_data_phase)
+                        slave_sda &lt;= 1&#x27;b1;  // 데이터 후 NACK(마스터가 보냄)이므로 여기서 high
+                    else
+                        slave_sda &lt;= 1&#x27;b0;  // ACK
+                    bit_in_byte &lt;= 4&#x27;d0;
+                    if (!in_data_phase) byte_phase &lt;= byte_phase + 1&#x27;b1;
+                    if (byte_phase == 2&#x27;d2) in_data_phase &lt;= 1&#x27;b1;
+                end else begin
+                    if (in_data_phase) begin
+                        // 데이터 출력: MSB first
+                        slave_sda  &lt;= slave_data[7 - bit_in_byte];
+                    end else begin
+                        slave_sda &lt;= 1&#x27;b1;  // 입력 비트는 1(high-Z)
+                    end
+                    bit_in_byte &lt;= bit_in_byte + 1&#x27;b1;
+                end
+            end else if (prev_scl &amp;&amp; !scl) begin
+                // SCL 하강 후 ACK 해제
+                if (bit_in_byte == 4&#x27;d0 &amp;&amp; !in_data_phase)
+                    slave_sda &lt;= 1&#x27;b1;
+            end
+        end
+    end
+
+    // ---- T1: ACK, 슬레이브 데이터 0xAB ----
+    initial begin
+        rst_n = 0; start = 0;
+        dev_addr   = 7&#x27;h68;
+        reg_addr   = 8&#x27;h3B;
+        slave_data = 8&#x27;hAB;
+        slave_nack = 1&#x27;b0;
+        @(posedge clk); @(posedge clk);
+        rst_n = 1;
+
+        @(posedge clk);
+        start = 1; @(posedge clk); start = 0;
+
+        wait(done === 1&#x27;b1);
+        @(posedge clk);
+
+        check_eq(rdata, 8&#x27;hAB, &quot;T1_rdata&quot;);
+        check_eq(error, 0,      &quot;T1_no_error&quot;);
+
+        // ---- T2: NACK ----
+        rst_n = 0;
+        @(posedge clk); @(posedge clk);
+        rst_n      = 1;
+        slave_nack = 1&#x27;b1;
+        slave_sda  = 1&#x27;b1;
+        bit_in_byte = 0; byte_phase = 0; in_data_phase = 0;
+
+        @(posedge clk);
+        start = 1; @(posedge clk); start = 0;
+
+        wait(done === 1&#x27;b1);
+        @(posedge clk);
+
+        check_eq(error, 1, &quot;T2_error_on_nack&quot;);
+
+        if (fail == 0)
+            $display(&quot;PASS tb_i2c_master: T1(ACK+data) T2(NACK) all checks OK&quot;);
+        else
+            $display(&quot;FAIL tb_i2c_master: %0d check(s) failed&quot;, fail);
+
+        $finish;
+    end
+
+    initial begin
+        #10_000_000;
+        $display(&quot;FAIL tb_i2c_master: simulation timeout&quot;);
+        $finish;
+    end
+
+endmodule
+</pre></details><details><summary><code>tb/tb_sensor_hub.v</code> <span class="muted">246줄</span></summary><pre>// tb_sensor_hub.v — sensor_hub_top 통합 자체 점검 테스트벤치
+// 출처: mmio-sensor-hub-checker 캡스톤 자체 RTL (Verilog-2001)
+// 테스트:
+//   T1: HC-SR04 start → 에코 모델 → dist_cm 레지스터 확인
+//   T2: DHT11 start → 40비트 모델 → humid/temp 레지스터 확인
+//   T3: I2C start → ACK 모델 → rdata 레지스터 확인
+
+`timescale 1ns/1ps
+module tb_sensor_hub;
+
+    reg clk, rst_n;
+    reg [31:0] addr;
+    reg [31:0] wdata;
+    reg        we, sel;
+    wire [31:0] rdata;
+
+    wire trig_o, dht_oe, scl_oe, sda_oe;
+
+    // 에코/DHT/SDA 모델 신호
+    reg echo_model, dht_model, sda_model;
+    wire echo_i  = echo_model;
+    wire dht_in  = dht_oe ? 1&#x27;b0 : dht_model;  // oe=1 → DUT forces low
+    wire sda_in  = (~sda_oe) &amp; sda_model;
+
+    sensor_hub_top dut (
+        .clk     (clk),
+        .rst_n   (rst_n),
+        .addr    (addr),
+        .wdata   (wdata),
+        .we      (we),
+        .sel     (sel),
+        .rdata   (rdata),
+        .trig_o  (trig_o),
+        .echo_i  (echo_i),
+        .dht_oe  (dht_oe),
+        .dht_in  (dht_in),
+        .scl_oe  (scl_oe),
+        .sda_oe  (sda_oe),
+        .sda_in  (sda_in)
+    );
+
+    initial clk = 0;
+    always #5 clk = ~clk;
+
+    integer fail = 0;
+
+    // MMIO 쓰기
+    task mmio_write;
+        input [31:0] a, d;
+        begin
+            @(posedge clk);
+            addr = a; wdata = d; we = 1&#x27;b1; sel = 1&#x27;b1;
+            @(posedge clk);
+            we = 1&#x27;b0; sel = 1&#x27;b0;
+        end
+    endtask
+
+    // MMIO 읽기
+    task mmio_read;
+        input [31:0] a;
+        output [31:0] d;
+        begin
+            @(posedge clk);
+            addr = a; we = 1&#x27;b0; sel = 1&#x27;b1;
+            @(posedge clk);
+            d = rdata;
+            sel = 1&#x27;b0;
+        end
+    endtask
+
+    task check_eq;
+        input [31:0] got;
+        input [31:0] exp;
+        input [127:0] tag;
+        begin
+            if (got !== exp) begin
+                $display(&quot;FAIL %s: got=0x%08X exp=0x%08X&quot;, tag, got, exp);
+                fail = fail + 1;
+            end
+        end
+    endtask
+
+    reg [31:0] rdval;
+
+    // ---- HC-SR04 모델 ----
+    // start 직후 trig_o 상승 감지, 1200 cycles 뒤 에코 2000 cycles 보냄
+    // dist = 2000000/5800 ≈ 344 (10 μs 트리거 후 20 ms 에코 = 344 cm)
+    // 단, TRIG_CYC=1000이므로 trig_o 뒤 1200 cycles 대기 후 echo_i=1
+    // 실제: 2000 cycles echo → dist = 2000/5800 = 0 (너무 짧음)
+    // 의미 있는 테스트: echo 175000 cycles → 30 cm
+    task hcsr04_model;
+        begin
+            wait(trig_o === 1&#x27;b1);
+            wait(trig_o === 1&#x27;b0);
+            repeat(50) @(posedge clk);  // 대기
+            echo_model = 1&#x27;b1;
+            repeat(175000) @(posedge clk);
+            echo_model = 1&#x27;b0;
+        end
+    endtask
+
+    // ---- DHT11 모델 ----
+    // humid=60(0x3C), temp=25(0x19), chk=0x55
+    task dht11_model;
+        reg [39:0] data;
+        integer i;
+        begin
+            data = 40&#x27;h3C_00_19_00_55;
+            wait(dht_oe === 1&#x27;b0);  // DUT가 release
+            repeat(100) @(posedge clk);
+            dht_model = 1&#x27;b0;
+            repeat(8000) @(posedge clk);  // 응답 Low 80 μs
+            dht_model = 1&#x27;b1;
+            repeat(8000) @(posedge clk);  // 응답 High 80 μs
+            for (i = 39; i &gt;= 0; i = i - 1) begin
+                dht_model = 1&#x27;b0;
+                repeat(5000) @(posedge clk);
+                dht_model = 1&#x27;b1;
+                if (data[i])
+                    repeat(7000) @(posedge clk);
+                else
+                    repeat(2800) @(posedge clk);
+            end
+            dht_model = 1&#x27;b0;
+        end
+    endtask
+
+    // ---- I2C 슬레이브 모델 (간단 ACK + 0xAB) ----
+    reg prev_scl_b;
+    reg [3:0] bit_b;
+    reg [1:0] bphase_b;
+    reg       in_data_b;
+
+    wire scl_bus = ~scl_oe;
+
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            prev_scl_b &lt;= 1&#x27;b1; bit_b &lt;= 0; bphase_b &lt;= 0;
+            sda_model  &lt;= 1&#x27;b1; in_data_b &lt;= 0;
+        end else begin
+            prev_scl_b &lt;= scl_bus;
+            if (!prev_scl_b &amp;&amp; scl_bus) begin
+                if (bit_b == 4&#x27;d8) begin
+                    if (in_data_b) sda_model &lt;= 1&#x27;b1;
+                    else           sda_model &lt;= 1&#x27;b0;
+                    bit_b &lt;= 0;
+                    if (!in_data_b) bphase_b &lt;= bphase_b + 1&#x27;b1;
+                    if (bphase_b == 2&#x27;d2) in_data_b &lt;= 1&#x27;b1;
+                end else begin
+                    if (in_data_b)
+                        sda_model &lt;= (8&#x27;hAB &gt;&gt; (7 - bit_b)) &amp; 1&#x27;b1;
+                    else
+                        sda_model &lt;= 1&#x27;b1;
+                    bit_b &lt;= bit_b + 1&#x27;b1;
+                end
+            end else if (prev_scl_b &amp;&amp; !scl_bus) begin
+                if (bit_b == 0 &amp;&amp; !in_data_b) sda_model &lt;= 1&#x27;b1;
+            end
+        end
+    end
+
+    // ---- 메인 테스트 ----
+    initial begin
+        rst_n      = 0; we = 0; sel = 0;
+        addr       = 0; wdata = 0;
+        echo_model = 0; dht_model = 1; sda_model = 1;
+        @(posedge clk); @(posedge clk);
+        rst_n = 1;
+
+        // ---- T1: HC-SR04 ----
+        fork
+            hcsr04_model;
+            mmio_write(32&#x27;h1002_0000, 32&#x27;h1); // HCSR04_CTRL start
+        join
+
+        // 완료 대기
+        begin : wait_hc
+            integer i;
+            for (i = 0; i &lt; 50; i = i + 1) begin
+                mmio_read(32&#x27;h1002_0004, rdval);
+                if (rdval[1]) disable wait_hc;
+                repeat(100) @(posedge clk);
+            end
+        end
+
+        mmio_read(32&#x27;h1002_0008, rdval);
+        check_eq(rdval[15:0], 16&#x27;d30, &quot;T1_hcsr04_30cm&quot;);
+
+        // ---- T2: DHT11 ----
+        fork
+            dht11_model;
+            mmio_write(32&#x27;h1002_0010, 32&#x27;h1); // DHT11_CTRL start
+        join
+
+        begin : wait_dht
+            integer j;
+            for (j = 0; j &lt; 100; j = j + 1) begin
+                mmio_read(32&#x27;h1002_0014, rdval);
+                if (rdval[1]) disable wait_dht;
+                repeat(10000) @(posedge clk);
+            end
+        end
+
+        mmio_read(32&#x27;h1002_0018, rdval);
+        check_eq(rdval[7:0], 8&#x27;d60, &quot;T2_dht11_humid&quot;);
+        mmio_read(32&#x27;h1002_001C, rdval);
+        check_eq(rdval[7:0], 8&#x27;d25, &quot;T2_dht11_temp&quot;);
+        mmio_read(32&#x27;h1002_0014, rdval);
+        check_eq(rdval[2], 1&#x27;b1,   &quot;T2_dht11_chk_ok&quot;);
+
+        // ---- T3: I2C ----
+        // I2C_CMD: [0]=start, [7:1]=0x68=0b110_1000 → wdata[7:1]=0x68
+        // wdata = {reg_addr(0x3B)[15:8], dev_addr(0x68)[7:1], start[0]}
+        //       = 0x00_3B_D1 → wdata = 32&#x27;h003B_D1
+        // 실제: wdata[7:1] = 7&#x27;h68, wdata[0]=1, wdata[15:8]=8&#x27;h3B
+        mmio_write(32&#x27;h1002_0020, 32&#x27;h003B_D1); // I2C_CMD
+
+        begin : wait_i2c
+            integer k;
+            for (k = 0; k &lt; 200; k = k + 1) begin
+                mmio_read(32&#x27;h1002_0024, rdval);
+                if (rdval[1]) disable wait_i2c;
+                repeat(1000) @(posedge clk);
+            end
+        end
+
+        mmio_read(32&#x27;h1002_0028, rdval);
+        check_eq(rdval[7:0], 8&#x27;hAB, &quot;T3_i2c_rdata&quot;);
+        mmio_read(32&#x27;h1002_0024, rdval);
+        check_eq(rdval[2], 1&#x27;b0,   &quot;T3_i2c_no_error&quot;);
+
+        if (fail == 0)
+            $display(&quot;PASS tb_sensor_hub: T1(HC-SR04) T2(DHT11) T3(I2C) all checks OK&quot;);
+        else
+            $display(&quot;FAIL tb_sensor_hub: %0d check(s) failed&quot;, fail);
+
+        $finish;
+    end
+
+    initial begin
+        #800_000_000;
+        $display(&quot;FAIL tb_sensor_hub: simulation timeout&quot;);
+        $finish;
+    end
+
+endmodule
+</pre></details><details><summary><code>constr/basys3.xdc</code> <span class="muted">81줄</span></summary><pre># basys3.xdc — Basys3 핀 제약
+# 출처: mmio-sensor-hub-checker 캡스톤 자체 RTL
+# 참고: Digilent Basys3 Master XDC (공개 문서)
+
+## 클럭
+set_property PACKAGE_PIN W5 [get_ports clk]
+set_property IOSTANDARD LVCMOS33 [get_ports clk]
+create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports clk]
+
+## 리셋 (btnC)
+set_property PACKAGE_PIN U18 [get_ports btnC]
+set_property IOSTANDARD LVCMOS33 [get_ports btnC]
+
+## LED [15:0]
+set_property PACKAGE_PIN U16 [get_ports {led[0]}]
+set_property PACKAGE_PIN E19 [get_ports {led[1]}]
+set_property PACKAGE_PIN U19 [get_ports {led[2]}]
+set_property PACKAGE_PIN V19 [get_ports {led[3]}]
+set_property PACKAGE_PIN W18 [get_ports {led[4]}]
+set_property PACKAGE_PIN U15 [get_ports {led[5]}]
+set_property PACKAGE_PIN U14 [get_ports {led[6]}]
+set_property PACKAGE_PIN V14 [get_ports {led[7]}]
+set_property PACKAGE_PIN V13 [get_ports {led[8]}]
+set_property PACKAGE_PIN V3  [get_ports {led[9]}]
+set_property PACKAGE_PIN W3  [get_ports {led[10]}]
+set_property PACKAGE_PIN U3  [get_ports {led[11]}]
+set_property PACKAGE_PIN P3  [get_ports {led[12]}]
+set_property PACKAGE_PIN N3  [get_ports {led[13]}]
+set_property PACKAGE_PIN P1  [get_ports {led[14]}]
+set_property PACKAGE_PIN L1  [get_ports {led[15]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {led[*]}]
+
+## Switches [15:0]
+set_property PACKAGE_PIN V17 [get_ports {sw[0]}]
+set_property PACKAGE_PIN V16 [get_ports {sw[1]}]
+set_property PACKAGE_PIN W16 [get_ports {sw[2]}]
+set_property PACKAGE_PIN W17 [get_ports {sw[3]}]
+set_property PACKAGE_PIN W15 [get_ports {sw[4]}]
+set_property PACKAGE_PIN V15 [get_ports {sw[5]}]
+set_property PACKAGE_PIN W14 [get_ports {sw[6]}]
+set_property PACKAGE_PIN W13 [get_ports {sw[7]}]
+set_property PACKAGE_PIN V2  [get_ports {sw[8]}]
+set_property PACKAGE_PIN T3  [get_ports {sw[9]}]
+set_property PACKAGE_PIN T2  [get_ports {sw[10]}]
+set_property PACKAGE_PIN R3  [get_ports {sw[11]}]
+set_property PACKAGE_PIN W2  [get_ports {sw[12]}]
+set_property PACKAGE_PIN U1  [get_ports {sw[13]}]
+set_property PACKAGE_PIN T1  [get_ports {sw[14]}]
+set_property PACKAGE_PIN R2  [get_ports {sw[15]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {sw[*]}]
+
+## UART (USB-UART TX)
+set_property PACKAGE_PIN A18 [get_ports RsTx]
+set_property IOSTANDARD LVCMOS33 [get_ports RsTx]
+
+## Pmod JA — HC-SR04
+# JA1: TRIG (출력)
+set_property PACKAGE_PIN J1 [get_ports ja1]
+set_property IOSTANDARD LVCMOS33 [get_ports ja1]
+# JA2: ECHO (입력, 5V→3.3V 레벨 변환 후 연결 필수)
+set_property PACKAGE_PIN L2 [get_ports ja2]
+set_property IOSTANDARD LVCMOS33 [get_ports ja2]
+
+## Pmod JB — DHT11 DATA
+# JB1: DHT_OE (N-FET 게이트 또는 오픈 콜렉터 드라이버)
+set_property PACKAGE_PIN A14 [get_ports jb1_oe]
+set_property IOSTANDARD LVCMOS33 [get_ports jb1_oe]
+# JB2: DHT_IN (입력, 풀업 4.7 kΩ to 3.3V)
+set_property PACKAGE_PIN A16 [get_ports jb1_in]
+set_property IOSTANDARD LVCMOS33 [get_ports jb1_in]
+
+## Pmod JC — I2C
+# JC1: SCL_OE (오픈 드레인, N-FET 게이트)
+set_property PACKAGE_PIN K17 [get_ports jc1_scl_oe]
+set_property IOSTANDARD LVCMOS33 [get_ports jc1_scl_oe]
+# JC2: SDA_OE (오픈 드레인, N-FET 게이트)
+set_property PACKAGE_PIN M18 [get_ports jc2_sda_oe]
+set_property IOSTANDARD LVCMOS33 [get_ports jc2_sda_oe]
+# JC3: SDA_IN (입력, 풀업 4.7 kΩ to 3.3V)
+set_property PACKAGE_PIN N17 [get_ports jc2_sda_in]
+set_property IOSTANDARD LVCMOS33 [get_ports jc2_sda_in]
+</pre></details><details><summary><code>Makefile</code> <span class="muted">76줄</span></summary><pre># Makefile — mmio-sensor-hub-checker 캡스톤 린트·시뮬·합성
+# 출처: 자체 작성 (Verilog-2001)
+# 도구: iverilog, vvp, yosys (verilator lint은 선택)
+
+SLUG = mmio-sensor-hub-checker
+
+RTL = rtl/hcsr04_ctrl.v \
+      rtl/dht11_ctrl.v \
+      rtl/i2c_master.v \
+      rtl/sensor_hub_top.v \
+      rtl/gpio.v \
+      rtl/uart_tx.v \
+      rtl/mmio_bus.v \
+      rtl/demo_master.v \
+      rtl/soc_top.v \
+      rtl/basys3_top.v
+
+TBS = tb/tb_hcsr04.v \
+      tb/tb_dht11.v \
+      tb/tb_i2c_master.v \
+      tb/tb_sensor_hub.v
+
+BUILD = build
+$(shell mkdir -p $(BUILD))
+
+.PHONY: all lint sim synth clean
+
+all: lint sim
+
+# --- 린트 ---
+lint:
+	@echo &quot;=== LINT ===&quot;
+	iverilog -g2001 -Wall -o $(BUILD)/lint_top.out \
+	    $(RTL) tb/tb_sensor_hub.v &amp;&amp; echo &quot;LINT PASS&quot; || echo &quot;LINT FAIL&quot;
+
+# --- 시뮬레이션 ---
+sim: sim_hcsr04 sim_dht11 sim_i2c sim_hub
+
+sim_hcsr04:
+	@echo &quot;--- sim: tb_hcsr04 ---&quot;
+	iverilog -g2001 -o $(BUILD)/tb_hcsr04.vvp rtl/hcsr04_ctrl.v tb/tb_hcsr04.v &amp;&amp; \
+	    vvp $(BUILD)/tb_hcsr04.vvp 2&gt;&amp;1 | tee $(BUILD)/tb_hcsr04.log | grep -E &quot;^(PASS|FAIL)&quot;
+
+sim_dht11:
+	@echo &quot;--- sim: tb_dht11 ---&quot;
+	iverilog -g2001 -o $(BUILD)/tb_dht11.vvp rtl/dht11_ctrl.v tb/tb_dht11.v &amp;&amp; \
+	    vvp $(BUILD)/tb_dht11.vvp 2&gt;&amp;1 | tee $(BUILD)/tb_dht11.log | grep -E &quot;^(PASS|FAIL)&quot;
+
+sim_i2c:
+	@echo &quot;--- sim: tb_i2c_master ---&quot;
+	iverilog -g2001 -o $(BUILD)/tb_i2c.vvp rtl/i2c_master.v tb/tb_i2c_master.v &amp;&amp; \
+	    vvp $(BUILD)/tb_i2c.vvp 2&gt;&amp;1 | tee $(BUILD)/tb_i2c.log | grep -E &quot;^(PASS|FAIL)&quot;
+
+sim_hub:
+	@echo &quot;--- sim: tb_sensor_hub ---&quot;
+	iverilog -g2001 -o $(BUILD)/tb_sensor_hub.vvp \
+	    rtl/hcsr04_ctrl.v rtl/dht11_ctrl.v rtl/i2c_master.v \
+	    rtl/sensor_hub_top.v tb/tb_sensor_hub.v &amp;&amp; \
+	    vvp $(BUILD)/tb_sensor_hub.vvp 2&gt;&amp;1 | tee $(BUILD)/tb_sensor_hub.log | grep -E &quot;^(PASS|FAIL)&quot;
+
+# --- 합성 (yosys 추정) ---
+synth:
+	@echo &quot;=== SYNTH (yosys, Xilinx 타겟) ===&quot;
+	yosys -q -p &quot;synth_xilinx -flatten -top basys3_top&quot; \
+	    $(RTL) 2&gt;&amp;1 | tee $(BUILD)/synth.log
+	@grep -E &quot;Number of (cells|wires|nets)&quot; $(BUILD)/synth.log || true
+	@echo &quot;SYNTH done. 자원은 yosys 추정 (Vivado 기준 아님)&quot;
+
+clean:
+	rm -rf $(BUILD)
+
+help:
+	@echo &quot;make lint   — iverilog -g2001 lint&quot;
+	@echo &quot;make sim    — 테스트벤치 4개 시뮬레이션&quot;
+	@echo &quot;make synth  — yosys 합성 (추정)&quot;
+	@echo &quot;make clean  — build/ 삭제&quot;
+</pre></details><h3>시뮬레이션 (각 IP 단위 검증)</h3><ol><li>make -C capstones/mmio-sensor-hub-checker lint sim</li><li>build/tb_hcsr04.log: PASS 확인 (HC-SR04 거리 계산)</li><li>build/tb_dht11.log: PASS 확인 (DHT11 체크섬 포함)</li><li>build/tb_i2c.log: PASS 확인 (I2C ACK/NACK 모두)</li><li>build/tb_sensor_hub.log: PASS 확인 (통합 MMIO)</li></ol><h3>합성 추정 (yosys)</h3><ol><li>make -C capstones/mmio-sensor-hub-checker synth</li><li>build/synth.log에서 셀 수와 LUT 추정 확인</li><li>주의: yosys 추정이므로 Vivado 실제 자원과 차이 있음</li></ol><h3>Vivado 빌드 (Basys3)</h3><ol><li>새 RTL 프로젝트, 파트 xc7a35tcpg236-1</li><li>rtl/*.v 추가 (tb/ 제외), constr/basys3.xdc 추가, 최상위 basys3_top</li><li>Generate Bitstream 후 Program Device</li><li>Pmod JA: HC-SR04 (TRIG=JA1, ECHO=JA2, 5V→3.3V 레벨 변환 필수)</li><li>Pmod JB: DHT11 (DATA 단선, 풀업 4.7kΩ to 3.3V)</li><li>Pmod JC: MPU-6050 I2C (SDA=JC2, SCL=JC1, 풀업 4.7kΩ)</li><li>RsTx(A18)를 PC 터미널 115200 8N1으로 연결</li><li>LED[0]: HC-SR04 완료, LED[2]: DHT11 완료, LED[4]: I2C 완료</li></ol>
+<h2 id="verify">8. 검증</h2><div class="panel"><table><tr><th>단계</th><th>결과</th><th>내용</th></tr>
+<tr><td>린트(verilator)</td><td>미실행</td><td></td></tr><tr><td>시뮬레이션(iverilog)</td><td>미실행</td><td></td></tr><tr><td>합성 추정(yosys)</td><td>미실행</td><td></td></tr><tr><td>보드 동작</td><td>not-tested</td><td></td></tr>
+</table></div><p>tb_hcsr04: 에코 1750 μs → 30 cm, 타임아웃(에코 없음). tb_dht11: 정상 40비트(25°C, 60%), 체크섬 오류. tb_i2c_master: ACK 정상 1바이트 읽기, NACK 오류. tb_sensor_hub: 세 센서 순차 트리거 → 레지스터 값 확인.</p>
+<h2 id="ref">9. 참고 카드와 위험</h2><h3>참고 카드</h3><ul><li><a href="../catalog/amd/lauriela8-fpga-multi-module-system.html"><code>lauriela8-fpga-multi-module-system</code></a> — HC-SR04·DHT11·I2C 복합 허브의 근거 카드. 다중 모듈 FSM 조합 패턴 참조.</li><li><a href="../catalog/amd/hackster-basys3-hcsr04-distance.html"><code>hackster-basys3-hcsr04-distance</code></a> — Basys3에서 HC-SR04 100 MHz 카운터로 거리 측정하는 근거. 타이밍 상수(5800 사이클/cm) 참조.</li><li><a href="../catalog/amd/ammar-bin-amir-arty-a7-i2c-mpu-6050.html"><code>ammar-bin-amir-arty-a7-i2c-mpu-6050</code></a> — FPGA에서 I2C 마스터 FSM으로 MPU-6050 레지스터를 읽는 근거. I2C 타이밍(400 kHz) 참조.</li></ul><h3>위험·한계</h3><ul><li>HC-SR04 ECHO는 5V 출력이므로 레벨 변환 없이 Basys3 Pmod에 직결 시 FPGA I/O 손상 위험</li><li>DHT11 타이밍(18 ms 시작, 40 μs 비트)은 클럭 도메인 주의. 100 MHz에서 카운터 비트 수 충분(24비트 = 167 ms 최대)</li><li>I2C 오픈 드레인: Verilog tri-state(sda_oe, sda_in 분리)로 모델링. 실보드에서 양방향 Pmod 배선 필요</li><li>DHT11 측정 최소 간격 1초. demo_master가 너무 빠르게 재트리거하면 비트 오류 발생</li></ul>
+</main></body></html>

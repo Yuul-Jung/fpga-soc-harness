@@ -1,0 +1,46 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>espressif-esp-tflite-micro</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../../hub.html">FPGA SoC 하네스</a><a href="../../hub.html">메인</a><a href="../../hub.html#capstones">캡스톤</a><a href="../../soc-map/tech-tree.html">기술 트리</a><a href="../../catalog/index.html">카탈로그</a><a href="../../inbox/ideas.html">아이디어</a><a href="../../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/catalog/esp32/espressif-esp-tflite-micro.md">GitHub 원본: catalog/esp32/espressif-esp-tflite-micro.md</a></p><h1>espressif-esp-tflite-micro</h1><div class="panel fm"><table><tr><td>name</td><td><a href="espressif-esp-tflite-micro.html">espressif-esp-tflite-micro</a></td></tr><tr><td>url</td><td>https://components.espressif.com/components/espressif/esp-tflite-micro/versions/1.3.3~1/readme?language=en</td></tr><tr><td>source_type</td><td>article</td></tr><tr><td>vendor</td><td>neutral</td></tr><tr><td>board</td><td>[ESP32-S3, ESP32, ESP32-C3, ESP32-P4]</td></tr><tr><td>fit_basys3</td><td>no</td></tr><tr><td>cpu</td><td>none(MCU 펌웨어)</td></tr><tr><td>language</td><td>C, C++</td></tr><tr><td>tools</td><td>[ESP-IDF v4.4+, idf.py, ESP-NN]</td></tr><tr><td>bus</td><td>none</td></tr><tr><td>peripherals</td><td>[마이크(I2S), 카메라(CSI)]</td></tr><tr><td>stage</td><td>T3</td></tr><tr><td>license</td><td>Apache-2.0</td></tr><tr><td>stats</td><td>{stars: 0, commits: 0, last_update: 2026}</td></tr><tr><td>doc_language</td><td>en</td></tr><tr><td>verification</td><td>L3</td></tr><tr><td>checked_at</td><td>2026-11-04</td></tr><tr><td>sources</td><td>[https://components.espressif.com/components/espressif/esp-tflite-micro/versions/1.3.3~1/readme?language=en]</td></tr></table></div><h2>요약</h2>
+<p>Espressif 공식 TensorFlow Lite Micro 컴포넌트(v1.3.3~1, 최신 안정판 v1.4.2). 모든 ESP32 타겟 지원, ESP-NN 최적화 커널로 추론 속도를 크게 올린다. 세 가지 예제(hello_world, micro_speech, person_detection)를 <code>idf.py create-project-from-example</code>로 생성 가능. 아카이브 크기 약 1.63 MB.</p>
+<h2>구조</h2>
+<ul><li style="margin-left:0.0em">설치: <code>idf.py add-dependency &quot;esp-tflite-micro&quot;</code>, ESP-IDF release/v4.4 이상</li><li style="margin-left:0.0em">빌드: ESP-NN 활성화는 CMakeLists.txt에 <code>-DESP_NN</code> 플래그 추가</li><li style="margin-left:0.0em">예제:</li><li style="margin-left:1.2em"><code>hello_world</code>: 기본 추론 흐름</li><li style="margin-left:1.2em"><code>micro_speech</code>: 키워드 감지(wake word)</li><li style="margin-left:1.2em"><code>person_detection</code>: 사람 감지</li><li style="margin-left:0.0em">Person Detection 추론 시간(ESP-NN 활성 기준):</li><li style="margin-left:1.2em">ESP32-P4: 73 ms</li><li style="margin-left:1.2em">ESP32-S3: unverified(페이지에서 확인 못 함)</li><li style="margin-left:1.2em">ESP32-NN 없을 때: 1395 ms (약 19배 차이)</li><li style="margin-left:0.0em">내부 메모리 우선: ESP-NN은 내부 SRAM에서 최적화. PSRAM 사용 시 성능 저하</li></ul>
+<h2>검증·재현성</h2>
+<ul><li style="margin-left:0.0em">Espressif 공식 컴포넌트 레지스트리. 버전별 소스 열람 가능</li><li style="margin-left:0.0em">내 판단: ESP32-P4(73 ms)와 ESP32-S3 추론 차이가 얼마인지는 페이지에서 직접 확인 못 했음(unverified)</li></ul>
+<h2>한계·위험</h2>
+<ul><li style="margin-left:0.0em">RAM/Flash 사용량 수치 없음. PSRAM 없는 ESP32에서 모델 크기 제약 큼</li><li style="margin-left:0.0em">micro_speech·person_detection은 예제 이름만 나오고 세부 모델 구조 미기재</li></ul>
+<h2>재사용 메모</h2>
+<p>Basys3로 직접 옮기기 어려움(<code>fit_basys3: no</code>). 개조 관점: Espressif 컴포넌트 구조(모델 플래시 저장, int8 추론, 메모리 관리자)는 FPGA 추론기 설계 시 참고. ESP-NN의 최적화 방식(내부 메모리 우선, 가중치 DMA)은 BRAM 가중치 로딩 패턴으로 차용 가능. 개조: ESP-IDF·ESP-NN은 옮길 수 없음. 모델 양자화 흐름(float → int8)과 테스트벤치 구조(hello_world 패턴)는 FPGA 가속기 IP 시험 환경에 응용 가능.</p></main></body></html>

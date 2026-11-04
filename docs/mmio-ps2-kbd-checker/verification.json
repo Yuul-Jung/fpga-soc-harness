@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-ps2-kbd-checker",
+  "stage": "T1",
+  "lint": {
+    "result": "skipped",
+    "detail": "verilator 없음"
+  },
+  "sim": {
+    "result": "skipped",
+    "detail": "iverilog 없음"
+  },
+  "synth": {
+    "result": "skipped",
+    "detail": "yosys 없음"
+  },
+  "board": {
+    "result": "not-run",
+    "detail": "사람이 확인한 항목만 pass. 에이전트는 pass로 쓰지 않는다(HARNESS §13.4)"
+  },
+  "synth_note": "yosys 추정이다. Vivado의 LUT/FF/WNS와 다를 수 있다.",
+  "recorded": "2026-11-04"
+}
