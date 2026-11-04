@@ -187,3 +187,6 @@
 | [rtime-cvut-openmsp430-watchdog](embedded/rtime-cvut-openmsp430-watchdog.md) | L3 | T1 | 미지정 (Basys3 needs-port) | 2026-11-04 |
 | [heia-fr-ma-embreal-zephyr-stack-protection](embedded/heia-fr-ma-embreal-zephyr-stack-protection.md) | L3 | T0 | nRF5340dk (Basys3 needs-port) | 2026-11-04 |
 | [tum-industrial-es-2015-functional-safety](papers/tum-industrial-es-2015-functional-safety.md) | L3 | T0 | 미지정 | 2026-11-04 |
+| [industrialmonitordirect-irs2110-half-bridge](electronics/industrialmonitordirect-irs2110-half-bridge.md) | L3 | T2 | 없음 (회로 가이드) | 2026-11-04 |
+| [zbotic-backem-flyback-protection](electronics/zbotic-backem-flyback-protection.md) | L3 | T2 | 없음 (회로 가이드) | 2026-11-04 |
+| [lcsc-mosfet-selection-motor-control](electronics/lcsc-mosfet-selection-motor-control.md) | L3 | T2 | 없음 (회로 가이드) | 2026-11-04 |

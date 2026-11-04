@@ -134,3 +134,4 @@
 2026-11-04 20:21 | collect | 안전 기능(MISRA C·워치독·스택 카나리·CRC·FMEA) · S7 난이도 사다리+S1 인접 도메인 이식 | 카드 +3 | 아이디어 +2 | 큐 잔여 8 | blocked 0
 2026-11-04 20:39 | verify | 재열람 0(차단: WebFetch PROVENANCE_REQUIRED 전면 차단) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +2(I-067·I-060, 차단조건재심사: 9점·8점) | raw→vetted +2(I-070 7점·I-071 5점) | atlas 신설(functional-safety.md, 카드 3건) | soc-map 갱신(185건·기능안전 도메인 추가)
 2026-11-04 21:01 | capstone-ci | mmio-imu-cf-ip | 등급 S2 달성 (CI run 41825251807, SHA 348a4e8c) | lint=pass sim=pass(TC1~TC5 PASS, CORDIC atan2 ±2° 오차 내) synth=pass(LUT 904·FF 448·yosys 추정) | fix1: 36비트 블렌드 곱셈(18비트 컨텍스트 오버플로 수정) / fix2: TC5 초기화 스텝(prev_roll=0 가정 보정)
+2026-11-04 21:23 | collect | 모터 드라이버 회로(H-브리지 MOSFET·게이트 드라이버·데드타임·역기전력 보호) · S2 조합 탐색(주: IRS2110+플라이백+MOSFET 선택 완전 회로 조합)+S5 비정형 출처(보조: 제조사 블로그·부품 가이드) | 카드 +3 | 아이디어 +3 (I-072~I-074) | 큐 잔여 8 | blocked 0 | catalog/electronics/ 신설

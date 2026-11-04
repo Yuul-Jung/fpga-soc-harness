@@ -949,3 +949,33 @@
 - 단계: T2
 - 상태: vetted
 - 심사: 2026-11-04 /verify(6차), WebFetch 전면 차단. 근거 0(근거 카드 모두 rechecked_at 없음) + 새로움 2(CRC 검사 AXI IP 없음; 복합 안전 계층 없음) + 적합성 2(CRC FSM LUT 최소, BRAM Controller 경유 가능, C 코드 MicroBlaze V 동작) + 완결성 1(CRC IP + 스택 센티넬 C 조합 TB 복잡, I-070 선행 필요) = 5점 → vetted. 보강: 근거 카드 rechecked_at 취득, I-070 1단계 완성 후 재심사.
+
+## I-072 FPGA RTL 데드타임 생성기 IP (IRS2110 외부 로직 대체)
+- 상태: raw
+- 요약: 내 판단: H-브리지 하이사이드/로우사이드 PWM 쌍을 AXI4-Lite 슬레이브로 제어하고, RTL 카운터로 200–500 ns 데드타임을 보장하는 T2 IP. IRS2110의 HIN/LIN 입력에 직접 연결.
+- 조합: [Basys3 FPGA(PWM+데드타임 IP), 로직레벨 MOSFET(VGS(th)<2.5V), 쇼트키 플라이백 다이오드]
+- 근거: [industrialmonitordirect-irs2110-half-bridge, zbotic-backem-flyback-protection, lcsc-mosfet-selection-motor-control]
+- 새로움의 근거: 기존 아이디어들은 슛스루 차단이 주목적; 이 IP는 IRS2110 HIN/LIN 쌍 직접 구동을 위한 데드타임 타이밍 IP로 목적이 다름
+- Basys3 적합성의 근거: Pmod JA/JB 핀(3.3V)으로 HIN/LIN 출력 가능; 100MHz 클럭으로 10 ns 분해능, 20클럭=200 ns 최소 데드타임 카운터 구현 가능
+- 난이도: 2 / 단계: T2
+- 심사: (미심사)
+
+## I-073 역기전력 보호 회로 + FPGA XADC 과전류 감지 조합 T2
+- 상태: raw
+- 요약: 내 판단: RC 스너버·TVS·쇼트키 다이오드 하드웨어 보호와 Basys3 XADC 션트 저항 전류 측정을 결합한 소프트·하드 2중 모터 보호 시스템.
+- 조합: [Basys3 XADC(전류 샘플), zbotic 플라이백 보호 회로, mmio-motor-safety-wrapper RTL 연장]
+- 근거: [zbotic-backem-flyback-protection, industrialmonitordirect-irs2110-half-bridge]
+- 새로움의 근거: 순수 하드웨어 보호(쇼트키+TVS)와 FPGA XADC 소프트 과전류 차단을 계층화; 기존 아이디어는 RTL 슛스루·데드타임만 처리, XADC 연동 없음
+- Basys3 적합성의 근거: XADC JXADC 커넥터를 션트 저항 전압 측정에 사용(0–1V 범위); 외부 하드웨어 보호는 Pmod 외부 회로에 추가
+- 난이도: 3 / 단계: T2
+- 심사: (미심사)
+
+## I-074 Basys3 Pmod 3.3V 직구동 로직레벨 H-브리지 테스트베드 T1
+- 상태: raw
+- 요약: 내 판단: 별도 게이트 드라이버 없이 Basys3 Pmod 3.3V 신호로 VGS(th)<2.5V 로직레벨 MOSFET을 직접 구동하는 소신호 모터 테스트베드. 소전류 모터(< 500 mA) 대상 최소 구성.
+- 조합: [Basys3 Pmod 직접 출력, 로직레벨 MOSFET(VGS(th)<2.5V), 쇼트키 플라이백]
+- 근거: [lcsc-mosfet-selection-motor-control, zbotic-backem-flyback-protection]
+- 새로움의 근거: 기존 카드들은 모두 별도 드라이버 IC 사용; Pmod 직접 구동 최소 구성 테스트베드는 카탈로그에 없음
+- Basys3 적합성의 근거: Pmod 출력 전류 제한(< 24 mA per pin 확인 필요) → 소신호 MOSFET(e.g. 2N7002) 게이트 전류 감당 가능 여부 확인 필요; 대전류 모터에는 부적합
+- 난이도: 1 / 단계: T1
+- 심사: (미심사)

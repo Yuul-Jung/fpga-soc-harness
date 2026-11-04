@@ -427,3 +427,11 @@
 - https://www.microchip.com/en-us/development-tool/atavrfeb-safety | Microchip ATAVRFEB-SAFETY 평가 보드: 코어-독립 윈도우 워치독·CRC 메모리 스캔(Class B)·BOR·VLM·POR 하드웨어 데모 — L3 직접 열람(카드 작성 한도 초과) | Microchip ATtiny watchdog windowed CRC Class B safety evaluation board
 - https://opencores.org/websvn/listing.php?repname=openmsp430&path=%2F | openMSP430 전체 소스 트리 목록 — 미열람(L1), 워치독·기타 주변장치 추가 파일 확인 필요 | openMSP430 Verilog MSP430 softcore peripherals source tree
 - https://www.ti.com/lit/ug/slau208q/slau208q.pdf | TI MSP430 패밀리 사용자 가이드: WDTCTL 레지스터 공식 명세 (openMSP430 대조 목적) — 미열람(L1) | TI MSP430 watchdog timer register WDTCTL user guide
+- https://www.infineon.com/cms/en/product/power/gate-driver-ics/irs2110/ | IRS2110 공식 Infineon 제품 페이지 (데이터시트·앱노트 링크 포함) | 검색어: IRS2110 half bridge gate driver
+- https://www.ti.com/lit/an/slva704/slva704.pdf | TI 게이트 드라이버 데드타임 애플리케이션 노트 | 검색어: gate driver deadtime application note motor
+- https://hackaday.com/2015/08/07/basics-of-h-bridge-theory-and-practice/ | Hackaday H-브리지 이론과 실습 (N채널 구동·부트스트랩 기초) | 검색어: H-bridge MOSFET gate driver tutorial
+- https://electronics.stackexchange.com/questions/10410/h-bridge-shoot-through-prevention | EE SE 슛스루 방지 Q&A | 검색어: H-bridge shoot-through prevention deadtime FPGA Verilog
+- https://www.analog.com/en/resources/technical-articles/bootstrap-circuit-for-high-side-driver.html | ADI 하이사이드 드라이버 부트스트랩 회로 가이드 | 검색어: bootstrap capacitor high side driver circuit calculation
+- https://ww1.microchip.com/downloads/en/AppNotes/01346B.pdf | Microchip AN1346 H-브리지 모터 제어 앱노트 | 검색어: H-bridge motor control application note microcontroller
+- https://www.st.com/en/motor-drivers/l6391.html | ST L6391 게이트 드라이버 IC (600V 하프브리지, IRS2110 대안) | 검색어: half bridge gate driver IC MOSFET 600V motor
+- https://github.com/WestfW/H-bridge | WestfW H-bridge Verilog FPGA 구현 (GitHub) | 검색어: H-bridge Verilog FPGA gate driver deadtime implementation
