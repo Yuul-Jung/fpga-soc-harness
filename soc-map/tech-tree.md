@@ -1,6 +1,6 @@
 # SoC 기술 트리 (단계별 카드 연결)
 
-갱신: 2026-11-04 (/verify 4차). 카드 173건 기준. 비 FPGA 도메인(STM32 18건·ESP32 12건·RPi·Arduino·임베디드·전자기술 포함).
+갱신: 2026-11-04 (/verify 6차). 카드 185건 기준. 비 FPGA 도메인(STM32 18건·ESP32 12건·RPi·Arduino·임베디드·전자기술·papers 포함).
 
 ---
 
@@ -81,6 +81,18 @@ FreeRTOS·Zephyr 비교 카드는 MicroBlaze V + AXI INTC RTOS 설계에 개조 
 
 ---
 
+## 기능 안전 도메인 단계 연결 (IEC 61508, 개조 참고)
+
+안전 관련 카드는 AXI4-Lite 워치독 IP·CRC 검사 IP·스택 센티넬 소프트웨어 패턴 개발에 개조 경로가 있다. 상세는 `atlas/functional-safety.md` 참조.
+
+| 단계 | 카드 | 개조 대상 |
+|---|---|---|
+| T0 | heia-fr-ma-embreal-zephyr-stack-protection (embedded) | Zephyr 스택 보호 4계층 → MicroBlaze V 소프트웨어 센티넬(C) + AXI4-Lite 감시 IP |
+| T0 | tum-industrial-es-2015-functional-safety (papers) | IEC 61508 개념(FMEA/FMEDA/CRC) → 캡스톤 보고서 안전 분석 절 근거 |
+| T1 | rtime-cvut-openmsp430-watchdog (embedded) | openMSP430 WDT FSM → AXI4-Lite WDT IP (패스워드 보호, 비트-탭 타임아웃, free_slots 배정) |
+
+---
+
 ## gap 목록 (내 판단)
 
 - gap T1→T2: 오디오·SD를 AXI4-Lite 레지스터 맵으로 감싼 Basys3 완성형 카드 미확보.
@@ -92,3 +104,5 @@ FreeRTOS·Zephyr 비교 카드는 MicroBlaze V + AXI INTC RTOS 설계에 개조 
 - gap T2: MODBUS RTU AXI4-Lite 슬레이브 IP 카드 없음; isluckyhui-fpga-modbus-rtu(FC 0x03 슬레이브)가 기초, AXI 래퍼 신규 작성 필요(I-065 vetted).
 - gap T2: CAN FD 파서 FPGA Verilog 카드 없음; wangxuan95-fpga-can(CAN 2.0)에서 FDF 분기 추가 경로(I-064 vetted).
 - gap T3: EtherCAT 소프트 슬레이브 Basys3 MicroBlaze V 사례 없음; egerobotics-esp32s3-ethercat-soes 개조 경로 있으나 사이클 타임 미검증(I-066 dropped, 재등록 조건 필요).
+- gap T1: Basys3 MicroBlaze V에 연결된 AXI4-Lite 워치독 IP 카드 없음; rtime-cvut-openmsp430-watchdog 개조 경로 있음(I-070 vetted, 7점).
+- gap T2: Basys3 BRAM 명령 메모리 CRC 검사 AXI IP 카드 없음(I-071 vetted, 5점, I-070 선행 필요).

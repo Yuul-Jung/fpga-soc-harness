@@ -756,8 +756,9 @@
 - Basys3 적합성 근거: LiteX Linux는 initramfs 기반으로 BusyBox 적용 가능. 커널 menuconfig로 비필수 드라이버 모듈화는 obuda 튜토리얼의 접근법과 같다. BRAM 제한 Basys3에서 커널 이미지 크기 축소는 필수 과제(smartmechatronics 미완성 항목, Basys3에서 특히 중요라는 재사용 메모 참조).
 - 난이도: 3
 - 단계: T3
-- 상태: vetted
+- 상태: ready
 - 심사: 2026-11-04 /verify, 근거 0(smartmechatronics·sujan·obuda rechecked_at 없음) + 새로움 2(BRAM 제한 FPGA SoC에서 BusyBox init 최소 init 스크립트 카드 없음; S4 제약 역전 첫 적용) + 적합성 2(LiteX Linux initramfs BusyBox 적용 가능, menuconfig 모듈화 obuda 접근법과 같음, BRAM 한계 Basys3 필수 과제 근거) + 완결성 1(패턴 카드, LiteX Linux 선행 조건, TB는 보드 init 시퀀스 측정) = 5점 → vetted. 보강: smartmechatronics·obuda rechecked_at 취득 필요.
+- 차단조건재심사: 2026-11-04 /verify(6차), 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(smartmechatronics-embedded-linux-boot-time-reduction, sujan-coder-buildroot-linux-rpi3, obuda-buildroot-mini-linux-tutorial, rechecked_at 불문) → 근거 3 + 새로움 2(BRAM 제한 FPGA SoC BusyBox init 카드 없음; S4 제약 역전) + 적합성 2(LiteX Linux initramfs BusyBox 가능, menuconfig 모듈화 obuda 접근법, BRAM 한계 필수 과제) + 완결성 1(패턴 카드, LiteX Linux 선행 조건) = 8점 ≥ 7 → ready 승격. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ---
 
@@ -876,8 +877,9 @@
 - Basys3 적합성 근거: logIP가 Basys3 직접 합성 스크립트 제공. 16채널 4096샘플 = BRAM 2개(72Kbit). Basys3 BRAM 50개 여유 충분.
 - 난이도: 3
 - 단계: T2
-- 상태: vetted
+- 상태: ready
 - 심사: 2026-11-04 /verify, 근거 0(meiniki-logip·lekgolo167-enxor-logic-analyzer·enjoy-digital-litescope 모두 rechecked_at 없음) + 새로움 2(AXI4-Lite 래퍼 + .vcd 직접 출력 조합 카드 없음; logIP SUMP·UART, enxor 자체 프로토콜·Tkinter를 MicroBlaze V 친화형으로 재설계하는 조합 없음) + 적합성 2(logIP Basys3 직접 합성 스크립트 제공, 16ch 4096샘플=BRAM 2개(72Kbit), Basys3 BRAM 50개 여유 충분) + 완결성 2(AXI4-Lite 슬레이브+BRAM 샘플 메모리+에지 트리거 FSM+UART .vcd 덤프 단일 IP 범위 명확) = 6점 → vetted. 보강: 근거 카드 rechecked_at 취득 필요.
+- 차단조건재심사: 2026-11-04 /verify(6차), 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(meiniki-logip, lekgolo167-enxor-logic-analyzer, enjoy-digital-litescope, rechecked_at 불문) → 근거 3 + 새로움 2(AXI4-Lite 래퍼 + .vcd 직접 출력 조합 카드 없음) + 적합성 2(logIP Basys3 직접 합성 스크립트, 16ch 4096샘플=BRAM 2개(72Kbit), BRAM 50개 여유) + 완결성 2(단일 IP 범위 명확, RTL+TB 작성 가능) = 9점 ≥ 7 → ready 승격. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ---
 
@@ -895,6 +897,7 @@
 - 단계: T3
 - 상태: vetted
 - 심사: 2026-11-04 /verify, 근거 0(memfault-interrupt-mcuboot-overview·cnxsoft-arduino-mcuboot-stm32h7·hubble-ble-ota-dfu-zephyr-mcuboot 모두 rechecked_at 없음) + 새로움 2(FPGA SoC OTA 부트로더 카드 없음; SPI Flash 2슬롯 OTA Basys3 MicroBlaze V 사례 없음) + 적합성 2(Basys3 Pmod SPI W25Q64 연결 가능, AXI Quad SPI IP BRAM 여유 충분, SHA256 C 코드 ~2kB) + 완결성 1(imgtool 이미지 형식·부트로더 FSM·C 코드·SPI 드라이버 조합 범위 큼; 1단계(이미지 헤더 검증, ECDSA 없음)로 범위 축소 필요) = 5점 → vetted. 보강: 근거 카드 rechecked_at 취득, 1단계 범위 명세화.
+- 차단조건재심사: 2026-11-04 /verify(6차), 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(memfault-interrupt-mcuboot-overview, cnxsoft-arduino-mcuboot-stm32h7, hubble-ble-ota-dfu-zephyr-mcuboot, rechecked_at 불문) → 근거 3 + 새로움 2(FPGA SoC OTA 부트로더 없음; SPI Flash 2슬롯 OTA 없음) + 적합성 2(Pmod SPI W25Q64 연결, AXI Quad SPI IP BRAM 여유, SHA256 C ~2kB) + 완결성 1(imgtool+FSM+C+SPI 드라이버 조합 범위 큼) = 8점 ≥ 7이나 한 사이클 2건 상한 초과로 보류 → vetted 유지. 다음 사이클 1순위 후보.
 
 ---
 
@@ -927,7 +930,8 @@
 - Basys3 적합성 근거: 순수 FSM+카운터이므로 BRAM·LUT 소모 최소(< 100 LUT 추정). AXI4-Lite 슬레이브 래퍼는 `library/rtl/axil_regs.v` 참고 가능. `free_slots` 중 하나에 64KB 배정 가능.
 - 난이도: 2 (1단계), 3 (2단계), 4 (3단계)
 - 단계: T1 → T2 → T3
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-04 /verify(6차), WebFetch 전면 차단으로 근거 카드 rechecked_at 없음. 근거 0(rtime-cvut-openmsp430-watchdog·heia-fr-ma-embreal-zephyr-stack-protection·tum-industrial-es-2015-functional-safety 모두 rechecked_at 없음) + 새로움 2(AXI4-Lite 워치독 IP 카드 없음; 단계적 WDT 구현 없음) + 적합성 3(순수 FSM+카운터 LUT 최소, free_slots 가용, axil_regs.v 참고) + 완결성 2(3단계 체인 범위 명확, RTL+TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득 필요.
 
 ---
 
@@ -943,4 +947,5 @@
 - Basys3 적합성 근거: CRC FSM은 LUT 소모 최소(< 200 LUT). BRAM 접근은 AXI BRAM Controller 경유. 스택 센티넬 C 코드는 MicroBlaze V에서 직접 동작. I-070 1단계(기본 WDT) 완성 후 T2 확장으로 추가 가능.
 - 난이도: 3
 - 단계: T2
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-04 /verify(6차), WebFetch 전면 차단. 근거 0(근거 카드 모두 rechecked_at 없음) + 새로움 2(CRC 검사 AXI IP 없음; 복합 안전 계층 없음) + 적합성 2(CRC FSM LUT 최소, BRAM Controller 경유 가능, C 코드 MicroBlaze V 동작) + 완결성 1(CRC IP + 스택 센티넬 C 조합 TB 복잡, I-070 선행 필요) = 5점 → vetted. 보강: 근거 카드 rechecked_at 취득, I-070 1단계 완성 후 재심사.
