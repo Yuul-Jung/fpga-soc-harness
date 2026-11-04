@@ -522,3 +522,13 @@
 - https://www.xilinx.com/support/documentation/ip_documentation/axi_timer/v2_0/pg079-axi-timer.pdf | AMD AXI Timer v2.0 PG079 공식 제품 가이드 (Generate/Capture/PWM/Cascade, TCSR0/TLR0/TCR0 레지스터) — 미열람 전체(L2: 일부 열람), 완전 L3 열람 필요 | AMD Xilinx AXI Timer peripheral guide MicroBlaze
 - https://github.com/AmoghvarshBhasme-11/axi4-lite-timer | AXI4-Lite 타이머 IP(SystemVerilog, 단순 카운터) — 미열람 L1, mij001과 비교 후보 | AXI4-Lite timer Verilog GitHub
 - https://zipcpu.com/zipcpu/2018/04/17/ziptimer.html | ZipCPU ziptimer 블로그 (형식 검증, 원샷/주기 타이머 설계 과정) — 열람 L3, zipcpu-ziptimer 카드 근거 | ZipCPU timer interrupt peripheral formal verification
+- https://github.com/arpitsingh7634/SPI_Master_Slave | 8-bit SPI 마스터·슬레이브 Verilog Mode 0, 루프백 최상위, 테스트벤치, Basys3 XDC 포함 — 열람 L2(검색 제목), 카드 완료 | Basys3 SPI slave FPGA search
+- https://github.com/taada33/basys3-spi | Basys3 파라메트릭 SPI master/slave SystemVerilog AXI4-Stream CDC 클래스 기반 검증 — 열람 L2(검색 제목), 카드 완료 | Basys3 SPI slave FPGA search
+- https://github.com/nandland/spi-slave | nandland SPI 슬레이브 Verilog 튜토리얼, 단순 FSM Verilog/VHDL — 열람 L2(검색 제목+소스 경로), 카드 완료 | nandland SPI slave search
+- https://github.com/janschiefer/verilog_spi | Verilog SPI 마스터·슬레이브 4모드(CPOL/CPHA) 전부 지원, 단순 구현 — 미열람 L1 | SPI slave FPGA Verilog mode search
+- https://github.com/JignasuShah/spi-protocol-fpga | SPI 마스터·슬레이브 Verilog, CPOL/CPHA 설정 가능, 클럭 분주, 자기점검 테스트벤치 — 미열람 L1 | Basys3 SPI CPOL CPHA testbench search
+- https://www.fpga4fun.com/SPI2.html | fpga4fun SPI 슬레이브 단순 Verilog 구현 튜토리얼 (S5 비정형 출처) — 미열람 L1 | S5 비정형 출처, fpga4fun SPI
+- https://xhovanim8.github.io/posts/SPI-project/ | "My First SPI Slave" 개인 블로그 (S5 비정형 출처) — 미열람 L1 | S5 비정형 출처, 블로그 SPI slave
+- https://www.latticesemi.com/en/Products/DesignSoftwareAndIP/IntellectualProperty/ReferenceDesigns/ReferenceDesign03/SPISlaveController | Lattice SPI 슬레이브 컨트롤러 레퍼런스 디자인 (S5 비정형 출처, Lattice 벤더 IP) — 미열람 L1 | Lattice SPI slave reference design
+- https://www.digikey.cn/zh/maker/tutorials/2025/spi-peripheral-design-in-systemverilog | DigiKey Maker SPI 주변장치 SystemVerilog 설계 튜토리얼 (S5 비정형 출처) — 미열람 L1 | DigiKey SPI peripheral design SystemVerilog
+- https://github.com/schang412/verilog-spi | Verilog SPI 슬레이브 라이브러리 — 미열람 L1 | nandland SPI slave search

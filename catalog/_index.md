@@ -222,3 +222,6 @@
 | [efabless-ef-tcc32](vendor-neutral/efabless-ef-tcc32.md) | L3 | T2 | 없음 (ASIC IP, Basys3 needs-port) | 2026-11-05 |
 | [zipcpu-ziptimer](vendor-neutral/zipcpu-ziptimer.md) | L3 | T1 | 없음 (ZipCPU 주변장치, Basys3 needs-port) | 2026-11-05 |
 | [mij001-axil-timer](vendor-neutral/mij001-axil-timer.md) | L3 | T2 | 없음 (시뮬레이션 전용, Basys3 needs-port) | 2026-11-05 |
+| [arpitsingh7634-spi-master-slave](amd/arpitsingh7634-spi-master-slave.md) | L2 | T1 | Basys3 yes | 2026-11-04 |
+| [taada33-basys3-spi](amd/taada33-basys3-spi.md) | L2 | T2 | Basys3 yes | 2026-11-04 |
+| [nandland-spi-slave](vendor-neutral/nandland-spi-slave.md) | L2 | T1 | 없음 (Basys3 needs-port) | 2026-11-04 |

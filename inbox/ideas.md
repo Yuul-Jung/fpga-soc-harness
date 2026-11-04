@@ -1271,3 +1271,25 @@
 - 새로움의 근거: 카탈로그에 다중 채널 소프트 타이머 패턴 카드 없음. 하드 IP 1개 + 소프트 멀티플렉싱 패턴은 자원 절약 효과가 명확하며 T2 펌웨어 설계 패턴 사례로 가치 있음.
 - Basys3 적합성의 근거: 하드웨어 IP 1개(free_slots 1슬롯)로 모든 타임아웃 처리. BRAM 사용 없음. 채널 배열 크기 선택 자유.
 - 난이도: 2 / 단계: T2 / 상태: raw
+
+## I-095 SPI 슬레이브 FSM + AXI4-Lite 래퍼로 MicroBlaze V에 외부 MCU 인터페이스 추가 (T2)
+
+- 내 판단: Basys3 MicroBlaze V SoC에 SPI 슬레이브 IP를 붙여, 외부 Arduino/STM32 SPI 마스터가 AXI 주변장치를 직접 제어하는 이중 인터페이스 구조. SPI 슬레이브 FSM이 MOSI 명령을 받아 AXI4-Lite 버스에 읽기·쓰기를 발급하고, 결과를 MISO로 반환. CPU 없는 외부 MCU 개발 흐름과 MicroBlaze V 펌웨어 흐름을 동시에 지원하는 T2 아이디어.
+- id: I-095
+- 조합: [SPI-slave-FSM, AXI4-Lite-slave-wrapper, MicroBlaze-V, Arduino-SPI-master]
+- 근거 카드: [arpitsingh7634-spi-master-slave, taada33-basys3-spi, airhdl-spi-to-axi-bridge]
+- 근거 URL: [https://github.com/arpitsingh7634/SPI_Master_Slave, https://github.com/taada33/basys3-spi]
+- 새로움의 근거: 카탈로그에 SPI 슬레이브→AXI4-Lite 버스 마스터 역할을 하는 완성 IP 카드 없음. airhdl-spi-to-axi-bridge는 AXI4-Lite 타깃이지만 Basys3 XDC 없음. 본 아이디어는 Basys3 XDC+MicroBlaze V 동결 맵까지 포함하는 최초 패키지.
+- Basys3 적합성의 근거: SPI 슬레이브 FSM은 Pmod 핀 4개(SCLK, MOSI, MISO, CS)로 구현 가능. AXI4-Lite 래퍼는 LUT 수백 개 수준. 동결 맵 free_slots 1칸 사용. arpitsingh7634 카드가 Basys3 XDC 존재를 확인.
+- 난이도: 3 / 단계: T2 / 상태: raw
+
+## I-096 Verilog Arduino SPI 마스터 모델 테스트벤치 (MCU SPI 타이밍 에뮬레이션) (T1)
+
+- 내 판단: Arduino Uno의 SPI 마스터 타이밍(SCLK 분주, CS 타이밍, Mode 0 CPOL/CPHA)을 Verilog 모델로 구현하여 FPGA SPI 슬레이브 FSM 시뮬레이션 테스트벤치로 사용. MCU 하드웨어 없이 iverilog/verilator에서 슬레이브 IP를 완전히 검증할 수 있는 패턴. S1(MCU→FPGA 이식) + S7(T1 테스트벤치 → T2 통합) 전략의 직접 구현.
+- id: I-096
+- 조합: [Arduino-SPI-master-model, SPI-slave-FSM, Verilog-testbench, CPOL-CPHA-timing]
+- 근거 카드: [arpitsingh7634-spi-master-slave, nandland-spi-slave, arduino-forum-spi-interface-with-fpga-3-3voltage-issue]
+- 근거 URL: [https://github.com/arpitsingh7634/SPI_Master_Slave, https://github.com/nandland/spi-slave]
+- 새로움의 근거: 카탈로그에 "MCU SPI 마스터를 Verilog 테스트벤치로 모델링"하는 카드 없음. SPI 슬레이브 FSM을 MCU 없이 CI에서 검증하는 패턴으로 하베스트 주제 [B3]의 핵심 요구사항(마스터 시뮬레이터 테스트벤치)과 직접 대응.
+- Basys3 적합성의 근거: 테스트벤치 전용(합성 불필요). iverilog·verilator 모두 지원. SPI 타이밍은 클럭 주기 계산으로 결정론적 구현 가능. T1 수준 LUT 사용.
+- 난이도: 2 / 단계: T1 / 상태: raw

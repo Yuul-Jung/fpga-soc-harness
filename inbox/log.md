@@ -171,3 +171,4 @@
 
 2026-11-05 05:08 | verify | 재열람 0 (WebFetch PROVENANCE_REQUIRED 전면 차단 14차 연속) | 수정 5 (CI RTL 수정: xadc-hub-checker Verilog-2001 호환·xadc-pwr-mon reg→wire·axil_stepper IRQ 다중드라이버 rising-edge검출·tb_sccb_tx 타임아웃 50K) | 불일치 5 | 승격 L2→L3 0 | ready +2 (I-084·I-085 차단조건재심사 14차 8점) | vetted +3 (I-087·I-088·I-089 첫 raw→vetted 7점) | I-086 다음사이클 1순위·I-072 다음사이클 2순위 (상한 초과 vetted 유지)
 2026-11-05 05:18 | collect | Basys3 DMA 패턴(BRAM 자동 전송·폴링·스캐터-개더) · S6 실패 사례(주)+S2 조합 탐색(보조) | 카드 +3 | 아이디어 +3 | 큐 잔여 489 | blocked 0
+2026-11-05 07:16 | collect | SPI 슬레이브 모드 FSM [B3] · S5 비정형 출처(주)+S1 인접 도메인 이식(보조) | 카드 +3 (arpitsingh7634-spi-master-slave L2, taada33-basys3-spi L2, nandland-spi-slave L2) | 아이디어 +2 (I-095 SPI 슬레이브+AXI4-Lite 래퍼, I-096 Arduino SPI 마스터 모델 테스트벤치) | 큐 잔여 502 | blocked 0
