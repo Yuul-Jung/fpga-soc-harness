@@ -1,0 +1,169 @@
+{
+  "slug": "mmio-imu-cf-ip",
+  "title": "IMU 상보 필터 IP (CORDIC atan2 + AXI4-Lite)",
+  "summary": "MPU-6050 원시 가속도·각속도 값을 AXI4-Lite 레지스터로 받아, CORDIC 벡터링 모드 atan2와 고정소수점 상보 필터로 롤·피치 각도를 계산하는 T4 IP 패키지. 테스트벤치는 알려진 각도의 합성 센서 값을 주입해 수렴을 자체 점검한다.",
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 Verilog-2001 원본이며 외부 코드를 포함하지 않는다. 아이디어 I-019 기반. free_slots [19]=0x4019_0000 제안. 시뮬레이션·합성 결과는 CI에서 검증한다.",
+  "board": "Basys3",
+  "stage": "T4",
+  "goals": [
+    "CORDIC 벡터링 모드 atan2를 Verilog-2001 고정소수점으로 구현 (16반복, Q7.9 도 출력)",
+    "상보 필터 FSM: roll = alpha*(roll_prev + GX_DEL) + (1-alpha)*atan2(ay, az)",
+    "AXI4-Lite 슬레이브 래퍼로 MicroBlaze V SoC에 플러그인 가능한 IP 작성",
+    "테스트벤치가 TC1~TC5 (0°, 90°, 45°, α=0 순간 응답, 자이로 드리프트 보정)를 PASS/FAIL로 검사"
+  ],
+  "non_goals": [
+    "실제 I2C 읽기 (기존 IIC IP[05]에서 소프트웨어가 처리)",
+    "칼만 필터, 사원수(Quaternion) 출력",
+    "보드 실물 검증 (S3는 사용자 담당)",
+    "부동소수점 연산"
+  ],
+  "architecture": {
+    "clock": "100 MHz (Basys3 W5 sysclk)",
+    "blocks": [
+      {"id": "basys3_top",  "name": "basys3_imu_cf_top", "kind": "top",        "module": "basys3_imu_cf_top", "file": "rtl/basys3_imu_cf_top.v", "desc": "보드 래퍼: 클럭, 리셋, LED, 7세그", "short": "Basys3 Top", "side": "top"},
+      {"id": "axil_wrap",   "name": "axil_imu_cf",       "kind": "peripheral", "module": "axil_imu_cf",       "file": "rtl/axil_imu_cf.v",       "desc": "AXI4-Lite 슬레이브 레지스터 맵 (0x4019_0000 기준)", "short": "AXI Wrap", "side": "left"},
+      {"id": "imu_cf_ip",   "name": "imu_cf_ip",         "kind": "ip",         "module": "imu_cf_ip",         "file": "rtl/imu_cf_ip.v",         "desc": "상보 필터 FSM + CORDIC 시퀀서", "short": "CF IP", "side": "center"},
+      {"id": "cordic",      "name": "cordic_atan2",       "kind": "ip",         "module": "cordic_atan2",      "file": "rtl/cordic_atan2.v",      "desc": "16반복 순차 CORDIC 벡터링 모드 (atan2 계산)", "short": "CORDIC", "side": "right"},
+      {"id": "gpio",        "name": "gpio",               "kind": "peripheral", "module": "gpio",              "file": "rtl/gpio_stub.v",         "desc": "LED/SW (스텁, 기존 GPIO IP 대체 가능)", "short": "GPIO", "side": "external"},
+      {"id": "uart_tx",     "name": "uart_tx",            "kind": "peripheral", "module": "uart_tx",           "file": "rtl/uart_tx.v",           "desc": "디버그 UART (보드 테스트용)", "short": "UART TX", "side": "external"},
+      {"id": "mpu6050_sensor", "name": "MPU-6050",        "kind": "external",   "module": "-",                 "file": "",                        "desc": "GY-521 MPU-6050 IMU 모듈 (I2C, 소프트웨어가 읽어 AXI-Lite로 전달)", "short": "MPU-6050", "side": "external"}
+    ],
+    "links": [
+      {"from": "basys3_top", "to": "axil_wrap",  "label": "AXI4-Lite"},
+      {"from": "axil_wrap",  "to": "imu_cf_ip",  "label": "reg I/F"},
+      {"from": "imu_cf_ip",  "to": "cordic",     "label": "xi/yi/start"},
+      {"from": "basys3_top", "to": "gpio",        "label": "LED[15:0]"},
+      {"from": "basys3_top", "to": "uart_tx",     "label": "TX debug"}
+    ]
+  },
+  "bus_protocol": {
+    "name": "AXI4-Lite",
+    "addr_width": 32,
+    "data_width": 32,
+    "signals": [
+      {"name": "s_axil_awaddr",  "dir": "in",  "width": 8,  "desc": "쓰기 주소 (오프셋)"},
+      {"name": "s_axil_awvalid", "dir": "in",  "width": 1,  "desc": "쓰기 주소 유효"},
+      {"name": "s_axil_awready", "dir": "out", "width": 1,  "desc": "쓰기 주소 준비"},
+      {"name": "s_axil_wdata",   "dir": "in",  "width": 32, "desc": "쓰기 데이터"},
+      {"name": "s_axil_wstrb",   "dir": "in",  "width": 4,  "desc": "쓰기 스트로브"},
+      {"name": "s_axil_wvalid",  "dir": "in",  "width": 1,  "desc": "쓰기 데이터 유효"},
+      {"name": "s_axil_wready",  "dir": "out", "width": 1,  "desc": "쓰기 데이터 준비"},
+      {"name": "s_axil_bresp",   "dir": "out", "width": 2,  "desc": "쓰기 응답 (00=OKAY)"},
+      {"name": "s_axil_bvalid",  "dir": "out", "width": 1,  "desc": "쓰기 응답 유효"},
+      {"name": "s_axil_bready",  "dir": "in",  "width": 1,  "desc": "쓰기 응답 준비"},
+      {"name": "s_axil_araddr",  "dir": "in",  "width": 8,  "desc": "읽기 주소 (오프셋)"},
+      {"name": "s_axil_arvalid", "dir": "in",  "width": 1,  "desc": "읽기 주소 유효"},
+      {"name": "s_axil_arready", "dir": "out", "width": 1,  "desc": "읽기 주소 준비"},
+      {"name": "s_axil_rdata",   "dir": "out", "width": 32, "desc": "읽기 데이터"},
+      {"name": "s_axil_rresp",   "dir": "out", "width": 2,  "desc": "읽기 응답"},
+      {"name": "s_axil_rvalid",  "dir": "out", "width": 1,  "desc": "읽기 데이터 유효"},
+      {"name": "s_axil_rready",  "dir": "in",  "width": 1,  "desc": "읽기 데이터 준비"}
+    ],
+    "note": "단일 슬레이브. BREADY/RREADY 항상 1 가정 (슬레이브 간소화). 마스터 버스트 불가."
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "custom",
+    "compat": "partial",
+    "plan": "0x4019_0000에 슬롯 [19] 배정 제안. frozen-v2의 free_slots 구간에서 선택. 사용자 동결 후 address_map→mbv-frozen-v2, frozen_mapping.frozen→해당영역명, compat→compatible 으로 갱신 가능.",
+    "frozen_mapping": [
+      {"block": "axil_wrap", "region": "[19] free_slot_proposal: 0x4019_0000, size 0x10000"}
+    ]
+  },
+  "external_parts": [
+    {
+      "id": "mpu6050",
+      "name": "MPU-6050 모듈 (GY-521)",
+      "block": "mpu6050_sensor",
+      "interface": "I2C",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": 3.3,
+      "level_shift": false,
+      "arduino_compatible": true,
+      "notes": "Basys3 Pmod JA 핀에 SDA/SCL 연결. 모듈의 VCC는 3.3V Pmod 전원 사용. 주소 0x68 (AD0=GND). I2C 읽기는 기존 IIC IP(0x4005_0000)에서 소프트웨어 처리, 본 IP는 계산만."
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "디지털 계통도만 작성. MPU-6050 ↔ Basys3 Pmod 배선은 미작성."
+  },
+  "hierarchy": {
+    "module": "basys3_imu_cf_top",
+    "file": "rtl/basys3_imu_cf_top.v",
+    "children": [
+      {"module": "axil_imu_cf", "file": "rtl/axil_imu_cf.v",
+        "children": [{"module": "imu_cf_ip", "file": "rtl/imu_cf_ip.v",
+          "children": [{"module": "cordic_atan2", "file": "rtl/cordic_atan2.v"}]
+        }]
+      }
+    ]
+  },
+  "memory_map": [
+    {
+      "base": "0x4019_0000",
+      "size": "0x10000",
+      "block": "axil_wrap",
+      "desc": "IMU 상보 필터 IP 레지스터 맵 (제안: free_slots 슬롯 [19])",
+      "regs": [
+        {"off": "0x00", "name": "CTRL",    "access": "WO", "desc": "bit0: start (자동 클리어). 쓰면 필터 1스텝 계산 시작."},
+        {"off": "0x04", "name": "STATUS",  "access": "RO", "desc": "bit0: done, bit1: busy"},
+        {"off": "0x08", "name": "AY",      "access": "WO", "desc": "가속도 Y, 16비트 부호, Q2.14 (16384=1g)"},
+        {"off": "0x0C", "name": "AZ",      "access": "WO", "desc": "가속도 Z, 16비트 부호, Q2.14"},
+        {"off": "0x10", "name": "AX",      "access": "WO", "desc": "가속도 X, 16비트 부호, Q2.14 (피치용)"},
+        {"off": "0x14", "name": "GX_DEL",  "access": "WO", "desc": "자이로 각도 증분 (degrees*512, 18비트 부호, [17:0]). 소프트: gx_dps/fs*512"},
+        {"off": "0x18", "name": "ALPHA",   "access": "WO", "desc": "상보 필터 계수 alpha*65536. 기본값 64225(=0.98). 65536=alpha=1.0"},
+        {"off": "0x1C", "name": "GY_DEL",  "access": "WO", "desc": "자이로 피치 증분 (degrees*512, 18비트 부호). gy_dps/fs*512"},
+        {"off": "0x20", "name": "ROLL",    "access": "RO", "desc": "롤 각도 출력 (degrees*512, 18비트 부호, [17:0])"},
+        {"off": "0x24", "name": "PITCH",   "access": "RO", "desc": "피치 각도 출력 (degrees*512, 18비트 부호, [17:0])"}
+      ]
+    }
+  ],
+  "roadmap": [
+    {"stage": "T2", "state": "done",    "title": "mmio-qenc-diag-checker: 엔코더 IP (AXI4-Lite)", "refs": ["mmio-qenc-diag-checker"]},
+    {"stage": "T2", "state": "done",    "title": "mmio-xadc-hub: XADC 허브 (AXI4-Lite)", "refs": ["mmio-xadc-hub"]},
+    {"stage": "T4", "state": "current", "title": "mmio-imu-cf-ip: IMU 상보 필터 (CORDIC atan2)", "refs": ["ammar-bin-amir-arty-a7-i2c-mpu-6050", "columbia-4840-spring-2026-ahrs", "pmc4628004-microblaze-gps-ins-virtex6"]},
+    {"stage": "T4", "state": "planned", "title": "mmio-lqr-ctrl-ip: LQR 상태 되먹임 제어기 (I-021)", "refs": ["comillas-tfg-2026-lqr-cartpole-basys3"]}
+  ],
+  "references": [
+    {"card": "ammar-bin-amir-arty-a7-i2c-mpu-6050", "why": "Artix-7 MPU-6050 I2C FSM 구조 참조 (I2C 마스터 패턴)"},
+    {"card": "columbia-4840-spring-2026-ahrs", "why": "AHRS 필터 하드웨어 구현 사례 참조"},
+    {"card": "pmc4628004-microblaze-gps-ins-virtex6", "why": "MicroBlaze + 관성 항법 소프트웨어 패턴 참조"},
+    {"card": "mit-6111-2018-team18-balancing-robot", "why": "IMU + 균형 제어 조합 T4 참조"}
+  ],
+  "sources": {
+    "rtl": ["rtl/cordic_atan2.v", "rtl/imu_cf_ip.v", "rtl/axil_imu_cf.v", "rtl/basys3_imu_cf_top.v", "rtl/gpio_stub.v", "rtl/uart_tx.v"],
+    "tb":  ["tb/tb_imu_cf.v"],
+    "constraints": ["constr/basys3_imu_cf.xdc"],
+    "build": ["Makefile"]
+  },
+  "howto": [
+    {
+      "title": "시뮬레이션 (iverilog)",
+      "steps": [
+        "make lint  — verilator로 rtl/*.v 문법 검사",
+        "make sim   — iverilog+vvp로 tb_imu_cf.v 실행, PASS/FAIL 확인",
+        "make synth — yosys로 자원 추정 (Vivado 수치와 다를 수 있음)"
+      ]
+    },
+    {
+      "title": "Vivado 합성",
+      "steps": [
+        "Vivado 2024.2에서 rtl/*.v를 프로젝트에 추가한다.",
+        "constr/basys3_imu_cf.xdc를 제약 파일로 추가한다.",
+        "top=basys3_imu_cf_top으로 합성한다.",
+        "합성 후 LUT/FF/BRAM 사용량과 WNS를 기록한다."
+      ]
+    }
+  ],
+  "verification": {
+    "board": "not-tested",
+    "notes": "S3 보드 검증은 사용자 담당. CI에서 iverilog/verilator/yosys로 S1/S2 결정 예정."
+  },
+  "risks": [
+    "CORDIC 초기 조건 x<=0 처리: 90°/−90° 쿼드런트 보정 로직이 올바른지 별도 TC3b(ay=16384, az=0)로 확인 필요",
+    "GX_DEL 오버플로: |gx_dps|>250 deg/s, fs=100Hz이면 최대 2.5°/step=1280 → 18비트 범위 내 안전",
+    "ALPHA=0xFFFF와 1 차이: (1-alpha)=1 경우 (65536-65535)=1 → 거의 순수 자이로, 의도 맞는지 확인 필요"
+  ]
+}

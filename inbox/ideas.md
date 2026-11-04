@@ -217,7 +217,7 @@
 - 차단조건재심사: 2026-11-04 /verify, 근거 3(stepmotion-vp-steps-per-time, eeict-2011-xpisid00-stepper-linear-speed-controller, opencores-roboarm-stepper, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 → ready. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-019 IMU 자세 추정 사다리: I2C 읽기 → 상보 필터 IP → (선택) 칼만 비교, 합성 센서 모델 테스트벤치
-- 상태: ready
+- 상태: used (패키지: mmio-imu-cf-ip, 2026-11-04)
 - 요약: 내 판단: MPU-6050 원시값(가속도·각속도)을 AXI4-Lite 레지스터로 받아 고정소수점 상보 필터로 롤·피치를 내는 IP. 테스트벤치는 알려진 각도의 합성 센서 값(중력 벡터 + 자이로 편향)을 주입해 수렴을 자체 점검한다.
 - 조합: [I2C 센서(MPU-6050), 고정소수점 필터 FSM, AXI4-Lite 레지스터, 7세그 각도 표시]
 - 근거: [columbia-4840-spring-2026-ahrs, pmc4628004-microblaze-gps-ins-virtex6, ammar-bin-amir-arty-a7-i2c-mpu-6050]
