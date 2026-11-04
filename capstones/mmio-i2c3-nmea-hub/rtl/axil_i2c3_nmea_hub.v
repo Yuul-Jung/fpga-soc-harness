@@ -336,20 +336,14 @@ integer i;  // Verilog-2001: 모듈 레벨 선언 (unnamed block 불가)
 always @(posedge aclk or negedge aresetn) begin
     if (!aresetn) begin
         fifo_wptr <= 4'd0;
-        fifo_rptr <= 4'd0;
         fifo_cnt  <= 5'd0;
         for (i = 0; i < FIFO_DEPTH; i = i + 1) begin
             fifo_data[i] <= 32'd0;
             fifo_ts[i]   <= 32'd0;
         end
-        inj_valid <= 1'b0;
-        inj_data  <= 32'd0;
     end else begin
-        inj_valid <= 1'b0;
-
         if (r_fifo_clr) begin
             fifo_wptr <= 4'd0;
-            fifo_rptr <= 4'd0;
             fifo_cnt  <= 5'd0;
         end else if (r_test_mode && inj_valid) begin
             if (!fifo_full) begin
@@ -372,6 +366,9 @@ always @(posedge aclk or negedge aresetn) begin
                 fifo_wptr <= fifo_wptr + 4'd1;
                 fifo_cnt  <= fifo_cnt  + 5'd1;
             end
+        end else if (fifo_pop && !fifo_empty) begin
+            // 팝은 AXI 읽기 블록이 fifo_pop 펄스로 요청, 여기서 cnt 감소
+            fifo_cnt <= fifo_cnt - 5'd1;
         end
     end
 end
@@ -497,7 +494,7 @@ always @(posedge aclk or negedge aresetn) begin
                     popped_data <= fifo_data[fifo_rptr];
                     popped_ts   <= fifo_ts[fifo_rptr];
                     fifo_rptr   <= fifo_rptr + 4'd1;
-                    fifo_cnt    <= fifo_cnt  - 5'd1;
+                    fifo_pop    <= 1'b1;
                     s_rdata     <= fifo_data[fifo_rptr];
                 end else begin
                     s_rdata <= 32'd0;
