@@ -69,6 +69,11 @@ module sensor_hub_top #(
                       A_IP_ID  = 16'hFFF0, A_IP_VER = 16'hFFF4,
                       A_IRQS   = 16'hFFF8, A_IRQEN  = 16'hFFFC;
 
+    // AXI4-Lite: WSTRB=0xF 전용(§bus_protocol), s_wdata 상위비트 미사용 — lint 억제
+    /* verilator lint_off UNUSEDSIGNAL */
+    wire _unused_ok = &{1'b0, s_wstrb, s_wdata[31:3]};
+    /* verilator lint_on UNUSEDSIGNAL */
+
     //=========================================================
     // 제어 / 인터럽트 레지스터
     //=========================================================
@@ -79,7 +84,7 @@ module sensor_hub_top #(
     // 64비트 타임스탬프
     //=========================================================
     reg [63:0] ts_ctr;
-    reg [31:0] ts_latch;
+    reg [31:0] ts_latch;   // TS_HI 읽을 때 ts_ctr[31:0] 래치; ts_ctr[63:32]는 직접 반환
     always @(posedge aclk) begin
         if (!aresetn) ts_ctr <= 64'd0;
         else          ts_ctr <= ts_ctr + 64'd1;
@@ -131,7 +136,7 @@ module sensor_hub_top #(
         end else if (!uart_active) begin
             if (!uart_rx2) begin           // 스타트 비트 하강 엣지
                 uart_active <= 1'b1;
-                uart_div    <= BAUD_MID;
+                uart_div    <= BAUD_MID + BAUD_CNT + 1; // 스타트 비트 중간을 건너뛰어 데이터 비트0 중간부터 샘플링
                 uart_bcnt   <= 4'd0;
             end
         end else begin
