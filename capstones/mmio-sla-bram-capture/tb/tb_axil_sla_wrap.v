@@ -170,7 +170,7 @@ module tb_axil_sla_wrap;
         // FORCE 트리거 (bit1=1)
         axil_write(8'h00, 32'h2);
         // 256 샘플 캡처 대기 (256 클럭 + 여유)
-        repeat(300) @(posedge aclk);
+        repeat(400) @(posedge aclk);
 
         axil_read(8'h04, rd);
         check_eq("TC1:ARMED",      rd & 32'h1, 32'h1);
@@ -225,7 +225,7 @@ module tb_axil_sla_wrap;
         axil_write(8'h00, 32'h1);     // ARM
         repeat(15) @(posedge aclk);
         axil_write(8'h00, 32'h2);     // FORCE
-        repeat(300) @(posedge aclk);
+        repeat(400) @(posedge aclk);
 
         axil_read(8'h04, rd);
         check_eq("TC3:FULL", (rd >> 2) & 32'h1, 32'h1);

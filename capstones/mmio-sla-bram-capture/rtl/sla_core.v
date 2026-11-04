@@ -90,6 +90,7 @@ module sla_core #(
     // pretrig 샘플을 쌓을 때까지 트리거 검출을 억제한다.
     reg [DEPTH_LOG2-1:0] pre_cnt;
     reg                  pre_done;     // pre-trigger 채움 완료
+    reg                  trig_req;     // 트리거 요청 래치 (1사이클 펄스 유실 방지)
 
     // ── FSM ───────────────────────────────────────────────
     // IDLE: armed=0, capturing=0, full=0
@@ -115,6 +116,7 @@ module sla_core #(
             sample_cnt <= {(DEPTH_LOG2+1){1'b0}};
             pre_cnt    <= {DEPTH_LOG2{1'b0}};
             pre_done   <= 1'b0;
+            trig_req   <= 1'b0;
         end else begin
             case (state)
                 S_IDLE: begin
@@ -128,6 +130,7 @@ module sla_core #(
                         sample_cnt <= {(DEPTH_LOG2+1){1'b0}};
                         pre_cnt    <= {DEPTH_LOG2{1'b0}};
                         pre_done   <= (pretrig == {DEPTH_LOG2{1'b0}});
+                        trig_req   <= 1'b0;
                     end
                 end
 
@@ -144,13 +147,18 @@ module sla_core #(
                             pre_cnt <= pre_cnt + 1'b1;
                     end
 
+                    // 트리거 요청 래치 (pre_done 전 도착한 1사이클 펄스도 보존)
+                    if (force_trig || edge_hit)
+                        trig_req <= 1'b1;
+
                     // 트리거 검출 (pre_done 후에만)
-                    if (pre_done && (edge_hit || force_trig)) begin
+                    if (pre_done && (trig_req || force_trig || edge_hit)) begin
                         state      <= S_CAPTURING;
                         capturing  <= 1'b1;
                         trig_found <= 1'b1;
                         trig_addr  <= wr_addr;
                         sample_cnt <= {{DEPTH_LOG2{1'b0}}, 1'b1};
+                        trig_req   <= 1'b0;
                     end
                 end
 
@@ -179,6 +187,7 @@ module sla_core #(
                         sample_cnt <= {(DEPTH_LOG2+1){1'b0}};
                         pre_cnt    <= {DEPTH_LOG2{1'b0}};
                         pre_done   <= (pretrig == {DEPTH_LOG2{1'b0}});
+                        trig_req   <= 1'b0;
                     end
                 end
 
