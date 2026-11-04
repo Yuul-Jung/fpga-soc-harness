@@ -127,3 +127,4 @@
 2026-11-04 19:35 | collect | 펌웨어 OTA MCUboot · S3 빈틈 추적+S2 조합 탐색 | 카드 +3 | 아이디어 +2 | 큐 잔여 398 | blocked 17(PROVENANCE_REQUIRED)
 2026-11-04 19:37 | capstone-ci | mmio-qenc-diag-checker | 등급 S2 달성 (CI run 177, SHA 28cfd7b) | lint=pass sim=pass synth=pass | 4체배 직교 엔코더+불가능 전이 카운터+AXI4-Lite 슬레이브 TC1~TC5 전부 통과
 2026-11-04 19:59 | capstone | mmio-pid-step-capture (I-017, T4, PID 계단 응답 캡처) | 등급 S0 (로컬 iverilog/yosys 없음; CI에서 S1/S2 결정) | 아이디어 used +1 | 7블록 SoC(basys3_top+soc_top+mmio_bus+gpio+uart_tx+pid_cap_ip+demo_master) | 4체배 직교 엔코더+창 계수 속도+8.8 고정소수 PID FSM+BRAM 32엔트리 계단 응답 로거+PWM | TB 5항목(ID/VER·KP왕복·최종속도±3·cap_full·BRAM) | 슬롯 [18]=0x1002_0000(MMIO-lite, 동결맵 제안)
+2026-11-04 20:00 | verify | 재열람 0(차단: WebFetch PROVENANCE_REQUIRED 전면 차단) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +2(I-019·I-021, 차단조건재심사: 각 8점) | raw 심사 +3(I-067 vetted 6점·I-068 vetted 5점·I-069 dropped 4점) | CI fix(mmio-multi-axis-motion-ctrl S2 확정, SHA 5e73742) | check 통과(182건)

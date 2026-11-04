@@ -217,7 +217,7 @@
 - 차단조건재심사: 2026-11-04 /verify, 근거 3(stepmotion-vp-steps-per-time, eeict-2011-xpisid00-stepper-linear-speed-controller, opencores-roboarm-stepper, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 → ready. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-019 IMU 자세 추정 사다리: I2C 읽기 → 상보 필터 IP → (선택) 칼만 비교, 합성 센서 모델 테스트벤치
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: MPU-6050 원시값(가속도·각속도)을 AXI4-Lite 레지스터로 받아 고정소수점 상보 필터로 롤·피치를 내는 IP. 테스트벤치는 알려진 각도의 합성 센서 값(중력 벡터 + 자이로 편향)을 주입해 수렴을 자체 점검한다.
 - 조합: [I2C 센서(MPU-6050), 고정소수점 필터 FSM, AXI4-Lite 레지스터, 7세그 각도 표시]
 - 근거: [columbia-4840-spring-2026-ahrs, pmc4628004-microblaze-gps-ins-virtex6, ammar-bin-amir-arty-a7-i2c-mpu-6050]
@@ -225,6 +225,7 @@
 - Basys3 적합성의 근거: 상보 필터는 곱셈 몇 개로 가능(내 추정, 카드에 자원 수치 없음). 칼만 176개 곱셈기 설계는 시분할이 필요할 수 있어 제외. I2C 2핀은 Pmod 3.3V, GY-521 모듈은 3.3V 로직 확인 필요.
 - 난이도: 3 / 단계: T4
 - 심사: 2026-11-04 /verify, 근거 1(ammar-bin-amir-arty-a7-i2c-mpu-6050) + 새로움 2(상보 필터 IP + 합성 센서 시험 없음) + 적합성 2(곱셈 소수·I2C 2핀 Pmod) + 완결성 1(고정소수점 비트폭·수렴 조건 미정) = 6점. 보강: 근거 카드 추가, 고정소수점 비트폭 명시.
+- 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(columbia-4840-spring-2026-ahrs, pmc4628004-microblaze-gps-ins-virtex6, ammar-bin-amir-arty-a7-i2c-mpu-6050, rechecked_at 불문) → 근거 3 + 새로움 2(상보 필터 IP + 합성 센서 시험 없음) + 적합성 2(곱셈 소수·I2C 2핀 Pmod) + 완결성 1(고정소수점 비트폭 미정) = 8점 ≥ 7 → ready 승격. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-020 균형 로봇 사다리: 합성 IMU 각도 → PID IP(적분 클램프) → 도립 플랜트 모델 폐루프 테스트벤치
 - 상태: dropped
@@ -237,7 +238,7 @@
 - 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2 + 적합성 1(모터·IMU 조합 Basys3 실물 없는 추정) + 완결성 1(단계 T4 도립진자 모델 범위 큼) = 4점 → dropped. 사유: 근거 없음, Basys3 실측 없는 추정만, I-013(속도 PI)·I-019(IMU) 선행 없이 범위 과대.
 
 ## I-021 상태 되먹임(LQR) 제어기 IP: 이득 K 레지스터 + 곱셈-누산 FSM + 카트-폴 모델 폐루프 테스트벤치
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: 상태 벡터(위치, 속도, 각도, 각속도)와 이득 K를 AXI4-Lite 레지스터로 받아 고정소수점 곱셈-누산으로 출력 u를 내는 IP. 테스트벤치에 카트-폴 이산 모델을 붙여 쓰러지지 않고 수렴하는지 자체 점검. 1단계 이득 고정, 2단계 이득을 런타임 변경, 3단계 STEP 펄스 구동기(I-018)에 가속도 지시로 연결.
 - 조합: [엔코더(I-016) 2채널, 상태 되먹임 FSM, 스텝모터 가감속(I-018), 리밋 스위치 차단(I-014)]
 - 근거: [comillas-tfg-2026-lqr-cartpole-basys3, polito-upm-2023-cartpole-fpga-lqr-pid-rl, andreicito2-inverted-pendulum, jie-2011-fpga-inverted-pendulum-robot]
@@ -245,6 +246,7 @@
 - Basys3 적합성의 근거: Comillas 초록이 Basys3에서 1 ms 주기, 루프 지연 360 ns라고 서술(L2). 곱셈 4개 수준으로 추정(내 추정, 자원 수치 없음). 스텝모터 드라이버 5V/모터 전원은 분리, 엔코더 입력은 3.3V 확인.
 - 난이도: 4 / 단계: T4
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(LQR IP + 모델 폐루프 시험 없음) + 적합성 2(Comillas 초록 Basys3 1 ms 주기 L2) + 완결성 1(카트-폴 이산 모델·이득 고정 단계 범위 미정) = 5점. 보강: 근거 카드 rechecked_at 1건, 1단계(이득 고정 PD)로 범위 축소.
+- 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 4건(comillas-tfg-2026-lqr-cartpole-basys3, polito-upm-2023-cartpole-fpga-lqr-pid-rl, andreicito2-inverted-pendulum, jie-2011-fpga-inverted-pendulum-robot, rechecked_at 불문) → 근거 3(최대) + 새로움 2(LQR IP + 모델 폐루프 시험 없음) + 적합성 2(Comillas 초록 Basys3 1 ms 주기 L2) + 완결성 1(이산 모델·이득 고정 범위 미정) = 8점 ≥ 7 → ready 승격. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-022 릴레이 자동 튜닝 IP: 릴레이 피드백 FSM(주기·진폭 측정) + PID IP 이득 쓰기, 1차+지연 모터 모델 폐루프 테스트벤치
 - 상태: vetted
@@ -874,7 +876,8 @@
 - Basys3 적합성 근거: logIP가 Basys3 직접 합성 스크립트 제공. 16채널 4096샘플 = BRAM 2개(72Kbit). Basys3 BRAM 50개 여유 충분.
 - 난이도: 3
 - 단계: T2
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-04 /verify, 근거 0(meiniki-logip·lekgolo167-enxor-logic-analyzer·enjoy-digital-litescope 모두 rechecked_at 없음) + 새로움 2(AXI4-Lite 래퍼 + .vcd 직접 출력 조합 카드 없음; logIP SUMP·UART, enxor 자체 프로토콜·Tkinter를 MicroBlaze V 친화형으로 재설계하는 조합 없음) + 적합성 2(logIP Basys3 직접 합성 스크립트 제공, 16ch 4096샘플=BRAM 2개(72Kbit), Basys3 BRAM 50개 여유 충분) + 완결성 2(AXI4-Lite 슬레이브+BRAM 샘플 메모리+에지 트리거 FSM+UART .vcd 덤프 단일 IP 범위 명확) = 6점 → vetted. 보강: 근거 카드 rechecked_at 취득 필요.
 
 ---
 
@@ -890,7 +893,8 @@
 - Basys3 적합성 근거: Basys3의 Pmod JA~JD로 W25Q64 SPI 연결 가능(SPI MOSI/MISO/CLK/CS). AXI Quad SPI IP는 MIG 없이 BRAM 50개 여유에서 실행. SHA256 소프트웨어 구현 약 2kB C 코드. BRAM 100kB 여유(T3 단계 이미지 크기 내).
 - 난이도: 4
 - 단계: T3
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-04 /verify, 근거 0(memfault-interrupt-mcuboot-overview·cnxsoft-arduino-mcuboot-stm32h7·hubble-ble-ota-dfu-zephyr-mcuboot 모두 rechecked_at 없음) + 새로움 2(FPGA SoC OTA 부트로더 카드 없음; SPI Flash 2슬롯 OTA Basys3 MicroBlaze V 사례 없음) + 적합성 2(Basys3 Pmod SPI W25Q64 연결 가능, AXI Quad SPI IP BRAM 여유 충분, SHA256 C 코드 ~2kB) + 완결성 1(imgtool 이미지 형식·부트로더 FSM·C 코드·SPI 드라이버 조합 범위 큼; 1단계(이미지 헤더 검증, ECDSA 없음)로 범위 축소 필요) = 5점 → vetted. 보강: 근거 카드 rechecked_at 취득, 1단계 범위 명세화.
 
 ---
 
@@ -906,4 +910,5 @@
 - Basys3 적합성 근거: Mbed TLS는 C 라이브러리로 MicroBlaze V에서 빌드 가능. 단, BRAM/캐시 없는 환경에서 타이밍이 길어질 수 있음(I-068 선행 필요).
 - 난이도: 5
 - 단계: T3
-- 상태: raw
+- 상태: dropped
+- 심사: 2026-11-04 /verify, 근거 0(memfault-interrupt-mcuboot-overview·cnxsoft-arduino-mcuboot-stm32h7 rechecked_at 없음; 근거 카드 2건만) + 새로움 2(ECDSA-256 MicroBlaze V 사례 없음; FPGA 소프트 CPU 공개키 검증 타이밍 측정 카드 미존재) + 적합성 1(Mbed TLS MicroBlaze V 빌드 가능이나 BRAM/캐시 없는 환경 타이밍 불확실, I-068 선행 없이 단독 실행 불가) + 완결성 1(I-068 선행 필요, Mbed TLS 포팅 절차 미정, 단독 TB 범위 불명확) = 4점 → dropped. 사유: 근거 없음·적합성·완결성 미달. I-068 완성 후 재심사 가능.
