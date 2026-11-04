@@ -133,7 +133,7 @@ module tb_axil_xadc_hub;
             @(posedge clk); #1;
             arvalid <= 1'b0;
             @(posedge clk); #1;
-            rd_data <= rdata;
+            rd_data = rdata;   // 블로킹: check_eq 호출 전 rd_data가 갱신돼야 함 (NBA면 X)
             rready  <= 1'b0;
         end
     endtask
