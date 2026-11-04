@@ -1,0 +1,158 @@
+{
+  "slug": "mmio-qenc-diag-checker",
+  "title": "직교 엔코더 진단 IP: 4체배 디코더 + 불가능 전이 카운터 + AXI4-Lite 레지스터 자체 점검",
+  "summary": "A/B 2상 엔코더 신호를 4체배(x4) 해독해 위치·속도·방향·오류 전이 수를 AXI4-Lite 슬레이브 레지스터로 노출하는 IP. 테스트벤치가 슬라이드 스위치 모사 AXI 쓰기/읽기로 정방향·역방향·글리치 주입·창 속도를 PASS/FAIL로 검사한다.",
+  "board": "Basys3",
+  "stage": "T2",
+  "goals": [
+    "A/B 엔코더 신호 4체배 해독 (방향·위치 32비트 부호 있는 카운터)",
+    "10 ms 고정 창 속도 카운터 (100 MHz 기준 10^6 사이클)",
+    "불가능 전이 오류 카운터 (글리치·단선 감지용)",
+    "AXI4-Lite 슬레이브 5개 레지스터 (CTRL/POSITION/VELOCITY/STATUS/ERROR_CNT)",
+    "테스트벤치: 정방향 4펄스 → 위치 +4, 역방향 4펄스 → 위치 0, 글리치 주입 → 오류 카운터 ≥1 PASS/FAIL 검사"
+  ],
+  "non_goals": [
+    "인덱스(Z상) 처리",
+    "고속 엔코더 보간 (보간 없이 4체배까지만)",
+    "속도 PID 폐루프 (I-013 패키지 담당)",
+    "보드 실물 검증 (S3)"
+  ],
+  "architecture": {
+    "clock": "100 MHz (Basys3 메인 클럭)",
+    "reset": "btnC active-high (AXI aresetn은 active-low)",
+    "blocks": [
+      {
+        "id": "top",
+        "name": "basys3_qenc_top",
+        "kind": "wrapper",
+        "module": "basys3_qenc_top",
+        "file": "rtl/basys3_qenc_top.v",
+        "desc": "보드 최상위: clk/btnC/JA[1:0] 입력, AXI 마스터 포트 미연결(standalone 시험용)",
+        "short": "보드 래퍼",
+        "side": "external"
+      },
+      {
+        "id": "wrap",
+        "name": "axil_qenc_wrap",
+        "kind": "peripheral",
+        "module": "axil_qenc_wrap",
+        "file": "rtl/axil_qenc_wrap.v",
+        "desc": "AXI4-Lite 슬레이브: 레지스터 디코드, qenc_diag 인스턴스화, 창 타이머",
+        "short": "AXI 래퍼",
+        "side": "left"
+      },
+      {
+        "id": "core",
+        "name": "qenc_diag",
+        "kind": "rtl",
+        "module": "qenc_diag",
+        "file": "rtl/qenc_diag.v",
+        "desc": "4체배 디코더 코어: 직전/현재 {A,B} 2비트 Gray 전이 테이블 → position/direction/error_cnt, 10ms 창 속도",
+        "short": "4x 디코더 코어",
+        "side": "right"
+      }
+    ],
+    "links": [
+      {"from": "top",  "to": "wrap", "label": "AXI4-Lite"},
+      {"from": "wrap", "to": "core", "label": "sync signals"}
+    ]
+  },
+  "bus_protocol": {
+    "name": "AXI4-Lite",
+    "data_width": 32,
+    "addr_width": 8,
+    "signals": ["awaddr","awvalid","awready","wdata","wstrb","wvalid","wready","bresp","bvalid","bready","araddr","arvalid","arready","rdata","rresp","rvalid","rready"],
+    "limits": ["단일 비트 wstrb만 사용(전체 쓰기), 버스트 없음"]
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "mbv-frozen-v2",
+    "compat": "compatible",
+    "plan": "동결 맵의 free_slots [16]에 배정 제안: base=0x4016_0000, size=0x10000. INTC 입력 미사용(폴링).",
+    "frozen_mapping": {
+      "wrap": "slot [16] 0x4016_0000"
+    }
+  },
+  "external_parts": [
+    {
+      "id": "enc",
+      "name": "직교 인크리멘탈 엔코더 (3.3 V 호환)",
+      "block": "top",
+      "interface": "JKPMOD JA 핀 (A=JA[0], B=JA[1])",
+      "io_voltage": "3.3",
+      "qty": 1,
+      "board_resident": false,
+      "notes": "5V 엔코더는 3.3V 레벨 변환 필수 (전기 규칙). 풀업은 엔코더 내장 또는 Pmod 쪽에 있어야 함."
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "디지털 계통도만 작성. 전기 회로도 미작성."
+  },
+  "hierarchy": [
+    {
+      "module": "basys3_qenc_top",
+      "file": "rtl/basys3_qenc_top.v",
+      "children": [
+        {
+          "module": "axil_qenc_wrap",
+          "file": "rtl/axil_qenc_wrap.v",
+          "children": [
+            {"module": "qenc_diag", "file": "rtl/qenc_diag.v", "children": []}
+          ]
+        }
+      ]
+    }
+  ],
+  "memory_map": {
+    "regions": [
+      {
+        "name": "qenc_diag",
+        "base": "0x4016_0000",
+        "size": "0x10000",
+        "block": "wrap",
+        "registers": [
+          {"off": "0x00", "name": "CTRL",      "access": "RW", "desc": "bit0=EN(enable), bit1=SRST(소프트 리셋), bit2=WINDOW_EN(창 속도 계산 활성)"},
+          {"off": "0x04", "name": "POSITION",  "access": "RO", "desc": "32비트 부호 있는 위치 카운터 (4체배 펄스 수)"},
+          {"off": "0x08", "name": "VELOCITY",  "access": "RO", "desc": "16비트 최근 10ms 창 카운트 (부호 없음)"},
+          {"off": "0x0C", "name": "STATUS",    "access": "RO", "desc": "bit0=DIR(0=정방향,1=역방향), bit1=OVFL(위치 오버플로 래치), bit2=ERR_LATCH(오류 발생 래치)"},
+          {"off": "0x10", "name": "ERROR_CNT", "access": "RO", "desc": "16비트 불가능 전이 오류 누산 카운터"}
+        ]
+      }
+    ]
+  },
+  "roadmap": [
+    {"stage": "T1", "state": "done",    "title": "UART+GPIO 기반 MMIO 뼈대",         "refs": ["mmio-uart-gpio-skeleton"]},
+    {"stage": "T2", "state": "done",    "title": "PWM+직교엔코더 기초 IP",            "refs": ["mmio-pwm-qenc-checker"]},
+    {"stage": "T2", "state": "current", "title": "엔코더 진단 IP (I-016)",            "refs": []},
+    {"stage": "T3", "state": "planned", "title": "단일 채널 속도 PI 폐루프",          "refs": ["mmio-speed-pi-checker"]},
+    {"stage": "T4", "state": "planned", "title": "다축 PID + 공통 트리거 (I-015)",   "refs": []}
+  ],
+  "references": [
+    {"name": "element14-arty-s7-artybot-axi-speed-sensing-ip",   "reason": "AXI4-Lite 속도 검출 IP 구조 착안"},
+    {"name": "wdevore-tinyfpga-quadrature-decoder-gist",          "reason": "4체배 Gray 전이 테이블 착안"},
+    {"name": "ubc-elex2117-lab6-quadrature-encoder",              "reason": "불가능 전이 오류 진단 아이디어"},
+    {"name": "deepbluembedded-stm32-timer-encoder-mode",          "reason": "x4 모드·DIR 비트·필터 모델 참고"},
+    {"name": "stm32-community-encoder-rollover-management",        "reason": "롤오버 경계 사분면 델타 규칙 참고"}
+  ],
+  "sources": {
+    "rtl":         ["rtl/qenc_diag.v", "rtl/axil_qenc_wrap.v", "rtl/basys3_qenc_top.v"],
+    "tb":          ["tb/tb_axil_qenc_wrap.v"],
+    "constraints": ["constr/qenc_basys3.xdc"],
+    "build":       ["Makefile"]
+  },
+  "howto": {
+    "sim": "make sim  # iverilog tb/tb_axil_qenc_wrap.v rtl/qenc_diag.v rtl/axil_qenc_wrap.v && vvp a.out",
+    "lint": "make lint  # verilator --lint-only rtl/qenc_diag.v rtl/axil_qenc_wrap.v",
+    "synth": "make synth  # yosys -p 'synth_xilinx -top axil_qenc_wrap' rtl/qenc_diag.v rtl/axil_qenc_wrap.v"
+  },
+  "verification": {
+    "board": "not-tested",
+    "notes": "S0→S2 CI 담당. S3는 사람이 올린다."
+  },
+  "risks": [
+    "5V 엔코더 레벨 변환 없으면 Basys3 I/O 손상 가능",
+    "글리치 필터 없음: 소음 많은 환경에서 오류 카운터가 빠르게 증가할 수 있음",
+    "10ms 창 속도는 저속(< 400 rpm, 100선 엔코더 가정)에서 분해능 1 count"
+  ]
+}

@@ -181,7 +181,8 @@
 - 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 4건(iccas-2003-general-purpose-pid-motion-controller-fpga·ieek-2009-dc-servo-speed-control-fpga·deepc94-pid-fpga-vhdl·columbia-4840-dc-motor-controller, rechecked_at 불문) → 차단 근거 3 + 새로움 2(다채널 공통 트리거 IP 없음) + 적합성 1(채널 증가 시 자원 추정 없음, Pmod 2~3개 추정) + 완결성 1(2채널로 범위 고정 완료, 채널 간 지터 테스트벤치 작성 가능) = 7점 ≥ 7 → ready 승격. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-016 엔코더 난이도 사다리: 손 엔코더 → 4체배 속도 IP → 불가능 전이 진단
-- 상태: ready
+- 상태: used
+- 패키지: mmio-qenc-diag-checker, 2026-11-04
 - 요약: 내 판단: 하나의 4체배 디코더 RTL에 방향·위치·고정 창 속도·불가능 전이 오류 카운터를 담고, 슬라이드 스위치 모사 테스트벤치로 정/역방향과 글리치 주입을 자체 점검하는 IP를 만든다.
 - 조합: [직교 엔코더(sensor), 7세그 표시, AXI4-Lite 카운터 레지스터]
 - 근거: [element14-arty-s7-artybot-axi-speed-sensing-ip, wdevore-tinyfpga-quadrature-decoder-gist, ubc-elex2117-lab6-quadrature-encoder, deepbluembedded-stm32-timer-encoder-mode, stm32-community-encoder-rollover-management]
