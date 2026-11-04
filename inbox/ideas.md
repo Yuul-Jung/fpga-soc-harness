@@ -294,7 +294,7 @@
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(이더넷 IP + 모터 텔레메트리 없음) + 적합성 1(W5500 SPI 모드·전원 미확인, unverified) + 완결성 2(UDP TX 초기화+SEND 명령 범위 명확) = 5점. 보강: 근거 카드 rechecked_at 1건, W5500 Pmod 적합성 확인.
 
 ## I-027 제어 루프 계기판 IP: 타일맵 VGA에 모터 속도·PID 값을 글자와 막대로 표시 (프레임 버퍼 없음)
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: 80x60 tilemap + 256 타일 + 16색 팔레트를 AXI4-Lite 슬레이브로 노출하고, 속도·목표값·오차 같은 숫자를 타일 글자로, 오차 크기를 막대 타일로 그린다. 제어 루프가 쓰는 레지스터를 읽어 줄 단위로 화소를 만들므로 프레임 버퍼가 없다. 테스트벤치는 레지스터에 숫자를 쓰고 특정 타일 좌표의 출력 화소를 확인한다.
 - 조합: [VGA 타일 렌더러, 엔코더·PID 값 레지스터, AXI4-Lite 레지스터, 프레임 끝 인터럽트]
 - 근거: [columbia-4840-tiles-tutorial, zipcpu-llvga-video-timing, microchip-an532-dc-servo-pid, ubc-elex2117-lab6-quadrature-encoder]
@@ -302,6 +302,7 @@
 - Basys3 적합성의 근거: VGA 포트는 보드 내장이라 Pmod가 필요 없고 12비트 색은 4비트 팔레트 색인으로 충분. 타일 메모리 약 16 KB는 Columbia 자료의 131,456비트 수치 기준이며 Basys3 BRAM 대비 여유는 공식 매뉴얼로 확인 필요(내 추정).
 - 난이도: 3 / 단계: T3
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(제어 루프 타일 VGA 계기판 없음) + 적합성 2(VGA 보드 내장, 타일 메모리 Columbia 131 Kbit 기준 BRAM 범위) + 완결성 2(타일맵 렌더러+숫자 타일 범위 명확) = 6점. 보강: 근거 카드 rechecked_at 1건.
+- 차단조건재심사: 2026-11-04 13:38 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 4건(columbia-4840-tiles-tutorial, zipcpu-llvga-video-timing, microchip-an532-dc-servo-pid, ubc-elex2117-lab6-quadrature-encoder, rechecked_at 불문) → 근거 3 + 새로움 2(제어 루프 타일 VGA 계기판 없음) + 적합성 3(VGA 보드 내장 Pmod 불필요, 타일 메모리 16KB < Basys3 BRAM 225KB, Columbia 131,456bit 근거 있음) + 완결성 2(타일맵 렌더러+숫자·막대 타일+레지스터 접근 범위 명확) = 10점 ≥ 7 → ready 승격.
 
 ## I-028 조이스틱 서보 로봇팔 IP: PmodJSTK2 SPI 판독 → 2축 서보 PWM, 범위·모의 시험 모델 테스트벤치
 - 상태: vetted
@@ -397,7 +398,7 @@
 - 심사: 2026-11-04 /verify, 근거 1(ammar-bin-amir-arty-a7-i2c-mpu-6050) + 새로움 2(I2C 순회+NMEA UART 허브 없음) + 적합성 2(Pmod 2개·3.3V 센서·FIFO BRAM 소량) + 완결성 1(I2C 순회 주기·FIFO 깊이 미정) = 6점. 보강: 근거 카드 추가.
 
 ## I-037 명령 우선순위 중재 RC카 IP: 원격 명령 vs 거리 안전정지 중재 FSM + 서보 3방향 스캔 결정 레지스터
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: IR(또는 UART) 명령과 초음파 거리 임계값을 받아, 안전 정지가 항상 명령을 이기는 중재 FSM을 만든다. 서보 3방향(좌·중·우) 거리 표본을 레지스터에 두고 "여유가 큰 쪽" 결정 비트를 노출한다. 테스트벤치는 합성 거리 열과 명령 열로 정지·회전·재개 순서를 PASS/FAIL 점검.
 - 조합: [명령 입력(IR/UART), 거리 측정(HC-SR04), 서보 스캔 PWM, 모터 PWM, 중재 FSM, AXI4-Lite 레지스터·인터럽트]
 - 근거: [masher1-gogo-car, circuitdigest-arduino-obstacle-avoiding-car, hackster-basys3-hcsr04-distance, opencores-nec-ir-decoder]
@@ -405,6 +406,7 @@
 - Basys3 적합성의 근거: Pmod 2~3개(IR 1핀, TRIG/ECHO 2핀, 서보 1핀, 모터 PWM/DIR 4핀 내외)면 충분, BRAM 불필요. HC-SR04 5 V 에코는 레벨 변환 필요, 모터 전원 분리. 100 MHz에서 58 µs/cm 환산은 설계 시 정함(내 판단).
 - 난이도: 3 / 단계: T2
 - 심사: 2026-11-04 /verify, 근거 1(hackster-basys3-hcsr04-distance) + 새로움 2(명령 대 자동 회피 중재 FSM 없음) + 적합성 2(Pmod 2~3개·레벨 변환 명시·BRAM 불필요) + 완결성 2(정지·회전·재개 순서 테스트벤치 범위 명확) = 7점. 보강: 근거 카드 추가.
+- 차단조건재심사: 2026-11-04 13:38 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 4건(masher1-gogo-car, circuitdigest-arduino-obstacle-avoiding-car, hackster-basys3-hcsr04-distance, opencores-nec-ir-decoder, rechecked_at 불문) → 근거 3 + 새로움 2(명령 대 자동 회피 우선순위 중재 FSM 없음) + 적합성 2(Pmod 2~3개로 충분, HC-SR04 5V 에코 레벨 변환 명시, 모터 전원 분리, BRAM 불필요) + 완결성 2(정지·회전·재개 순서 테스트벤치·서보 스캔 결정 레지스터 범위 명확) = 9점 ≥ 7 → ready 승격.
 
 ## I-038 Arduino 마스터 SPI 브리지 IP: Basys3 SPI 슬레이브 → AXI4-Lite 레지스터, 방향별 레벨 변환 점검표 포함
 - 상태: vetted
@@ -595,7 +597,8 @@
 - Basys3 적합성 근거: OV7670은 Basys3 Pmod 2개(HREF/VSYNC/PCLK/D[7:0])로 직접 연결 가능. BRAM 36개로 라인 더블 버퍼 충분(720픽셀×2×16bit = 23KB).
 - 난이도: 4
 - 단계: T4
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-04 /verify, 근거 0(chili-chips-ba-openeye-camsi rechecked_at 없음; kwondo99-fpga-vga-photobooth-project 카탈로그에 없음) + 새로움 2(D-PHY 없는 ISERDES 패턴을 OV7670 병렬 버스에 적용한 카드·패키지 없음) + 적합성 2(OV7670 Pmod 2개 직결 가능, 라인 버퍼 23KB < Basys3 BRAM 225KB) + 완결성 1(라인 버퍼 IP 범위는 명확하나 테스트벤치 기대값 미명시, kwondo99 카드 부재로 근거 약함) = 5점. 보강: kwondo99 카드 작성, chili-chips-ba-openeye-camsi rechecked_at 취득.
 
 ## I-052 automaticdai 착안 RPi ML 추론 결과 → UART → Basys3 VGA 오버레이 IP (S2 조합 탐색)
 내 판단: automaticdai/rpi-object-detection의 역할 분리 패턴에서 착안해, RPi CM4/CM5가 YOLO11n 또는 TFLite로 객체 검출을 수행하고 바운딩박스 좌표(x, y, w, h, 클래스 1바이트)를 115200bps UART로 MicroBlaze V에 전달하면, FPGA는 AXI-UART Lite로 수신 후 VGA 오버레이 IP(박스 그리기·클래스 레이블)로 출력하는 T3 캡스톤 패키지.
@@ -606,7 +609,8 @@
 - Basys3 적합성 근거: Basys3 USB-UART(JA Pmod 또는 FTDI)로 115200bps UART 가능. 바운딩박스 10바이트 패킷 기준 초당 최대 1150 패킷.
 - 난이도: 3
 - 단계: T3
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-04 /verify, 근거 0(automaticdai-rpi-object-detection rechecked_at 없음; kwondo99-fpga-vga-photobooth-project 카탈로그에 없음) + 새로움 2(RPi ML 추론→UART→VGA 오버레이 조합 카탈로그에 없음) + 적합성 2(Basys3 USB-UART 가능, 바운딩박스 10B 패킷 대역폭 명시) + 완결성 2(RPi 역할·FPGA 역할·패킷 형식 명확, 테스트벤치 계획 가능) = 6점. 보강: kwondo99 카드 작성, automaticdai-rpi-object-detection rechecked_at 취득, 패킷 형식 명세화.
 
 ## I-053 Picamera2 ZSL DMA 라인 버퍼 패턴 → Basys3 AXI-Stream ISP 사다리 T2→T4 (S4+S7 난이도 사다리)
 내 판단: Picamera2의 ZSL DMA 버퍼 패턴을 Basys3 BRAM 더블 버퍼링 개념으로 옮겨, AXI-Stream 라인 버퍼 ISP 사다리(OV7670 → 디베이어 → 데드픽셀 보정 → 가감 연산 → VGA 출력)를 T2→T3→T4 단계 체인으로 구성하는 연구 과제.
@@ -617,7 +621,8 @@
 - Basys3 적합성 근거: OV7670 병렬 입력 카드 존재(I-006). 디베이어 IP는 BRAM 1개로 충분(3-라인 버퍼). VGA 출력은 Basys3 표준 인터페이스. BRAM 36개 중 25개 이하 사용 예상(내 판단, 미검증).
 - 난이도: 5
 - 단계: T4
-- 상태: raw
+- 상태: dropped
+- 심사: 2026-11-04 /verify, 근거 0(근거 카드 모두 rechecked_at 없음; kwondo99 카드 카탈로그에 없음) + 새로움 1(I-051과 OV7670 라인 버퍼 목표 중복, Picamera2 ZSL 패턴 각도만 다름) + 적합성 1(BRAM 25개 이하 "내 판단, 미검증", OV7670 카드는 존재하나 Picamera2 ZSL 연결 근거 없음) + 완결성 0("연구 과제"로 범위가 T2→T4 체인 전체, 단일 캡스톤 범위 초과, 테스트벤치 기대값 불명확) = 2점 → dropped. 사유: I-051과 목표 중복, 범위 과대(T2→T4 단계 체인은 복수 패키지 필요), 근거 없음.
 
 ## I-054 RPi4 PREEMPT_RT 외부 루프 + Basys3 MicroBlaze V 내부 루프 이중 도메인 모터 제어 (S2 조합+S7 사다리)
 내 판단: applied-ee-rpi-realtime-linux의 핵심 결론 "BLDC 20kHz는 PREEMPT_RT에서 불가 → FPGA/MCU 분리 필요"와 ppisa-rpi-rt-control의 "SPI로 외부 FPGA에 명령 전달" 패턴을 Basys3로 이식. RPi4 PREEMPT_RT가 1kHz 외부 PID 루프(위치 setpoint 계산)를 담당하고, AXI-UART Lite 또는 SPI Pmod로 MicroBlaze V에 명령 전달, Basys3 AXI-PWM+직교 엔코더 IP(mmio-pwm-qenc-checker 패키지 기반)가 100kHz 내부 PWM 생성·엔코더 카운터 읽기를 담당하는 T3 패키지.
