@@ -331,17 +331,21 @@ end
 // TEST_MODE 주입 신호 (AXI 쓰기에서 1-사이클 펄스)
 reg        inj_valid;
 reg [31:0] inj_data;
+reg        push_done;    // FIFO push 완료 1-펄스 (FIFO write block만 구동)
+reg        w1c_irq_pend; // IRQ_PEND W1C 요청 1-펄스 (AXI write block만 구동)
 
 integer i;  // Verilog-2001: 모듈 레벨 선언 (unnamed block 불가)
 always @(posedge aclk or negedge aresetn) begin
     if (!aresetn) begin
         fifo_wptr <= 4'd0;
         fifo_cnt  <= 5'd0;
+        push_done <= 1'b0;
         for (i = 0; i < FIFO_DEPTH; i = i + 1) begin
             fifo_data[i] <= 32'd0;
             fifo_ts[i]   <= 32'd0;
         end
     end else begin
+        push_done <= 1'b0;  // 기본: 펄스 없음 (매 사이클 클리어)
         if (r_fifo_clr) begin
             fifo_wptr <= 4'd0;
             fifo_cnt  <= 5'd0;
@@ -351,6 +355,7 @@ always @(posedge aclk or negedge aresetn) begin
                 fifo_ts  [fifo_wptr] <= ts_cnt;
                 fifo_wptr <= fifo_wptr + 4'd1;
                 fifo_cnt  <= fifo_cnt  + 5'd1;
+                push_done <= 1'b1;  // IRQ 이벤트 펄스
             end
         end else if (uart_nmea_done && r_uart_en) begin
             if (!fifo_full) begin
@@ -358,6 +363,7 @@ always @(posedge aclk or negedge aresetn) begin
                 fifo_ts  [fifo_wptr] <= ts_cnt;
                 fifo_wptr <= fifo_wptr + 4'd1;
                 fifo_cnt  <= fifo_cnt  + 5'd1;
+                push_done <= 1'b1;  // IRQ 이벤트 펄스
             end
         end else if (i2c_push_r) begin
             if (!fifo_full) begin
@@ -365,6 +371,7 @@ always @(posedge aclk or negedge aresetn) begin
                 fifo_ts  [fifo_wptr] <= ts_cnt;
                 fifo_wptr <= fifo_wptr + 4'd1;
                 fifo_cnt  <= fifo_cnt  + 5'd1;
+                push_done <= 1'b1;  // IRQ 이벤트 펄스
             end
         end else if (fifo_pop && !fifo_empty) begin
             // 팝은 AXI 읽기 블록이 fifo_pop 펄스로 요청, 여기서 cnt 감소
@@ -374,13 +381,17 @@ always @(posedge aclk or negedge aresetn) begin
 end
 
 // ── IRQ 로직 ─────────────────────────────────────────────
+// r_irq_pend의 유일한 구동자. W1C 클리어(w1c_irq_pend) 우선, 푸시 이벤트(push_done)로 세트.
+// 연속 레벨(!fifo_empty)이 아닌 1-펄스 이벤트 기반 → multi-driver 없음
 always @(posedge aclk or negedge aresetn) begin
     if (!aresetn) begin
         r_irq_pend <= 1'b0;
         irq_out    <= 1'b0;
     end else begin
-        if (!fifo_empty || uart_nmea_done)
-            r_irq_pend <= 1'b1;
+        if (w1c_irq_pend)
+            r_irq_pend <= 1'b0;           // W1C 클리어 (AXI 쓰기 요청 1-펄스)
+        else if (push_done || uart_nmea_done)
+            r_irq_pend <= 1'b1;           // 이벤트 기반 세트 (레벨이 아닌 펄스)
         irq_out <= r_irq_en & r_irq_pend;
     end
 end
@@ -420,12 +431,14 @@ always @(posedge aclk or negedge aresetn) begin
         r_i2c_div  <= CLK_DIV_I2C;
         r_uart_div <= CLK_DIV_UART;
         r_irq_en   <= 1'b0;
-        inj_valid  <= 1'b0;
-        inj_data   <= 32'd0;
+        inj_valid     <= 1'b0;
+        inj_data      <= 32'd0;
+        w1c_irq_pend  <= 1'b0;
     end else begin
-        s_wready   <= 1'b0;
-        r_fifo_clr <= 1'b0;  // 자동 클리어
-        inj_valid  <= 1'b0;
+        s_wready      <= 1'b0;
+        r_fifo_clr    <= 1'b0;  // 자동 클리어
+        inj_valid     <= 1'b0;
+        w1c_irq_pend  <= 1'b0;  // 자동 클리어 (1-펄스)
 
         if (s_bvalid && s_bready) s_bvalid <= 1'b0;
 
@@ -451,7 +464,7 @@ always @(posedge aclk or negedge aresetn) begin
             end
             A_IRQ_EN:   r_irq_en   <= s_wdata[0];
             A_IRQ_PEND: begin
-                if (s_wdata[0]) r_irq_pend <= 1'b0;  // W1C
+                if (s_wdata[0]) w1c_irq_pend <= 1'b1;  // W1C 요청 → IRQ block이 처리
             end
             default: ;
             endcase
