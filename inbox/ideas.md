@@ -749,3 +749,54 @@
 - 단계: T3
 - 상태: vetted
 - 심사: 2026-11-04 /verify, 근거 0(smartmechatronics·sujan·obuda rechecked_at 없음) + 새로움 2(BRAM 제한 FPGA SoC에서 BusyBox init 최소 init 스크립트 카드 없음; S4 제약 역전 첫 적용) + 적합성 2(LiteX Linux initramfs BusyBox 적용 가능, menuconfig 모듈화 obuda 접근법과 같음, BRAM 한계 Basys3 필수 과제 근거) + 완결성 1(패턴 카드, LiteX Linux 선행 조건, TB는 보드 init 시퀀스 측정) = 5점 → vetted. 보강: smartmechatronics·obuda rechecked_at 취득 필요.
+
+---
+
+## I-061 MicroBlaze V + FreeRTOS AXI 인터럽트 핸들러 태스크 통지 패턴 (S3 빈틈 추적)
+
+내 판단: beningo-freertos-to-zephyr-migration에서 확인한 FreeRTOS ISR → 태스크 통지 패턴(`xSemaphoreGiveFromISR()`)을 MicroBlaze V 기준 AXI 슬레이브 IP 인터럽트 서비스 루틴에 적용하는 T2 캡스톤 패키지. AXI 인터럽트 컨트롤러(AXI INTC)와 FreeRTOS 세마포어를 연결하는 최소 예제를 RTL+C 조합으로 구성한다.
+
+- id: I-061
+- 조합: [AXI INTC(IP), FreeRTOS(Vitis BSP), xSemaphoreGiveFromISR(), MicroBlaze V(CPU)]
+- 근거 카드: [[beningo-freertos-to-zephyr-migration]], [[freertos-org-faq-memory]]
+- 근거 URL: https://www.beningo.com/migrating-from-freertos-to-zephyr/, https://www.freertos.org/FAQMem.html
+- 새로움 근거: 카탈로그에 MicroBlaze V + FreeRTOS + AXI 인터럽트 조합 카드 없음. ISR → FreeRTOS 태스크 통지 패턴을 보여주는 최소 예제 패키지가 현재 없음.
+- Basys3 적합성 근거: Vitis에서 MicroBlaze V BSP를 생성하면 FreeRTOS 패키지 선택 가능. AXI INTC는 Basys3 XC7A35T에 1개 이상 인스턴스화 가능(LUT 소량). 동결 맵의 free_slots에서 IP 1슬롯 배정.
+- 난이도: 3
+- 단계: T2
+- 상태: raw
+- 심사: 없음(신규 raw)
+
+---
+
+## I-062 FreeRTOS vs Zephyr 컨텍스트 전환 오버헤드 비교 측정 카드 (S6 실패 사례)
+
+내 판단: ezurio-freertos-vs-zephyr-benchmark에서 확인한 STM32F4 벤치마크(협력형 전환 FreeRTOS 223 vs Zephyr 524사이클, 뮤텍스 FreeRTOS 1964 vs Zephyr 969사이클)를 근거로, RTOS 선택이 AXI 슬레이브 IP 인터럽트 반응성에 미치는 영향을 정리한 임베디드 공통 카드 추가. 항목마다 더 느린 쪽의 "실패 사례"(협력형 전환에서 Zephyr가 느린 이유, 뮤텍스에서 FreeRTOS가 느린 이유)를 함께 기술함.
+
+- id: I-062
+- 조합: [FreeRTOS(커널), Zephyr(커널), STM32F4(벤치 플랫폼), AXI ISR 반응성(Basys3 연결)]
+- 근거 카드: [[ezurio-freertos-vs-zephyr-benchmark]], [[freertos-org-faq-memory]]
+- 근거 URL: https://www.ezurio.com/resources/blog/freertos-vs-zephyr, https://www.freertos.org/FAQMem.html
+- 새로움 근거: 카탈로그에 RTOS 성능 비교 카드 없음. "항목별로 결과가 역전"되는 패턴을 명시한 카드가 필요.
+- Basys3 적합성 근거: 카드는 임베디드 공통 참조 자료로 RTL/BRAM 필요 없음. MicroBlaze V + FreeRTOS 조합에서 타이밍 여유 계산 근거로 직접 활용.
+- 난이도: 1
+- 단계: T2
+- 상태: raw
+- 심사: 없음(신규 raw)
+
+---
+
+## I-063 ThreadX(Eclipse) 결정론적 인터럽트 패턴 → FPGA SoC 하드 실시간 타이밍 비교 (S3 빈틈 추적)
+
+내 판단: Eclipse ThreadX의 결정론적 성능(우선순위 상속, 고정 오버헤드)을 의료·항공 임베디드 맥락에서 정리하고, Basys3 위 MicroBlaze V에서 FreeRTOS 대비 ThreadX를 선택할 근거가 있는지 비교하는 임베디드 공통 카드. ThreadX는 Vitis BSP에 포함 여부 미확인 → 카드 작성 후 Vitis BSP 지원 여부 조사 필요.
+
+- id: I-063
+- 조합: [Eclipse ThreadX(RTOS), MicroBlaze V(CPU), Vitis BSP(빌드환경), AXI INTC(IP)]
+- 근거 카드: [[ezurio-freertos-vs-zephyr-benchmark]]
+- 근거 URL: https://hackaday.com/2024/01/16/the-state-of-embedded-rtos-in-2024/, https://eclipse.org/threadx
+- 새로움 근거: 카탈로그에 ThreadX 카드 없음. MIT 라이선스 이전(2023) 이후 사용성 평가 카드가 필요.
+- Basys3 적합성 근거: ThreadX가 Vitis BSP에 미포함이면 Basys3 직접 적용 불가. 카드에 "조사 필요" 명시. 카드 자체가 임베디드 공통 참조로 가치 있음.
+- 난이도: 2
+- 단계: T2
+- 상태: raw
+- 심사: 없음(신규 raw)

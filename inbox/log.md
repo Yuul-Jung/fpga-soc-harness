@@ -111,3 +111,4 @@
 2026-11-04 15:23 | collect | RPi OS 프로젝트: Buildroot 최소 이미지·부트 최적화 · S1 인접 도메인 이식(주)+S5 비정형 출처(보조) | 카드 +3 | 아이디어 +3 | 큐 잔여 348 | blocked 1
 2026-11-04 15:29 | capstone | mmio-ps2-mouse-cursor (I-008, ready) | 등급 S0 (iverilog 없음, CI에서 S1/S2 결정) | check 오류 0 / build.py 경고 3(예상됨) / audit 오류 0 | 선택 경로: §13.7 I-008 ready→used: PS/2 마우스 FSM+VGA 오버레이 T2 패키지 | ps2_mouse_host.v(BAT/0xF4/3바이트 패킷 디코더·클램프) + vga_sync_cursor.v(5×5 커서) + basys3_top.v + tb(PASS/FAIL 6개)
 2026-11-04 15:47 | verify | 재열람 0(차단: WebFetch PROVENANCE_REQUIRED 전면 차단) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +2(I-043·I-054, 차단조건재심사: 8점·8점) | raw 심사 +6(I-055 vetted 6점·I-056 vetted 5점·I-057 vetted 5점·I-058 vetted 7점·I-059 vetted 5점·I-060 vetted 5점) | atlas/soc-map 갱신(RPi Buildroot 카드 3건) | check 통과(167건)
+2026-11-04 16:10 | collect | RTOS 비교: FreeRTOS vs Zephyr vs ThreadX · S3 빈틈 추적(주)+S6 실패 사례(보조) | 카드 +3 | 아이디어 +3(I-061~I-063 raw) | 큐 잔여 392 | blocked 0

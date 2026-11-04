@@ -169,3 +169,6 @@
 | [sujan-coder-buildroot-linux-rpi3](rpi/sujan-coder-buildroot-linux-rpi3.md) | L3 | T0 | Raspberry Pi 3 (Basys3 needs-port) | 2026-11-04 |
 | [obuda-buildroot-mini-linux-tutorial](rpi/obuda-buildroot-mini-linux-tutorial.md) | L3 | T0 | Raspberry Pi 4 (Basys3 needs-port) | 2026-11-04 |
 | [smartmechatronics-embedded-linux-boot-time-reduction](rpi/smartmechatronics-embedded-linux-boot-time-reduction.md) | L3 | T1 | Raspberry Pi 4 (Basys3 needs-port) | 2026-11-04 |
+| [ezurio-freertos-vs-zephyr-benchmark](embedded/ezurio-freertos-vs-zephyr-benchmark.md) | L3 | T2 | MCU 범용 (Basys3 needs-port) | 2026-11-04 |
+| [freertos-org-faq-memory](embedded/freertos-org-faq-memory.md) | L3 | T2 | MCU 범용 (Basys3 needs-port) | 2026-11-04 |
+| [beningo-freertos-to-zephyr-migration](embedded/beningo-freertos-to-zephyr-migration.md) | L3 | T2 | MCU 범용 (Basys3 needs-port) | 2026-11-04 |

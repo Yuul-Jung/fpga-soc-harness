@@ -72,7 +72,7 @@
 - [x] RPi OS 프로젝트: Buildroot 최소 이미지, 부트 시간 최적화, 임베디드 배포 — 2026-11-04 15시대 사이클: 카드 3건(L3: sujan-coder-buildroot-linux-rpi3·obuda-buildroot-mini-linux-tutorial·smartmechatronics-embedded-linux-boot-time-reduction), romainreignier/minimal_raspberrypi_buildroot blocked(PROVENANCE_REQUIRED), 아이디어 3건(I-058~I-060)
 
 ## 임베디드 공통 도메인 (2026-11-03 추가, 위에서부터 소비)
-- [ ] RTOS 비교: FreeRTOS vs Zephyr vs ThreadX — 태스크 모델·메모리·포팅 난이도
+- [x] RTOS 비교: FreeRTOS vs Zephyr vs ThreadX — 태스크 모델·메모리·포팅 난이도
 - [ ] 프로토콜 심화: CAN FD 프레임 구조, MODBUS RTU/TCP, EtherCAT 기초
 - [ ] 디버그 기법: JTAG/SWD 트레이스, OpenOCD, Segger RTT, 논리 분석기 활용
 - [ ] 펌웨어 OTA: MCUboot 부트로더, 이중 파티션 업데이트, 서명 검증
