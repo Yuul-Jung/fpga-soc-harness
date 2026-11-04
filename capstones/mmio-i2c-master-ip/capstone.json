@@ -1,0 +1,152 @@
+{
+  "slug": "mmio-i2c-master-ip",
+  "title": "CTRL/DATA형 I2C 마스터 IP",
+  "summary": "단일 바이트 CTRL/DATA 레지스터 인터페이스로 I2C 마스터 트랜잭션을 제어하는 Basys3 mmio-lite IP. MPU-6050 WHO_AM_I 레지스터 읽기 시뮬레이션(가짜 슬레이브 모델)으로 검증.",
+  "board": "Basys3",
+  "stage": "T2",
+  "goals": [
+    "mmio-lite 버스 위에서 I2C 100 kHz 마스터 단일 바이트 쓰기/읽기 트랜잭션 제공",
+    "CTRL 레지스터(GO 비트 자기 소거, BUSY·NAK 플래그)와 DATA 레지스터로 CPU 없이 FSM에서도 구동 가능",
+    "IP 표준 Rev.1 관리 레지스터(IP_ID·VER·IRQ_STATUS·IRQ_ENABLE) 준수",
+    "iverilog 시뮬레이션에서 가짜 MPU-6050 슬레이브와 WHO_AM_I(0x68) 읽기 PASS 확인"
+  ],
+  "non_goals": [
+    "멀티 바이트 버스트 트랜잭션 (한 번의 GO로 여러 바이트 전송)",
+    "클럭 스트레칭 (SCL 모니터링 없음)",
+    "400 kHz / 1 MHz Fast/Fast+ 속도",
+    "AXI4-Lite 버스 인터페이스 (mmio-lite 전용)",
+    "보드 동작 확인 (S3)"
+  ],
+  "architecture": {
+    "clock": {
+      "source": "clk_100mhz (Basys3 XTAL)",
+      "freq_mhz": 100,
+      "i2c_khz": 100,
+      "clk_div": 1000
+    },
+    "blocks": [
+      {"id": "top",   "name": "basys3_top",    "kind": "board_wrapper", "module": "basys3_top",    "file": "rtl/basys3_top.v",    "desc": "Basys3 보드 래퍼, I/O 버퍼", "short": "Board Top", "side": "top"},
+      {"id": "soc",   "name": "soc_top",       "kind": "soc_core",      "module": "soc_top",       "file": "rtl/soc_top.v",       "desc": "SoC 코어: mmio_bus + I2C IP + demo_master", "short": "SoC Core", "side": "top"},
+      {"id": "bus",   "name": "mmio_bus",      "kind": "bus_decoder",   "module": "mmio_bus",      "file": "rtl/mmio_bus.v",      "desc": "단일 슬레이브 mmio-lite 디코더", "short": "MMIO Bus", "side": "left"},
+      {"id": "i2c",   "name": "i2c_master_ip", "kind": "peripheral",    "module": "i2c_master_ip", "file": "rtl/i2c_master_ip.v", "desc": "I2C 100 kHz 마스터 FSM + MMIO 레지스터", "short": "I2C Master", "side": "right"},
+      {"id": "demo",  "name": "demo_master",   "kind": "controller",    "module": "demo_master",   "file": "rtl/demo_master.v",   "desc": "WHO_AM_I 읽기 시연 FSM (합성용)", "short": "Demo FSM", "side": "left"},
+      {"id": "pmod",  "name": "pmod_i2c",      "kind": "external",      "module": null,            "file": null,                  "desc": "Pmod JA 1-2번 핀 → I2C SDA/SCL (3.3V 오픈드레인)", "short": "Pmod I2C", "side": "right"}
+    ],
+    "links": [
+      {"from": "top",  "to": "soc",  "label": "clk, rst_n"},
+      {"from": "soc",  "to": "bus",  "label": "mmio_addr/wdata/rdata/we"},
+      {"from": "bus",  "to": "i2c",  "label": "cs, addr, wdata, rdata, we"},
+      {"from": "demo", "to": "bus",  "label": "MMIO master port"},
+      {"from": "i2c",  "to": "pmod", "label": "scl_o/sda_o (open-drain)"},
+      {"from": "pmod", "to": "i2c",  "label": "sda_i (입력 루프백)"}
+    ]
+  },
+  "bus_protocol": {
+    "name": "mmio-lite",
+    "type": "single-cycle synchronous",
+    "signals": ["addr[31:0]", "wdata[31:0]", "rdata[31:0]", "we", "cs"],
+    "note": "AXI4-Lite 비호환. ready/valid 핸드셰이크 없음. 한 사이클 응답."
+  },
+  "integration": {
+    "bus": "mmio-lite",
+    "address_map": "custom",
+    "compat": "incompatible",
+    "plan": "mbv-frozen-v2 맵으로 이식 시 slot [19] = 0x4019_0000 사용 예정. integration.compat=partial로 올리려면 AXI4-Lite 래퍼 추가 필요.",
+    "note": "이 패키지는 mmio-lite 버스 전용 독립 데모이며 MicroBlaze V SoC에 직접 연결되지 않음."
+  },
+  "external_parts": [
+    {
+      "id": "ext_pullup_sda",
+      "name": "SDA 풀업 저항 4.7 kΩ",
+      "block": "pmod",
+      "interface": "I2C",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": 3.3,
+      "level_shift": false,
+      "power_note": "Pmod 3.3V 전원",
+      "arduino_compatible": true,
+      "notes": "오픈드레인 버스 풀업. 시뮬레이션에서는 불필요."
+    },
+    {
+      "id": "ext_pullup_scl",
+      "name": "SCL 풀업 저항 4.7 kΩ",
+      "block": "pmod",
+      "interface": "I2C",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": 3.3,
+      "level_shift": false,
+      "power_note": "Pmod 3.3V 전원",
+      "arduino_compatible": true,
+      "notes": "오픈드레인 버스 풀업. 시뮬레이션에서는 불필요."
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "오픈드레인 버스 + 풀업 2개만 필요. 별도 회로도 미작성."
+  },
+  "hierarchy": [
+    {
+      "module": "basys3_top", "file": "rtl/basys3_top.v",
+      "children": [
+        {
+          "module": "soc_top", "file": "rtl/soc_top.v",
+          "children": [
+            {"module": "mmio_bus",      "file": "rtl/mmio_bus.v",      "children": []},
+            {"module": "i2c_master_ip", "file": "rtl/i2c_master_ip.v", "children": []},
+            {"module": "demo_master",   "file": "rtl/demo_master.v",   "children": []}
+          ]
+        }
+      ]
+    }
+  ],
+  "memory_map": {
+    "regions": [
+      {"base": "0x0000_0000", "size": "64KB", "block": "i2c", "name": "I2C Master IP"}
+    ],
+    "registers": [
+      {"off": "0x0000", "name": "CTRL",       "access": "RW", "desc": "[6:0]=addr [7]=rnw [8]=go(W,SC) [9]=stop [10]=busy(RO) [11]=nak(RO)"},
+      {"off": "0x0004", "name": "DATA",       "access": "RW", "desc": "[7:0]=tx_data(W) / rx_data(R)"},
+      {"off": "0xFFF0", "name": "IP_ID",      "access": "RO", "desc": "0x4932_434D (ASCII 'I2CM')"},
+      {"off": "0xFFF4", "name": "IP_VER",     "access": "RO", "desc": "0x0000_0100 (Rev 1.0)"},
+      {"off": "0xFFF8", "name": "IRQ_STATUS", "access": "RW", "desc": "[0]=done (W1C)"},
+      {"off": "0xFFFC", "name": "IRQ_ENABLE", "access": "RW", "desc": "[0]=done_en"}
+    ]
+  },
+  "roadmap": [
+    {"stage": "T1", "state": "done",    "title": "UART+GPIO 기초 SoC",           "refs": ["mmio-uart-gpio-skeleton"]},
+    {"stage": "T2", "state": "current", "title": "CTRL/DATA I2C 마스터 IP",       "refs": []},
+    {"stage": "T2", "state": "planned", "title": "I2C + SPI 멀티 센서 허브",       "refs": ["I-036"]},
+    {"stage": "T3", "state": "planned", "title": "MicroBlaze V AXI4-Lite 래퍼", "refs": []}
+  ],
+  "references": [
+    {"name": "suoglu-axi-lite-slave",   "reason": "AXI-Lite 슬레이브 패턴 참조 (버스 디코더 구조)"},
+    {"name": "kwondo99-fpga-vga-photobooth-project", "reason": "Pmod 오픈드레인 I/O 사례"},
+    {"name": "nexusv-ieee-nitk",        "reason": "PicoRV32 + I2C IP 주변장치 패턴 참조"}
+  ],
+  "sources": {
+    "rtl":         ["rtl/basys3_top.v", "rtl/soc_top.v", "rtl/mmio_bus.v", "rtl/i2c_master_ip.v", "rtl/demo_master.v"],
+    "tb":          ["tb/tb_i2c_master.v"],
+    "constraints": ["constr/basys3.xdc"],
+    "build":       ["Makefile"]
+  },
+  "howto": {
+    "sim":   "make sim   # iverilog + vvp; PASS/FAIL 출력 확인",
+    "lint":  "make lint  # iverilog -Wall -t null",
+    "synth": "make synth # yosys 합성, 자원 추정",
+    "clean": "make clean"
+  },
+  "verification": {
+    "board": "not-tested",
+    "notes": "시뮬레이션: 가짜 MPU-6050 슬레이브와 2단계 트랜잭션(레지스터 쓰기→읽기) 검증. S3(보드 동작)는 미수행."
+  },
+  "risks": [
+    "mmio-lite 단일 사이클 응답: 긴 I2C 트랜잭션 중 BUSY=1이므로 CPU가 폴링 필요",
+    "클럭 스트레칭 미지원: 느린 슬레이브와 연동 시 타이밍 오류 가능",
+    "단일 바이트 전송: 멀티 바이트 레지스터 읽기에는 소프트웨어 루프 필요",
+    "오픈드레인 출력: 보드 연결 시 외부 풀업 저항(4.7 kΩ) 필수"
+  ]
+}
