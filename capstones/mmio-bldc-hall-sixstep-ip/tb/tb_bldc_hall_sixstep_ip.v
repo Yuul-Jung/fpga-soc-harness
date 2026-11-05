@@ -286,11 +286,16 @@ module tb_bldc_hall_sixstep_ip;
         axi_read(8'h10, rd_val);
         check(rd_val[6] === 1'b1, 63, rd_val, 32'h40);
 
-        // Clear fault by writing CTRL (re-enable)
-        axi_write(8'h04, 32'h3);  // ctrl_en=1, ctrl_ie=1, writes clear fault_lat
-
-        // Restore valid hall
+        // Restore valid hall FIRST so fault_raw goes low before CTRL write.
+        // (3 sync stages must propagate; writing CTRL while fault_raw=1 would
+        //  re-latch the fault on the very next cycle.)
         hall_in = 3'b101;
+        repeat (6) @(posedge clk); // 3 sync + 3 margin → fault_raw=0
+
+        // Now clear fault by writing CTRL (re-enable).
+        // Correct usage order: fix hardware problem, then acknowledge fault.
+        axi_write(8'h04, 32'h3);  // ctrl_en=1, ctrl_ie=1, fault_lat cleared
+
         repeat (5) @(posedge clk);
 
         // STATUS[6] should now be clear
