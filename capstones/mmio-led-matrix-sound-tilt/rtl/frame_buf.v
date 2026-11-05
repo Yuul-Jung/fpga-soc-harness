@@ -39,17 +39,16 @@ module frame_buf #(
 
     integer b, r, c;
 
-    // 에너지 추출
-    genvar gi;
-    generate
-        for (gi=0; gi<N_BANDS; gi=gi+1) begin : unpack
-            always @(posedge clk or negedge rst_n) begin
-                if (!rst_n) energy[gi] <= 0;
-                else if (energy_update)
-                    energy[gi] <= energy_flat[gi*ENERGY_W +: ENERGY_W];
-            end
+    // 에너지 추출 (단일 always 블록으로 yosys 호환성 확보)
+    always @(posedge clk or negedge rst_n) begin : energy_unpack
+        integer gi;
+        if (!rst_n) begin
+            for (gi = 0; gi < N_BANDS; gi = gi+1) energy[gi] <= 0;
+        end else if (energy_update) begin
+            for (gi = 0; gi < N_BANDS; gi = gi+1)
+                energy[gi] <= energy_flat[gi*ENERGY_W +: ENERGY_W];
         end
-    endgenerate
+    end
 
     // ADXL 최신값 유지
     always @(posedge clk or negedge rst_n) begin

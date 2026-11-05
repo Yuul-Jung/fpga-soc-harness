@@ -133,38 +133,8 @@ module tb_led_matrix_sound_tilt;
         end
     endtask
 
-    // frame_buf 내부 에너지 직접 강제 — 단위 테스트 가속
-    // (실제 PDM 경로를 기다리지 않음)
-    task force_energy;
-        input [2:0]  band;
-        input [31:0] val;
-        begin
-            case (band)
-                3'd0: force u_soc.u_frame.energy[0] = val;
-                3'd1: force u_soc.u_frame.energy[1] = val;
-                3'd2: force u_soc.u_frame.energy[2] = val;
-                3'd3: force u_soc.u_frame.energy[3] = val;
-                3'd4: force u_soc.u_frame.energy[4] = val;
-                3'd5: force u_soc.u_frame.energy[5] = val;
-                3'd6: force u_soc.u_frame.energy[6] = val;
-                3'd7: force u_soc.u_frame.energy[7] = val;
-                default: ;
-            endcase
-        end
-    endtask
-
-    task release_energy;
-        begin
-            release u_soc.u_frame.energy[0];
-            release u_soc.u_frame.energy[1];
-            release u_soc.u_frame.energy[2];
-            release u_soc.u_frame.energy[3];
-            release u_soc.u_frame.energy[4];
-            release u_soc.u_frame.energy[5];
-            release u_soc.u_frame.energy[6];
-            release u_soc.u_frame.energy[7];
-        end
-    endtask
+    // frame_buf 에너지 강제: energy_flat 포트를 직접 사용
+    // (iverilog vvp는 reg 배열의 개별 원소 force를 지원하지 않음)
 
     integer b, r, c;
     reg [31:0] rd_data;
@@ -223,15 +193,18 @@ module tb_led_matrix_sound_tilt;
         // CTRL = en=1
         axil_write(12'h000, 32'h0000_0001);
 
-        // 에너지 강제: 대역 0=최대(0xFFFF_FFFF), 대역 1=0, 대역 7=절반(0x4000_0000)
-        force_energy(3'd0, 32'hFFFF_FFFF);  // bar_h = 7
-        force_energy(3'd1, 32'h0000_0000);  // bar_h = 0
-        force_energy(3'd2, 32'h0000_0000);
-        force_energy(3'd3, 32'h0000_0000);
-        force_energy(3'd4, 32'h0000_0000);
-        force_energy(3'd5, 32'h0000_0000);
-        force_energy(3'd6, 32'h0000_0000);
-        force_energy(3'd7, 32'h4000_0000);  // bar_h = 2 (상위 3비트 = 010)
+        // 에너지 강제: energy_flat 포트 직접 사용
+        // energy_flat[gi*32 +: 32]: band0=[31:0], band7=[255:224] (LSB=band0)
+        force u_soc.u_frame.energy_flat = {
+            32'h4000_0000,  // band 7: bar_h=2 (상위3비트=010)
+            32'h0000_0000,  // band 6: bar_h=0
+            32'h0000_0000,  // band 5: bar_h=0
+            32'h0000_0000,  // band 4: bar_h=0
+            32'h0000_0000,  // band 3: bar_h=0
+            32'h0000_0000,  // band 2: bar_h=0
+            32'h0000_0000,  // band 1: bar_h=0
+            32'hFFFF_FFFF   // band 0: bar_h=7 (상위3비트=111)
+        };
 
         // energy_update 펄스를 직접 강제
         force u_soc.u_frame.energy_update = 1;
@@ -297,7 +270,7 @@ module tb_led_matrix_sound_tilt;
             end
         end
 
-        release_energy;
+        release u_soc.u_frame.energy_flat;
         release u_soc.u_frame.energy_update;
 
         // ================================================================
