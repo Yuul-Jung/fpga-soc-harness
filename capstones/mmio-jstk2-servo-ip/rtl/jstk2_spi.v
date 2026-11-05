@@ -127,9 +127,9 @@ always @(posedge clk or negedge rst_n) begin
                 // X = {X_H[1:0], X_L[7:0]} (10비트)
                 // Y = {Y_H[1:0], Y_L[7:0]} (10비트)
                 // BTN = BTN_BYTE[1:0]
-                jstk_x   <= {rx_shift[30:29], rx_shift[39:32]}; // {X_H[1:0], X_L}
-                jstk_y   <= {rx_shift[22:21], rx_shift[31:24]}; // {Y_H[1:0], Y_L}
-                jstk_btn <= rx_shift[17:16];                     // BTN 바이트 [1:0]
+                jstk_x   <= {rx_shift[25:24], rx_shift[39:32]}; // {X_H[1:0], X_L}
+                jstk_y   <= {rx_shift[9:8],   rx_shift[23:16]}; // {Y_H[1:0], Y_L}
+                jstk_btn <= rx_shift[1:0];                       // BTN 바이트 [1:0]
                 sample_done <= 1'b1;
                 state    <= S_IDLE;
             end

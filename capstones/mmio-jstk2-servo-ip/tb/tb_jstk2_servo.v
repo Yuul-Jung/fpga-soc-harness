@@ -91,6 +91,7 @@ localparam [39:0] SPI_MISO_DATA = 40'h00_02_FF_01_01;
 reg [5:0]  miso_bit_cnt;
 reg [39:0] miso_shift;
 reg        spi_cs_n_prev;
+reg        spi_sclk_prev;   // 상승에지 검출용
 
 always @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
@@ -98,15 +99,17 @@ always @(posedge clk or negedge rst_n) begin
         miso_bit_cnt  <= 6'd0;
         miso_shift    <= SPI_MISO_DATA;
         spi_cs_n_prev <= 1'b1;
+        spi_sclk_prev <= 1'b0;
     end else begin
         spi_cs_n_prev <= spi_cs_n;
+        spi_sclk_prev <= spi_sclk;
         // CS# 하강: 새 전송 시작, MISO 데이터 준비
         if (spi_cs_n_prev && !spi_cs_n) begin
             miso_shift   <= SPI_MISO_DATA;
             miso_bit_cnt <= 6'd0;
         end
-        // SCLK 상승에지에서 MISO 비트 출력 (Mode 0)
-        if (!spi_cs_n && spi_sclk) begin
+        // SCLK 상승에지에서만 MISO 비트 출력 (Mode 0, 에지 검출)
+        if (!spi_cs_n && !spi_sclk_prev && spi_sclk) begin
             spi_miso     <= miso_shift[39];
             miso_shift   <= {miso_shift[38:0], 1'b0};
             miso_bit_cnt <= miso_bit_cnt + 1'b1;
@@ -129,12 +132,13 @@ task axi_write;
         s_wvalid  <= 1'b1;
         @(posedge clk); #1;
         while (!(s_awready && s_wready)) @(posedge clk); #1;
+        // while exits at posedge+1ns 시점: wready=1 && awready=1 && bvalid=1 (동일 클럭에 세트됨)
         s_awvalid <= 1'b0;
         s_wvalid  <= 1'b0;
         s_bready  <= 1'b1;
-        @(posedge clk); #1;
-        while (!s_bvalid) @(posedge clk); #1;
+        @(posedge clk); #1;  // DUT가 bready&&bvalid를 보고 bvalid=0으로 소거
         s_bready  <= 1'b0;
+        // while (!s_bvalid) 는 제거: bvalid는 bready 첫 클럭에서 소거되어 바로 0이 됨
     end
 endtask
 
@@ -148,7 +152,7 @@ task axi_read;
         s_rready  <= 1'b1;
         @(posedge clk); #1;
         while (!s_rvalid) @(posedge clk); #1;
-        data      <= s_rdata;
+        data      = s_rdata;   // blocking: 같은 timestep에 호출자가 읽어야 하므로
         s_arvalid <= 1'b0;
         s_rready  <= 1'b0;
     end

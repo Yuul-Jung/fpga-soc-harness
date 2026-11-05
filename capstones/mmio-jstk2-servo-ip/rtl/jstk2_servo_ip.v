@@ -108,47 +108,46 @@ servo_pwm #(
     .pwm_b (pwm_b)
 );
 
-// ─── IRQ ──────────────────────────────────────────────────────────
-always @(posedge s_axi_aclk or negedge s_axi_aresetn) begin
-    if (!s_axi_aresetn)
-        reg_irq_status <= 1'b0;
-    else begin
-        if (sample_done)
-            reg_irq_status <= 1'b1;
-        // W1C: AXI 쓰기에서 소거 (아래 쓰기 블록에서 처리)
-    end
-end
-
 assign irq = reg_irq_status & reg_irq_enable;
 
 // ─── AXI4-Lite 쓰기 채널 ─────────────────────────────────────────
+// IRQ status는 여기에서만 구동 (single driver): sample_done에서 set, W1C에서 clear
 reg [15:0] aw_addr_lat;
 
 always @(posedge s_axi_aclk or negedge s_axi_aresetn) begin
     if (!s_axi_aresetn) begin
+        s_axi_awready  <= 1'b0;
+        s_axi_wready   <= 1'b0;
+        s_axi_bvalid   <= 1'b0;
+        s_axi_bresp    <= 2'b00;
+        aw_addr_lat    <= 16'd0;
+        reg_servo_a    <= 32'd1_500_000; // 중앙 1.5 ms
+        reg_servo_b    <= 32'd1_500_000;
+        reg_ctrl       <= 32'd0;
+        reg_slew       <= 32'd0;
+        reg_irq_enable <= 1'b0;
+        reg_irq_status <= 1'b0;
+    end else begin
         s_axi_awready <= 1'b0;
         s_axi_wready  <= 1'b0;
-        s_axi_bvalid  <= 1'b0;
-        s_axi_bresp   <= 2'b00;
-        aw_addr_lat   <= 16'd0;
-        reg_servo_a   <= 32'd1_500_000; // 중앙 1.5 ms
-        reg_servo_b   <= 32'd1_500_000;
-        reg_ctrl      <= 32'd0;
-        reg_slew      <= 32'd0;
-        reg_irq_enable<= 1'b0;
-    end else begin
+
+        // IRQ status: sample_done에서 set (single driver)
+        if (sample_done) reg_irq_status <= 1'b1;
+
         // AW 핸드셰이크
         if (s_axi_awvalid && !s_axi_awready) begin
             s_axi_awready <= 1'b1;
             aw_addr_lat   <= s_axi_awaddr[15:0];
-        end else begin
-            s_axi_awready <= 1'b0;
         end
 
-        // W 핸드셰이크 + 레지스터 쓰기
+        // W 핸드셰이크 + 레지스터 쓰기 + B 응답 세트
         if (s_axi_wvalid && !s_axi_wready) begin
             s_axi_wready <= 1'b1;
-            case (aw_addr_lat)
+            s_axi_bvalid <= 1'b1;
+            s_axi_bresp  <= 2'b00;
+            // awvalid와 wvalid가 같은 클럭에 도착하면 NBA로 aw_addr_lat이 아직 갱신되지 않으므로
+            // awvalid가 살아있는 동안은 awaddr를 직접 사용한다
+            case (s_axi_awvalid ? s_axi_awaddr[15:0] : aw_addr_lat)
                 ADDR_SERVO_A: reg_servo_a   <= s_axi_wdata;
                 ADDR_SERVO_B: reg_servo_b   <= s_axi_wdata;
                 ADDR_CTRL:    reg_ctrl      <= s_axi_wdata;
@@ -160,17 +159,11 @@ always @(posedge s_axi_aclk or negedge s_axi_aresetn) begin
                 ADDR_IRQ_ENABLE: reg_irq_enable <= s_axi_wdata[0];
                 default: ; // 없는 주소: 무시
             endcase
-        end else begin
-            s_axi_wready <= 1'b0;
         end
 
-        // B 채널
-        if (s_axi_wready && s_axi_wvalid) begin
-            s_axi_bvalid <= 1'b1;
-            s_axi_bresp  <= 2'b00;
-        end else if (s_axi_bready && s_axi_bvalid) begin
+        // B 채널 소거
+        if (s_axi_bready && s_axi_bvalid)
             s_axi_bvalid <= 1'b0;
-        end
     end
 end
 
