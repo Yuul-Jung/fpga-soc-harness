@@ -12,6 +12,7 @@ docs/catalog/
 docs/atlas/
 docs/soc-map/
 docs/inbox/
+docs/devices/
 docs/mmio-*/
 docs/*/index.html
 docs/*/diagram.svg
