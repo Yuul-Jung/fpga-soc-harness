@@ -40,7 +40,8 @@ module frame_buf #(
     integer b, r, c;
 
     // 에너지 추출 (단일 always 블록으로 yosys 호환성 확보)
-    always @(posedge clk or negedge rst_n) begin : energy_unpack
+    // CI fix: 동기 리셋으로 변경 — negedge rst_n + soft_rst 혼합 → proc_dff "Multiple edge" 오류 회피
+    always @(posedge clk) begin : energy_unpack
         integer gi;
         if (!rst_n) begin
             for (gi = 0; gi < N_BANDS; gi = gi+1) energy[gi] <= 0;
@@ -51,13 +52,13 @@ module frame_buf #(
     end
 
     // ADXL 최신값 유지
-    always @(posedge clk or negedge rst_n) begin
+    always @(posedge clk) begin
         if (!rst_n) begin x_hold <= 0; y_hold <= 0; end
         else if (adxl_valid) begin x_hold <= x_tilt; y_hold <= y_tilt; end
     end
 
     // 비트맵 갱신
-    always @(posedge clk or negedge rst_n) begin
+    always @(posedge clk) begin
         if (!rst_n || soft_rst) begin
             bitmap  <= 0;
             refresh <= 0;
