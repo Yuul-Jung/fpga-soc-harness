@@ -141,22 +141,23 @@ module adxl345_spi_reader #(
                     // CPOL=1 CPHA=1: sclk_hi 위상 추적으로 엣지 판별
                     // sclk_hi==1 → CLK_DIV-1 도달 시 하강엣지 직전: MOSI 출력
                     // sclk_hi==0 → CLK_DIV-1 도달 시 상승엣지 직전: MISO 샘플
-                    if (sclk_cnt == CLK_DIV-1 && sclk_hi) begin
-                        // 하강엣지 직전 → 출력 비트 설정
-                        // 주소 바이트: 0xF2 (R=1, MB=1, addr=0x32)
-                        if (bit_cnt < 8)
-                            spi_mosi <= (8'hF2 >> (7 - bit_cnt[2:0])) & 1'b1;
-                        else
-                            spi_mosi <= 0;  // 읽기 중 MOSI = 0
-                    end
-
-                    if (sclk_cnt == CLK_DIV-1 && !sclk_hi) begin
-                        // 상승엣지 직전 → MISO 샘플
-                        rx_shift <= {rx_shift[54:0], spi_miso};
-                        bit_cnt  <= bit_cnt + 1;
-                        if (bit_cnt == 55) begin  // 7바이트 완료
-                            sclk_en <= 0;
-                            state   <= S_READ_EN;
+                    // 두 조건을 if-else 한 블록으로 합쳐 yosys proc_dff 충돌 방지
+                    if (sclk_cnt == CLK_DIV-1) begin
+                        if (sclk_hi) begin
+                            // 하강엣지 직전 → 출력 비트 설정
+                            // 주소 바이트: 0xF2 (R=1, MB=1, addr=0x32)
+                            if (bit_cnt < 8)
+                                spi_mosi <= (8'hF2 >> (7 - bit_cnt[2:0])) & 1'b1;
+                            else
+                                spi_mosi <= 0;  // 읽기 중 MOSI = 0
+                        end else begin
+                            // 상승엣지 직전 → MISO 샘플
+                            rx_shift <= {rx_shift[54:0], spi_miso};
+                            bit_cnt  <= bit_cnt + 1;
+                            if (bit_cnt == 55) begin  // 7바이트 완료
+                                sclk_en <= 0;
+                                state   <= S_READ_EN;
+                            end
                         end
                     end
                 end
