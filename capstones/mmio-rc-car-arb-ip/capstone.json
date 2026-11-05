@@ -1,0 +1,286 @@
+{
+  "slug": "mmio-rc-car-arb-ip",
+  "title": "RC카 명령 우선순위 중재 IP (AXI4-Lite)",
+  "summary": "IR/UART 명령과 HC-SR04 초음파 거리를 받아, 안전 정지(거리 < 임계)가 항상 명령을 이기는 중재 FSM을 구현한다. 서보 3방향(좌·중·우) 스캔으로 각 방향 거리를 레지스터에 저장하고, 여유가 가장 큰 쪽 결정 비트를 노출한다. T2 복합 IP: AXI4-Lite 슬레이브 + 초음파 드라이버 + 서보 PWM + 스캔 FSM + 중재 FSM + 모터 PWM. 테스트벤치는 합성 에코 펄스와 명령 순서로 정지·회전·재개를 PASS/FAIL 점검한다.",
+  "board": "Basys3",
+  "stage": "T2",
+  "goals": [
+    "HC-SR04 에코 펄스 계측 → 거리(cm) 레지스터 저장",
+    "서보 3방향(좌 45°, 중 90°, 우 135°) 스캔 FSM + 각 방향 거리 레지스터",
+    "안전 정지 중재 FSM: dist_min < THRESHOLD → 모터 출력 강제 0 (명령 무관)",
+    "AXI4-Lite 슬레이브: CTRL·THRESHOLD·DIST_L/C/R·STATUS·IRQ 8개 레지스터",
+    "자체 점검 테스트벤치: 합성 에코 모델로 정지·회전·재개 PASS/FAIL 검증"
+  ],
+  "non_goals": [
+    "NEC IR 하드웨어 수신기 (명령은 소프트웨어가 AXI CTRL 레지스터에 씀)",
+    "PID 속도 제어 (별도 mmio-speed-pi-checker IP 사용)",
+    "다중 HC-SR04 동시 구동 (스캔 FSM이 순차 처리)",
+    "보드에서 실제 RC카 구동 (S3는 사람만 올림)"
+  ],
+  "architecture": {
+    "clock": "100 MHz (Basys3 시스템 클럭)",
+    "reset": "synchronous active-low rst_n",
+    "blocks": [
+      {
+        "id": "cpu",
+        "name": "CPU (MicroBlaze V)",
+        "kind": "external",
+        "module": null,
+        "file": null,
+        "desc": "AXI4-Lite 마스터. CTRL 레지스터에 명령(방향·속도·활성화) 쓰기, STATUS·DIST 읽기.",
+        "short": "CPU",
+        "side": "left"
+      },
+      {
+        "id": "axil_rc",
+        "name": "axil_rc_arb",
+        "kind": "rtl",
+        "module": "axil_rc_arb",
+        "file": "rtl/axil_rc_arb.v",
+        "desc": "AXI4-Lite 슬레이브 최상위. 8개 레지스터(CTRL·DIST_L·DIST_C·DIST_R·THRESHOLD·STATUS·IRQ_EN·IRQ_STAT) 관리. 하위 모듈 인스턴스화.",
+        "short": "AXI4-L 최상위",
+        "side": "center"
+      },
+      {
+        "id": "hcsr04",
+        "name": "hcsr04_drv",
+        "kind": "rtl",
+        "module": "hcsr04_drv",
+        "file": "rtl/hcsr04_drv.v",
+        "desc": "HC-SR04 1회 측정 드라이버. 10 µs TRIG 펄스 → ECHO 펄스 계측 → 거리(cm) 출력. 타임아웃 23 ms.",
+        "short": "HC-SR04",
+        "side": "center"
+      },
+      {
+        "id": "servo",
+        "name": "servo_pwm",
+        "kind": "rtl",
+        "module": "servo_pwm",
+        "file": "rtl/servo_pwm.v",
+        "desc": "50 Hz 서보 PWM 발생기. angle[7:0](0=0°, 180=180°) → 펄스 1 ms~2 ms. 20 ms 주기.",
+        "short": "서보 PWM",
+        "side": "center"
+      },
+      {
+        "id": "scan",
+        "name": "scan_fsm",
+        "kind": "rtl",
+        "module": "scan_fsm",
+        "file": "rtl/scan_fsm.v",
+        "desc": "서보 3방향 순차 스캔 FSM. 좌(45°)→중(90°)→우(135°) 순으로 서보 이동 후 HC-SR04 측정. 완료 시 scan_done 펄스 + dist_L/C/R 갱신.",
+        "short": "스캔 FSM",
+        "side": "center"
+      },
+      {
+        "id": "arb",
+        "name": "arb_fsm",
+        "kind": "rtl",
+        "module": "arb_fsm",
+        "file": "rtl/arb_fsm.v",
+        "desc": "명령 우선순위 중재 FSM. dist_min < THRESHOLD → 안전 정지(SAFE_STOP) 강제. THRESHOLD + HYST(5cm) 초과 시 복귀. best_dir 출력: 세 방향 중 거리 최대인 쪽.",
+        "short": "중재 FSM",
+        "side": "center"
+      },
+      {
+        "id": "motor",
+        "name": "motor_ctrl",
+        "kind": "rtl",
+        "module": "motor_ctrl",
+        "file": "rtl/motor_ctrl.v",
+        "desc": "좌·우 2채널 모터 H-브리지 PWM. 입력: speed[7:0], dir[1:0], arb_stop. arb_stop=1 → 양쪽 PWM=0.",
+        "short": "모터 PWM",
+        "side": "center"
+      },
+      {
+        "id": "hcsr04_pins",
+        "name": "HC-SR04 센서 (외부)",
+        "kind": "external",
+        "module": null,
+        "file": null,
+        "desc": "TRIG 1핀(3.3 V 출력), ECHO 1핀(5 V 출력 → 레벨 변환 필요). Pmod 1개 사용.",
+        "short": "HC-SR04 ×1",
+        "side": "right"
+      },
+      {
+        "id": "servo_pins",
+        "name": "서보모터 (외부)",
+        "kind": "external",
+        "module": null,
+        "file": null,
+        "desc": "표준 서보(5 V). PWM 신호선 1핀(3.3 V 로직 직결 가능). 전원 분리.",
+        "short": "Servo ×1",
+        "side": "right"
+      },
+      {
+        "id": "motor_pins",
+        "name": "H-브리지 (외부)",
+        "kind": "external",
+        "module": null,
+        "file": null,
+        "desc": "TB6612FNG 등. IN1/IN2/PWMA + IN3/IN4/PWMB 각각 3핀 = 6핀. 3.3 V 로직 호환. 모터 전원 분리, GND 공통.",
+        "short": "H-Bridge",
+        "side": "right"
+      }
+    ],
+    "links": [
+      {"from": "cpu",    "to": "axil_rc",  "label": "AXI4-Lite"},
+      {"from": "axil_rc","to": "scan",     "label": "scan_start/THRESHOLD"},
+      {"from": "scan",   "to": "hcsr04",   "label": "meas_start"},
+      {"from": "scan",   "to": "servo",    "label": "angle[7:0]"},
+      {"from": "hcsr04", "to": "scan",     "label": "dist_cm[9:0]/meas_done"},
+      {"from": "scan",   "to": "arb",      "label": "dist_L/C/R/scan_done"},
+      {"from": "axil_rc","to": "arb",      "label": "ctrl_en/dir/THRESHOLD"},
+      {"from": "arb",    "to": "motor",    "label": "arb_stop/speed/dir"},
+      {"from": "arb",    "to": "axil_rc",  "label": "status/best_dir"},
+      {"from": "hcsr04", "to": "hcsr04_pins", "label": "TRIG/ECHO"},
+      {"from": "servo",  "to": "servo_pins",  "label": "PWM"},
+      {"from": "motor",  "to": "motor_pins",  "label": "PWM_A/B DIR_A/B"}
+    ]
+  },
+  "bus_protocol": {
+    "name": "AXI4-Lite",
+    "data_width": 32,
+    "addr_width": 8,
+    "signals": ["awvalid","awready","awaddr","wvalid","wready","wdata","wstrb",
+                "bvalid","bready","bresp","arvalid","arready","araddr","rvalid","rready","rdata","rresp"],
+    "limits": "단일 비트 전송만. 버스트 없음. 쓰기 응답 1사이클."
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "mbv-frozen-v2",
+    "compat": "compatible",
+    "plan": "free_slots [21] = 0x4021_0000 사용 제안. INTC 입력 13번 (현재 미배정). 프로젝트 인덱스 표 동결 후 확정.",
+    "frozen_mapping": {
+      "axil_rc_arb": "free_slots[21] 0x4021_0000"
+    }
+  },
+  "external_parts": [
+    {
+      "id": "hcsr04",
+      "name": "HC-SR04 초음파 거리 센서",
+      "block": "hcsr04_pins",
+      "interface": "TRIG(out) + ECHO(in)",
+      "io_voltage": 5.0,
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": 5.0,
+      "level_shift": true,
+      "power_note": "5 V ECHO 신호 → 레벨 변환(74AHCT1G125 등) 후 Pmod 입력 필요.",
+      "arduino_compatible": true,
+      "notes": "TRIG는 3.3 V 직결 가능(5V TTL 입력 허용). ECHO는 반드시 레벨 변환."
+    },
+    {
+      "id": "servo",
+      "name": "표준 서보모터 (SG90 등)",
+      "block": "servo_pins",
+      "interface": "PWM 50 Hz",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": 5.0,
+      "level_shift": false,
+      "power_note": "서보 전원 5 V 별도 공급. PWM 신호선은 3.3 V 직결 가능(SG90 허용).",
+      "arduino_compatible": true,
+      "notes": "50 Hz, 1 ms(0°)~2 ms(180°). 각도 범위는 서보 사양에 따라 조정."
+    },
+    {
+      "id": "hbridge",
+      "name": "TB6612FNG (H-브리지 모터 드라이버)",
+      "block": "motor_pins",
+      "interface": "IN1/IN2/PWMA + IN3/IN4/PWMB",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": 5.0,
+      "level_shift": false,
+      "power_note": "VM(모터 전원) 5~15 V 별도 공급. VCC(논리) 3.3 V. GND 공통. 역기전력 보호 내장.",
+      "arduino_compatible": true,
+      "notes": "L298N도 사용 가능(핀 배열 차이만). 모터 전원과 FPGA 전원을 분리."
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "레벨 변환(HC-SR04 ECHO 5V→3.3V) 및 TB6612FNG 연결 회로 미작성. 외부 부품 절에 연결 원칙 기술."
+  },
+  "hierarchy": [
+    {
+      "module": "axil_rc_arb",
+      "file": "rtl/axil_rc_arb.v",
+      "children": [
+        {"module": "hcsr04_drv",  "file": "rtl/hcsr04_drv.v",  "children": []},
+        {"module": "servo_pwm",   "file": "rtl/servo_pwm.v",   "children": []},
+        {"module": "scan_fsm",    "file": "rtl/scan_fsm.v",    "children": []},
+        {"module": "arb_fsm",     "file": "rtl/arb_fsm.v",     "children": []},
+        {"module": "motor_ctrl",  "file": "rtl/motor_ctrl.v",  "children": []}
+      ]
+    }
+  ],
+  "memory_map": [
+    {
+      "base": "0x4021_0000",
+      "size": "0x10000",
+      "block": "axil_rc_arb",
+      "desc": "RC카 중재 IP 레지스터 공간 (free_slots[21] 제안, 동결 전)",
+      "regs": [
+        {"off": "0x00", "name": "CTRL",      "access": "RW", "desc": "[0]=EN(1=활성화) [2:1]=DIR(00=STOP,01=FWD,10=BWD,11=SPIN_L) [11:4]=SPEED[7:0] [12]=SCAN_START(펄스, 1클럭)"},
+        {"off": "0x04", "name": "DIST_L",    "access": "RO", "desc": "[9:0]=왼쪽 거리(cm). 스캔 미완료 시 0xFFFF."},
+        {"off": "0x08", "name": "DIST_C",    "access": "RO", "desc": "[9:0]=정면 거리(cm). 스캔 미완료 시 0xFFFF."},
+        {"off": "0x0C", "name": "DIST_R",    "access": "RO", "desc": "[9:0]=오른쪽 거리(cm). 스캔 미완료 시 0xFFFF."},
+        {"off": "0x10", "name": "THRESHOLD", "access": "RW", "desc": "[7:0]=안전 정지 임계 거리(cm, 기본 20)."},
+        {"off": "0x14", "name": "STATUS",    "access": "RO", "desc": "[3:0]=FSM 상태(0=IDLE,1=RUN,2=SAFE_STOP) [4]=ARB_STOP [6:5]=BEST_DIR(0=L,1=C,2=R) [7]=SCAN_DONE"},
+        {"off": "0x18", "name": "IRQ_EN",    "access": "RW", "desc": "[0]=scan_done_irq_en"},
+        {"off": "0x1C", "name": "IRQ_STAT",  "access": "RW1C", "desc": "[0]=scan_done_irq (W1C: 1을 쓰면 소거)"}
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T1",
+      "state": "done",
+      "title": "MMIO UART+GPIO 스켈레톤",
+      "refs": ["mmio-uart-gpio-skeleton"]
+    },
+    {
+      "stage": "T2",
+      "state": "current",
+      "title": "RC카 명령 우선순위 중재 IP",
+      "refs": ["masher1-gogo-car", "circuitdigest-arduino-obstacle-avoiding-car",
+               "hackster-basys3-hcsr04-distance", "opencores-nec-ir-decoder"]
+    },
+    {
+      "stage": "T2+",
+      "state": "planned",
+      "title": "PID 속도 제어 추가 (엔코더 + PWM)",
+      "refs": ["mmio-speed-pi-checker", "mmio-pid-step-capture"]
+    }
+  ],
+  "references": [
+    {"name": "masher1-gogo-car",                        "reason": "RC카 모터·서보 FSM 조합 패턴 참조"},
+    {"name": "circuitdigest-arduino-obstacle-avoiding-car","reason": "HC-SR04 서보 스캔 + 장애물 회피 로직 참조"},
+    {"name": "hackster-basys3-hcsr04-distance",          "reason": "Basys3 HC-SR04 에코 계측 Verilog 타이밍 참조"},
+    {"name": "opencores-nec-ir-decoder",                 "reason": "NEC IR 디코더 (본 IP는 소프트웨어 명령 레지스터로 대체)"}
+  ],
+  "sources": {
+    "rtl":         ["rtl/axil_rc_arb.v","rtl/hcsr04_drv.v","rtl/servo_pwm.v","rtl/scan_fsm.v","rtl/arb_fsm.v","rtl/motor_ctrl.v"],
+    "tb":          ["tb/tb_rc_car_arb.v"],
+    "constraints": ["constr/basys3.xdc"],
+    "build":       ["Makefile"]
+  },
+  "howto": {
+    "sim":    "make sim  (iverilog -g2001; 출력에 PASS: 가 나오면 성공)",
+    "lint":   "make lint (verilator --lint-only -Wall --Wno-UNUSEDSIGNAL)",
+    "synth":  "make synth (yosys -Q; 자원 추정 build/synth.log 참조)",
+    "vivado": "unverified: Basys3 XC7A35T 타깃으로 Vivado 2024.2에서 임포트. free_slots[21] 주소로 MicroBlaze V AXI 인터커넥트에 추가 제안."
+  },
+  "verification": {
+    "board": "not-tested",
+    "notes": "S3(보드 동작)는 사람이 올린다. CI: lint(verilator), sim(iverilog PASS), synth(yosys)."
+  },
+  "risks": [
+    "HC-SR04 ECHO 5V 신호를 레벨 변환 없이 Pmod에 직결하면 FPGA I/O 손상 위험.",
+    "서보·모터 전원을 보드와 공유하면 노이즈로 FPGA 리셋 발생 가능. GND 공통, 전원 분리 필수.",
+    "초음파 에코 오측정(멀티패스, 흡음 재질)은 거리 레지스터 이상값으로 나타남 → THRESHOLD 여유 권장.",
+    "스캔 중 서보 이동 시간(최소 100 ms 정착) 동안 모터 명령이 차단될 수 있음.",
+    "yosys 합성 자원은 추정값. Vivado 타이밍(WNS) 미검증."
+  ]
+}

@@ -427,7 +427,8 @@
 - 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 4건(shillehtek-nano-mpu6050-neo6m-vehicle-logger·arduino-forum-nano-crash-3-i2c-gps·jpralves-car-hud-speed-compass·ammar-bin-amir-arty-a7-i2c-mpu-6050, rechecked_at 불문) → 차단 근거 3 + 새로움 2(I2C 순회+NMEA UART 공통 타임스탬프 허브 없음) + 적합성 2(Pmod 2개·3.3V 센서 가능·FIFO BRAM 소량) + 완결성 1(I2C 순회 주기 100 ms 기준·FIFO 깊이 16샘플로 고정 가능, 테스트벤치 작성 가능) = 8점 ≥ 7 → ready 승격. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-037 명령 우선순위 중재 RC카 IP: 원격 명령 vs 거리 안전정지 중재 FSM + 서보 3방향 스캔 결정 레지스터
-- 상태: ready
+- 상태: used
+- 패키지: mmio-rc-car-arb-ip
 - 요약: 내 판단: IR(또는 UART) 명령과 초음파 거리 임계값을 받아, 안전 정지가 항상 명령을 이기는 중재 FSM을 만든다. 서보 3방향(좌·중·우) 거리 표본을 레지스터에 두고 "여유가 큰 쪽" 결정 비트를 노출한다. 테스트벤치는 합성 거리 열과 명령 열로 정지·회전·재개 순서를 PASS/FAIL 점검.
 - 조합: [명령 입력(IR/UART), 거리 측정(HC-SR04), 서보 스캔 PWM, 모터 PWM, 중재 FSM, AXI4-Lite 레지스터·인터럽트]
 - 근거: [masher1-gogo-car, circuitdigest-arduino-obstacle-avoiding-car, hackster-basys3-hcsr04-distance, opencores-nec-ir-decoder]
