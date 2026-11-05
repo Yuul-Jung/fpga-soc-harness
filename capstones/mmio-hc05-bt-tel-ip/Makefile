@@ -16,6 +16,7 @@ sim: $(RTL) $(TB)
 lint: $(RTL)
 	verilator --lint-only -Wall --timing \
 		--Wno-WIDTHEXPAND --Wno-WIDTHTRUNC \
+		--Wno-UNUSEDSIGNAL \
 		$(RTL)
 
 synth: $(RTL)
