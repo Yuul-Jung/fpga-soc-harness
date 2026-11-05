@@ -91,7 +91,7 @@ localparam [39:0] SPI_MISO_DATA = 40'h00_02_FF_01_01;
 reg [5:0]  miso_bit_cnt;
 reg [39:0] miso_shift;
 reg        spi_cs_n_prev;
-reg        spi_sclk_prev;   // 상승에지 검출용
+reg        spi_sclk_prev;   // 하강에지 검출용
 
 always @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
@@ -103,14 +103,15 @@ always @(posedge clk or negedge rst_n) begin
     end else begin
         spi_cs_n_prev <= spi_cs_n;
         spi_sclk_prev <= spi_sclk;
-        // CS# 하강: 새 전송 시작, MISO 데이터 준비
+        // CS# 하강: 새 전송 시작, 첫 번째 비트 즉시 출력 (Mode 0: CPHA=0)
         if (spi_cs_n_prev && !spi_cs_n) begin
             miso_shift   <= SPI_MISO_DATA;
             miso_bit_cnt <= 6'd0;
+            spi_miso     <= SPI_MISO_DATA[39]; // MSB 먼저
         end
-        // SCLK 상승에지에서만 MISO 비트 출력 (Mode 0, 에지 검출)
-        if (!spi_cs_n && !spi_sclk_prev && spi_sclk) begin
-            spi_miso     <= miso_shift[39];
+        // SCLK 하강에지: 다음 MISO 비트 출력 (DUT는 상승에지에서 샘플)
+        if (!spi_cs_n && spi_sclk_prev && !spi_sclk) begin
+            spi_miso     <= miso_shift[38];
             miso_shift   <= {miso_shift[38:0], 1'b0};
             miso_bit_cnt <= miso_bit_cnt + 1'b1;
         end
@@ -249,12 +250,12 @@ initial begin
     $display("T5 JSTK2 regs OK");
 
     // ── 테스트 6: 서보 A PWM 펄스 폭 측정 ───────────────────────
-    // 현재 SERVO_A=1,500,000. 이를 2,000,000(2ms 최대)로 변경해 더 넓은 폭 측정
+    // 현재 SERVO_A=1,500,000. 이를 1,200,000(1.2ms)로 변경해 펄스 폭 측정
     axi_write(32'h401F_000C, 32'd1_200_000); // 1.2 ms
     // 서보 PWM은 20ms 주기. 한 주기 내 펄스 측정
-    // 최대 대기: 3,000,000 클럭 (다음 주기)
-    // pwm_a 상승에지 대기
-    timeout = 3_000_000;
+    // 최대 대기: 6,000,000 클럭 (약 60ms, 3주기 여유)
+    // 하강(현재 HIGH일 수 있음)→상승→하강 순서로 측정
+    timeout = 6_000_000;
     while (pwm_a && timeout > 0) begin @(posedge clk); timeout = timeout - 1; end // 하강 대기
     while (!pwm_a && timeout > 0) begin @(posedge clk); timeout = timeout - 1; end // 상승 대기
     if (timeout <= 0) begin
