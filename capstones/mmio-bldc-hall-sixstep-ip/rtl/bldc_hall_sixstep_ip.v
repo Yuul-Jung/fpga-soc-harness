@@ -151,6 +151,20 @@ module bldc_hall_sixstep_ip #(
     reg [2:0] step_prev;
     reg       fault_lat;   // sticky fault (clear on CTRL write)
 
+    // ctrl_write_done: combinational true when CTRL register write completes this cycle
+    wire ctrl_write_done = s_wvalid && waddr_valid && (waddr_lat == REG_CTRL);
+
+    // Single always block owns fault_lat (prevents multi-driver race)
+    // Priority: reset > CTRL-write-clear > fault_raw-set
+    always @(posedge clk) begin
+        if (!rst_n)
+            fault_lat <= 1'b0;
+        else if (ctrl_write_done)
+            fault_lat <= 1'b0;
+        else if (fault_raw)
+            fault_lat <= 1'b1;
+    end
+
     wire step_change = (step != step_prev) && !fault_raw;
 
     // -----------------------------------------------------------------------
@@ -163,13 +177,9 @@ module bldc_hall_sixstep_ip #(
         if (!rst_n) begin
             dt_cnt    <= 8'd0;
             step_prev <= 3'd0;
-            fault_lat <= 1'b0;
             sample_trig <= 1'b0;
         end else begin
             sample_trig <= 1'b0;
-
-            if (fault_raw)
-                fault_lat <= 1'b1;
 
             step_prev <= step;
 
@@ -229,7 +239,6 @@ module bldc_hall_sixstep_ip #(
             r_duty     <= DEFAULT_DUTY;
             r_deadtime <= DEFAULT_DEADTIME;
             irq_status <= 32'd0;
-            fault_lat  <= 1'b0;
         end else begin
             // latch write address
             s_awready <= 1'b0;
@@ -251,7 +260,7 @@ module bldc_hall_sixstep_ip #(
                         ctrl_en  <= s_wdata[0];
                         ctrl_ie  <= s_wdata[1];
                         ctrl_dir <= s_wdata[2];
-                        fault_lat<= 1'b0;  // clear fault on CTRL write
+                        // fault_lat cleared via ctrl_write_done in its own always block
                     end
                     REG_DUTY:     r_duty     <= s_wdata[9:0];
                     REG_DEADTIME: r_deadtime <= s_wdata[7:0];
