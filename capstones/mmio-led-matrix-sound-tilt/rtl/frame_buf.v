@@ -3,8 +3,10 @@
 // 모드에 따라 IIR 에너지(막대) 또는 ADXL 기울기(점)로 갱신
 // MAX7219 체인 드라이버에 bitmap[127:0] 제공
 //
-// CI fix — 동기 리셋: negedge rst_n 감도 제거 (yosys proc_dff 호환)
-// soft_rst는 동기 조건이므로 @(posedge clk) 블록 내 if(!rst_n||soft_rst) 사용 가능.
+// CI fix v2 — 단일 NBA: bm_next 임시 변수로 비트맵을 조립한 뒤
+// bitmap <= bm_next 한 번만 대입. 복수 비트-셀렉트 NBA의
+// iverilog 처리 순서 문제(coalesce 버그)를 회피한다.
+// 동기 리셋 전용 (yosys proc_dff 호환).
 //
 // Verilog-2001. iverilog/verilator/yosys 호환.
 `default_nettype none
@@ -33,24 +35,26 @@ module frame_buf #(
     output reg [ROWS*COLS-1:0] bitmap,
     output reg                  refresh   // 갱신 완료 펄스
 );
-    // 에너지 → 열 높이 (8행 중 몇 행 켤지)
-    // energy는 32비트 → 상위 3비트를 사용해 0~7 범위로 스케일
-    // 각 열(대역)의 높이: 에너지가 높을수록 아래에서 위로 채움
-
     reg [ENERGY_W-1:0] energy [0:N_BANDS-1];
     reg signed [9:0]   x_hold, y_hold;
 
-    integer b, r, c;
+    // 비트맵 조립용 임시 변수 (블로킹 대입 전용, NBA 아님)
+    reg [ROWS*COLS-1:0] bm_next;
+    reg [3:0] bh;    // bar height 0~8
+    reg [3:0] dc;    // dot column 0~15
+    reg [3:0] dri;   // dot row intermediate (오버플로 방지용 4비트)
+    reg [2:0] dr;    // dot row 0~7
+    integer   gi, bb, ri;
 
     // 에너지 추출 (단일 always 블록으로 yosys 호환성 확보)
-    // CI fix: 동기 리셋 — negedge rst_n 감도 제거, proc_dff "Multiple edge" 오류 회피
+    // 동기 리셋 — negedge rst_n 감도 제거, proc_dff "Multiple edge" 오류 회피
     always @(posedge clk) begin : energy_unpack
-        integer gi;
+        integer ui;
         if (!rst_n) begin
-            for (gi = 0; gi < N_BANDS; gi = gi+1) energy[gi] <= 0;
+            for (ui = 0; ui < N_BANDS; ui = ui+1) energy[ui] <= 0;
         end else if (energy_update) begin
-            for (gi = 0; gi < N_BANDS; gi = gi+1)
-                energy[gi] <= energy_flat[gi*ENERGY_W +: ENERGY_W];
+            for (ui = 0; ui < N_BANDS; ui = ui+1)
+                energy[ui] <= energy_flat[ui*ENERGY_W +: ENERGY_W];
         end
     end
 
@@ -60,7 +64,9 @@ module frame_buf #(
         else if (adxl_valid) begin x_hold <= x_tilt; y_hold <= y_tilt; end
     end
 
-    // 비트맵 갱신 (soft_rst는 동기 신호이므로 감도 목록 불필요)
+    // 비트맵 갱신 — 단일 NBA 방식
+    // bm_next를 블로킹(=)으로 조립한 뒤, 마지막에 bitmap <= bm_next 한 번만.
+    // iverilog의 "복수 비트-셀렉트 NBA coalesce" 버그를 회피한다.
     always @(posedge clk) begin
         if (!rst_n || soft_rst) begin
             bitmap  <= 0;
@@ -69,32 +75,20 @@ module frame_buf #(
             refresh <= 0;
 
             if (energy_update || adxl_valid) begin
-                for (r=0; r<ROWS; r=r+1) begin
-                    for (c=0; c<COLS; c=c+1) begin
-                        bitmap[r*COLS + c] <= 0;  // 초기화
-                    end
-                end
+                // 1) bm_next를 0으로 초기화 (블로킹)
+                bm_next = {(ROWS*COLS){1'b0}};
 
                 // ---- 소리 막대 모드 (mode==2'b00 또는 2'b10) ----
                 if (mode[1:0] != 2'b01) begin
-                    for (b=0; b<N_BANDS; b=b+1) begin
-                        // 에너지 → 높이 (상위 3비트, 0~7)
-                        // 열 2개를 한 대역에 사용 (16열 / 8대역)
-                        begin : bar_draw
-                            reg [3:0] bar_h;  // 0~8: 행 수 (상위3비트 + 반올림비트)
-                            integer   row_idx, col_l, col_r;
-                            // 에너지 → 행 수: 상위3비트 + 4번째비트(반올림)
-                            // 예) 0xFFFF_FFFF → 7+1=8행(전체), 0x40000000 → 2+0=2행
-                            bar_h = {1'b0, energy_flat[(b+1)*ENERGY_W - 1 -: 3]}
-                                  + {3'b0, energy_flat[(b+1)*ENERGY_W - 4]};
-                            col_l = b * 2;
-                            col_r = b * 2 + 1;
-                            for (row_idx=0; row_idx<ROWS; row_idx=row_idx+1) begin
-                                // 아래에서 채우기: row ROWS-1 이 맨 아래
-                                if (bar_h == 3'b111 || (ROWS-1 - row_idx) < bar_h) begin
-                                    bitmap[row_idx*COLS + col_l] <= 1;
-                                    bitmap[row_idx*COLS + col_r] <= 1;
-                                end
+                    for (bb = 0; bb < N_BANDS; bb = bb+1) begin
+                        // 에너지 → 높이: 상위3비트 + 4번째비트(반올림)
+                        bh = {1'b0, energy_flat[(bb+1)*ENERGY_W - 1 -: 3]}
+                           + {3'b0, energy_flat[(bb+1)*ENERGY_W - 4]};
+                        for (ri = 0; ri < ROWS; ri = ri+1) begin
+                            // 아래에서 채우기: row ROWS-1 이 맨 아래
+                            if ((ROWS-1 - ri) < bh) begin
+                                bm_next[ri*COLS + bb*2]     = 1'b1;
+                                bm_next[ri*COLS + bb*2 + 1] = 1'b1;
                             end
                         end
                     end
@@ -102,22 +96,18 @@ module frame_buf #(
 
                 // ---- 기울기 점 모드 (mode==2'b01 또는 2'b10) ----
                 if (mode[1:0] != 2'b00) begin
-                    begin : dot_draw
-                        reg [3:0] dot_col;
-                        reg [3:0] dot_row_int;  // 4비트 임시: 오버플로 방지
-                        reg [2:0] dot_row;
-                        // X(±512) → 열 0~15, Y(±512) → 행 0~7
-                        // x_hold: -512~511 → 0~15 선형 매핑
-                        dot_col     = x_hold[9:6] + 4'd8;         // 상위 4비트 + 중점 보정
-                        dot_row_int = {1'b0, y_hold[9:7]} + 4'd4; // 1비트 확장으로 오버플로 방지
-                        // 범위 클램프
-                        if (dot_col > 4'd15)    dot_col     = 4'd15;
-                        if (dot_row_int > 4'd7) dot_row_int = 4'd7;
-                        dot_row = dot_row_int[2:0];
-                        bitmap[dot_row*COLS + dot_col] <= 1;
-                    end
+                    // X(±512) → 열 0~15, Y(±512) → 행 0~7
+                    dc  = x_hold[9:6] + 4'd8;
+                    dri = {1'b0, y_hold[9:7]} + 4'd4;
+                    // 범위 클램프
+                    if (dc  > 4'd15) dc  = 4'd15;
+                    if (dri > 4'd7)  dri = 4'd7;
+                    dr  = dri[2:0];
+                    bm_next[dr*COLS + dc] = 1'b1;
                 end
 
+                // 2) 단일 NBA로 bitmap 갱신
+                bitmap  <= bm_next;
                 refresh <= 1;
             end
         end
