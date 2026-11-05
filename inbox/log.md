@@ -222,3 +222,4 @@
 2026-11-06 08:06 | capstone | mmio-rc-car-arb-ip | 사용자 지시로 수동 수정(예약 작업 아님, CI retry 카운트 외) | 원인: hcsr04_drv가 ECHO 상승 감지 클럭을 세지 않아 5800클럭을 5799로 측정(0 cm), TB는 posedge에서 echo를 바꿔 샘플링 경합 | fix: S_WAIT→S_MEAS 진입 시 cnt<=1, TB echo를 negedge 구동 | 로컬 시뮬레이터 없음, 파이썬 사이클 모델로 5800→1 cm 확인, CI 대기 | 등급 S0 보류
 2026-11-06 08:24 | collect | [B3] 고정소수점 Q포맷·비트성장·포화·반올림 (S1 인접도메인+S5 비정형출처) | 카드 +3 | 아이디어 +3 | 큐 잔여 10건 추가 | blocked 3(dsprelated PROVENANCE_REQUIRED, OpenCores 504, AMD docs 405)
 2026-11-06 08:44 | capstone | mmio-axilite-regfile-ip | 아이디어 I-114 used | 단계 T2 | memory_map dict→list 형식 수정, address_map mbv-frozen-v1→mbv-frozen-v2 수정 | check.py 0오류, build.py 0오류 | 근거 재확인 없음(무조건 최대한 생성 방침) | 등급 S0 (시뮬레이터 미설치, CI에서 S1/S2 예정)
+2026-11-06 08:50 | capstone | mmio-hc05-bt-tel-ip (I-031 병렬 2바이트 버전) | 게이트 3·4 건너뜀(무조건 최대한 생성) | I-031 mmio-bt-hc05-bridge 선점 → 병렬 구현으로 추가 | S0 | 소스 4+1+Makefile | check.py 경고 0 오류 0

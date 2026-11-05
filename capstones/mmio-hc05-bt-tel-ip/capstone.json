@@ -1,0 +1,176 @@
+{
+  "slug": "mmio-hc05-bt-tel-ip",
+  "title": "AXI4-Lite HC-05 블루투스 텔레메트리 브리지 IP",
+  "summary": "HC-05 블루투스 모듈을 AXI4-Lite 슬레이브로 연결하는 MMIO IP. 속도·조향 2바이트 텔레메트리를 TX하고 단일 바이트 RX를 IRQ로 알린다. BAUD_DIV 파라미터로 보율 조정 가능(기본 9600 bps @ 100 MHz).",
+  "board": "Basys3",
+  "stage": "T2",
+  "goals": [
+    "AXI4-Lite 슬레이브 레지스터 6개로 HC-05 TX/RX 제어",
+    "TX: 속도 바이트 → 조향 바이트 순서로 연속 2바이트 송신 (TX_GO W1S 트리거)",
+    "RX: 수신 1바이트를 RX_DAT 레지스터에 래치하고 IRQ 발생",
+    "EN 핀으로 HC-05 전원/AT 모드 제어, STATE 핀 상태 반영",
+    "iverilog 시뮬레이션 PASS, yosys 합성 성공 (S2)"
+  ],
+  "non_goals": [
+    "AT 명령 자동 처리",
+    "페어링 자동화",
+    "다중 바이트 RX FIFO",
+    "보드에서 동작 확인(S3) — 사람이 한다"
+  ],
+  "architecture": {
+    "clock": "100 MHz (Basys3 클럭)",
+    "blocks": [
+      {
+        "id": "axi",
+        "name": "AXI4-Lite Slave",
+        "kind": "bus_interface",
+        "module": "axil_hc05_bt",
+        "file": "rtl/axil_hc05_bt.v",
+        "desc": "AXI4-Lite 슬레이브 레지스터 파일, TX FSM, IRQ 생성",
+        "short": "AXI Slave + TX FSM",
+        "side": "left"
+      },
+      {
+        "id": "utx",
+        "name": "UART TX",
+        "kind": "submodule",
+        "module": "uart_tx",
+        "file": "rtl/uart_tx.v",
+        "desc": "8N1 UART 송신기, BAUD_DIV 파라미터",
+        "short": "UART TX",
+        "side": "center"
+      },
+      {
+        "id": "urx",
+        "name": "UART RX",
+        "kind": "submodule",
+        "module": "uart_rx",
+        "file": "rtl/uart_rx.v",
+        "desc": "8N1 UART 수신기, BAUD_DIV 파라미터",
+        "short": "UART RX",
+        "side": "center"
+      },
+      {
+        "id": "top",
+        "name": "Basys3 Top",
+        "kind": "board_wrapper",
+        "module": "basys3_hc05_top",
+        "file": "rtl/basys3_hc05_top.v",
+        "desc": "클럭·리셋·Pmod 핀 연결, AXI 마스터 포트 노출",
+        "short": "Board Top",
+        "side": "right"
+      },
+      {
+        "id": "hc05",
+        "name": "HC-05 Module",
+        "kind": "external",
+        "module": null,
+        "file": null,
+        "desc": "블루투스 직렬 모듈. UART TX/RX, STATE, EN 핀.",
+        "short": "HC-05",
+        "side": "right"
+      }
+    ],
+    "links": [
+      {"from": "top", "to": "axi", "label": "AXI4-Lite"},
+      {"from": "axi", "to": "utx", "label": "data/valid/ready"},
+      {"from": "axi", "to": "urx", "label": "rx/data/valid"},
+      {"from": "utx", "to": "hc05", "label": "UART TX (3.3V→HC-05 RX)"},
+      {"from": "hc05", "to": "urx", "label": "UART RX (HC-05 TX→3.3V)"},
+      {"from": "axi", "to": "hc05", "label": "EN (GPIO)"},
+      {"from": "hc05", "to": "axi", "label": "STATE (GPIO)"}
+    ]
+  },
+  "bus_protocol": {
+    "name": "AXI4-Lite",
+    "data_width": 32,
+    "addr_width": 32,
+    "signals": ["AWADDR","AWVALID","AWREADY","WDATA","WSTRB","WVALID","WREADY","BRESP","BVALID","BREADY","ARADDR","ARVALID","ARREADY","RDATA","RRESP","RVALID","RREADY"],
+    "limits": ["단일 비트 IRQ 출력. 인터럽트 컨트롤러 연결 필요"]
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "custom",
+    "compat": "partial",
+    "plan": "동결 맵 slot[16] 0x40160000 / intc=13 을 제안. 사용자가 동결 후 compat=compatible로 변경.",
+    "frozen_mapping": null
+  },
+  "external_parts": [
+    {
+      "id": "hc05_mod",
+      "name": "HC-05 블루투스 직렬 모듈",
+      "block": "hc05",
+      "interface": "UART 9600 bps 8N1",
+      "io_voltage": "3.3V",
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": "3.3V",
+      "level_shift": false,
+      "power_note": "Basys3 Pmod 3.3V 핀 사용. HC-05 모듈에 따라 5V 필요 시 별도 공급 + 레벨 변환 추가.",
+      "arduino_compatible": true,
+      "notes": "HC-05 TX→FPGA RX: 3.3V 직결 가능. FPGA TX→HC-05 RX: 대부분 3.3V 허용이나 모듈 사양 확인 필요."
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "미작성. Pmod 핀 배선과 HC-05 연결 회로도는 사람이 추가한다."
+  },
+  "hierarchy": [
+    {
+      "module": "basys3_hc05_top",
+      "file": "rtl/basys3_hc05_top.v",
+      "children": [
+        {
+          "module": "axil_hc05_bt",
+          "file": "rtl/axil_hc05_bt.v",
+          "children": [
+            {"module": "uart_tx", "file": "rtl/uart_tx.v"},
+            {"module": "uart_rx", "file": "rtl/uart_rx.v"}
+          ]
+        }
+      ]
+    }
+  ],
+  "memory_map": {
+    "region": {"base": "0x40160000", "size": "0x10000", "block": "axi", "note": "제안값. 동결 미완"},
+    "registers": [
+      {"off": "0x00", "name": "CTRL",     "access": "RW",  "desc": "[0]=TX_GO(W1S) [1]=EN_OUT(RW) [8]=BUSY(RO) [9]=STATE_IN(RO)"},
+      {"off": "0x04", "name": "TX_SPD",   "access": "RW",  "desc": "[7:0] TX 속도 바이트"},
+      {"off": "0x08", "name": "TX_ANG",   "access": "RW",  "desc": "[7:0] TX 조향 바이트"},
+      {"off": "0x0C", "name": "RX_DAT",   "access": "RO",  "desc": "[7:0] 수신 데이터 [8]=VALID(1클럭 래치)"},
+      {"off": "0x10", "name": "IRQ_EN",   "access": "RW",  "desc": "[0]=RX_EN: RX 완료 IRQ 활성화"},
+      {"off": "0x14", "name": "IRQ_STAT", "access": "RW",  "desc": "[0]=RX_DONE(W1C): RX IRQ 상태, 1 쓰면 소거"}
+    ]
+  },
+  "roadmap": [
+    {"stage": "T1", "state": "done",    "title": "UART AXI4-Lite 브리지 (mmio-uart-axilite-bridge)", "refs": []},
+    {"stage": "T2", "state": "current", "title": "HC-05 BT 텔레메트리 IP (이 패키지)"},
+    {"stage": "T3", "state": "planned", "title": "AT 명령 자동화 + 다중 바이트 RX FIFO"}
+  ],
+  "references": [
+    {"name": "yuul-jung-mmio-uart-axilite-bridge", "reason": "uart_tx/uart_rx 원본 모듈"},
+    {"name": "kimdk1005-collab-MimicArm-FPGA-Project", "reason": "서보 출력 원격 제어 패턴 참고"}
+  ],
+  "sources": {
+    "rtl": ["rtl/uart_tx.v", "rtl/uart_rx.v", "rtl/axil_hc05_bt.v", "rtl/basys3_hc05_top.v"],
+    "tb": ["tb/tb_axil_hc05_bt.v"],
+    "constraints": [],
+    "build": ["Makefile"]
+  },
+  "howto": {
+    "sim": "make sim  # iverilog + vvp; PASS 출력 확인",
+    "lint": "make lint  # verilator --lint-only",
+    "synth": "make synth  # yosys 합성 추정",
+    "vivado": "미작성. Pmod JA 핀 배정 XDC 추가 후 Vivado 2024.2에서 구현 가능."
+  },
+  "verification": {
+    "board": "not-tested",
+    "notes": "S2: CI에서 린트·시뮬·합성 통과 목표. 보드 검증은 사람이 한다."
+  },
+  "risks": [
+    "HC-05 모듈에 따라 RX 핀이 5V 허용이 아닐 수 있음 — 레벨 변환 필요 여부 확인",
+    "STATE 핀 풀다운 필요 여부는 모듈 버전에 따라 다름",
+    "9600 bps 에서 BAUD_DIV=10417, 실제 오류율은 보드에서 확인 필요",
+    "TX 2바이트 사이에 HC-05가 첫 바이트를 선행 처리하면 프레임이 분리될 수 있음"
+  ]
+}
