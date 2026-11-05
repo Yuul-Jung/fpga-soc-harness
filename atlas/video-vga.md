@@ -93,5 +93,5 @@ VGA 출력(video-vga), 카메라 파이프라인(camera), LED·PWM(pwm-rgb) 주�
 
 ## 관련 카드 (기존 수집)
 
-- [kwondo99-fpga-vga-photobooth-project](../catalog/amd/kwondo99-fpga-vga-photobooth-project.md) — OV7670 → VGA 파이프라인, T4, L3
-- [fanguoc2len-risc-v-computer](../catalog/amd/fanguoc2len-risc-v-computer.md) — PicoRV32 + VGA 텍스트 80×29, T2, L3
+- kwondo99-fpga-vga-photobooth-project — OV7670 → VGA 파이프라인, T4, L3 (카드 미작성, §10 시드 목록)
+- fanguoc2len-risc-v-computer — PicoRV32 + VGA 텍스트 80×29, T2, L3 (카드 미작성, §10 시드 목록)

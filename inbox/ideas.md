@@ -1475,33 +1475,26 @@
 - 심사: 2026-11-05 /verify(19차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(mit-6205-rgb-pwm-week01·maplesilicon-mapleled-core·olivier-le-sage-camera-filters 모두 rechecked_at 없음) + 새로움 2(T1~T2 RGB LED 사다리 패키지 카탈로그 없음) + 적합성 2(I-105·I-106 Basys3 적합성 확인, 단계별 Makefile 타겟 분리 가능 — 내 판단) + 완결성 2(5단계 각각 독립 RTL+TB, 단계별 Makefile 타겟 명확) = 6점 → vetted. 보강: 근거 카드 rechecked_at 1건, I-105·I-106 먼저 패키지화 후 통합.
 
 ## I-108 VGA 텍스트 오버레이 + 7세그 동기화 AXI4-Lite IP (S2 조합)
-- 상태: raw
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: BYU ECEN 423 Lab 10의 MMIO 패턴을 착안해, 80×30 문자 버퍼와 7세그 카운터를 단일 AXI4-Lite 슬레이브 IP 안에서 공통 타임스탬프로 묶는 IP. VGA 텍스트 출력이 활성 비디오 선에만 작동하고, 수직 귀선 기간에 7세그 디지트를 순환 갱신한다. 두 디스플레이가 같은 프레임 경계에 동기화되는 패턴을 명세화하고 Basys3에서 검증한다.
 - 조합: [video-vga(텍스트 컨트롤러), 7seg-mux, AXI4-Lite, BRAM(문자 버퍼)]
 - 근거: [byu-ecen423-lab10-riscv-vga-7seg, argrabowski-fpga-vga-display, itsnotjiaching-ec311project]
 - 새로움의 근거: 카탈로그에 VGA와 7세그를 단일 AXI4-Lite IP로 통합해 VSync 기준으로 동기화하는 패키지 없음. 개별 IP 두 개를 합치는 것보다 같은 클럭 도메인 안에서 공통 타임스탬프를 갖는 구조가 차별점(내 판단).
 - Basys3 적합성의 근거: Basys3 VGA 12비트 DAC + 4자리 공통-양극 7세그 모두 보드 내장. 80×30 문자 버퍼 = 2400 바이트 → BRAM 1개 미만. AXI4-Lite free_slot 1개. 25MHz VGA 픽셀 클럭은 100MHz 분주.
 - 난이도: 3 / 단계: T2
-- 심사: (미심사)
+- 심사: 2026-11-06 /verify(20차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(byu-ecen423-lab10-riscv-vga-7seg·argrabowski-fpga-vga-display·itsnotjiaching-ec311project 모두 rechecked_at 없음) + 새로움 2(VGA+7세그 단일 AXI4-Lite IP+VSync 동기화 카탈로그 없음) + 적합성 3(VGA 12비트 DAC·4자리 7세그 보드 내장, 80×30 char buf 2400 B < BRAM 1개, 25MHz 픽셀 클럭 100MHz 분주 가능) + 완결성 2(AXI4-Lite 슬레이브+문자 버퍼+7세그 FSM+텍스트 렌더러 범위 명확, RTL+TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 1건.
+- 차단조건재심사: 2026-11-06 02:43, /verify(21차), 모든 WebFetch PROVENANCE_REQUIRED 차단(21차 연속). 근거 카드 총 3건(byu-ecen423-lab10-riscv-vga-7seg·argrabowski-fpga-vga-display·itsnotjiaching-ec311project, rechecked_at 불문) → 근거 3 + 새로움 2 + 적합성 3 + 완결성 2 = 10점 ≥ 7, 사이클 1번째 → ready 승격.
 
 ## I-109 Pong 게임 VGA+7세그 SoC 패키지: MicroBlaze V C 드라이버로 게임 상태 관리 (S7 중간 단계)
-- 상태: raw
-- 심사: 2026-11-06 /verify(20차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(byu-ecen423-lab10-riscv-vga-7seg·argrabowski-fpga-vga-display·itsnotjiaching-ec311project 모두 rechecked_at 없음) + 새로움 2(VGA+7세그 단일 AXI4-Lite IP+VSync 동기화 카탈로그 없음) + 적합성 3(VGA 12비트 DAC·4자리 7세그 보드 내장, 80×30 char buf 2400 B < BRAM 1개, 25MHz 픽셀 클럭 100MHz 분주 가능 — 카드 근거 있음) + 완결성 2(AXI4-Lite 슬레이브+문자 버퍼+7세그 FSM+텍스트 렌더러 범위 명확, RTL+TB 작성 가능) = 7점 → vetted. 보강 필요: 근거 카드 rechecked_at 1건 이상(ready 조건: 8점 이상 AND 근거 3).
-
-## I-109 Pong 게임 VGA+7세그 SoC 패키지: MicroBlaze V C 드라이버로 게임 상태 관리 (S7 중간 단계)
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: itsnotjiaching-ec311project의 Pong 게임 구조를 MicroBlaze V SoC로 이식. 공·패들 위치를 AXI4-Lite 레지스터로 노출하고, MicroBlaze V C 드라이버가 게임 루프(패들 이동, 충돌 판정, 점수 갱신)를 소프트웨어로 처리. VGA 렌더링과 7세그 점수 표시는 FSM이 담당. FPGA가 렌더링만, 소프트웨어가 로직만 맡는 역할 분리 패턴을 T3 사례로 만든다.
 - 조합: [video-vga(렌더링 FSM), 7seg-mux, AXI4-Lite, MicroBlaze V, hid-btn/hid-sw]
 - 근거: [itsnotjiaching-ec311project, argrabowski-fpga-vga-display, byu-ecen423-lab10-riscv-vga-7seg]
 - 새로움의 근거: 카탈로그의 게임 카드들은 FSM 단독 처리(sdcarlson-fpga-snake는 MicroBlaze이나 하드웨어 미포함). 게임 로직을 MicroBlaze V C 드라이버로 올리고 VGA+7세그를 AXI4-Lite 슬레이브로 묶는 조합 패키지는 없음.
 - Basys3 적합성의 근거: Basys3 VGA, 7세그, 버튼 모두 보드 내장. MicroBlaze V는 동결 맵 기반, 게임 로직 소프트웨어화는 AXI-UART Lite 불필요(순수 메모리 맵 접근). BRAM 프레임버퍼 불필요(픽셀 렌더링은 FSM이 실시간 계산).
 - 난이도: 3 / 단계: T3
-- 심사: (미심사)
-
-## I-110 RISC-V 어셈블리 → C 이식 비교: MMIO VGA+7세그 드라이버 계층 설계 (S7 어려운 단계)
-- 상태: raw
-- 심사: 2026-11-06 /verify(20차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(itsnotjiaching-ec311project·argrabowski-fpga-vga-display·byu-ecen423-lab10-riscv-vga-7seg 모두 rechecked_at 없음) + 새로움 2(MBV C 드라이버 + VGA+7세그 AXI4-Lite 슬레이브 조합 패키지 카탈로그 없음) + 적합성 2(보드 내장 VGA·7세그·버튼, 프레임버퍼 불필요, MBV 동결 맵 적용 가능 — 내 판단) + 완결성 2(VGA FSM+7세그 FSM+AXI4-Lite 레지스터+MBV C 드라이버 범위 명확) = 6점 → vetted. 보강 필요: 근거 카드 rechecked_at 1건, MBV 소프트웨어 환경 필요성 확인(I-108 먼저 패키지화 권장).
+- 심사: 2026-11-06 /verify(20차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(itsnotjiaching-ec311project·argrabowski-fpga-vga-display·byu-ecen423-lab10-riscv-vga-7seg 모두 rechecked_at 없음) + 새로움 2(MicroBlaze V C 드라이버+VGA+7세그 AXI4-Lite 슬레이브 조합 패키지 카탈로그 없음) + 적합성 3(VGA·7세그·버튼 보드 내장, BRAM 프레임버퍼 불필요, MBV 동결 맵 기반) + 완결성 2(VGA 렌더링 FSM+7세그 FSM+AXI4-Lite 레지스터+MBV C 드라이버 범위 명확) = 7점 → vetted. 보강: 근거 카드 rechecked_at 1건.
+- 차단조건재심사: 2026-11-06 02:43, /verify(21차), 모든 WebFetch PROVENANCE_REQUIRED 차단(21차 연속). 근거 카드 총 3건(itsnotjiaching-ec311project·argrabowski-fpga-vga-display·byu-ecen423-lab10-riscv-vga-7seg, rechecked_at 불문) → 근거 3 + 새로움 2 + 적합성 3 + 완결성 2 = 10점 ≥ 7, 사이클 2번째 → ready 승격.
 
 ## I-110 RISC-V 어셈블리 → C 이식 비교: MMIO VGA+7세그 드라이버 계층 설계 (S7 어려운 단계)
 - 상태: dropped
@@ -1522,8 +1515,8 @@
 - 새로움의 근거: 카탈로그에 PG099 호환 Verilog(비 VHDL) INTC 오픈소스 자체 구현 사례 없음. 동결 맵 free_slot 배정 연습으로도 가치 있음
 - Basys3 적합성의 근거: Artix-7 8입력 기준 ~176 LUT/161 FF (PG099 수치). XC7A35T의 20,800 LUT 대비 여유 충분. AXI4-Lite 슬레이브 인터페이스만 필요
 - 난이도: 3 / 단계: T3
-- 상태: raw
-- 심사: (미심사)
+- 상태: vetted
+- 심사: 2026-11-06 /verify(21차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(amd-axi-intc-pg099·zipcpu-icontrol·mij001-axil-timer 모두 rechecked_at 없음) + 새로움 2(PG099 호환 Verilog INTC 오픈소스 구현 사례 카탈로그 없음) + 적합성 3(~176 LUT/161 FF < XC7A35T 20,800 LUT 여유, AXI4-Lite 슬레이브 인터페이스만 필요, PG099 수치 근거 있음) + 완결성 2(ISR·IER·IAR·IVR·MER 레지스터 맵 + 우선순위 인코더 + AXI4-Lite 슬레이브 범위 명확, RTL+TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 1건.
 
 ## I-112 인터럽트 중심 UART RX FIFO IP 조합 (INTC + UARTLite 연동)
 - 제목: UART RX not-empty 인터럽트 + AXI4-Lite INTC 연동 패키지
@@ -1533,8 +1526,8 @@
 - 새로움의 근거: 카탈로그에 UART+INTC 조합을 ISR 기준으로 완전 구현한 Basys3 사례 없음(realisshoon은 연결만, 드라이버 패턴 없음)
 - Basys3 적합성의 근거: AXI UARTLite와 AXI INTC 모두 Vivado IP 카탈로그 기본 제공. Basys3 USB-UART 연결로 테스트 가능
 - 난이도: 3 / 단계: T3
-- 상태: raw
-- 심사: (미심사)
+- 상태: vetted
+- 심사: 2026-11-06 /verify(21차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(amd-axi-intc-pg099·realisshoon-axi4-lite-multi-peripheral-soc·opencores-auto-baud 모두 rechecked_at 없음) + 새로움 2(UART+INTC ISR 완전 구현 Basys3 사례 카탈로그 없음) + 적합성 3(AXI UARTLite·AXI INTC Vivado IP 기본 제공, Basys3 USB-UART 연결 가능, MBV 동결 맵 적용 가능) + 완결성 2(UART RX not-empty → INTC → MBV ISR 흐름 명확, RTL+TB+드라이버 C 파일 범위 정의 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 1건.
 
 ## I-113 인터럽트 컨트롤러 난이도 사다리 패키지 (T1→T2→T3 3단계)
 - 제목: INTC 난이도 사다리: 우선순위 인코더(T1) → Wishbone PIC(T2) → AXI4-Lite INTC(T3)
@@ -1544,9 +1537,8 @@
 - 새로움의 근거: 카탈로그에 단일 주제를 3단계 난이도로 연결한 커리큘럼 패키지 없음. INTC는 모든 SoC에서 필수 블록이므로 교육 가치 높음
 - Basys3 적합성의 근거: 각 단계 모두 XC7A35T 자원 범위 내 (T1: ~20 LUT, T2: ~100 LUT, T3: ~200 LUT 추정)
 - 난이도: 2(T1)/3(T2)/4(T3) / 단계: T1→T3
-- 상태: raw
-- 심사: (미심사)
-- 심사: 2026-11-06 /verify(20차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(근거 카드 모두 rechecked_at 없음) + 새로움 2(어셈블리→C 비교 사례 없음) + 적합성 1(RISC-V asm과 MicroBlaze V가 다른 ISA, Vitis/SDK 환경 별도 필요, 범위 과다) + 완결성 1(세 가지 접근 비교로 범위 과다, 단일 캡스톤으로 명확히 정의 어려움) = 4점 → dropped.
+- 상태: vetted
+- 심사: 2026-11-06 /verify(21차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(zipcpu-icontrol·amd-axi-intc-pg099·mij001-axil-timer 모두 rechecked_at 없음) + 새로움 2(T1→T2→T3 단일 주제 3단계 커리큘럼 패키지 카탈로그 없음) + 적합성 3(T1 ~20 LUT, T2 ~100 LUT, T3 ~200 LUT 추정 모두 XC7A35T 20,800 LUT 여유 충분) + 완결성 2(각 단계 독립 RTL+TB, 단계별 Makefile 타겟 명확, 범위 정의됨) = 7점 → vetted. 보강: 근거 카드 rechecked_at 1건.
 
 ## I-114
 - 제목: AXI4-Lite 슬레이브 레지스터 파일 자동화 IP (WSTRB + $clog2 디코더 + 형식 검증)
