@@ -1,0 +1,256 @@
+{
+  "slug": "mmio-oled-ssd1306-ip",
+  "title": "Pmod OLED SSD1306 AXI4-Lite IP — SPI 초기화 ROM + 프레임 버퍼 + 연속 갱신 FSM",
+  "summary": "SSD1306 128×32 모노크롬 OLED(Pmod OLED)를 구동하는 AXI4-Lite IP. 24바이트 초기화 명령 ROM, 512바이트 분산 RAM 프레임 버퍼, 4페이지 연속 갱신 FSM으로 구성. 소프트웨어가 프레임 버퍼에 픽셀/텍스트 데이터를 쓰면 IP가 SSD1306 SPI 프로토콜로 자동 전송. 테스트벤치는 SPI 바이트열을 추적해 초기화 명령과 프레임 데이터를 자체 점검(PASS/FAIL).",
+  "board": "Basys3",
+  "stage": "T2",
+  "goals": [
+    "SSD1306 SPI 초기화(24바이트 ROM) 하드웨어 자동 수행",
+    "AXI4-Lite 슬레이브 레지스터로 프레임 버퍼 쓰기·갱신 제어",
+    "4페이지(128×32) 연속 갱신 FSM — 갱신 완료 IRQ 출력",
+    "iverilog 시뮬레이션에서 SPI 바이트열 자체 점검 PASS"
+  ],
+  "non_goals": [
+    "폰트 렌더링·그래픽 라이브러리 하드웨어 내장 (소프트웨어 담당)",
+    "I2C 모드 지원 (SPI 4선 전용)",
+    "다중 OLED 동시 구동",
+    "Vivado 보드 동작 검증 (S3은 사용자 담당)"
+  ],
+  "architecture": {
+    "clock": "100 MHz (Basys3 W5)",
+    "blocks": [
+      {
+        "id": "cpu",
+        "name": "MicroBlaze V",
+        "kind": "cpu",
+        "module": "-",
+        "desc": "AXI4-Lite 마스터. 프레임 버퍼를 채우고 갱신을 트리거",
+        "short": "MBv",
+        "side": "left"
+      },
+      {
+        "id": "oled_ip",
+        "name": "axil_oled_ssd1306",
+        "kind": "ip",
+        "module": "axil_oled_ssd1306",
+        "file": "rtl/axil_oled_ssd1306.v",
+        "desc": "AXI4-Lite 슬레이브 + 초기화 ROM FSM + 프레임 버퍼 + 갱신 FSM",
+        "short": "OLED IP",
+        "side": "center"
+      },
+      {
+        "id": "spi_m",
+        "name": "spi_master_8b",
+        "kind": "submodule",
+        "module": "spi_master_8b",
+        "file": "rtl/spi_master_8b.v",
+        "desc": "SPI 마스터 — 8비트 직렬 전송, CPOL=0 CPHA=0, 분주 가능",
+        "short": "SPI-M",
+        "side": "center"
+      },
+      {
+        "id": "pmod_oled",
+        "name": "Pmod OLED (SSD1306)",
+        "kind": "external",
+        "module": "-",
+        "desc": "Digilent Pmod OLED 128×32 단색 디스플레이. SPI 4선, DC, RES",
+        "short": "OLED",
+        "side": "right"
+      }
+    ],
+    "links": [
+      {"from": "cpu",     "to": "oled_ip",   "label": "AXI4-Lite"},
+      {"from": "oled_ip", "to": "spi_m",     "label": "byte_data/start"},
+      {"from": "spi_m",   "to": "pmod_oled", "label": "MOSI/SCK/CS/DC/RES"},
+      {"from": "oled_ip", "to": "cpu",       "label": "IRQ(refresh_done)"}
+    ]
+  },
+  "bus_protocol": {
+    "name": "AXI4-Lite",
+    "width": 32,
+    "addr_w": 8,
+    "signals": [
+      "s_awaddr", "s_awvalid", "s_awready",
+      "s_wdata",  "s_wstrb",   "s_wvalid",  "s_wready",
+      "s_bresp",  "s_bvalid",  "s_bready",
+      "s_araddr", "s_arvalid", "s_arready",
+      "s_rdata",  "s_rresp",   "s_rvalid",  "s_rready"
+    ],
+    "limits": [
+      "단일 비동기 슬레이브. 버스트·캐시·QoS 미지원",
+      "BUF_DATA 쓰기는 BUF_ADDR 설정 후 연속으로 수행해야 함",
+      "초기화 중(init_done=0) 갱신 요청은 무시됨"
+    ]
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "custom",
+    "compat": "partial",
+    "frozen_mapping": [
+      {
+        "block": "oled_ip",
+        "region": "free_slot_20",
+        "base": "0x4020_0000",
+        "intc": 13,
+        "note": "mbv-frozen-v2 기준 free_slot [20] = 0x4020_0000 배정 제안. INTC 13번 사용 제안(intc_free 첫 빈 번호). 프로젝트 인덱스 표가 동결한다."
+      }
+    ],
+    "plan": "동결 맵 slot [20] (0x4020_0000, 64KB) 배정 제안. INTC 13번 IRQ 연결(refresh_done). Pmod JB에 SPI 4핀+DC+RES 연결. Pmod OLED 전원은 보드 3.3V·GND 직결."
+  },
+  "external_parts": [
+    {
+      "id": "pmod_oled_module",
+      "name": "Digilent Pmod OLED (SSD1306 128×32)",
+      "block": "pmod_oled",
+      "interface": "SPI 4선 (MOSI, SCK, CS) + DC + RES",
+      "io_voltage": "3.3V",
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": "3.3V",
+      "level_shift": "불필요 (3.3V 직결)",
+      "power_note": "Pmod 헤더 VCC(3.3V)·GND 직결. 전원 소모 약 5~15mA.",
+      "arduino_compatible": false,
+      "notes": "Pmod JB 헤더 연결. JB[0]=CS_N, JB[1]=MOSI, JB[2]=SCK, JB[3]=DC, JB[4]=RES_N. SSD1306 SPI 4선 모드(DC는 명령/데이터 구분 핀)."
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "디지털 계통도만 제공. 전기 회로도 미작성 — Pmod 헤더 직결이므로 외부 부품 없음."
+  },
+  "hierarchy": [
+    {
+      "module": "basys3_oled_top",
+      "file": "rtl/basys3_oled_top.v",
+      "desc": "Basys3 최상위 래퍼 — 클럭 버퍼, Pmod 핀 연결",
+      "children": [
+        {
+          "module": "axil_oled_ssd1306",
+          "file": "rtl/axil_oled_ssd1306.v",
+          "desc": "AXI4-Lite 슬레이브 + 초기화 ROM + 프레임 버퍼 + 갱신 FSM",
+          "children": [
+            {
+              "module": "spi_master_8b",
+              "file": "rtl/spi_master_8b.v",
+              "desc": "SPI 바이트 직렬 전송기 (CPOL=0 CPHA=0)"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "memory_map": [
+    {
+      "base": "0x4020_0000",
+      "size": "0x10000",
+      "block": "oled_ip",
+      "note": "제안 슬롯 [20], 미동결",
+      "regs": [
+        {
+          "off": "0x0000",
+          "name": "CTRL",
+          "access": "RW",
+          "desc": "[0]=en_refresh(자동 갱신 활성화), [1]=force_init(펄스: 초기화 재시작), [2]=soft_rst(펄스: IP 리셋)"
+        },
+        {
+          "off": "0x0004",
+          "name": "STATUS",
+          "access": "RO",
+          "desc": "[0]=init_done, [1]=busy(초기화 또는 갱신 중), [3:2]=fsm_state[1:0], [4]=refresh_done_pulse(읽으면 클리어)"
+        },
+        {
+          "off": "0x0008",
+          "name": "BUF_ADDR",
+          "access": "RW",
+          "desc": "[9:0] = {page[1:0], col[6:0]} 형식. 프레임 버퍼 쓰기 주소 설정."
+        },
+        {
+          "off": "0x000C",
+          "name": "BUF_DATA",
+          "access": "WO",
+          "desc": "[7:0] = SSD1306 열 데이터 1바이트. BUF_ADDR 위치에 저장. 쓰기 후 BUF_ADDR 자동 증가 없음."
+        }
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T1",
+      "state": "done",
+      "title": "UART/GPIO 스켈레톤 (mmio-uart-gpio-skeleton)",
+      "refs": ["pkt-gif-custom-vending-machine"]
+    },
+    {
+      "stage": "T2",
+      "state": "current",
+      "title": "Pmod OLED SSD1306 AXI4-Lite IP — 이 패키지",
+      "refs": ["digilent-pmod-oled-reference-manual", "lushaylabs-tang-nano-9k-ssd1306-oled"]
+    },
+    {
+      "stage": "T3",
+      "state": "planned",
+      "title": "PID 계기판 — OLED + 엔코더 되먹임 + VGA 타일 조합",
+      "refs": []
+    }
+  ],
+  "references": [
+    {
+      "name": "digilent-pmod-oled-reference-manual",
+      "reason": "Pmod OLED 핀 배치·SSD1306 SPI 접속·전원 사양 (L2)"
+    },
+    {
+      "name": "lushaylabs-tang-nano-9k-ssd1306-oled",
+      "reason": "SSD1306 SPI FPGA 구동 흐름·초기화 명령 순서 참고 (L2)"
+    },
+    {
+      "name": "masterplayer-lcd-st7789-sv",
+      "reason": "SPI 디스플레이 IP 구조(명령 ROM FSM + 갱신 FSM) 패턴 참고 (L2)"
+    }
+  ],
+  "sources": {
+    "rtl": [
+      "rtl/spi_master_8b.v",
+      "rtl/axil_oled_ssd1306.v",
+      "rtl/basys3_oled_top.v"
+    ],
+    "tb": [
+      "tb/tb_axil_oled_ssd1306.v"
+    ],
+    "constraints": [
+      "constr/basys3.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
+  },
+  "howto": {
+    "sim": [
+      "cd capstones/mmio-oled-ssd1306-ip",
+      "make sim   # iverilog + vvp; 기대 출력: 'PASS: init sequence OK' 및 'PASS: frame data OK'"
+    ],
+    "lint": [
+      "make lint  # verilator --lint-only -Wall"
+    ],
+    "synth": [
+      "make synth # yosys 자원 추정 (Vivado 수치와 다를 수 있음)"
+    ],
+    "vivado": [
+      "Vivado 2024.2에서 새 프로젝트 → constr/basys3.xdc, rtl/*.v 추가",
+      "IP 외부 AXI4-Lite 포트를 MicroBlaze V M_AXI_DP 버스에 연결",
+      "IRQ 출력(irq_refresh_done)을 INTC 13번 입력에 연결",
+      "Pmod JB 헤더에 SPI 4선+DC+RES 연결 후 Basys3에 프로그래밍"
+    ]
+  },
+  "verification": {
+    "board": "not-tested",
+    "lint": "pending",
+    "sim": "pending",
+    "synth": "pending",
+    "notes": "S3(보드 동작)는 사용자가 직접 확인. SSD1306 SPI 클럭 ≤ 10 MHz 권장(본 IP는 100MHz/20=5MHz). 초기화 순서: 화면 OFF → 설정 → 충전 펌프 ON → 화면 ON. 전원 인가 후 100ms 대기는 소프트웨어 담당."
+  },
+  "risks": [
+    "SSD1306 전원 순서 미준수 시 초기화 실패 가능 — 소프트웨어에서 100ms 대기 후 force_init 트리거",
+    "5V 전원 공급 오류 시 Pmod 핀 손상 주의 — Basys3 Pmod는 3.3V 전용",
+    "SPI 클럭 10MHz 초과 시 SSD1306 응답 불안정 — 분주 파라미터 CLK_DIV ≥ 10 유지",
+    "프레임 버퍼 초기값 0x00 (전체 픽셀 꺼짐) — 필요 시 소프트웨어에서 초기화"
+  ]
+}

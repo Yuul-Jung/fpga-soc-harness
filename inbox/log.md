@@ -5,6 +5,7 @@
 - verify: `YYYY-MM-DD HH:MM | verify | 재열람 N | 수정 M | 불일치 K | 승격 L2→L3 P | ready +R`
 - capstone: `YYYY-MM-DD HH:MM | capstone | <slug> | 등급 S0~S2` 또는 `... | skip: <사유>`
 
+2026-11-06 04:29 | capstone | I-029 → mmio-oled-ssd1306-ip | S0 (iverilog/yosys 없음, CI 대기) | 슬롯 [20] 0x4020_0000 / intc=13 | address_map=custom (free_slot_20 제안) | WebFetch PROVENANCE_REQUIRED 차단 23차 연속
 2026-11-06 03:45 | capstone | mmio-led-matrix-sound-tilt | skip: CI fix 3회 초과 → status=broken 설정. 근본원인: (1) TB1—iverilog force가 active driver 와이어(u_iir→energy_flat) 오버라이드 불가, (2) TB2_corner—force reg가 always@(*) 재평가 미트리거. 수정법: energy_stored 내부 reg 직접 force + TB2 @posedge 정착 1사이클 추가 (사용자 확인 필요)
 2026-11-06 03:20 | collect | Watchdog 타이머 고급 패턴 (윈도우 WDT, 하트비트, 카운트다운) · S2 조합 탐색(주)+S6 실패 사례(보조) | 카드 +3 (amd-axi-timebase-wdt-pg083 L2·ignaciosim-tt06-triple-watchdog L2·amoghvarsh-axi4-lite-timer-wdt L2) | 아이디어 +3 (I-117 윈도우WDT+7세그, I-118 삼중WDT 비교 패널, I-119 WDT WDTOUT 하트비트 핀) | 큐 잔여 629 | blocked 0
 2026-11-06 02:27 | capstone | I-030 → mmio-onewire-ds18b20-ip | S0 (iverilog/yosys 없음, CI 대기) | 슬롯 [0E] 0x400E_0000 / intc=6 | mbv-frozen-v2 compatible
