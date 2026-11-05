@@ -3,10 +3,17 @@
 // 모드에 따라 IIR 에너지(막대) 또는 ADXL 기울기(점)로 갱신
 // MAX7219 체인 드라이버에 bitmap[127:0] 제공
 //
-// CI fix v3 — 조합 논리와 순차 논리 완전 분리.
-//   bm_next: always @(*) 블록에서 블로킹으로 계산.
-//   bitmap:  always @(posedge clk) 블록에서 NBA 한 번만.
-//   이 구조는 iverilog/verilator/yosys 모두에서 동작이 정의된다.
+// CI fix v4 — energy_stored 내부 래치 + x_hold/bitmap NBA 병합.
+//
+//   수정 1 (TB1): energy_flat 포트 직접 읽기 대신
+//     energy_stored(flat wide reg)에 1클럭 래치 후 사용.
+//     조합 블록은 energy_stored를 읽으므로 포트 force 타이밍 무관.
+//     energy_pend(1사이클 지연)로 bitmap 갱신 트리거.
+//
+//   수정 2 (TB2_corner): x_hold/y_hold NBA와 bitmap NBA를
+//     같은 always @(posedge clk) 블록에 둔다.
+//     같은 블록 내에서 RHS는 NBA 적용 전 값으로 평가되므로
+//     bitmap <= bm_next 가 x_hold=511(force) 기준 bm_next를 받는다.
 //
 // Verilog-2001. iverilog/verilator/yosys 호환.
 `default_nettype none
@@ -35,34 +42,42 @@ module frame_buf #(
     output reg [ROWS*COLS-1:0] bitmap,
     output reg                  refresh   // 갱신 완료 펄스
 );
-    // 기울기 보유 레지스터
-    reg signed [9:0]   x_hold, y_hold;
+    // ----------------------------------------------------------------
+    // 에너지 내부 래치 (flat wide reg — 배열 아님)
+    // energy_stored: energy_update 클럭에 energy_flat 래치
+    // energy_pend:   energy_stored가 유효해진 다음 사이클 표시
+    // ----------------------------------------------------------------
+    reg [N_BANDS*ENERGY_W-1:0] energy_stored;
+    reg                         energy_pend;
 
-    // 비트맵 조합 계산용 중간 변수 (always @(*) 전용)
+    always @(posedge clk) begin
+        if (!rst_n || soft_rst) begin
+            energy_stored <= 0;
+            energy_pend   <= 0;
+        end else begin
+            energy_pend <= energy_update;          // 1사이클 지연
+            if (energy_update)
+                energy_stored <= energy_flat;      // 래치
+        end
+    end
+
+    // ----------------------------------------------------------------
+    // 기울기 보유 레지스터 (조합 블록에서 읽음)
+    // ----------------------------------------------------------------
+    reg signed [9:0] x_hold, y_hold;
+
+    // ----------------------------------------------------------------
+    // 비트맵 조합 계산 — always @(*) 로 bm_next를 항상 최신으로 유지.
+    // energy_stored와 x_hold/y_hold를 읽음 (포트 직접 읽기 없음).
+    // 블로킹 대입(=)만 사용.
+    // ----------------------------------------------------------------
     reg [ROWS*COLS-1:0] bm_next;
     reg [3:0] bh;    // bar height 0~8
     reg [3:0] dc;    // dot column 0~15
     reg [3:0] dri;   // dot row (4비트 임시, 오버플로 방지)
     reg [2:0] dr;    // dot row 0~7
-    integer   gi, bb, ri;
+    integer   bb, ri;
 
-    // ----------------------------------------------------------------
-    // ADXL 최신값 유지 (순차)
-    // ----------------------------------------------------------------
-    always @(posedge clk) begin
-        if (!rst_n) begin
-            x_hold <= 0;
-            y_hold <= 0;
-        end else if (adxl_valid) begin
-            x_hold <= x_tilt;
-            y_hold <= y_tilt;
-        end
-    end
-
-    // ----------------------------------------------------------------
-    // 비트맵 조합 계산 — always @(*) 로 bm_next를 항상 최신으로 유지.
-    // 블로킹 대입(=)만 사용. NBA 없음.
-    // ----------------------------------------------------------------
     always @(*) begin
         // 초기화
         bm_next = {(ROWS*COLS){1'b0}};
@@ -75,8 +90,8 @@ module frame_buf #(
         if (mode[1:0] != 2'b01) begin
             for (bb = 0; bb < N_BANDS; bb = bb+1) begin
                 // 에너지 → 높이: 상위3비트 + 4번째비트(반올림)
-                bh = {1'b0, energy_flat[(bb+1)*ENERGY_W - 1 -: 3]}
-                   + {3'b0, energy_flat[(bb+1)*ENERGY_W - 4]};
+                bh = {1'b0, energy_stored[(bb+1)*ENERGY_W - 1 -: 3]}
+                   + {3'b0, energy_stored[(bb+1)*ENERGY_W - 4]};
                 for (ri = 0; ri < ROWS; ri = ri+1) begin
                     // 아래에서 채우기: row ROWS-1 이 맨 아래
                     if ((ROWS-1 - ri) < bh) begin
@@ -101,16 +116,29 @@ module frame_buf #(
     end
 
     // ----------------------------------------------------------------
-    // 비트맵 등록 (순차) — bm_next를 NBA 한 번으로 래치.
+    // 순차 블록 (통합) — x_hold/y_hold NBA와 bitmap NBA를 같은 블록에서
+    // 처리해 iverilog NBA 순서 비결정성에 의한 경쟁 조건을 제거한다.
+    //
+    // bitmap <= bm_next 의 RHS는 같은 블록 내 x_hold NBA 적용 전에
+    // 평가되므로, x_hold가 force로 고정된 값(예: 511)을 사용한다.
     // ----------------------------------------------------------------
     always @(posedge clk) begin : bitmap_reg
-        integer ui;
         if (!rst_n || soft_rst) begin
+            x_hold  <= 0;
+            y_hold  <= 0;
             bitmap  <= 0;
             refresh <= 0;
         end else begin
             refresh <= 0;
-            if (energy_update || adxl_valid) begin
+
+            // ADXL 최신값 갱신
+            if (adxl_valid) begin
+                x_hold <= x_tilt;
+                y_hold <= y_tilt;
+            end
+
+            // 비트맵 갱신: 에너지 래치 완료(energy_pend) 또는 기울기 갱신(adxl_valid)
+            if (energy_pend || adxl_valid) begin
                 bitmap  <= bm_next;
                 refresh <= 1;
             end
