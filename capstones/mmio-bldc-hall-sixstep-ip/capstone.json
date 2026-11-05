@@ -1,0 +1,236 @@
+{
+  "slug":    "mmio-bldc-hall-sixstep-ip",
+  "title":   "AXI4-Lite BLDC 6스텝 홀센서 IP + 데드타임 PWM",
+  "summary": "홀 3입력 → 6스텝 해독 FSM(양방향) → 보완 PWM 게이트 출력 + 상·하 암 데드타임 삽입. ADC 샘플 트리거를 데드타임 종료 시점에 출력한다.",
+  "board":   "Basys3",
+  "stage":   "T2",
+
+  "goals": [
+    "홀 신호 3비트 → 6스텝 해독(순방향·역방향 모두 지원)",
+    "10비트 PWM 카운터로 상위 암(HIN) 듀티 제어, 하위 암(LIN)은 DC ON",
+    "정류 전환 시 상·하 암 데드타임(클럭 수 단위) 삽입으로 슛스루 방지",
+    "데드타임 종료 시점에 1사이클 ADC 샘플 트리거 펄스 출력",
+    "AXI4-Lite 레지스터 6개(ID/CTRL/DUTY/DEADTIME/STATUS/IRQ) 로 CPU 연동",
+    "자체 점검형 테스트벤치: 홀 순서, 슛스루 없음, 데드타임 길이 검증"
+  ],
+  "non_goals": [
+    "FOC(Field-Oriented Control) — 다음 사다리 단계",
+    "전류 센싱·ADC 처리 — 샘플 트리거 출력만 제공",
+    "게이트 드라이버 IC 제어 신호(ENABLE, FAULT 입력) — 외부에서 처리",
+    "모터 보호(과전류 차단) — 외부 하드웨어 또는 상위 IP 담당"
+  ],
+
+  "architecture": {
+    "clock":  "100 MHz (Basys3 W5)",
+    "reset":  "rst_n — active-low synchronous",
+    "blocks": [
+      {
+        "id":     "cpu",
+        "name":   "MicroBlaze V CPU",
+        "kind":   "cpu",
+        "module": null,
+        "file":   null,
+        "desc":   "AXI4-Lite 마스터. INTC 경유 IRQ 수신",
+        "short":  "MBV",
+        "side":   "left"
+      },
+      {
+        "id":     "bldc_ip",
+        "name":   "bldc_hall_sixstep_ip",
+        "kind":   "ip",
+        "module": "bldc_hall_sixstep_ip",
+        "file":   "rtl/bldc_hall_sixstep_ip.v",
+        "desc":   "AXI4-Lite BLDC 6스텝 IP. 홀 해독 FSM + 데드타임 PWM + 게이트 출력",
+        "short":  "BLDC",
+        "side":   "center"
+      },
+      {
+        "id":     "hall_sensor",
+        "name":   "홀 센서 (3상)",
+        "kind":   "external",
+        "module": null,
+        "file":   null,
+        "desc":   "BLDC 로터 위치 감지. 3비트 그레이 코드 출력. Pmod JA 경유",
+        "short":  "HALL",
+        "side":   "right"
+      },
+      {
+        "id":     "gate_drv",
+        "name":   "게이트 드라이버 모듈",
+        "kind":   "external",
+        "module": null,
+        "file":   null,
+        "desc":   "3상 풀브리지 게이트 드라이버. HIN[2:0]/LIN[2:0] 수신. 레벨 변환 필요(3.3V→5V).",
+        "short":  "GATE",
+        "side":   "right"
+      },
+      {
+        "id":     "adc",
+        "name":   "ADC (외부)",
+        "kind":   "external",
+        "module": null,
+        "file":   null,
+        "desc":   "전류 샘플 트리거 수신. sample_trig 1사이클 펄스로 ADC 변환 개시",
+        "short":  "ADC",
+        "side":   "right"
+      }
+    ],
+    "links": [
+      { "from": "cpu",         "to": "bldc_ip",    "label": "AXI4-Lite" },
+      { "from": "hall_sensor", "to": "bldc_ip",    "label": "hall_in[2:0]" },
+      { "from": "bldc_ip",     "to": "gate_drv",   "label": "hin[2:0]/lin[2:0]" },
+      { "from": "bldc_ip",     "to": "adc",        "label": "sample_trig" },
+      { "from": "bldc_ip",     "to": "cpu",        "label": "irq→INTC14" }
+    ]
+  },
+
+  "bus_protocol": {
+    "name":   "AXI4-Lite",
+    "width":  32,
+    "addr_w": 8,
+    "signals": ["s_awaddr","s_awvalid","s_awready","s_wdata","s_wstrb","s_wvalid","s_wready",
+                "s_bresp","s_bvalid","s_bready","s_araddr","s_arvalid","s_arready",
+                "s_rdata","s_rresp","s_rvalid","s_rready"],
+    "limits": ["단일 비동기 슬레이브. 버스트·캐시·QoS 미지원"]
+  },
+
+  "integration": {
+    "bus":           "AXI4-Lite",
+    "address_map":   "mbv-frozen-v2",
+    "compat":        "compatible",
+    "frozen_mapping": [
+      { "block": "bldc_ip", "region": "free_slot_1F", "base": "0x401F_0000", "intc": 14 }
+    ],
+    "plan": "동결 맵 slot [1F] (0x401F_0000, 64KB) 배정 제안. INTC 14 번 사용(현재 비어 있음). 프로젝트 인덱스 표 동결 후 확정."
+  },
+
+  "external_parts": [
+    {
+      "id":               "hall_module",
+      "name":             "BLDC 홀 센서 (내장형, 3상)",
+      "block":            "hall_sensor",
+      "interface":        "GPIO 3핀 (디지털 출력)",
+      "io_voltage":       "3.3V",
+      "qty":              1,
+      "board_resident":   false,
+      "supply_voltage":   "3.3V 또는 5V (모듈 사양 확인)",
+      "level_shift":      false,
+      "power_note":       "5V 모듈이면 출력 레벨 변환 필요(신호 → 3.3V)",
+      "arduino_compatible": true,
+      "notes":            "BLDC 모터 내장형 홀 센서 또는 별도 모듈. Pmod JA 1~3번 핀 연결."
+    },
+    {
+      "id":               "gate_driver",
+      "name":             "3상 풀브리지 게이트 드라이버 모듈",
+      "block":            "gate_drv",
+      "interface":        "GPIO 6핀 (HIN×3, LIN×3 입력)",
+      "io_voltage":       "3.3V",
+      "qty":              1,
+      "board_resident":   false,
+      "supply_voltage":   "별도 모터 전원(예: 12~24V)",
+      "level_shift":      true,
+      "power_note":       "게이트 드라이버 로직이 5V이면 Basys3 Pmod(3.3V) → 5V 레벨 변환 필요. 모터 전원은 Basys3와 완전 분리, GND만 공통.",
+      "arduino_compatible": false,
+      "notes":            "예: IR2130, DRV8302, L6234 등. HIN/LIN 입력 전압 범위 확인 필수. Pmod JB 경유."
+    }
+  ],
+
+  "schematic": {
+    "state": "not-written",
+    "note":  "게이트 드라이버 ↔ Pmod 레벨 변환 회로도 미작성. 외부 연결 사양은 constr/basys3.xdc 주석 참조."
+  },
+
+  "hierarchy": [
+    {
+      "file":   "rtl/bldc_hall_sixstep_ip.v",
+      "module": "bldc_hall_sixstep_ip",
+      "children": []
+    }
+  ],
+
+  "memory_map": {
+    "base": "0x401F_0000",
+    "regions": [
+      {
+        "name":  "bldc_regs",
+        "base":  "0x401F_0000",
+        "size":  "0x20",
+        "block": "bldc_ip",
+        "registers": [
+          { "off": "0x00", "name": "REG_ID",       "access": "R",  "desc": "0x424C4443 ('BLDC')" },
+          { "off": "0x04", "name": "REG_CTRL",     "access": "RW", "desc": "[0]=EN, [1]=IE, [2]=DIR. CTRL 쓰기로 fault_lat 클리어" },
+          { "off": "0x08", "name": "REG_DUTY",     "access": "RW", "desc": "[9:0] PWM 듀티 0~1023 (10비트)" },
+          { "off": "0x0C", "name": "REG_DEADTIME", "access": "RW", "desc": "[7:0] 데드타임 클럭 수 (default 50 → 500 ns @ 100 MHz)" },
+          { "off": "0x10", "name": "REG_STATUS",   "access": "R",  "desc": "[2:0]=HALL, [5:3]=STEP, [6]=FAULT_LAT" },
+          { "off": "0x14", "name": "REG_IRQ_STAT", "access": "RW", "desc": "[0]=STEP_CHANGE (W1C)" }
+        ]
+      }
+    ]
+  },
+
+  "roadmap": [
+    {
+      "stage": "T1",
+      "state": "done",
+      "title": "AXI4-Lite MMIO 뼈대 (mmio-uart-gpio-skeleton)",
+      "refs":  ["verilog-uart-skeleton"]
+    },
+    {
+      "stage": "T2",
+      "state": "current",
+      "title": "BLDC 6스텝 홀 IP + 데드타임 PWM (이 패키지)",
+      "refs":  ["arief-2026-ijecbe-artix7-36v-bldc-hall-sixstep", "wangxuan95-fpga-foc"]
+    },
+    {
+      "stage": "T3",
+      "state": "planned",
+      "title": "하단 암 ON 구간 ADC 샘플링 → 전류 측정 → 간단 PI 전류 루프 (FOC 입문)",
+      "refs":  ["wangxuan95-fpga-foc", "mari-upc-2022-fpga-foc-ipmsm-field-weakening"]
+    }
+  ],
+
+  "references": [
+    { "name": "arief-2026-ijecbe-artix7-36v-bldc-hall-sixstep", "reason": "Artix-7 BLDC 6스텝 홀 해독 FSM + 데드타임 삽입 구조 근거" },
+    { "name": "wangxuan95-fpga-foc",                             "reason": "FPGA FOC 오픈소스: 6스텝 → FOC 사다리 흐름과 ADC 샘플링 창 타이밍 근거" },
+    { "name": "mari-upc-2022-fpga-foc-ipmsm-field-weakening",   "reason": "FPGA FOC 논문: 데드타임 기준값(500 ns)과 샘플 트리거 위치 근거" }
+  ],
+
+  "sources": {
+    "rtl":         ["rtl/bldc_hall_sixstep_ip.v"],
+    "tb":          ["tb/tb_bldc_hall_sixstep_ip.v"],
+    "constraints": ["constr/basys3.xdc"],
+    "build":       ["Makefile"]
+  },
+
+  "howto": {
+    "sim": [
+      "cd capstones/mmio-bldc-hall-sixstep-ip",
+      "make sim   # iverilog + vvp; 기대 출력: 'PASS: all tests passed'"
+    ],
+    "lint": [
+      "make lint  # verilator --lint-only -Wall"
+    ],
+    "synth": [
+      "make synth # yosys 자원 추정 (Vivado 수치와 다를 수 있음)"
+    ],
+    "vivado": [
+      "Vivado 2024.2에서 새 프로젝트 → constr/basys3.xdc, rtl/bldc_hall_sixstep_ip.v 추가",
+      "IP 외부 AXI4-Lite 포트를 MicroBlaze V M_AXI_DP 버스에 연결",
+      "IRQ 출력을 INTC 14번 입력에 연결",
+      "합성·구현 후 Basys3에 프로그래밍"
+    ]
+  },
+
+  "verification": {
+    "board": "not-tested",
+    "notes": "S3(보드 동작)는 에이전트가 올리지 않음. 사람이 Basys3에서 확인 후 'pass + 날짜'로 갱신."
+  },
+
+  "risks": [
+    "게이트 드라이버 로직 레벨이 5V이면 Pmod 출력(3.3V) → 레벨 변환 없이 연결 금지",
+    "모터 전원과 Basys3 전원을 절대 공통 연결하지 않음(GND만 공통, 별도 공급)",
+    "DEFAULT_DEADTIME=50(500 ns)는 대부분의 소형 게이트 드라이버에 충분하나, 사용하는 드라이버의 turn-off 지연을 반드시 확인",
+    "홀 센서 신호를 3단 플립플롭 동기화(hall_s0→s1→s2)로 처리하므로 최소 3사이클 지연 발생. 고속 모터에서 단계 오검출 가능성 낮음",
+    "fault(000/111 홀 코드) 발생 시 CTRL 레지스터 쓰기로만 해제됨. 소프트웨어가 이를 처리하지 않으면 모터가 멈춘 채 유지됨"
+  ]
+}
