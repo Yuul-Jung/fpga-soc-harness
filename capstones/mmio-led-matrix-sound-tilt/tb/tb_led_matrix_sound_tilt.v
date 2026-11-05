@@ -195,7 +195,7 @@ module tb_led_matrix_sound_tilt;
 
         // 에너지 강제: energy_flat 포트 직접 사용
         // energy_flat[gi*32 +: 32]: band0=[31:0], band7=[255:224] (LSB=band0)
-        force u_soc.u_frame.energy_flat = {
+        force u_soc.energy_flat = {
             32'h4000_0000,  // band 7: bar_h=2 (상위3비트=010)
             32'h0000_0000,  // band 6: bar_h=0
             32'h0000_0000,  // band 5: bar_h=0
@@ -206,10 +206,10 @@ module tb_led_matrix_sound_tilt;
             32'hFFFF_FFFF   // band 0: bar_h=7 (상위3비트=111)
         };
 
-        // energy_update 펄스를 직접 강제
-        force u_soc.u_frame.energy_update = 1;
+        // energy_update 펄스를 직접 강제 (soc_top 레벨 wire)
+        force u_soc.energy_update = 1;
         @(posedge clk);
-        force u_soc.u_frame.energy_update = 0;
+        force u_soc.energy_update = 0;
         @(posedge clk);
         // bitmap 갱신 대기
         repeat(5) @(posedge clk);
@@ -270,8 +270,8 @@ module tb_led_matrix_sound_tilt;
             end
         end
 
-        release u_soc.u_frame.energy_flat;
-        release u_soc.u_frame.energy_update;
+        release u_soc.energy_flat;
+        release u_soc.energy_update;
 
         // ================================================================
         // TB2: 기울기 점 모드 비트맵 확인
@@ -284,9 +284,9 @@ module tb_led_matrix_sound_tilt;
         // X=0, Y=0 → dot_col = 0[9:6]+8 = 8, dot_row = 0[9:7]+4 = 4
         force u_soc.u_frame.x_hold = 10'd0;
         force u_soc.u_frame.y_hold = 10'd0;
-        force u_soc.u_frame.adxl_valid = 1;
+        force u_soc.adxl_valid = 1;
         @(posedge clk);
-        force u_soc.u_frame.adxl_valid = 0;
+        force u_soc.adxl_valid = 0;
         @(posedge clk);
         repeat(5) @(posedge clk);
         bm_snap = u_soc.bitmap;
@@ -306,9 +306,9 @@ module tb_led_matrix_sound_tilt;
         // y_hold = -512 → 10'b10_0000_0000: [9:7]=3'b100=4(부호 무시, 비트만), 4+4=8 > 7 → clamp=7
         force u_soc.u_frame.x_hold = 10'h1FF;   // +511
         force u_soc.u_frame.y_hold = 10'h200;   // -512 (2의 보수)
-        force u_soc.u_frame.adxl_valid = 1;
+        force u_soc.adxl_valid = 1;
         @(posedge clk);
-        force u_soc.u_frame.adxl_valid = 0;
+        force u_soc.adxl_valid = 0;
         @(posedge clk);
         repeat(5) @(posedge clk);
         bm_snap = u_soc.bitmap;
@@ -324,7 +324,7 @@ module tb_led_matrix_sound_tilt;
 
         release u_soc.u_frame.x_hold;
         release u_soc.u_frame.y_hold;
-        release u_soc.u_frame.adxl_valid;
+        release u_soc.adxl_valid;
 
         // ================================================================
         // TB4: MAX7219 CS/CLK 활성화 여부

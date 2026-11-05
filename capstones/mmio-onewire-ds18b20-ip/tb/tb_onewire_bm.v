@@ -125,17 +125,12 @@ task axi_write;
         @(posedge clk); #1;
         s_awaddr  = addr; s_awvalid = 1;
         s_wdata   = data; s_wvalid  = 1; s_bready = 1;
-        // AW 완료 대기
+        // P1에서 DUT가 AW+W를 수신; awready→0 (aw_done←1)
         @(posedge clk);
+        // B 완료 후 aw_done→0 → awready→1 까지 대기
+        // (awready는 B 핸드셰이크가 aw_done/w_done을 클리어한 뒤 1로 돌아옴)
         while (!s_awready) @(posedge clk);
-        #1; s_awvalid = 0;
-        // W 완료 대기
-        @(posedge clk);
-        while (!s_wready) @(posedge clk);
-        #1; s_wvalid = 0;
-        // B 완료 대기
-        while (!s_bvalid) @(posedge clk);
-        #1; s_bready = 0;
+        #1; s_awvalid = 0; s_wvalid = 0; s_bready = 0;
     end
 endtask
 
@@ -146,11 +141,14 @@ task axi_read;
     begin
         @(posedge clk); #1;
         s_araddr  = addr; s_arvalid = 1; s_rready = 1;
+        // P1에서 DUT가 AR을 수신; ar_active←1, arready→0
+        @(posedge clk);
+        // R 핸드셰이크 완료 후 ar_active←0 → arready→1 까지 대기
+        // (rready=1이므로 P2에서 R이 완료되어 ar_active→0)
         while (!s_arready) @(posedge clk);
-        #1; s_arvalid = 0;
-        while (!s_rvalid) @(posedge clk);
+        // r_rdata 레지스터는 ar_active 클리어 후에도 값이 유지됨
         data = s_rdata;
-        #1; s_rready = 0;
+        #1; s_arvalid = 0; s_rready = 0;
     end
 endtask
 
