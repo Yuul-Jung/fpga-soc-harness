@@ -251,7 +251,7 @@
       "qty": 1,
       "board_resident": false,
       "supply_voltage": 3.3,
-      "level_shift": false,
+      "level_shift": "불필요 (3.3V)",
       "arduino_compatible": true,
       "notes": "Basys3 Pmod JA 핀에 SDA/SCL 연결. 모듈의 VCC는 3.3V Pmod 전원 사용. 주소 0x68 (AD0=GND). I2C 읽기는 기존 IIC IP(0x4005_0000)에서 소프트웨어 처리, 본 IP는 계산만."
     }

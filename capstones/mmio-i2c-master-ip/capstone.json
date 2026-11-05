@@ -192,7 +192,7 @@
       "qty": 1,
       "board_resident": false,
       "supply_voltage": 3.3,
-      "level_shift": false,
+      "level_shift": "불필요 (3.3V)",
       "power_note": "Pmod 3.3V 전원",
       "arduino_compatible": true,
       "notes": "오픈드레인 버스 풀업. 시뮬레이션에서는 불필요."
@@ -206,7 +206,7 @@
       "qty": 1,
       "board_resident": false,
       "supply_voltage": 3.3,
-      "level_shift": false,
+      "level_shift": "불필요 (3.3V)",
       "power_note": "Pmod 3.3V 전원",
       "arduino_compatible": true,
       "notes": "오픈드레인 버스 풀업. 시뮬레이션에서는 불필요."

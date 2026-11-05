@@ -118,27 +118,91 @@
       }
     ],
     "links": [
-      { "from": "clk",    "to": "clkgen", "label": "100 MHz" },
-      { "from": "clkgen", "to": "i2s",    "label": "MCLK/BCLK/LRCLK" },
-      { "from": "master", "to": "bus",    "label": "mmio-lite" },
-      { "from": "bus",    "to": "gpio",   "label": "sel/rdata" },
-      { "from": "bus",    "to": "uart",   "label": "sel/rdata" },
-      { "from": "bus",    "to": "i2s",    "label": "sel/rdata" },
-      { "from": "gpio",   "to": "x_sw",  "label": "sw, led" },
-      { "from": "uart",   "to": "x_uart","label": "txd" },
-      { "from": "i2s",    "to": "x_i2s2","label": "MCLK/BCLK/LRCLK/SDIN" },
-      { "from": "i2s",    "to": "master", "label": "irq" }
+      {
+        "from": "clk",
+        "to": "clkgen",
+        "label": "100 MHz"
+      },
+      {
+        "from": "clkgen",
+        "to": "i2s",
+        "label": "MCLK/BCLK/LRCLK"
+      },
+      {
+        "from": "master",
+        "to": "bus",
+        "label": "mmio-lite"
+      },
+      {
+        "from": "bus",
+        "to": "gpio",
+        "label": "sel/rdata"
+      },
+      {
+        "from": "bus",
+        "to": "uart",
+        "label": "sel/rdata"
+      },
+      {
+        "from": "bus",
+        "to": "i2s",
+        "label": "sel/rdata"
+      },
+      {
+        "from": "gpio",
+        "to": "x_sw",
+        "label": "sw, led"
+      },
+      {
+        "from": "uart",
+        "to": "x_uart",
+        "label": "txd"
+      },
+      {
+        "from": "i2s",
+        "to": "x_i2s2",
+        "label": "MCLK/BCLK/LRCLK/SDIN"
+      },
+      {
+        "from": "i2s",
+        "to": "master",
+        "label": "irq"
+      }
     ]
   },
   "bus_protocol": {
     "name": "mmio-lite",
     "signals": [
-      { "name": "m_valid",    "dir": "master→slave", "desc": "요청 유효" },
-      { "name": "m_we",       "dir": "master→slave", "desc": "1이면 쓰기" },
-      { "name": "m_addr[31:0]","dir": "master→slave", "desc": "바이트 주소, 4바이트 정렬" },
-      { "name": "m_wdata[31:0]","dir": "master→slave","desc": "쓰기 데이터" },
-      { "name": "m_rdata[31:0]","dir": "slave→master","desc": "읽기 데이터 (조합 경로)" },
-      { "name": "m_ready",    "dir": "slave→master", "desc": "항상 1: 모든 접근은 1사이클" }
+      {
+        "name": "m_valid",
+        "dir": "master→slave",
+        "desc": "요청 유효"
+      },
+      {
+        "name": "m_we",
+        "dir": "master→slave",
+        "desc": "1이면 쓰기"
+      },
+      {
+        "name": "m_addr[31:0]",
+        "dir": "master→slave",
+        "desc": "바이트 주소, 4바이트 정렬"
+      },
+      {
+        "name": "m_wdata[31:0]",
+        "dir": "master→slave",
+        "desc": "쓰기 데이터"
+      },
+      {
+        "name": "m_rdata[31:0]",
+        "dir": "slave→master",
+        "desc": "읽기 데이터 (조합 경로)"
+      },
+      {
+        "name": "m_ready",
+        "dir": "slave→master",
+        "desc": "항상 1: 모든 접근은 1사이클"
+      }
     ],
     "note": "주소 [31:16]으로 슬레이브 선택, [15:0]이 슬레이브 내 오프셋. i2s_tx는 0xFFF0~FFFC(mgmt 레지스터)에 접근하므로 16비트 오프셋이 필요하다."
   },
@@ -146,16 +210,34 @@
     "module": "basys3_top",
     "file": "rtl/basys3_top.v",
     "children": [
-      { "module": "i2s_clk_gen", "file": "rtl/i2s_clk_gen.v" },
+      {
+        "module": "i2s_clk_gen",
+        "file": "rtl/i2s_clk_gen.v"
+      },
       {
         "module": "soc_top",
         "file": "rtl/soc_top.v",
         "children": [
-          { "module": "demo_master", "file": "rtl/demo_master.v" },
-          { "module": "mmio_bus",   "file": "rtl/mmio_bus.v" },
-          { "module": "gpio",       "file": "rtl/gpio.v" },
-          { "module": "uart_tx",    "file": "rtl/uart_tx.v" },
-          { "module": "i2s_tx",     "file": "rtl/i2s_tx.v" }
+          {
+            "module": "demo_master",
+            "file": "rtl/demo_master.v"
+          },
+          {
+            "module": "mmio_bus",
+            "file": "rtl/mmio_bus.v"
+          },
+          {
+            "module": "gpio",
+            "file": "rtl/gpio.v"
+          },
+          {
+            "module": "uart_tx",
+            "file": "rtl/uart_tx.v"
+          },
+          {
+            "module": "i2s_tx",
+            "file": "rtl/i2s_tx.v"
+          }
         ]
       }
     ]
@@ -166,8 +248,18 @@
       "size": "0x10000",
       "block": "gpio",
       "regs": [
-        { "off": "0x00", "name": "LED",  "access": "RW", "desc": "하위 16비트가 LED 핀" },
-        { "off": "0x04", "name": "SW",   "access": "RO", "desc": "하위 16비트, 2단 동기화된 스위치" }
+        {
+          "off": "0x00",
+          "name": "LED",
+          "access": "RW",
+          "desc": "하위 16비트가 LED 핀"
+        },
+        {
+          "off": "0x04",
+          "name": "SW",
+          "access": "RO",
+          "desc": "하위 16비트, 2단 동기화된 스위치"
+        }
       ]
     },
     {
@@ -175,8 +267,18 @@
       "size": "0x10000",
       "block": "uart",
       "regs": [
-        { "off": "0x00", "name": "DATA",   "access": "WO", "desc": "하위 8비트 송신 시작. busy 중 무시" },
-        { "off": "0x04", "name": "STATUS", "access": "RO", "desc": "bit0 = busy" }
+        {
+          "off": "0x00",
+          "name": "DATA",
+          "access": "WO",
+          "desc": "하위 8비트 송신 시작. busy 중 무시"
+        },
+        {
+          "off": "0x04",
+          "name": "STATUS",
+          "access": "RO",
+          "desc": "bit0 = busy"
+        }
       ]
     },
     {
@@ -184,14 +286,54 @@
       "size": "0x10000",
       "block": "i2s",
       "regs": [
-        { "off": "0x0000", "name": "CTRL",       "access": "RW", "desc": "bit[0]=TX_EN. 1이면 연속 송신 활성화" },
-        { "off": "0x0004", "name": "STATUS",      "access": "RO", "desc": "bit[0]=active(TX_EN과 동일)" },
-        { "off": "0x0008", "name": "L_DATA",      "access": "WO", "desc": "다음 프레임에 사용할 왼쪽 채널 16비트 샘플 [15:0]" },
-        { "off": "0x000C", "name": "R_DATA",      "access": "WO", "desc": "다음 프레임에 사용할 오른쪽 채널 16비트 샘플 [15:0]" },
-        { "off": "0xFFF0", "name": "ID",          "access": "RO", "desc": "0x49325354 ('I2ST')" },
-        { "off": "0xFFF4", "name": "VER",         "access": "RO", "desc": "0x01000001: std_rev=1, major=0, minor=1" },
-        { "off": "0xFFF8", "name": "IRQ_STATUS",  "access": "W1C","desc": "bit[0]=frame_done. 1쓰면 클리어(W1C)" },
-        { "off": "0xFFFC", "name": "IRQ_ENABLE",  "access": "RW", "desc": "bit[0]=frame_done 인터럽트 활성화" }
+        {
+          "off": "0x0000",
+          "name": "CTRL",
+          "access": "RW",
+          "desc": "bit[0]=TX_EN. 1이면 연속 송신 활성화"
+        },
+        {
+          "off": "0x0004",
+          "name": "STATUS",
+          "access": "RO",
+          "desc": "bit[0]=active(TX_EN과 동일)"
+        },
+        {
+          "off": "0x0008",
+          "name": "L_DATA",
+          "access": "WO",
+          "desc": "다음 프레임에 사용할 왼쪽 채널 16비트 샘플 [15:0]"
+        },
+        {
+          "off": "0x000C",
+          "name": "R_DATA",
+          "access": "WO",
+          "desc": "다음 프레임에 사용할 오른쪽 채널 16비트 샘플 [15:0]"
+        },
+        {
+          "off": "0xFFF0",
+          "name": "ID",
+          "access": "RO",
+          "desc": "0x49325354 ('I2ST')"
+        },
+        {
+          "off": "0xFFF4",
+          "name": "VER",
+          "access": "RO",
+          "desc": "0x01000001: std_rev=1, major=0, minor=1"
+        },
+        {
+          "off": "0xFFF8",
+          "name": "IRQ_STATUS",
+          "access": "W1C",
+          "desc": "bit[0]=frame_done. 1쓰면 클리어(W1C)"
+        },
+        {
+          "off": "0xFFFC",
+          "name": "IRQ_ENABLE",
+          "access": "RW",
+          "desc": "bit[0]=frame_done 인터럽트 활성화"
+        }
       ]
     }
   ],
@@ -200,30 +342,45 @@
       "stage": "T1",
       "state": "done",
       "title": "MMIO 버스 + GPIO + UART, 마스터는 FSM",
-      "refs": ["mmio-uart-gpio-skeleton"]
+      "refs": [
+        "mmio-uart-gpio-skeleton"
+      ]
     },
     {
       "stage": "T2",
       "state": "current",
       "title": "I2S 클럭 생성·검증, Pmod I2S2 오디오 출력",
-      "refs": ["digilent-forum-pmodamp3-basys3-i2s", "columbia-4840-audio-visualizer"]
+      "refs": [
+        "digilent-forum-pmodamp3-basys3-i2s",
+        "columbia-4840-audio-visualizer"
+      ]
     },
     {
       "stage": "T2",
       "state": "planned",
       "title": "마스터를 PicoRV32로 교체, I2S TX를 C 드라이버로 제어",
-      "refs": ["fanguoc2len-risc-v-computer"]
+      "refs": [
+        "fanguoc2len-risc-v-computer"
+      ]
     },
     {
       "stage": "T3",
       "state": "planned",
       "title": "오디오 톤 생성기 또는 BRAM 오디오 플레이어 펌웨어",
-      "refs": ["columbia-4840-audio-visualizer"]
+      "refs": [
+        "columbia-4840-audio-visualizer"
+      ]
     }
   ],
   "references": [
-    { "card": "digilent-forum-pmodamp3-basys3-i2s", "why": "MCLK/BCLK/LRCLK 분주기와 Pmod I2S 연결의 직접 근거" },
-    { "card": "columbia-4840-audio-visualizer",      "why": "I2S + VGA 조합, 오디오 비주얼라이저 아이디어 근거" }
+    {
+      "card": "digilent-forum-pmodamp3-basys3-i2s",
+      "why": "MCLK/BCLK/LRCLK 분주기와 Pmod I2S 연결의 직접 근거"
+    },
+    {
+      "card": "columbia-4840-audio-visualizer",
+      "why": "I2S + VGA 조합, 오디오 비주얼라이저 아이디어 근거"
+    }
   ],
   "sources": {
     "rtl": [
@@ -285,7 +442,12 @@
     "target_map": "mbv-frozen-v2",
     "plan": "이 패키지는 CPU 없이 시뮬레이션하려고 자체 버스(0x1002_xxxx)를 쓴다. 동결 맵(mbv-frozen-v2)에는 i2s_tx 슬롯 [14] 0x4014_0000 (intc 11)이 미리 배정되어 있다. 이식 경로: (1) 주소를 0x1002_0000 → 0x4014_0000으로 교체하고 mmio-lite → AXI4-Lite 래퍼를 붙인다. (2) IRQ를 intc 11에 연결한다. (3) MMIO 레지스터 배치(CTRL/STATUS/L_DATA/R_DATA/mgmt)는 ip_standard.json을 따르므로 AXI4-Lite 래퍼를 쓰면 드라이버 변경 없이 MicroBlaze V에서 동작한다.",
     "frozen_mapping": [
-      { "block": "i2s_tx", "region": "i2s_tx", "base": "0x4014_0000", "intc": 11 }
+      {
+        "block": "i2s_tx",
+        "region": "i2s_tx",
+        "base": "0x4014_0000",
+        "intc": 11
+      }
     ]
   },
   "external_parts": [
@@ -298,7 +460,7 @@
       "qty": 1,
       "board_resident": false,
       "supply_voltage": 3.3,
-      "level_shift": false,
+      "level_shift": "불필요 (3.3V)",
       "arduino_compatible": false,
       "notes": "Pmod JA 포트 연결. JA1=LRCLK, JA2=SDIN, JA4=MCLK, JA7=BCLK. 3.3V 단일 전원. VDD=3.3V는 Pmod VCC에서 공급."
     },

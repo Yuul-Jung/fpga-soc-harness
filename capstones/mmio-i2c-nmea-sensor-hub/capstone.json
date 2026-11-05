@@ -252,7 +252,7 @@
       "qty": 1,
       "board_resident": false,
       "supply_voltage": "3.3",
-      "level_shift": false,
+      "level_shift": "불필요 (3.3V)",
       "power_note": "VDD=3.3V. I2C 풀업 4.7kΩ → 3.3V 필요. AD0 GND → 주소 0x68.",
       "arduino_compatible": true,
       "notes": "5V 모듈 사용 시 레벨 변환 필수(SDA 양방향). 3.3V 전용 모듈 권장."
@@ -266,7 +266,7 @@
       "qty": 1,
       "board_resident": false,
       "supply_voltage": "3.3",
-      "level_shift": false,
+      "level_shift": "불필요 (3.3V)",
       "power_note": "VDD max 3.6V. SDO GND → 주소 0x76.",
       "arduino_compatible": true,
       "notes": "I2C 버스 공유. CSB를 3.3V에 연결(SPI 비활성화)."
@@ -280,7 +280,7 @@
       "qty": 1,
       "board_resident": false,
       "supply_voltage": "3.3",
-      "level_shift": false,
+      "level_shift": "불필요 (3.3V)",
       "power_note": "VDD=2.16~3.6V. 주소 고정 0x1E.",
       "arduino_compatible": true,
       "notes": "DRDY 핀 미사용(폴링 모드). 모듈 내장 풀업 확인 필요."
@@ -294,7 +294,7 @@
       "qty": 1,
       "board_resident": false,
       "supply_voltage": "3.3",
-      "level_shift": false,
+      "level_shift": "불필요 (3.3V)",
       "power_note": "TX 로직 레벨 3.3V. 5V TX 모듈 사용 시 분압 또는 레벨 변환 필수.",
       "arduino_compatible": true,
       "notes": "9600 baud, N81 고정. GPS 모듈 VCC는 별도 전원(3.3V 또는 5V, 최대 50mA)."

@@ -272,7 +272,7 @@
 - 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(arief-2026-ijecbe-artix7-36v-bldc-hall-sixstep·wangxuan95-fpga-foc·mari-upc-2022-fpga-foc-ipmsm-field-weakening, rechecked_at 불문) → 차단 근거 3 + 새로움 2(6스텝→FOC 샘플링 사다리 없음) + 적합성 2(홀 3핀+PWM 6핀 Pmod 2개, 인버터 전원 분리) + 완결성 1(FOC 샘플링 창 범위 미정) = 8점 ≥ 7 → ready 승격. §14.2 차단 조건 적용(사이클 2번째).
 
 ## I-024 소리·기울기 반응 LED 매트릭스 IP: PDM/I2S 마이크 대역 에너지 + ADXL345 기울기 → MAX7219 열 버퍼 레지스터
-- 상태: ready
+- 상태: used (slug: mmio-led-matrix-sound-tilt, 2026-11-05)
 - 요약: 내 판단: MAX7219 SPI 출력을 열 버퍼·밝기·갱신 트리거 레지스터를 가진 AXI4-Lite 래퍼로 만들고, 소리 대역 에너지(16대역 이하)와 가속도 기울기 중 하나를 모드 레지스터로 골라 막대나 점으로 그린다. 테스트벤치는 합성 사인파 입력으로 대역 막대 높이를, 가짜 ADXL 값으로 점 위치를 확인한다.
 - 조합: [MAX7219 SPI 출력, I2S/PDM 마이크 입력, ADXL345 SPI/I2C, AXI4-Lite 레지스터]
 - 근거: [vhdplus-spectrum-analyzer-max7219, renesas-forgefpga-fg015-running-string, mit-6111-2017-team20-audio-spectrum-analyzer, https://jpralves.net/post/2017/12/10/visual-accelerometer.html]

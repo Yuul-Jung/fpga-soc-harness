@@ -99,25 +99,87 @@
       }
     ],
     "links": [
-      {"from": "top",  "to": "soc",  "label": "clk/rst/jxadc/led"},
-      {"from": "soc",  "to": "hub",  "label": "mmio-lite"},
-      {"from": "soc",  "to": "demo", "label": "mmio-lite master"},
-      {"from": "hub",  "to": "drp",  "label": "DRP(den/daddr/drdy/do/eoc)"},
-      {"from": "hub",  "to": "avg",  "label": "sample_valid/sample_data×4"},
-      {"from": "hub",  "to": "regs", "label": "raw×4/avg×4/irq"},
-      {"from": "regs", "to": "demo", "label": "mmio-lite slave"},
-      {"from": "jxadc", "to": "drp",  "label": "JXADC analog (0~1V)"}
+      {
+        "from": "top",
+        "to": "soc",
+        "label": "clk/rst/jxadc/led"
+      },
+      {
+        "from": "soc",
+        "to": "hub",
+        "label": "mmio-lite"
+      },
+      {
+        "from": "soc",
+        "to": "demo",
+        "label": "mmio-lite master"
+      },
+      {
+        "from": "hub",
+        "to": "drp",
+        "label": "DRP(den/daddr/drdy/do/eoc)"
+      },
+      {
+        "from": "hub",
+        "to": "avg",
+        "label": "sample_valid/sample_data×4"
+      },
+      {
+        "from": "hub",
+        "to": "regs",
+        "label": "raw×4/avg×4/irq"
+      },
+      {
+        "from": "regs",
+        "to": "demo",
+        "label": "mmio-lite slave"
+      },
+      {
+        "from": "jxadc",
+        "to": "drp",
+        "label": "JXADC analog (0~1V)"
+      }
     ]
   },
   "bus_protocol": {
     "name": "mmio-lite",
     "signals": [
-      {"name": "addr",  "dir": "M→S", "width": 16, "desc": "16비트 오프셋 주소"},
-      {"name": "wdata", "dir": "M→S", "width": 32, "desc": "쓰기 데이터"},
-      {"name": "rdata", "dir": "S→M", "width": 32, "desc": "읽기 데이터 (슬레이브 출력)"},
-      {"name": "we",    "dir": "M→S", "width": 1,  "desc": "쓰기=1, 읽기=0"},
-      {"name": "req",   "dir": "M→S", "width": 1,  "desc": "트랜잭션 요청"},
-      {"name": "ack",   "dir": "S→M", "width": 1,  "desc": "1클럭 응답 펄스"}
+      {
+        "name": "addr",
+        "dir": "M→S",
+        "width": 16,
+        "desc": "16비트 오프셋 주소"
+      },
+      {
+        "name": "wdata",
+        "dir": "M→S",
+        "width": 32,
+        "desc": "쓰기 데이터"
+      },
+      {
+        "name": "rdata",
+        "dir": "S→M",
+        "width": 32,
+        "desc": "읽기 데이터 (슬레이브 출력)"
+      },
+      {
+        "name": "we",
+        "dir": "M→S",
+        "width": 1,
+        "desc": "쓰기=1, 읽기=0"
+      },
+      {
+        "name": "req",
+        "dir": "M→S",
+        "width": 1,
+        "desc": "트랜잭션 요청"
+      },
+      {
+        "name": "ack",
+        "dir": "S→M",
+        "width": 1,
+        "desc": "1클럭 응답 펄스"
+      }
     ],
     "note": "기존 capstone mmio-lite 계약(sensor-hub-checker, ps2-kbd-checker와 동일). AXI4-Lite 래퍼 없이 직접 버스 슬레이브로 연결."
   },
@@ -127,7 +189,10 @@
     "compat": "partial",
     "plan": "동결 맵 [09] xadc 슬롯(0x4009_0000)이 이미 예약됨. 이 IP는 같은 주소를 사용하므로 MicroBlaze V AXI4-Lite 래퍼를 붙이면 compatible 선언 가능. 현재 mmio-lite 버스이므로 partial.",
     "frozen_mapping": [
-      {"block": "hub", "frozen": "xadc"}
+      {
+        "block": "hub",
+        "frozen": "xadc"
+      }
     ]
   },
   "external_parts": [
@@ -140,7 +205,7 @@
       "qty": 4,
       "board_resident": false,
       "supply_voltage": 3.3,
-      "level_shift": false,
+      "level_shift": "불필요 (3.3V)",
       "power_note": "XADC 보조 채널 입력은 0~1 V 범위. 3.3V 센서 출력에는 반드시 분압기 사용",
       "arduino_compatible": true,
       "notes": "테스트벤치는 외부 부품 없이 DRP 모의 모델로 동작함. 보드 실제 측정은 S3 검증(사람 확인)."
@@ -162,12 +227,24 @@
             "module": "xadc_hub",
             "file": "rtl/xadc_hub.v",
             "children": [
-              {"module": "xadc_drp_ctrl", "file": "rtl/xadc_drp_ctrl.v"},
-              {"module": "xadc_avg",      "file": "rtl/xadc_avg.v"},
-              {"module": "xadc_regs",     "file": "rtl/xadc_regs.v"}
+              {
+                "module": "xadc_drp_ctrl",
+                "file": "rtl/xadc_drp_ctrl.v"
+              },
+              {
+                "module": "xadc_avg",
+                "file": "rtl/xadc_avg.v"
+              },
+              {
+                "module": "xadc_regs",
+                "file": "rtl/xadc_regs.v"
+              }
             ]
           },
-          {"module": "demo_master", "file": "rtl/demo_master.v"}
+          {
+            "module": "demo_master",
+            "file": "rtl/demo_master.v"
+          }
         ]
       }
     ]
@@ -179,18 +256,78 @@
       "block": "hub",
       "note": "mmio-lite 버스 기준 오프셋. 슬롯 [09] = 동결 맵 xadc 항목.",
       "regs": [
-        {"off": "0x00", "name": "CTRL",     "access": "RW", "desc": "bit[1:0]=avg_len(0=1,1=4,2=8,3=16) bit2=irq_en bit3=scan_en"},
-        {"off": "0x04", "name": "STATUS",   "access": "RO", "desc": "bit0=busy bit[5:2]=ch_valid[3:0]"},
-        {"off": "0x08", "name": "CH0_RAW",  "access": "RO", "desc": "VAUXP/N[4] 12비트 원시값 [11:0]"},
-        {"off": "0x0C", "name": "CH1_RAW",  "access": "RO", "desc": "VAUXP/N[5] 12비트 원시값 [11:0]"},
-        {"off": "0x10", "name": "CH2_RAW",  "access": "RO", "desc": "VAUXP/N[12] 12비트 원시값 [11:0]"},
-        {"off": "0x14", "name": "CH3_RAW",  "access": "RO", "desc": "VAUXP/N[13] 12비트 원시값 [11:0]"},
-        {"off": "0x18", "name": "CH0_AVG",  "access": "RO", "desc": "채널0 이동 평균 12비트"},
-        {"off": "0x1C", "name": "CH1_AVG",  "access": "RO", "desc": "채널1 이동 평균 12비트"},
-        {"off": "0x20", "name": "CH2_AVG",  "access": "RO", "desc": "채널2 이동 평균 12비트"},
-        {"off": "0x24", "name": "CH3_AVG",  "access": "RO", "desc": "채널3 이동 평균 12비트"},
-        {"off": "0x28", "name": "IRQ_MASK", "access": "RW", "desc": "bit[3:0]: 채널별 인터럽트 마스크 (1=활성화)"},
-        {"off": "0x2C", "name": "IRQ_FLAG", "access": "RW", "desc": "bit[3:0]: 채널별 변환 완료 플래그 (write 1 to clear)"}
+        {
+          "off": "0x00",
+          "name": "CTRL",
+          "access": "RW",
+          "desc": "bit[1:0]=avg_len(0=1,1=4,2=8,3=16) bit2=irq_en bit3=scan_en"
+        },
+        {
+          "off": "0x04",
+          "name": "STATUS",
+          "access": "RO",
+          "desc": "bit0=busy bit[5:2]=ch_valid[3:0]"
+        },
+        {
+          "off": "0x08",
+          "name": "CH0_RAW",
+          "access": "RO",
+          "desc": "VAUXP/N[4] 12비트 원시값 [11:0]"
+        },
+        {
+          "off": "0x0C",
+          "name": "CH1_RAW",
+          "access": "RO",
+          "desc": "VAUXP/N[5] 12비트 원시값 [11:0]"
+        },
+        {
+          "off": "0x10",
+          "name": "CH2_RAW",
+          "access": "RO",
+          "desc": "VAUXP/N[12] 12비트 원시값 [11:0]"
+        },
+        {
+          "off": "0x14",
+          "name": "CH3_RAW",
+          "access": "RO",
+          "desc": "VAUXP/N[13] 12비트 원시값 [11:0]"
+        },
+        {
+          "off": "0x18",
+          "name": "CH0_AVG",
+          "access": "RO",
+          "desc": "채널0 이동 평균 12비트"
+        },
+        {
+          "off": "0x1C",
+          "name": "CH1_AVG",
+          "access": "RO",
+          "desc": "채널1 이동 평균 12비트"
+        },
+        {
+          "off": "0x20",
+          "name": "CH2_AVG",
+          "access": "RO",
+          "desc": "채널2 이동 평균 12비트"
+        },
+        {
+          "off": "0x24",
+          "name": "CH3_AVG",
+          "access": "RO",
+          "desc": "채널3 이동 평균 12비트"
+        },
+        {
+          "off": "0x28",
+          "name": "IRQ_MASK",
+          "access": "RW",
+          "desc": "bit[3:0]: 채널별 인터럽트 마스크 (1=활성화)"
+        },
+        {
+          "off": "0x2C",
+          "name": "IRQ_FLAG",
+          "access": "RW",
+          "desc": "bit[3:0]: 채널별 변환 완료 플래그 (write 1 to clear)"
+        }
       ]
     }
   ],
@@ -199,7 +336,10 @@
       "stage": "T2",
       "state": "current",
       "title": "XADC DRP FSM + 이동 평균 + mmio-lite 레지스터 (DRP 모의 모델 시뮬레이션)",
-      "refs": ["digilent-basys-3-xadc-demo", "umd-phys495-basys3-xadc-voltmeter"]
+      "refs": [
+        "digilent-basys-3-xadc-demo",
+        "umd-phys495-basys3-xadc-voltmeter"
+      ]
     },
     {
       "stage": "T3",
@@ -209,10 +349,22 @@
     }
   ],
   "references": [
-    {"card": "digilent-basys-3-xadc-demo",        "why": "Basys3 JXADC 핀 배치와 XADC 사용 사례"},
-    {"card": "umd-phys495-basys3-xadc-voltmeter",  "why": "XADC 전압계 구현 사례 (DRP 직접 읽기)"},
-    {"card": "unilim-vahid-xadc-basys3-vhdl",      "why": "VHDL XADC 구현 (VHDL→Verilog 사양 참조)"},
-    {"card": "shashankr-basys3-fpga-robotic-arm",  "why": "JXADC 조이스틱 ADC 사례"}
+    {
+      "card": "digilent-basys-3-xadc-demo",
+      "why": "Basys3 JXADC 핀 배치와 XADC 사용 사례"
+    },
+    {
+      "card": "umd-phys495-basys3-xadc-voltmeter",
+      "why": "XADC 전압계 구현 사례 (DRP 직접 읽기)"
+    },
+    {
+      "card": "unilim-vahid-xadc-basys3-vhdl",
+      "why": "VHDL XADC 구현 (VHDL→Verilog 사양 참조)"
+    },
+    {
+      "card": "shashankr-basys3-fpga-robotic-arm",
+      "why": "JXADC 조이스틱 ADC 사례"
+    }
   ],
   "sources": {
     "rtl": [
@@ -228,8 +380,12 @@
       "tb/tb_xadc_drp_ctrl.v",
       "tb/tb_xadc_hub.v"
     ],
-    "constraints": ["constr/basys3_xadc_hub.xdc"],
-    "build": ["Makefile"]
+    "constraints": [
+      "constr/basys3_xadc_hub.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
   },
   "howto": [
     {

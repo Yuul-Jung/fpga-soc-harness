@@ -78,34 +78,143 @@
       }
     ],
     "links": [
-      {"from": "axil_wrap", "to": "i2c_rd_byte", "label": "start/dev_addr/reg_addr/clk_div"},
-      {"from": "i2c_rd_byte", "to": "axil_wrap", "label": "done/data_out/scl_out/sda_in/sda_out"},
-      {"from": "i2c_rd_byte", "to": "x_mpu6050", "label": "SCL/SDA (I2C bus)"},
-      {"from": "i2c_rd_byte", "to": "x_bmp280",  "label": "SCL/SDA (I2C bus)"},
-      {"from": "i2c_rd_byte", "to": "x_hmc5883l","label": "SCL/SDA (I2C bus)"},
-      {"from": "x_neo6m",     "to": "axil_wrap", "label": "UART RX (NMEA)"}
+      {
+        "from": "axil_wrap",
+        "to": "i2c_rd_byte",
+        "label": "start/dev_addr/reg_addr/clk_div"
+      },
+      {
+        "from": "i2c_rd_byte",
+        "to": "axil_wrap",
+        "label": "done/data_out/scl_out/sda_in/sda_out"
+      },
+      {
+        "from": "i2c_rd_byte",
+        "to": "x_mpu6050",
+        "label": "SCL/SDA (I2C bus)"
+      },
+      {
+        "from": "i2c_rd_byte",
+        "to": "x_bmp280",
+        "label": "SCL/SDA (I2C bus)"
+      },
+      {
+        "from": "i2c_rd_byte",
+        "to": "x_hmc5883l",
+        "label": "SCL/SDA (I2C bus)"
+      },
+      {
+        "from": "x_neo6m",
+        "to": "axil_wrap",
+        "label": "UART RX (NMEA)"
+      }
     ]
   },
   "bus_protocol": {
     "name": "AXI4-Lite",
     "signals": [
-      {"name": "s_awaddr",  "width": 16, "dir": "in",  "desc": "쓰기 주소 [15:0]"},
-      {"name": "s_awvalid", "width": 1,  "dir": "in",  "desc": "쓰기 주소 유효"},
-      {"name": "s_awready", "width": 1,  "dir": "out", "desc": "쓰기 주소 수락"},
-      {"name": "s_wdata",   "width": 32, "dir": "in",  "desc": "쓰기 데이터"},
-      {"name": "s_wstrb",   "width": 4,  "dir": "in",  "desc": "바이트 스트로브 (전달만, 바이트 선택 미구현)"},
-      {"name": "s_wvalid",  "width": 1,  "dir": "in",  "desc": "쓰기 데이터 유효"},
-      {"name": "s_wready",  "width": 1,  "dir": "out", "desc": "쓰기 데이터 수락"},
-      {"name": "s_bresp",   "width": 2,  "dir": "out", "desc": "쓰기 응답 (항상 OKAY)"},
-      {"name": "s_bvalid",  "width": 1,  "dir": "out", "desc": "쓰기 응답 유효"},
-      {"name": "s_bready",  "width": 1,  "dir": "in",  "desc": "쓰기 응답 수락"},
-      {"name": "s_araddr",  "width": 16, "dir": "in",  "desc": "읽기 주소 [15:0]"},
-      {"name": "s_arvalid", "width": 1,  "dir": "in",  "desc": "읽기 주소 유효"},
-      {"name": "s_arready", "width": 1,  "dir": "out", "desc": "읽기 주소 수락"},
-      {"name": "s_rdata",   "width": 32, "dir": "out", "desc": "읽기 데이터"},
-      {"name": "s_rresp",   "width": 2,  "dir": "out", "desc": "읽기 응답 (항상 OKAY)"},
-      {"name": "s_rvalid",  "width": 1,  "dir": "out", "desc": "읽기 데이터 유효"},
-      {"name": "s_rready",  "width": 1,  "dir": "in",  "desc": "읽기 데이터 수락"}
+      {
+        "name": "s_awaddr",
+        "width": 16,
+        "dir": "in",
+        "desc": "쓰기 주소 [15:0]"
+      },
+      {
+        "name": "s_awvalid",
+        "width": 1,
+        "dir": "in",
+        "desc": "쓰기 주소 유효"
+      },
+      {
+        "name": "s_awready",
+        "width": 1,
+        "dir": "out",
+        "desc": "쓰기 주소 수락"
+      },
+      {
+        "name": "s_wdata",
+        "width": 32,
+        "dir": "in",
+        "desc": "쓰기 데이터"
+      },
+      {
+        "name": "s_wstrb",
+        "width": 4,
+        "dir": "in",
+        "desc": "바이트 스트로브 (전달만, 바이트 선택 미구현)"
+      },
+      {
+        "name": "s_wvalid",
+        "width": 1,
+        "dir": "in",
+        "desc": "쓰기 데이터 유효"
+      },
+      {
+        "name": "s_wready",
+        "width": 1,
+        "dir": "out",
+        "desc": "쓰기 데이터 수락"
+      },
+      {
+        "name": "s_bresp",
+        "width": 2,
+        "dir": "out",
+        "desc": "쓰기 응답 (항상 OKAY)"
+      },
+      {
+        "name": "s_bvalid",
+        "width": 1,
+        "dir": "out",
+        "desc": "쓰기 응답 유효"
+      },
+      {
+        "name": "s_bready",
+        "width": 1,
+        "dir": "in",
+        "desc": "쓰기 응답 수락"
+      },
+      {
+        "name": "s_araddr",
+        "width": 16,
+        "dir": "in",
+        "desc": "읽기 주소 [15:0]"
+      },
+      {
+        "name": "s_arvalid",
+        "width": 1,
+        "dir": "in",
+        "desc": "읽기 주소 유효"
+      },
+      {
+        "name": "s_arready",
+        "width": 1,
+        "dir": "out",
+        "desc": "읽기 주소 수락"
+      },
+      {
+        "name": "s_rdata",
+        "width": 32,
+        "dir": "out",
+        "desc": "읽기 데이터"
+      },
+      {
+        "name": "s_rresp",
+        "width": 2,
+        "dir": "out",
+        "desc": "읽기 응답 (항상 OKAY)"
+      },
+      {
+        "name": "s_rvalid",
+        "width": 1,
+        "dir": "out",
+        "desc": "읽기 데이터 유효"
+      },
+      {
+        "name": "s_rready",
+        "width": 1,
+        "dir": "in",
+        "desc": "읽기 데이터 수락"
+      }
     ],
     "note": "단일 outstanding 트랜잭션. WSTRB 무시(전체 32비트 쓰기). ARUSER/AWUSER 없음. burst 없음."
   },
@@ -133,7 +242,7 @@
       "qty": 1,
       "board_resident": false,
       "supply_voltage": 3.3,
-      "level_shift": false,
+      "level_shift": "불필요 (3.3V)",
       "power_note": "3.3V 모듈 사용. 5V 모듈 사용 시 레벨 변환 필요.",
       "arduino_compatible": true,
       "notes": "I2C 주소 0x68 (AD0=0). 레지스터 0x75(WHO_AM_I)로 순회 확인."
@@ -147,7 +256,7 @@
       "qty": 1,
       "board_resident": false,
       "supply_voltage": 3.3,
-      "level_shift": false,
+      "level_shift": "불필요 (3.3V)",
       "power_note": "3.3V 모듈 사용(VDD 최대 3.6V). 5V 모듈 사용 시 레벨 변환 필요.",
       "arduino_compatible": true,
       "notes": "I2C 주소 0x76 (SDO=GND). 레지스터 0xD0(ID)으로 순회 확인."
@@ -161,7 +270,7 @@
       "qty": 1,
       "board_resident": false,
       "supply_voltage": 3.3,
-      "level_shift": false,
+      "level_shift": "불필요 (3.3V)",
       "power_note": "3.3V 모듈 사용. 5V 모듈 사용 시 레벨 변환 필요.",
       "arduino_compatible": true,
       "notes": "I2C 주소 0x1E. 레지스터 0x0A(IRA)로 순회 확인."
@@ -175,7 +284,7 @@
       "qty": 1,
       "board_resident": false,
       "supply_voltage": 3.3,
-      "level_shift": false,
+      "level_shift": "불필요 (3.3V)",
       "power_note": "TX 출력 3.3V 확인 필요. 일부 모듈 TX 5V → 레벨 변환 필요.",
       "arduino_compatible": true,
       "notes": "9600 baud, 8N1. NMEA 문장 $ 시작 \\n 종료. RX 핀 1개만 연결."
@@ -189,7 +298,11 @@
     "module": "axil_i2c3_nmea_hub",
     "file": "rtl/axil_i2c3_nmea_hub.v",
     "children": [
-      {"module": "i2c_rd_byte", "file": "rtl/i2c_rd_byte.v", "children": []}
+      {
+        "module": "i2c_rd_byte",
+        "file": "rtl/i2c_rd_byte.v",
+        "children": []
+      }
     ]
   },
   "memory_map": [
@@ -200,18 +313,78 @@
       "block": "axil_wrap",
       "note": "제안값. 동결 맵 free_slots[1D] 배정 대기.",
       "regs": [
-        {"off": "0x0000", "name": "CTRL",      "access": "RW", "desc": "bit0=EN, bit1=UART_EN, bit7=FIFO_CLR(자동클리어), bit8=TEST_MODE(직접FIFO주입)"},
-        {"off": "0x0004", "name": "STATUS",    "access": "RO", "desc": "bit0=FIFO_EMPTY, bit1=FIFO_FULL, bit2=TIMEOUT(I2C ACK 없음)"},
-        {"off": "0x0008", "name": "FIFO_DATA", "access": "RO", "desc": "팝온읽기. [31:24]=sensor_id(0~3), [23:0]=raw_data. FIFO_EMPTY이면 0 반환"},
-        {"off": "0x000C", "name": "FIFO_TS",   "access": "RO", "desc": "FIFO_DATA 팝과 함께 갱신되는 타임스탬프(자유실행 카운터)"},
-        {"off": "0x0010", "name": "FIFO_CNT",  "access": "RO", "desc": "[4:0] FIFO 적재 수"},
-        {"off": "0x0014", "name": "I2C_DIV",   "access": "RW", "desc": "I2C 비트 클럭 분주(기본 1000 → 100kHz@100MHz). 최소 8."},
-        {"off": "0x0018", "name": "UART_DIV",  "access": "RW", "desc": "UART 비트 클럭 분주(기본 10417 → 9600baud@100MHz)."},
-        {"off": "0x001C", "name": "FIFO_INJ",  "access": "WO", "desc": "TEST_MODE에서만 유효. [31:24]=sensor_id, [23:0]=data. 직접 FIFO 주입."},
-        {"off": "0xFFF0", "name": "ID_REG",    "access": "RO", "desc": "0x48554231 (ASCII HUB1)"},
-        {"off": "0xFFF4", "name": "VER_REG",   "access": "RO", "desc": "0x00010000 (v1.0.0)"},
-        {"off": "0xFFF8", "name": "IRQ_EN",    "access": "RW", "desc": "bit0=인터럽트 활성"},
-        {"off": "0xFFFC", "name": "IRQ_PEND",  "access": "RW", "desc": "bit0=FIFO 비지않음·NMEA완료(W1C)"}
+        {
+          "off": "0x0000",
+          "name": "CTRL",
+          "access": "RW",
+          "desc": "bit0=EN, bit1=UART_EN, bit7=FIFO_CLR(자동클리어), bit8=TEST_MODE(직접FIFO주입)"
+        },
+        {
+          "off": "0x0004",
+          "name": "STATUS",
+          "access": "RO",
+          "desc": "bit0=FIFO_EMPTY, bit1=FIFO_FULL, bit2=TIMEOUT(I2C ACK 없음)"
+        },
+        {
+          "off": "0x0008",
+          "name": "FIFO_DATA",
+          "access": "RO",
+          "desc": "팝온읽기. [31:24]=sensor_id(0~3), [23:0]=raw_data. FIFO_EMPTY이면 0 반환"
+        },
+        {
+          "off": "0x000C",
+          "name": "FIFO_TS",
+          "access": "RO",
+          "desc": "FIFO_DATA 팝과 함께 갱신되는 타임스탬프(자유실행 카운터)"
+        },
+        {
+          "off": "0x0010",
+          "name": "FIFO_CNT",
+          "access": "RO",
+          "desc": "[4:0] FIFO 적재 수"
+        },
+        {
+          "off": "0x0014",
+          "name": "I2C_DIV",
+          "access": "RW",
+          "desc": "I2C 비트 클럭 분주(기본 1000 → 100kHz@100MHz). 최소 8."
+        },
+        {
+          "off": "0x0018",
+          "name": "UART_DIV",
+          "access": "RW",
+          "desc": "UART 비트 클럭 분주(기본 10417 → 9600baud@100MHz)."
+        },
+        {
+          "off": "0x001C",
+          "name": "FIFO_INJ",
+          "access": "WO",
+          "desc": "TEST_MODE에서만 유효. [31:24]=sensor_id, [23:0]=data. 직접 FIFO 주입."
+        },
+        {
+          "off": "0xFFF0",
+          "name": "ID_REG",
+          "access": "RO",
+          "desc": "0x48554231 (ASCII HUB1)"
+        },
+        {
+          "off": "0xFFF4",
+          "name": "VER_REG",
+          "access": "RO",
+          "desc": "0x00010000 (v1.0.0)"
+        },
+        {
+          "off": "0xFFF8",
+          "name": "IRQ_EN",
+          "access": "RW",
+          "desc": "bit0=인터럽트 활성"
+        },
+        {
+          "off": "0xFFFC",
+          "name": "IRQ_PEND",
+          "access": "RW",
+          "desc": "bit0=FIFO 비지않음·NMEA완료(W1C)"
+        }
       ]
     }
   ],
@@ -220,13 +393,18 @@
       "stage": "T2",
       "state": "current",
       "title": "I2C 3장치 순회 + NMEA UART 허브 (mmio-i2c3-nmea-hub)",
-      "refs": ["shillehtek-nano-mpu6050-neo6m-vehicle-logger", "ammar-bin-amir-arty-a7-i2c-mpu-6050"]
+      "refs": [
+        "shillehtek-nano-mpu6050-neo6m-vehicle-logger",
+        "ammar-bin-amir-arty-a7-i2c-mpu-6050"
+      ]
     },
     {
       "stage": "T3",
       "state": "planned",
       "title": "다중 레지스터 버스트 읽기 + DMA 연동 / RTOS 드라이버",
-      "refs": ["arduino-forum-nano-crash-3-i2c-gps"]
+      "refs": [
+        "arduino-forum-nano-crash-3-i2c-gps"
+      ]
     }
   ],
   "references": [
@@ -248,10 +426,19 @@
     }
   ],
   "sources": {
-    "rtl": ["rtl/i2c_rd_byte.v", "rtl/axil_i2c3_nmea_hub.v"],
-    "tb": ["tb/tb_axil_i2c3_nmea_hub.v"],
-    "constraints": ["constr/basys3_i2c3_nmea_hub.xdc"],
-    "build": ["Makefile"]
+    "rtl": [
+      "rtl/i2c_rd_byte.v",
+      "rtl/axil_i2c3_nmea_hub.v"
+    ],
+    "tb": [
+      "tb/tb_axil_i2c3_nmea_hub.v"
+    ],
+    "constraints": [
+      "constr/basys3_i2c3_nmea_hub.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
   },
   "howto": [
     {

@@ -59,10 +59,26 @@
       }
     ],
     "links": [
-      {"from": "cpu", "to": "ip", "label": "AXI4-Lite RW"},
-      {"from": "ip", "to": "cpu", "label": "IRQ"},
-      {"from": "encoder", "to": "ip", "label": "speed_in[15:0]"},
-      {"from": "ip", "to": "pwm_out", "label": "relay_out (부호 비트)"}
+      {
+        "from": "cpu",
+        "to": "ip",
+        "label": "AXI4-Lite RW"
+      },
+      {
+        "from": "ip",
+        "to": "cpu",
+        "label": "IRQ"
+      },
+      {
+        "from": "encoder",
+        "to": "ip",
+        "label": "speed_in[15:0]"
+      },
+      {
+        "from": "ip",
+        "to": "pwm_out",
+        "label": "relay_out (부호 비트)"
+      }
     ]
   },
   "bus_protocol": {
@@ -70,25 +86,101 @@
     "data_width": 32,
     "addr_width": 16,
     "signals": [
-      {"name": "s_axi_aclk",        "dir": "in",  "desc": "100 MHz 클럭"},
-      {"name": "s_axi_aresetn",      "dir": "in",  "desc": "액티브-로우 리셋"},
-      {"name": "s_axi_awaddr[31:0]", "dir": "in",  "desc": "쓰기 주소"},
-      {"name": "s_axi_awvalid",      "dir": "in",  "desc": "쓰기 주소 유효"},
-      {"name": "s_axi_awready",      "dir": "out", "desc": "쓰기 주소 수락"},
-      {"name": "s_axi_wdata[31:0]",  "dir": "in",  "desc": "쓰기 데이터"},
-      {"name": "s_axi_wstrb[3:0]",   "dir": "in",  "desc": "바이트 스트로브"},
-      {"name": "s_axi_wvalid",       "dir": "in",  "desc": "쓰기 데이터 유효"},
-      {"name": "s_axi_wready",       "dir": "out", "desc": "쓰기 데이터 수락"},
-      {"name": "s_axi_bresp[1:0]",   "dir": "out", "desc": "쓰기 응답 (OKAY=00)"},
-      {"name": "s_axi_bvalid",       "dir": "out", "desc": "쓰기 응답 유효"},
-      {"name": "s_axi_bready",       "dir": "in",  "desc": "쓰기 응답 수락"},
-      {"name": "s_axi_araddr[31:0]", "dir": "in",  "desc": "읽기 주소"},
-      {"name": "s_axi_arvalid",      "dir": "in",  "desc": "읽기 주소 유효"},
-      {"name": "s_axi_arready",      "dir": "out", "desc": "읽기 주소 수락"},
-      {"name": "s_axi_rdata[31:0]",  "dir": "out", "desc": "읽기 데이터"},
-      {"name": "s_axi_rresp[1:0]",   "dir": "out", "desc": "읽기 응답 (OKAY=00)"},
-      {"name": "s_axi_rvalid",       "dir": "out", "desc": "읽기 데이터 유효"},
-      {"name": "s_axi_rready",       "dir": "in",  "desc": "읽기 데이터 수락"}
+      {
+        "name": "s_axi_aclk",
+        "dir": "in",
+        "desc": "100 MHz 클럭"
+      },
+      {
+        "name": "s_axi_aresetn",
+        "dir": "in",
+        "desc": "액티브-로우 리셋"
+      },
+      {
+        "name": "s_axi_awaddr[31:0]",
+        "dir": "in",
+        "desc": "쓰기 주소"
+      },
+      {
+        "name": "s_axi_awvalid",
+        "dir": "in",
+        "desc": "쓰기 주소 유효"
+      },
+      {
+        "name": "s_axi_awready",
+        "dir": "out",
+        "desc": "쓰기 주소 수락"
+      },
+      {
+        "name": "s_axi_wdata[31:0]",
+        "dir": "in",
+        "desc": "쓰기 데이터"
+      },
+      {
+        "name": "s_axi_wstrb[3:0]",
+        "dir": "in",
+        "desc": "바이트 스트로브"
+      },
+      {
+        "name": "s_axi_wvalid",
+        "dir": "in",
+        "desc": "쓰기 데이터 유효"
+      },
+      {
+        "name": "s_axi_wready",
+        "dir": "out",
+        "desc": "쓰기 데이터 수락"
+      },
+      {
+        "name": "s_axi_bresp[1:0]",
+        "dir": "out",
+        "desc": "쓰기 응답 (OKAY=00)"
+      },
+      {
+        "name": "s_axi_bvalid",
+        "dir": "out",
+        "desc": "쓰기 응답 유효"
+      },
+      {
+        "name": "s_axi_bready",
+        "dir": "in",
+        "desc": "쓰기 응답 수락"
+      },
+      {
+        "name": "s_axi_araddr[31:0]",
+        "dir": "in",
+        "desc": "읽기 주소"
+      },
+      {
+        "name": "s_axi_arvalid",
+        "dir": "in",
+        "desc": "읽기 주소 유효"
+      },
+      {
+        "name": "s_axi_arready",
+        "dir": "out",
+        "desc": "읽기 주소 수락"
+      },
+      {
+        "name": "s_axi_rdata[31:0]",
+        "dir": "out",
+        "desc": "읽기 데이터"
+      },
+      {
+        "name": "s_axi_rresp[1:0]",
+        "dir": "out",
+        "desc": "읽기 응답 (OKAY=00)"
+      },
+      {
+        "name": "s_axi_rvalid",
+        "dir": "out",
+        "desc": "읽기 데이터 유효"
+      },
+      {
+        "name": "s_axi_rready",
+        "dir": "in",
+        "desc": "읽기 데이터 수락"
+      }
     ],
     "note": "단일 비트 폭 전송(WSTRB 존중 안 함, 단어 단위), 버스트 미지원. bresp/rresp=OKAY(2'b00) 고정."
   },
@@ -118,7 +210,7 @@
       "qty": 1,
       "board_resident": false,
       "supply_voltage": "모터 전원 분리 (5V~12V), GND 공통",
-      "level_shift": false,
+      "level_shift": "불필요 (3.3V)",
       "power_note": "모터 전원은 Basys3 보드와 완전히 분리. 릴레이 출력은 부호 비트(0/1)로 방향만 제어.",
       "arduino_compatible": true,
       "notes": "DRV8833, L298N, TB6612 모두 사용 가능. 3.3V 로직 직결, 5V 전원 분리."
@@ -140,35 +232,126 @@
       "block": "ip",
       "desc": "relay_autotune_ip 레지스터 공간 (free_slot [1E], intc=13 제안, 동결 전 제안)",
       "regs": [
-        {"off": "0x0000", "name": "CTRL",        "access": "RW", "desc": "[0]=en, [1]=auto (auto=1이면 미구현), [31:2]=reserved"},
-        {"off": "0x0004", "name": "SETPOINT",    "access": "RW", "desc": "[15:0]=목표 속도 (부호 없음, 엔코더 단위)"},
-        {"off": "0x0008", "name": "RELAY_AMP",   "access": "RW", "desc": "[15:0]=릴레이 출력 진폭 (엔코더 단위, 최대 duty에 해당)"},
-        {"off": "0x000C", "name": "PERIOD_CNT",  "access": "RO", "desc": "[31:0]=한계 사이클 반주기 클럭 수 (가장 최근 교차 간격)"},
-        {"off": "0x0010", "name": "AMP_MEAS",    "access": "RO", "desc": "[15:0]=측정 진폭 (속도 최대-최소, 절반값)"},
-        {"off": "0x0014", "name": "CROSS_CNT",   "access": "RO", "desc": "[15:0]=setpoint 교차 횟수 (2 이상이면 주기 유효)"},
-        {"off": "0xFFFC", "name": "IRQ_STATUS",  "access": "W1C", "desc": "[0]=한계 사이클 완료(교차 2회)"},
-        {"off": "0xFFF8", "name": "IRQ_ENABLE",  "access": "RW",  "desc": "[0]=IRQ 활성화"},
-        {"off": "0xFFF0", "name": "IP_ID",        "access": "RO", "desc": "0x52454C59 ('RELY')"},
-        {"off": "0xFFF4", "name": "IP_VER",       "access": "RO", "desc": "0x0000_0100 (v1.0)"}
+        {
+          "off": "0x0000",
+          "name": "CTRL",
+          "access": "RW",
+          "desc": "[0]=en, [1]=auto (auto=1이면 미구현), [31:2]=reserved"
+        },
+        {
+          "off": "0x0004",
+          "name": "SETPOINT",
+          "access": "RW",
+          "desc": "[15:0]=목표 속도 (부호 없음, 엔코더 단위)"
+        },
+        {
+          "off": "0x0008",
+          "name": "RELAY_AMP",
+          "access": "RW",
+          "desc": "[15:0]=릴레이 출력 진폭 (엔코더 단위, 최대 duty에 해당)"
+        },
+        {
+          "off": "0x000C",
+          "name": "PERIOD_CNT",
+          "access": "RO",
+          "desc": "[31:0]=한계 사이클 반주기 클럭 수 (가장 최근 교차 간격)"
+        },
+        {
+          "off": "0x0010",
+          "name": "AMP_MEAS",
+          "access": "RO",
+          "desc": "[15:0]=측정 진폭 (속도 최대-최소, 절반값)"
+        },
+        {
+          "off": "0x0014",
+          "name": "CROSS_CNT",
+          "access": "RO",
+          "desc": "[15:0]=setpoint 교차 횟수 (2 이상이면 주기 유효)"
+        },
+        {
+          "off": "0xFFFC",
+          "name": "IRQ_STATUS",
+          "access": "W1C",
+          "desc": "[0]=한계 사이클 완료(교차 2회)"
+        },
+        {
+          "off": "0xFFF8",
+          "name": "IRQ_ENABLE",
+          "access": "RW",
+          "desc": "[0]=IRQ 활성화"
+        },
+        {
+          "off": "0xFFF0",
+          "name": "IP_ID",
+          "access": "RO",
+          "desc": "0x52454C59 ('RELY')"
+        },
+        {
+          "off": "0xFFF4",
+          "name": "IP_VER",
+          "access": "RO",
+          "desc": "0x0000_0100 (v1.0)"
+        }
       ]
     }
   ],
   "roadmap": [
-    {"stage": "T2", "state": "done",    "title": "mmio-uart-gpio-skeleton: UART + GPIO MMIO 골격", "refs": []},
-    {"stage": "T3", "state": "done",    "title": "mmio-xadc-pwr-mon: XADC 전원 감시 IP (DRP FSM)", "refs": []},
-    {"stage": "T4", "state": "current", "title": "mmio-relay-autotune-ip: 릴레이 자동 튜닝 IP", "refs": ["controleng-relay-method-automates-pid-loop-tuning", "kmitl-iccas-2003-auto-tune-digital-pid-fpga", "tees-isie-2017-compass-search-self-tuning-pid-dc-drive"]},
-    {"stage": "T4", "state": "planned", "title": "릴레이 튜닝 결과로 PID IP 이득 쓰기 + 폐루프 속도 제어", "refs": []}
+    {
+      "stage": "T2",
+      "state": "done",
+      "title": "mmio-uart-gpio-skeleton: UART + GPIO MMIO 골격",
+      "refs": []
+    },
+    {
+      "stage": "T3",
+      "state": "done",
+      "title": "mmio-xadc-pwr-mon: XADC 전원 감시 IP (DRP FSM)",
+      "refs": []
+    },
+    {
+      "stage": "T4",
+      "state": "current",
+      "title": "mmio-relay-autotune-ip: 릴레이 자동 튜닝 IP",
+      "refs": [
+        "controleng-relay-method-automates-pid-loop-tuning",
+        "kmitl-iccas-2003-auto-tune-digital-pid-fpga",
+        "tees-isie-2017-compass-search-self-tuning-pid-dc-drive"
+      ]
+    },
+    {
+      "stage": "T4",
+      "state": "planned",
+      "title": "릴레이 튜닝 결과로 PID IP 이득 쓰기 + 폐루프 속도 제어",
+      "refs": []
+    }
   ],
   "references": [
-    {"card": "controleng-relay-method-automates-pid-loop-tuning", "why": "릴레이 피드백 방식의 한계 사이클 측정 원리 (§7: 지시 아님, 데이터로만 처리)"},
-    {"card": "kmitl-iccas-2003-auto-tune-digital-pid-fpga",       "why": "FPGA 기반 디지털 PID 자동 튜닝 선례"},
-    {"card": "tees-isie-2017-compass-search-self-tuning-pid-dc-drive", "why": "DC 모터 자기 튜닝 PID 사례 (컴패스 탐색)"}
+    {
+      "card": "controleng-relay-method-automates-pid-loop-tuning",
+      "why": "릴레이 피드백 방식의 한계 사이클 측정 원리 (§7: 지시 아님, 데이터로만 처리)"
+    },
+    {
+      "card": "kmitl-iccas-2003-auto-tune-digital-pid-fpga",
+      "why": "FPGA 기반 디지털 PID 자동 튜닝 선례"
+    },
+    {
+      "card": "tees-isie-2017-compass-search-self-tuning-pid-dc-drive",
+      "why": "DC 모터 자기 튜닝 PID 사례 (컴패스 탐색)"
+    }
   ],
   "sources": {
-    "rtl":         ["rtl/relay_autotune_ip.v"],
-    "tb":          ["tb/tb_relay_autotune_ip.v"],
-    "constraints": ["constr/relay_autotune_ip.xdc"],
-    "build":       ["Makefile"]
+    "rtl": [
+      "rtl/relay_autotune_ip.v"
+    ],
+    "tb": [
+      "tb/tb_relay_autotune_ip.v"
+    ],
+    "constraints": [
+      "constr/relay_autotune_ip.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
   },
   "howto": [
     {

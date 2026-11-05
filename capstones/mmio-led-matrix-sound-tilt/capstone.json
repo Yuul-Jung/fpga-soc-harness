@@ -1,0 +1,569 @@
+{
+  "slug": "mmio-led-matrix-sound-tilt",
+  "title": "소리·기울기 반응 LED 매트릭스 IP",
+  "summary": "PDM 마이크로 대역 에너지를 측정하고 ADXL345 기울기와 AXI4-Lite 모드 레지스터로 선택해 MAX7219 8×8 LED 매트릭스 2개(8×16)에 막대 또는 점으로 표시하는 IP. FFT 없이 8-대역 대역통과 필터 뱅크(IIR 2차)로 대역 에너지를 추출한다.",
+  "board": "Basys3",
+  "stage": "T2",
+  "goals": [
+    "PDM 마이크(예: PmodMIC3) 1비트 스트림을 CIC 데시메이터로 PCM 16비트 샘플로 변환",
+    "8대역 IIR 대역통과 필터 뱅크로 각 대역의 에너지(제곱 누산)를 계산",
+    "ADXL345 SPI 판독으로 X/Y 기울기 2축을 10비트로 읽기",
+    "모드 레지스터(AXI4-Lite)로 소리-막대 / 기울기-점 모드 전환",
+    "MAX7219 2개 직렬 연결(16열×8행)에 SPI 출력",
+    "PASS/FAIL 자체 점검 테스트벤치로 대역 막대·점 위치 확인"
+  ],
+  "non_goals": [
+    "FFT 기반 스펙트럼 분석(자원 초과)",
+    "16대역 이상 필터 뱅크(Basys3 BRAM 없이 32비트 계수 8×2개로 제한)",
+    "실제 보드 동작 확인(S3)",
+    "오디오 복호화·재생"
+  ],
+  "architecture": {
+    "clock": "100 MHz 단일 클럭 도메인. CLK_CTRL 100 MHz 단일 클럭 도메인. PDM 클럭은 내부 분주(100MHz/41=~2.44MHz)",
+    "blocks": [
+      {
+        "id": "top",
+        "name": "basys3_top",
+        "kind": "wrapper",
+        "module": "basys3_led_matrix_sound_tilt_top",
+        "file": "rtl/basys3_top.v",
+        "desc": "Basys3 최상위 래퍼. CLK100MHZ, RST 버튼, Pmod JB(MAX7219), Pmod JA(PDM), Pmod JC(ADXL345 SPI)",
+        "short": "TOP",
+        "side": "top"
+      },
+      {
+        "id": "soc",
+        "name": "soc_top",
+        "kind": "core",
+        "module": "led_matrix_sound_tilt_soc",
+        "file": "rtl/soc_top.v",
+        "desc": "AXI4-Lite 버스 슬레이브 + 데이터 경로 연결. CPU 버스 마스터 포트 노출",
+        "short": "SOC",
+        "side": "left"
+      },
+      {
+        "id": "axil",
+        "name": "axil_slave",
+        "kind": "bus",
+        "module": "axil_led_matrix_slave",
+        "file": "rtl/axil_led_matrix_slave.v",
+        "desc": "AXI4-Lite 슬레이브. 4 레지스터: CTRL, STATUS, MODE, BRIGHT",
+        "short": "AXIL",
+        "side": "left"
+      },
+      {
+        "id": "pdm",
+        "name": "pdm_cic",
+        "kind": "peripheral",
+        "module": "pdm_cic_decimator",
+        "file": "rtl/pdm_cic_decimator.v",
+        "desc": "PDM 1비트 → CIC 3차 데시메이터(R=41) → 16비트 PCM. 샘플레이트 ≈2.44 kHz",
+        "short": "PDM",
+        "side": "right"
+      },
+      {
+        "id": "iir",
+        "name": "iir_bank",
+        "kind": "accelerator",
+        "module": "iir_band_energy",
+        "file": "rtl/iir_band_energy.v",
+        "desc": "8대역 IIR 2차 대역통과 필터 뱅크. 계수 Q12 고정소수점. 각 대역의 에너지(32비트 누산)를 128샘플마다 출력",
+        "short": "IIR",
+        "side": "right"
+      },
+      {
+        "id": "adxl",
+        "name": "adxl345_spi",
+        "kind": "peripheral",
+        "module": "adxl345_spi_reader",
+        "file": "rtl/adxl345_spi_reader.v",
+        "desc": "ADXL345 SPI 마스터. SCLK 1 MHz. 멀티바이트 읽기 FSM. X/Y 10비트 출력. 초기화 ROM 포함",
+        "short": "ADXL",
+        "side": "right"
+      },
+      {
+        "id": "frame",
+        "name": "frame_buffer",
+        "kind": "memory",
+        "module": "frame_buf",
+        "file": "rtl/frame_buf.v",
+        "desc": "8×16 비트맵 레지스터 파일(128비트). 모드에 따라 IIR 에너지 또는 ADXL 좌표로 갱신됨",
+        "short": "BUF",
+        "side": "center"
+      },
+      {
+        "id": "max",
+        "name": "max7219_driver",
+        "kind": "peripheral",
+        "module": "max7219_chain_driver",
+        "file": "rtl/max7219_chain_driver.v",
+        "desc": "MAX7219 2개 직렬 연결 SPI 드라이버. 행 단위 전송(16비트×2). 갱신 주기 ≈60Hz. BRIGHT 레지스터에서 밝기(0x0~0xF)",
+        "short": "MAX",
+        "side": "bottom"
+      },
+      {
+        "id": "x_mic",
+        "kind": "external",
+        "name": "PDM Mic",
+        "short": "마이크",
+        "side": "left",
+        "desc": "PmodMIC3 또는 호환 PDM 마이크 모듈 (Pmod JA)"
+      },
+      {
+        "id": "x_adxl",
+        "kind": "external",
+        "name": "ADXL345",
+        "short": "가속도계",
+        "side": "left",
+        "desc": "ADXL345 SPI 가속도계 모듈 (Pmod JC, 3.3V)"
+      },
+      {
+        "id": "x_max",
+        "kind": "external",
+        "name": "MAX7219 Chain",
+        "short": "LED 매트릭스",
+        "side": "right",
+        "desc": "MAX7219 8×8 LED 매트릭스 × 2 (Pmod JB, 직렬 연결)"
+      }
+    ],
+    "links": [
+      {
+        "from": "top",
+        "to": "soc",
+        "label": "AXI4-Lite M"
+      },
+      {
+        "from": "soc",
+        "to": "axil",
+        "label": "AXI4-Lite S"
+      },
+      {
+        "from": "soc",
+        "to": "pdm",
+        "label": "pdm_data / clk_pdm"
+      },
+      {
+        "from": "soc",
+        "to": "adxl",
+        "label": "SPI (SCLK/MOSI/MISO/CS)"
+      },
+      {
+        "from": "pdm",
+        "to": "iir",
+        "label": "pcm_sample[15:0] / valid"
+      },
+      {
+        "from": "iir",
+        "to": "frame",
+        "label": "energy[7:0][31:0] / update"
+      },
+      {
+        "from": "adxl",
+        "to": "frame",
+        "label": "x_tilt[9:0] / y_tilt[9:0] / valid"
+      },
+      {
+        "from": "axil",
+        "to": "frame",
+        "label": "mode[1:0] / bright[3:0] / soft_rst"
+      },
+      {
+        "from": "frame",
+        "to": "max",
+        "label": "bitmap[127:0] / refresh"
+      },
+      {
+        "from": "max",
+        "to": "top",
+        "label": "CLK(SPI) / MOSI / CS_N (Pmod JB)"
+      },
+      {
+        "from": "x_mic",
+        "to": "pdm",
+        "label": "PDM 클럭/데이터"
+      },
+      {
+        "from": "adxl",
+        "to": "x_adxl",
+        "label": "SPI"
+      },
+      {
+        "from": "max",
+        "to": "x_max",
+        "label": "SPI"
+      }
+    ]
+  },
+  "bus_protocol": {
+    "name": "AXI4-Lite",
+    "data_width": 32,
+    "addr_width": 12,
+    "note": "WSTRB는 1111b만 지원. BRESP/RRESP는 항상 OKAY.",
+    "signals": [
+      {
+        "name": "s_awaddr",
+        "dir": "in",
+        "desc": "쓰기 주소 (12비트)"
+      },
+      {
+        "name": "s_awvalid",
+        "dir": "in",
+        "desc": "쓰기 주소 유효"
+      },
+      {
+        "name": "s_awready",
+        "dir": "out",
+        "desc": "쓰기 주소 준비"
+      },
+      {
+        "name": "s_wdata",
+        "dir": "in",
+        "desc": "쓰기 데이터 (32비트)"
+      },
+      {
+        "name": "s_wstrb",
+        "dir": "in",
+        "desc": "쓰기 스트로브 (4비트)"
+      },
+      {
+        "name": "s_wvalid",
+        "dir": "in",
+        "desc": "쓰기 데이터 유효"
+      },
+      {
+        "name": "s_wready",
+        "dir": "out",
+        "desc": "쓰기 데이터 준비"
+      },
+      {
+        "name": "s_bresp",
+        "dir": "out",
+        "desc": "쓰기 응답 (00=OKAY)"
+      },
+      {
+        "name": "s_bvalid",
+        "dir": "out",
+        "desc": "쓰기 응답 유효"
+      },
+      {
+        "name": "s_bready",
+        "dir": "in",
+        "desc": "쓰기 응답 준비"
+      },
+      {
+        "name": "s_araddr",
+        "dir": "in",
+        "desc": "읽기 주소 (12비트)"
+      },
+      {
+        "name": "s_arvalid",
+        "dir": "in",
+        "desc": "읽기 주소 유효"
+      },
+      {
+        "name": "s_arready",
+        "dir": "out",
+        "desc": "읽기 주소 준비"
+      },
+      {
+        "name": "s_rdata",
+        "dir": "out",
+        "desc": "읽기 데이터 (32비트)"
+      },
+      {
+        "name": "s_rresp",
+        "dir": "out",
+        "desc": "읽기 응답 (00=OKAY)"
+      },
+      {
+        "name": "s_rvalid",
+        "dir": "out",
+        "desc": "읽기 데이터 유효"
+      },
+      {
+        "name": "s_rready",
+        "dir": "in",
+        "desc": "읽기 데이터 준비"
+      }
+    ]
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "custom",
+    "compat": "partial",
+    "plan": "mbv-frozen-v2 기준 free_slot [16] (0x4016_0000, 64KB) 배정 제안. 인터럽트 불필요(폴링). 슬롯은 사용자가 프로젝트 인덱스 표에서 동결한다. 동결 전이므로 compat=partial."
+  },
+  "external_parts": [
+    {
+      "id": "mic",
+      "name": "PmodMIC3 (또는 호환 PDM 마이크 모듈)",
+      "block": "x_mic",
+      "interface": "PDM(1-wire + CLK)",
+      "io_voltage": "3.3V",
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": "3.3V",
+      "level_shift": "불필요 (3.3V)",
+      "power_note": "Pmod 3.3V 공급",
+      "arduino_compatible": false,
+      "notes": "PDM 클럭은 FPGA 출력(100MHz/41 ≈ 2.44MHz). 데이터 선 직결."
+    },
+    {
+      "id": "adxl345",
+      "name": "ADXL345 SPI 모듈 (3.3V 버전)",
+      "block": "x_adxl",
+      "interface": "SPI (SCLK/MOSI/MISO/CS_N)",
+      "io_voltage": "3.3V",
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": "3.3V",
+      "level_shift": "불필요 (3.3V)",
+      "power_note": "3.3V 버전 모듈 필요. 5V 버전은 레벨 변환 필수.",
+      "arduino_compatible": true,
+      "notes": "ADXL345 모드: 풀파워, ±2g 범위, SPI 4선 모드."
+    },
+    {
+      "id": "max7219_chain",
+      "name": "MAX7219 8×8 LED 매트릭스 모듈 × 2 (직렬 연결)",
+      "block": "x_max",
+      "interface": "SPI (CLK/DIN/CS; 2개 직렬 연결)",
+      "io_voltage": "5V 신호 (레벨 변환 필요!)",
+      "qty": 2,
+      "board_resident": false,
+      "supply_voltage": "5V",
+      "level_shift": "필요 (레벨 변환)",
+      "power_note": "LED VCC는 5V 외부 공급. DIN/CLK/CS는 3.3V→5V 레벨 변환(74AHCT125 등) 필수.",
+      "arduino_compatible": true,
+      "notes": "ISET 저항 10 kΩ 권장(1~1.5mA/LED). 2개 직렬: DOUT→DIN 연결."
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "레벨 변환(74AHCT125) 1회로 + MAX7219 2개 직렬 + ADXL345 + PDM 마이크 블록도 필요. 미작성."
+  },
+  "hierarchy": {
+    "module": "basys3_led_matrix_sound_tilt_top",
+    "file": "rtl/basys3_top.v",
+    "children": [
+      {
+        "module": "led_matrix_sound_tilt_soc",
+        "file": "rtl/soc_top.v",
+        "children": [
+          {
+            "module": "axil_led_matrix_slave",
+            "file": "rtl/axil_led_matrix_slave.v"
+          },
+          {
+            "module": "pdm_cic_decimator",
+            "file": "rtl/pdm_cic_decimator.v"
+          },
+          {
+            "module": "iir_band_energy",
+            "file": "rtl/iir_band_energy.v"
+          },
+          {
+            "module": "adxl345_spi_reader",
+            "file": "rtl/adxl345_spi_reader.v"
+          },
+          {
+            "module": "frame_buf",
+            "file": "rtl/frame_buf.v"
+          },
+          {
+            "module": "max7219_chain_driver",
+            "file": "rtl/max7219_chain_driver.v"
+          }
+        ]
+      }
+    ]
+  },
+  "memory_map": [
+    {
+      "base": "0x4016_0000",
+      "size": "0x10000",
+      "block": "axil",
+      "desc": "소리·기울기·LED 매트릭스 IP 레지스터 공간 (free_slot [16] 제안, 동결 전, 인터럽트 없음)",
+      "regs": [
+        {
+          "off": "0x00",
+          "name": "CTRL",
+          "access": "RW",
+          "desc": "bit0=IP_EN, bit1=SOFT_RST, bit2=PDM_CLK_EN, bit3=ADXL_EN"
+        },
+        {
+          "off": "0x04",
+          "name": "STATUS",
+          "access": "RO",
+          "desc": "bit0=PDM_VALID, bit1=ADXL_VALID, bit7=IIR_BUSY, [15:8]=8대역 활성 플래그"
+        },
+        {
+          "off": "0x08",
+          "name": "MODE",
+          "access": "RW",
+          "desc": "bit1:0: 00=소리막대, 01=기울기점, 10=혼합(소리+기울기 오버레이)"
+        },
+        {
+          "off": "0x0C",
+          "name": "BRIGHT",
+          "access": "RW",
+          "desc": "[3:0] MAX7219 밝기 0x0(최저)~0xF(최고). 초기값 0x8"
+        },
+        {
+          "off": "0x10",
+          "name": "TILT_X",
+          "access": "RO",
+          "desc": "[9:0] ADXL345 X축 가속도(2의 보수, ±2g)"
+        },
+        {
+          "off": "0x14",
+          "name": "TILT_Y",
+          "access": "RO",
+          "desc": "[9:0] ADXL345 Y축 가속도(2의 보수, ±2g)"
+        },
+        {
+          "off": "0x18",
+          "name": "ENERGY0",
+          "access": "RO",
+          "desc": "[31:0] 대역0(저주파 ~200Hz) 에너지 누산값"
+        },
+        {
+          "off": "0x1C",
+          "name": "ENERGY1",
+          "access": "RO",
+          "desc": "[31:0] 대역1(200~400Hz) 에너지"
+        },
+        {
+          "off": "0x20",
+          "name": "ENERGY2",
+          "access": "RO",
+          "desc": "[31:0] 대역2(400~700Hz)"
+        },
+        {
+          "off": "0x24",
+          "name": "ENERGY3",
+          "access": "RO",
+          "desc": "[31:0] 대역3(700~1100Hz)"
+        },
+        {
+          "off": "0x28",
+          "name": "ENERGY4",
+          "access": "RO",
+          "desc": "[31:0] 대역4(1100~1600Hz)"
+        },
+        {
+          "off": "0x2C",
+          "name": "ENERGY5",
+          "access": "RO",
+          "desc": "[31:0] 대역5(1600~2400Hz)"
+        },
+        {
+          "off": "0x30",
+          "name": "ENERGY6",
+          "access": "RO",
+          "desc": "[31:0] 대역6(2400~3500Hz)"
+        },
+        {
+          "off": "0x34",
+          "name": "ENERGY7",
+          "access": "RO",
+          "desc": "[31:0] 대역7(3500Hz~) 최고 대역"
+        }
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T2",
+      "state": "current",
+      "title": "소리·기울기 반응 LED 매트릭스 IP (이 패키지)",
+      "refs": []
+    },
+    {
+      "stage": "T3",
+      "state": "planned",
+      "title": "소프트웨어 드라이버 + MicroBlaze V BSP 연동 (AXI4-Lite 직접 접근)",
+      "refs": []
+    },
+    {
+      "stage": "T4",
+      "state": "planned",
+      "title": "FFT 가속기로 교체, 32-대역, 애니메이션 모드 추가",
+      "refs": [
+        "mit-6111-2017-team20-audio-spectrum-analyzer"
+      ]
+    }
+  ],
+  "references": [
+    {
+      "card": "vhdplus-spectrum-analyzer-max7219",
+      "why": "MAX7219 8×32 매트릭스와 I2S 마이크 조합 구조 참고. 레벨 변환 명시 사례."
+    },
+    {
+      "card": "mit-6111-2017-team20-audio-spectrum-analyzer",
+      "why": "PDM 마이크 → FFT → LED 뱅크 파이프라인 계획 참고. 대역 에너지 활용 아이디어."
+    },
+    {
+      "card": "jpralves-car-hud-speed-compass",
+      "why": "ADXL345 기울기·점 표시 발상 참고."
+    }
+  ],
+  "sources": {
+    "rtl": [
+      "rtl/basys3_top.v",
+      "rtl/soc_top.v",
+      "rtl/axil_led_matrix_slave.v",
+      "rtl/pdm_cic_decimator.v",
+      "rtl/iir_band_energy.v",
+      "rtl/adxl345_spi_reader.v",
+      "rtl/frame_buf.v",
+      "rtl/max7219_chain_driver.v"
+    ],
+    "tb": [
+      "tb/tb_led_matrix_sound_tilt.v"
+    ],
+    "constraints": [
+      "constr/basys3.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
+  },
+  "howto": [
+    {
+      "title": "시뮬레이션 (iverilog)",
+      "steps": [
+        "make sim  # iverilog + vvp; PASS/FAIL 출력 확인"
+      ]
+    },
+    {
+      "title": "린트 (verilator)",
+      "steps": [
+        "make lint  # verilator --lint-only -Wall"
+      ]
+    },
+    {
+      "title": "합성 추정 (yosys)",
+      "steps": [
+        "make synth  # yosys -p 'synth_xilinx' (자원 추정; Vivado 수치와 다를 수 있음)"
+      ]
+    },
+    {
+      "title": "Vivado 합성 및 구현",
+      "steps": [
+        "Vivado 2024.2: Create Project → Basys3 (xc7a35tcpg236-1) → 소스 rtl/*.v + constr/basys3.xdc 추가 → Synthesis/Bitstream"
+      ]
+    }
+  ],
+  "verification": {
+    "board": "not-tested",
+    "notes": "S3는 사람만 올릴 수 있다. 테스트벤치로 대역 막대 높이와 기울기 점 위치를 자체 점검."
+  },
+  "risks": [
+    "IIR 필터 계수는 Q12 고정소수점 근사값이므로 Basys3 실제 PCM 샘플레이트(≈2.44 kHz)에서 차단 주파수가 설계값과 ±10% 오차 가능.",
+    "CIC 데시메이터(R=41, 3차)의 패스밴드 처짐이 대역1~3에서 뚜렷할 수 있음(보정 없음).",
+    "MAX7219는 5V 신호를 요구하므로 레벨 변환 없이 연결 시 로직 불확정 위험.",
+    "ADXL345 초기화 순서(전원 → 대기 100 ms → 측정 모드 쓰기)가 보드 리셋 직후 타이밍에 민감.",
+    "RTL 시뮬레이션 클럭(100 MHz 100 MHz)에서 testbench는 가속 PDM(실제 대역 에너지와 다를 수 있음)을 사용."
+  ],
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 원본이며 외부 코드를 포함하지 않는다. 아이디어 I-024(소리·기울기 반응 LED 매트릭스 IP)의 근거 카드 패턴을 참고했으며, 코드는 복사하지 않았다. 시뮬레이션·합성 결과는 CI가 기록한다."
+}

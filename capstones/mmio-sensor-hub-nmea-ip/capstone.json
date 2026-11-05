@@ -91,23 +91,91 @@
     "data_width": 32,
     "addr_width": 16,
     "signals": [
-      {"name": "s_awaddr[15:0]", "dir": "master→slave", "desc": "쓰기 주소"},
-      {"name": "s_awvalid",      "dir": "master→slave", "desc": "주소 유효"},
-      {"name": "s_awready",      "dir": "slave→master", "desc": "주소 수락"},
-      {"name": "s_wdata[31:0]",  "dir": "master→slave", "desc": "쓰기 데이터"},
-      {"name": "s_wstrb[3:0]",   "dir": "master→slave", "desc": "바이트 인에이블 (0xF만 사용)"},
-      {"name": "s_wvalid",       "dir": "master→slave", "desc": "데이터 유효"},
-      {"name": "s_wready",       "dir": "slave→master", "desc": "데이터 수락"},
-      {"name": "s_bresp[1:0]",   "dir": "slave→master", "desc": "응답 (00=OKAY)"},
-      {"name": "s_bvalid",       "dir": "slave→master", "desc": "응답 유효"},
-      {"name": "s_bready",       "dir": "master→slave", "desc": "응답 수락"},
-      {"name": "s_araddr[15:0]", "dir": "master→slave", "desc": "읽기 주소"},
-      {"name": "s_arvalid",      "dir": "master→slave", "desc": "읽기 주소 유효"},
-      {"name": "s_arready",      "dir": "slave→master", "desc": "읽기 주소 수락"},
-      {"name": "s_rdata[31:0]",  "dir": "slave→master", "desc": "읽기 데이터"},
-      {"name": "s_rresp[1:0]",   "dir": "slave→master", "desc": "읽기 응답"},
-      {"name": "s_rvalid",       "dir": "slave→master", "desc": "읽기 데이터 유효"},
-      {"name": "s_rready",       "dir": "master→slave", "desc": "읽기 데이터 수락"}
+      {
+        "name": "s_awaddr[15:0]",
+        "dir": "master→slave",
+        "desc": "쓰기 주소"
+      },
+      {
+        "name": "s_awvalid",
+        "dir": "master→slave",
+        "desc": "주소 유효"
+      },
+      {
+        "name": "s_awready",
+        "dir": "slave→master",
+        "desc": "주소 수락"
+      },
+      {
+        "name": "s_wdata[31:0]",
+        "dir": "master→slave",
+        "desc": "쓰기 데이터"
+      },
+      {
+        "name": "s_wstrb[3:0]",
+        "dir": "master→slave",
+        "desc": "바이트 인에이블 (0xF만 사용)"
+      },
+      {
+        "name": "s_wvalid",
+        "dir": "master→slave",
+        "desc": "데이터 유효"
+      },
+      {
+        "name": "s_wready",
+        "dir": "slave→master",
+        "desc": "데이터 수락"
+      },
+      {
+        "name": "s_bresp[1:0]",
+        "dir": "slave→master",
+        "desc": "응답 (00=OKAY)"
+      },
+      {
+        "name": "s_bvalid",
+        "dir": "slave→master",
+        "desc": "응답 유효"
+      },
+      {
+        "name": "s_bready",
+        "dir": "master→slave",
+        "desc": "응답 수락"
+      },
+      {
+        "name": "s_araddr[15:0]",
+        "dir": "master→slave",
+        "desc": "읽기 주소"
+      },
+      {
+        "name": "s_arvalid",
+        "dir": "master→slave",
+        "desc": "읽기 주소 유효"
+      },
+      {
+        "name": "s_arready",
+        "dir": "slave→master",
+        "desc": "읽기 주소 수락"
+      },
+      {
+        "name": "s_rdata[31:0]",
+        "dir": "slave→master",
+        "desc": "읽기 데이터"
+      },
+      {
+        "name": "s_rresp[1:0]",
+        "dir": "slave→master",
+        "desc": "읽기 응답"
+      },
+      {
+        "name": "s_rvalid",
+        "dir": "slave→master",
+        "desc": "읽기 데이터 유효"
+      },
+      {
+        "name": "s_rready",
+        "dir": "master→slave",
+        "desc": "읽기 데이터 수락"
+      }
     ],
     "note": "WSTRB는 전체 워드(0xF)만 사용. 비정렬 접근 미지원. awready/wready 상시 1(단순 슬레이브)."
   },
@@ -137,7 +205,7 @@
       "qty": 1,
       "board_resident": false,
       "supply_voltage": 3.3,
-      "level_shift": false,
+      "level_shift": "불필요 (3.3V)",
       "arduino_compatible": true,
       "notes": "I2C 주소 0x68 (AD0=GND). SDA/SCL에 4.7kΩ 풀업 필요."
     },
@@ -150,7 +218,7 @@
       "qty": 1,
       "board_resident": false,
       "supply_voltage": 3.3,
-      "level_shift": false,
+      "level_shift": "불필요 (3.3V)",
       "arduino_compatible": true,
       "notes": "I2C 주소 0x76 (SDO=GND). 모듈 내부 LDO 포함 여부 확인."
     },
@@ -163,7 +231,7 @@
       "qty": 1,
       "board_resident": false,
       "supply_voltage": 3.3,
-      "level_shift": false,
+      "level_shift": "불필요 (3.3V)",
       "arduino_compatible": true,
       "notes": "I2C 주소 0x1E (고정). 연속 측정 모드 설정 필요(0x02 레지스터)."
     },
@@ -190,7 +258,7 @@
       "qty": 2,
       "board_resident": false,
       "supply_voltage": 3.3,
-      "level_shift": false,
+      "level_shift": "불필요 (3.3V)",
       "notes": "SCL, SDA 각 1개. 3.3V 전원에 연결."
     }
   ],

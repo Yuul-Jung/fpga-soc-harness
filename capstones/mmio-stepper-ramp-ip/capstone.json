@@ -84,12 +84,36 @@
       }
     ],
     "links": [
-      {"from": "cpu",        "to": "axil_stepper",  "label": "AXI4-Lite (0x4016_0000)"},
-      {"from": "axil_stepper","to": "step_ramp_core","label": "start/stop/params"},
-      {"from": "step_ramp_core","to": "seq_4wire",   "label": "step_pulse, dir"},
-      {"from": "step_ramp_core","to": "axil_stepper","label": "busy, done, state[1:0]"},
-      {"from": "seq_4wire",  "to": "motor_28byj48",  "label": "coil[3:0]"},
-      {"from": "axil_stepper","to": "cpu",           "label": "irq (INTC 13)"}
+      {
+        "from": "cpu",
+        "to": "axil_stepper",
+        "label": "AXI4-Lite (0x4016_0000)"
+      },
+      {
+        "from": "axil_stepper",
+        "to": "step_ramp_core",
+        "label": "start/stop/params"
+      },
+      {
+        "from": "step_ramp_core",
+        "to": "seq_4wire",
+        "label": "step_pulse, dir"
+      },
+      {
+        "from": "step_ramp_core",
+        "to": "axil_stepper",
+        "label": "busy, done, state[1:0]"
+      },
+      {
+        "from": "seq_4wire",
+        "to": "motor_28byj48",
+        "label": "coil[3:0]"
+      },
+      {
+        "from": "axil_stepper",
+        "to": "cpu",
+        "label": "irq (INTC 13)"
+      }
     ]
   },
   "bus_protocol": {
@@ -97,22 +121,86 @@
     "addr_width": 16,
     "data_width": 32,
     "signals": [
-      {"name": "s_awaddr[15:0]", "dir": "master→slave", "desc": "쓰기 주소"},
-      {"name": "s_awvalid",      "dir": "master→slave", "desc": "주소 유효"},
-      {"name": "s_awready",      "dir": "slave→master", "desc": "주소 수락"},
-      {"name": "s_wdata[31:0]",  "dir": "master→slave", "desc": "쓰기 데이터"},
-      {"name": "s_wvalid",       "dir": "master→slave", "desc": "데이터 유효"},
-      {"name": "s_wready",       "dir": "slave→master", "desc": "데이터 수락"},
-      {"name": "s_bresp[1:0]",   "dir": "slave→master", "desc": "응답 (00=OKAY)"},
-      {"name": "s_bvalid",       "dir": "slave→master", "desc": "응답 유효"},
-      {"name": "s_bready",       "dir": "master→slave", "desc": "응답 수락"},
-      {"name": "s_araddr[15:0]", "dir": "master→slave", "desc": "읽기 주소"},
-      {"name": "s_arvalid",      "dir": "master→slave", "desc": "읽기 주소 유효"},
-      {"name": "s_arready",      "dir": "slave→master", "desc": "읽기 주소 수락"},
-      {"name": "s_rdata[31:0]",  "dir": "slave→master", "desc": "읽기 데이터"},
-      {"name": "s_rresp[1:0]",   "dir": "slave→master", "desc": "읽기 응답"},
-      {"name": "s_rvalid",       "dir": "slave→master", "desc": "읽기 데이터 유효"},
-      {"name": "s_rready",       "dir": "master→slave", "desc": "읽기 데이터 수락"}
+      {
+        "name": "s_awaddr[15:0]",
+        "dir": "master→slave",
+        "desc": "쓰기 주소"
+      },
+      {
+        "name": "s_awvalid",
+        "dir": "master→slave",
+        "desc": "주소 유효"
+      },
+      {
+        "name": "s_awready",
+        "dir": "slave→master",
+        "desc": "주소 수락"
+      },
+      {
+        "name": "s_wdata[31:0]",
+        "dir": "master→slave",
+        "desc": "쓰기 데이터"
+      },
+      {
+        "name": "s_wvalid",
+        "dir": "master→slave",
+        "desc": "데이터 유효"
+      },
+      {
+        "name": "s_wready",
+        "dir": "slave→master",
+        "desc": "데이터 수락"
+      },
+      {
+        "name": "s_bresp[1:0]",
+        "dir": "slave→master",
+        "desc": "응답 (00=OKAY)"
+      },
+      {
+        "name": "s_bvalid",
+        "dir": "slave→master",
+        "desc": "응답 유효"
+      },
+      {
+        "name": "s_bready",
+        "dir": "master→slave",
+        "desc": "응답 수락"
+      },
+      {
+        "name": "s_araddr[15:0]",
+        "dir": "master→slave",
+        "desc": "읽기 주소"
+      },
+      {
+        "name": "s_arvalid",
+        "dir": "master→slave",
+        "desc": "읽기 주소 유효"
+      },
+      {
+        "name": "s_arready",
+        "dir": "slave→master",
+        "desc": "읽기 주소 수락"
+      },
+      {
+        "name": "s_rdata[31:0]",
+        "dir": "slave→master",
+        "desc": "읽기 데이터"
+      },
+      {
+        "name": "s_rresp[1:0]",
+        "dir": "slave→master",
+        "desc": "읽기 응답"
+      },
+      {
+        "name": "s_rvalid",
+        "dir": "slave→master",
+        "desc": "읽기 데이터 유효"
+      },
+      {
+        "name": "s_rready",
+        "dir": "master→slave",
+        "desc": "읽기 데이터 수락"
+      }
     ],
     "note": "awready/wready 상시 1(단순 슬레이브). bresp=OKAY(0). 없는 주소 읽으면 0. 32비트 접근만; wstrb는 수신하나 무시."
   },
@@ -132,7 +220,7 @@
       "qty": 1,
       "board_resident": false,
       "supply_voltage": "5V 외부 공급 (USB 5V 가능)",
-      "level_shift": false,
+      "level_shift": "불필요 (3.3V)",
       "power_note": "모터 5V 전원을 보드 USB 전원에서 분리 권장. 전류 spike 방지.",
       "arduino_compatible": true,
       "notes": "Pmod JA[3:0]에 ULN2003 IN1~IN4 연결. GND 공통. 역기전력 보호는 ULN2003 내장 플라이백 다이오드."
@@ -169,16 +257,66 @@
       "block": "axil_stepper",
       "desc": "스텝모터 가감속 IP",
       "regs": [
-        {"off": "0x00", "name": "CTRL",        "access": "RW", "desc": "W: [0]=START(펄스), [1]=STOP(즉시정지). R: [0]=BUSY, [1]=DONE, [3:2]=STATE[1:0](0=IDLE,1=ACCEL,2=DECEL,3=DONE)"},
-        {"off": "0x04", "name": "TARGET_STEPS", "access": "RW", "desc": "[23:0] 총 스텝 수 (최대 16M). 0이면 START 무시."},
-        {"off": "0x08", "name": "MIN_PERIOD",   "access": "RW", "desc": "[23:0] 최소 주기(최고속, 클럭 수). 최소 2 권장. 예: 500 → 100MHz/500=200kHz"},
-        {"off": "0x0C", "name": "MAX_PERIOD",   "access": "RW", "desc": "[23:0] 최대 주기(시작 속도). MIN_PERIOD 이상이어야 함. 예: 50000 → 2kHz"},
-        {"off": "0x10", "name": "DELTA_PERIOD", "access": "RW", "desc": "[15:0] 스텝당 주기 감소량(가속시)/증가량(감속시). 0이면 가속 없음."},
-        {"off": "0x14", "name": "MODE",         "access": "RW", "desc": "[0]=STEP_DIR(0=4선 ULN2003, 1=STEP/DIR A4988). [1]=HALF_STEP(0=전상, 1=반상). START 전에 설정."},
-        {"off": "0xFFF0", "name": "ID",         "access": "RO", "desc": "0x53545050 ('STPP') — IP 식별자"},
-        {"off": "0xFFF4", "name": "VER",        "access": "RO", "desc": "0x01000100 — 표준 Rev.1, IP ver1.0"},
-        {"off": "0xFFF8", "name": "IRQ_STATUS", "access": "RW", "desc": "[0]=done. W1C: 1을 쓰면 클리어. IRQ_ENABLE과 AND하여 irq 출력 생성."},
-        {"off": "0xFFFC", "name": "IRQ_ENABLE", "access": "RW", "desc": "[0]=done_irq_en. 1이면 done IRQ 활성화."}
+        {
+          "off": "0x00",
+          "name": "CTRL",
+          "access": "RW",
+          "desc": "W: [0]=START(펄스), [1]=STOP(즉시정지). R: [0]=BUSY, [1]=DONE, [3:2]=STATE[1:0](0=IDLE,1=ACCEL,2=DECEL,3=DONE)"
+        },
+        {
+          "off": "0x04",
+          "name": "TARGET_STEPS",
+          "access": "RW",
+          "desc": "[23:0] 총 스텝 수 (최대 16M). 0이면 START 무시."
+        },
+        {
+          "off": "0x08",
+          "name": "MIN_PERIOD",
+          "access": "RW",
+          "desc": "[23:0] 최소 주기(최고속, 클럭 수). 최소 2 권장. 예: 500 → 100MHz/500=200kHz"
+        },
+        {
+          "off": "0x0C",
+          "name": "MAX_PERIOD",
+          "access": "RW",
+          "desc": "[23:0] 최대 주기(시작 속도). MIN_PERIOD 이상이어야 함. 예: 50000 → 2kHz"
+        },
+        {
+          "off": "0x10",
+          "name": "DELTA_PERIOD",
+          "access": "RW",
+          "desc": "[15:0] 스텝당 주기 감소량(가속시)/증가량(감속시). 0이면 가속 없음."
+        },
+        {
+          "off": "0x14",
+          "name": "MODE",
+          "access": "RW",
+          "desc": "[0]=STEP_DIR(0=4선 ULN2003, 1=STEP/DIR A4988). [1]=HALF_STEP(0=전상, 1=반상). START 전에 설정."
+        },
+        {
+          "off": "0xFFF0",
+          "name": "ID",
+          "access": "RO",
+          "desc": "0x53545050 ('STPP') — IP 식별자"
+        },
+        {
+          "off": "0xFFF4",
+          "name": "VER",
+          "access": "RO",
+          "desc": "0x01000100 — 표준 Rev.1, IP ver1.0"
+        },
+        {
+          "off": "0xFFF8",
+          "name": "IRQ_STATUS",
+          "access": "RW",
+          "desc": "[0]=done. W1C: 1을 쓰면 클리어. IRQ_ENABLE과 AND하여 irq 출력 생성."
+        },
+        {
+          "off": "0xFFFC",
+          "name": "IRQ_ENABLE",
+          "access": "RW",
+          "desc": "[0]=done_irq_en. 1이면 done IRQ 활성화."
+        }
       ]
     }
   ],
@@ -187,13 +325,18 @@
       "stage": "T1",
       "state": "done",
       "title": "mmio-uart-gpio-skeleton",
-      "refs": ["digilent-basys-3-getting-started-microblaze"]
+      "refs": [
+        "digilent-basys-3-getting-started-microblaze"
+      ]
     },
     {
       "stage": "T2",
       "state": "current",
       "title": "mmio-stepper-ramp-ip (이 패키지)",
-      "refs": ["jtec-lam-ehkan-stepper-trapezoid-fpga", "hackaday-fpga-cnc-stepper"]
+      "refs": [
+        "jtec-lam-ehkan-stepper-trapezoid-fpga",
+        "hackaday-fpga-cnc-stepper"
+      ]
     },
     {
       "stage": "T3",

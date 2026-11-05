@@ -154,7 +154,7 @@
       "qty": 1,
       "board_resident": false,
       "supply_voltage": 3.3,
-      "level_shift": false,
+      "level_shift": "불필요 (3.3V)",
       "power_note": "Pmod 3.3V 전원. W5500은 3.3V 동작, 5V 비호환.",
       "arduino_compatible": false,
       "notes": "Digilent Pmod NIC100 또는 호환 W5500 SPI 모듈. 직결 시 Pmod JA 핀 사용."

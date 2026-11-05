@@ -21,34 +21,158 @@
   "architecture": {
     "clock": "100 MHz 시스템 클럭(clk), OV7670 PCLK(~24 MHz, 비동기)",
     "blocks": [
-      {"id": "board",      "name": "basys3_color_lane_top", "kind": "board-wrapper", "module": "basys3_color_lane_top", "file": "rtl/basys3_color_lane_top.v", "desc": "핀 배치·클럭·리셋 래퍼", "short": "Board Top", "side": "external"},
-      {"id": "core",       "name": "color_lane_top",        "kind": "soc-core",      "module": "color_lane_top",        "file": "rtl/color_lane_top.v",        "desc": "MMIO 레지스터 + 도메인 교차 + 서브모듈 연결", "short": "SoC Core", "side": "internal"},
-      {"id": "capture",    "name": "ov7670_capture_stub",   "kind": "frontend",      "module": "ov7670_capture_stub",   "file": "rtl/ov7670_capture_stub.v",   "desc": "OV7670 PCLK 도메인 2바이트 조합(시뮬용 스텁)", "short": "Capture", "side": "internal"},
-      {"id": "thresh",     "name": "green_thresh",          "kind": "pipeline",      "module": "green_thresh",          "file": "rtl/green_thresh.v",          "desc": "RGB565 → 녹색 판단(1비트)", "short": "GreenThresh", "side": "internal"},
-      {"id": "grid9",      "name": "grid9_counter",         "kind": "pipeline",      "module": "grid9_counter",         "file": "rtl/grid9_counter.v",         "desc": "3×3 그리드 카운터, 프레임 완료 시 스냅샷", "short": "Grid9", "side": "internal"},
-      {"id": "decode",     "name": "lane_decode",           "kind": "pipeline",      "module": "lane_decode",           "file": "rtl/lane_decode.v",           "desc": "열 합산 argmax → 레인, 행 최상위 밀도 → 점프", "short": "LaneDec", "side": "internal"},
-      {"id": "cam_ext",    "name": "OV7670",                "kind": "external",      "module": null,                    "file": null,                          "desc": "OV7670 카메라 모듈(Pmod 경유)", "short": "OV7670", "side": "external"}
+      {
+        "id": "board",
+        "name": "basys3_color_lane_top",
+        "kind": "board-wrapper",
+        "module": "basys3_color_lane_top",
+        "file": "rtl/basys3_color_lane_top.v",
+        "desc": "핀 배치·클럭·리셋 래퍼",
+        "short": "Board Top",
+        "side": "external"
+      },
+      {
+        "id": "core",
+        "name": "color_lane_top",
+        "kind": "soc-core",
+        "module": "color_lane_top",
+        "file": "rtl/color_lane_top.v",
+        "desc": "MMIO 레지스터 + 도메인 교차 + 서브모듈 연결",
+        "short": "SoC Core",
+        "side": "internal"
+      },
+      {
+        "id": "capture",
+        "name": "ov7670_capture_stub",
+        "kind": "frontend",
+        "module": "ov7670_capture_stub",
+        "file": "rtl/ov7670_capture_stub.v",
+        "desc": "OV7670 PCLK 도메인 2바이트 조합(시뮬용 스텁)",
+        "short": "Capture",
+        "side": "internal"
+      },
+      {
+        "id": "thresh",
+        "name": "green_thresh",
+        "kind": "pipeline",
+        "module": "green_thresh",
+        "file": "rtl/green_thresh.v",
+        "desc": "RGB565 → 녹색 판단(1비트)",
+        "short": "GreenThresh",
+        "side": "internal"
+      },
+      {
+        "id": "grid9",
+        "name": "grid9_counter",
+        "kind": "pipeline",
+        "module": "grid9_counter",
+        "file": "rtl/grid9_counter.v",
+        "desc": "3×3 그리드 카운터, 프레임 완료 시 스냅샷",
+        "short": "Grid9",
+        "side": "internal"
+      },
+      {
+        "id": "decode",
+        "name": "lane_decode",
+        "kind": "pipeline",
+        "module": "lane_decode",
+        "file": "rtl/lane_decode.v",
+        "desc": "열 합산 argmax → 레인, 행 최상위 밀도 → 점프",
+        "short": "LaneDec",
+        "side": "internal"
+      },
+      {
+        "id": "cam_ext",
+        "name": "OV7670",
+        "kind": "external",
+        "module": null,
+        "file": null,
+        "desc": "OV7670 카메라 모듈(Pmod 경유)",
+        "short": "OV7670",
+        "side": "external"
+      }
     ],
     "links": [
-      {"from": "board",   "to": "core",    "label": "clk/rst/mmio"},
-      {"from": "cam_ext", "to": "board",   "label": "PCLK/VSYNC/HREF/D[7:0]"},
-      {"from": "board",   "to": "capture", "label": "pclk/vsync/href/d"},
-      {"from": "capture", "to": "core",    "label": "pixel_valid/pixel_data/frame_start/frame_done (CDC sync)"},
-      {"from": "core",    "to": "thresh",  "label": "pixel_data/enable/thresh[5:0]"},
-      {"from": "thresh",  "to": "grid9",   "label": "is_green/pixel_valid/frame_start/frame_done"},
-      {"from": "grid9",   "to": "decode",  "label": "grid_snap[8:0][15:0]/snap_valid"},
-      {"from": "decode",  "to": "core",    "label": "lane[1:0]/jump"},
-      {"from": "core",    "to": "board",   "label": "seg7_lane/led_jump (상태 표시)"}
+      {
+        "from": "board",
+        "to": "core",
+        "label": "clk/rst/mmio"
+      },
+      {
+        "from": "cam_ext",
+        "to": "board",
+        "label": "PCLK/VSYNC/HREF/D[7:0]"
+      },
+      {
+        "from": "board",
+        "to": "capture",
+        "label": "pclk/vsync/href/d"
+      },
+      {
+        "from": "capture",
+        "to": "core",
+        "label": "pixel_valid/pixel_data/frame_start/frame_done (CDC sync)"
+      },
+      {
+        "from": "core",
+        "to": "thresh",
+        "label": "pixel_data/enable/thresh[5:0]"
+      },
+      {
+        "from": "thresh",
+        "to": "grid9",
+        "label": "is_green/pixel_valid/frame_start/frame_done"
+      },
+      {
+        "from": "grid9",
+        "to": "decode",
+        "label": "grid_snap[8:0][15:0]/snap_valid"
+      },
+      {
+        "from": "decode",
+        "to": "core",
+        "label": "lane[1:0]/jump"
+      },
+      {
+        "from": "core",
+        "to": "board",
+        "label": "seg7_lane/led_jump (상태 표시)"
+      }
     ]
   },
   "bus_protocol": {
     "name": "mmio-lite",
     "signals": [
-      {"name": "addr",  "width": 32, "dir": "in",  "desc": "절대 주소"},
-      {"name": "wdata", "width": 32, "dir": "in",  "desc": "쓰기 데이터"},
-      {"name": "wen",   "width": 1,  "dir": "in",  "desc": "쓰기 활성"},
-      {"name": "ren",   "width": 1,  "dir": "in",  "desc": "읽기 활성"},
-      {"name": "rdata", "width": 32, "dir": "out", "desc": "읽기 데이터"}
+      {
+        "name": "addr",
+        "width": 32,
+        "dir": "in",
+        "desc": "절대 주소"
+      },
+      {
+        "name": "wdata",
+        "width": 32,
+        "dir": "in",
+        "desc": "쓰기 데이터"
+      },
+      {
+        "name": "wen",
+        "width": 1,
+        "dir": "in",
+        "desc": "쓰기 활성"
+      },
+      {
+        "name": "ren",
+        "width": 1,
+        "dir": "in",
+        "desc": "읽기 활성"
+      },
+      {
+        "name": "rdata",
+        "width": 32,
+        "dir": "out",
+        "desc": "읽기 데이터"
+      }
     ],
     "note": "AXI4-Lite 비호환 단순 버스. 시뮬레이션과 테스트용 전용. 프로젝트 통합 시 AXI4-Lite 래퍼 추가 필요."
   },
@@ -58,7 +182,10 @@
     "compat": "incompatible",
     "plan": "프로젝트 통합 시 AXI4-Lite 래퍼로 슬롯 [18]=0x4018_0000, intc=13에 연결. MicroBlaze V 인터럽트 채널 13 사용.",
     "frozen_mapping": [
-      {"block": "color_lane", "region": "[18] color_lane  0x4018_0000  intc=13  (제안, 미동결)"}
+      {
+        "block": "color_lane",
+        "region": "[18] color_lane  0x4018_0000  intc=13  (제안, 미동결)"
+      }
     ]
   },
   "external_parts": [
@@ -71,7 +198,7 @@
       "qty": 1,
       "board_resident": false,
       "supply_voltage": 3.3,
-      "level_shift": false,
+      "level_shift": "불필요 (3.3V)",
       "arduino_compatible": true,
       "notes": "OV7670 디지털 I/O는 2.8V 허용. 브레이크아웃 보드에 레귤레이터·풀업 내장 여부 확인 필요. 미확인 시 레벨 변환 추가."
     }
@@ -88,10 +215,22 @@
         "module": "color_lane_top",
         "file": "rtl/color_lane_top.v",
         "children": [
-          {"module": "ov7670_capture_stub", "file": "rtl/ov7670_capture_stub.v"},
-          {"module": "green_thresh",        "file": "rtl/green_thresh.v"},
-          {"module": "grid9_counter",       "file": "rtl/grid9_counter.v"},
-          {"module": "lane_decode",         "file": "rtl/lane_decode.v"}
+          {
+            "module": "ov7670_capture_stub",
+            "file": "rtl/ov7670_capture_stub.v"
+          },
+          {
+            "module": "green_thresh",
+            "file": "rtl/green_thresh.v"
+          },
+          {
+            "module": "grid9_counter",
+            "file": "rtl/grid9_counter.v"
+          },
+          {
+            "module": "lane_decode",
+            "file": "rtl/lane_decode.v"
+          }
         ]
       }
     ]
@@ -104,25 +243,87 @@
       "block": "core",
       "note": "시뮬레이션 전용 주소. 프로젝트 통합 시 0x4018_0000으로 변경.",
       "regs": [
-        {"off": "0x00", "name": "CTRL",      "access": "WO", "desc": "bit0=ENABLE, bit1=INT_EN, bit15=RESET"},
-        {"off": "0x04", "name": "STATUS",    "access": "RC", "desc": "bit0=FRAME_DONE, bit2:1=LANE[1:0](1=L,2=C,3=R), bit3=JUMP"},
-        {"off": "0x08", "name": "THRESH",    "access": "RW", "desc": "bit5:0=green_thresh (G[10:5] 비교 임계값, 기본=20)"},
-        {"off": "0x0C", "name": "COL_CFG",   "access": "RW", "desc": "bit9:0=col_thr1, bit25:16=col_thr2 (열 경계 위치, 기본=3,6)"},
-        {"off": "0x10", "name": "ROW_CFG",   "access": "RW", "desc": "bit8:0=row_thr1, bit24:16=row_thr2 (행 경계 위치, 기본=3,6)"},
-        {"off": "0x14", "name": "FRAME_CNT", "access": "RO", "desc": "bit7:0=프레임 완료 카운터 (오버플로 허용)"},
-        {"off": "0xFC", "name": "ID_VER",    "access": "RO", "desc": "0x0007_0100 (ID=0x07, VER=1.0)"}
+        {
+          "off": "0x00",
+          "name": "CTRL",
+          "access": "WO",
+          "desc": "bit0=ENABLE, bit1=INT_EN, bit15=RESET"
+        },
+        {
+          "off": "0x04",
+          "name": "STATUS",
+          "access": "RC",
+          "desc": "bit0=FRAME_DONE, bit2:1=LANE[1:0](1=L,2=C,3=R), bit3=JUMP"
+        },
+        {
+          "off": "0x08",
+          "name": "THRESH",
+          "access": "RW",
+          "desc": "bit5:0=green_thresh (G[10:5] 비교 임계값, 기본=20)"
+        },
+        {
+          "off": "0x0C",
+          "name": "COL_CFG",
+          "access": "RW",
+          "desc": "bit9:0=col_thr1, bit25:16=col_thr2 (열 경계 위치, 기본=3,6)"
+        },
+        {
+          "off": "0x10",
+          "name": "ROW_CFG",
+          "access": "RW",
+          "desc": "bit8:0=row_thr1, bit24:16=row_thr2 (행 경계 위치, 기본=3,6)"
+        },
+        {
+          "off": "0x14",
+          "name": "FRAME_CNT",
+          "access": "RO",
+          "desc": "bit7:0=프레임 완료 카운터 (오버플로 허용)"
+        },
+        {
+          "off": "0xFC",
+          "name": "ID_VER",
+          "access": "RO",
+          "desc": "0x0007_0100 (ID=0x07, VER=1.0)"
+        }
       ]
     }
   ],
   "roadmap": [
-    {"stage": "T4", "state": "current",  "title": "mmio-color-lane-detect (이 패키지)", "refs": []},
-    {"stage": "T4", "state": "planned",  "title": "AXI4-Lite 래퍼 + MicroBlaze V 통합", "refs": ["mit-6111-2021-team04-temple-run", "columbia-4840-cameracontrol"]},
-    {"stage": "T4", "state": "planned",  "title": "SCCB 초기화 연결 (mmio-ov7670-sccb-capture와 병행)", "refs": []}
+    {
+      "stage": "T4",
+      "state": "current",
+      "title": "mmio-color-lane-detect (이 패키지)",
+      "refs": []
+    },
+    {
+      "stage": "T4",
+      "state": "planned",
+      "title": "AXI4-Lite 래퍼 + MicroBlaze V 통합",
+      "refs": [
+        "mit-6111-2021-team04-temple-run",
+        "columbia-4840-cameracontrol"
+      ]
+    },
+    {
+      "stage": "T4",
+      "state": "planned",
+      "title": "SCCB 초기화 연결 (mmio-ov7670-sccb-capture와 병행)",
+      "refs": []
+    }
   ],
   "references": [
-    {"card": "mit-6111-2021-team04-temple-run",  "why": "BRAM 없는 스트리밍 색 추적 구조, 9분할 카운트 착안"},
-    {"card": "columbia-4840-cameracontrol",       "why": "OV7670 RGB565 스트리밍 처리 패턴"},
-    {"card": "shubhayu-das-vl504-project",        "why": "레인 검출 FSM 구조 참고"}
+    {
+      "card": "mit-6111-2021-team04-temple-run",
+      "why": "BRAM 없는 스트리밍 색 추적 구조, 9분할 카운트 착안"
+    },
+    {
+      "card": "columbia-4840-cameracontrol",
+      "why": "OV7670 RGB565 스트리밍 처리 패턴"
+    },
+    {
+      "card": "shubhayu-das-vl504-project",
+      "why": "레인 검출 FSM 구조 참고"
+    }
   ],
   "sources": {
     "rtl": [
@@ -133,9 +334,15 @@
       "rtl/grid9_counter.v",
       "rtl/lane_decode.v"
     ],
-    "tb": ["tb/tb_color_lane.v"],
-    "constraints": ["constr/basys3_color_lane.xdc"],
-    "build": ["Makefile"]
+    "tb": [
+      "tb/tb_color_lane.v"
+    ],
+    "constraints": [
+      "constr/basys3_color_lane.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
   },
   "howto": [
     {

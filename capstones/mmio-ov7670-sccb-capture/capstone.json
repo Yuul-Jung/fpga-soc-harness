@@ -5,7 +5,6 @@
   "board": "Basys3",
   "stage": "T2",
   "author_note": "I-006 아이디어(ready 상태, 9점). 선택 경로: §13.7 자동 과제화, ready 직접 선택.",
-
   "goals": [
     "SCCB 마스터 FSM으로 OV7670 설정 ROM(10 엔트리) 전송 완료",
     "OV7670의 VSYNC·HREF·PCLK 타이밍에 맞춰 RGB565 2바이트를 한 픽셀로 결합",
@@ -20,7 +19,6 @@
     "JPEG/YUV 출력 (RGB565 고정)",
     "MicroBlaze V 연결 (이 패키지는 단독 시뮬레이션용 mmio-lite 버스 사용)"
   ],
-
   "architecture": {
     "clock": "100 MHz 시스템 (Basys3 W5) + 24 MHz cam_pclk (OV7670 PCLK, Pmod JA7, 비동기 도메인)",
     "blocks": [
@@ -104,32 +102,94 @@
       }
     ],
     "links": [
-      {"from": "top",     "to": "core",    "label": "mmio_addr/wdata/wen/ren/rdata"},
-      {"from": "core",    "to": "sccb",    "label": "start/done/na_err/reg_addr/reg_data"},
-      {"from": "sccb",    "to": "ov7670",  "label": "SIO_C, SIO_D (오픈 드레인)"},
-      {"from": "ov7670",  "to": "capture", "label": "PCLK/VSYNC/HREF/D[7:0]"},
-      {"from": "capture", "to": "sync_fd", "label": "frame_done (PCLK)"},
-      {"from": "capture", "to": "sync_pv", "label": "pixel_valid + pixel_data (PCLK)"},
-      {"from": "capture", "to": "sync_fs", "label": "frame_start (PCLK)"},
-      {"from": "sync_fd", "to": "core",    "label": "sys_frame_done (SYS CLK)"},
-      {"from": "sync_pv", "to": "core",    "label": "sys_pixel_valid (SYS CLK)"},
-      {"from": "sync_fs", "to": "core",    "label": "sys_frame_start (SYS CLK)"},
-      {"from": "top",     "to": "ov7670",  "label": "IOBUF SIO_D (Pmod JA2)"}
+      {
+        "from": "top",
+        "to": "core",
+        "label": "mmio_addr/wdata/wen/ren/rdata"
+      },
+      {
+        "from": "core",
+        "to": "sccb",
+        "label": "start/done/na_err/reg_addr/reg_data"
+      },
+      {
+        "from": "sccb",
+        "to": "ov7670",
+        "label": "SIO_C, SIO_D (오픈 드레인)"
+      },
+      {
+        "from": "ov7670",
+        "to": "capture",
+        "label": "PCLK/VSYNC/HREF/D[7:0]"
+      },
+      {
+        "from": "capture",
+        "to": "sync_fd",
+        "label": "frame_done (PCLK)"
+      },
+      {
+        "from": "capture",
+        "to": "sync_pv",
+        "label": "pixel_valid + pixel_data (PCLK)"
+      },
+      {
+        "from": "capture",
+        "to": "sync_fs",
+        "label": "frame_start (PCLK)"
+      },
+      {
+        "from": "sync_fd",
+        "to": "core",
+        "label": "sys_frame_done (SYS CLK)"
+      },
+      {
+        "from": "sync_pv",
+        "to": "core",
+        "label": "sys_pixel_valid (SYS CLK)"
+      },
+      {
+        "from": "sync_fs",
+        "to": "core",
+        "label": "sys_frame_start (SYS CLK)"
+      },
+      {
+        "from": "top",
+        "to": "ov7670",
+        "label": "IOBUF SIO_D (Pmod JA2)"
+      }
     ]
   },
-
   "bus_protocol": {
     "name": "mmio-lite (단독 시뮬레이션용)",
     "signals": [
-      {"name": "addr[31:0]",  "dir": "M→S", "desc": "32비트 절대 주소"},
-      {"name": "wdata[31:0]", "dir": "M→S", "desc": "32비트 쓰기 데이터"},
-      {"name": "wen",         "dir": "M→S", "desc": "쓰기 활성화 (1클럭 펄스)"},
-      {"name": "ren",         "dir": "M→S", "desc": "읽기 활성화 (1클럭 펄스)"},
-      {"name": "rdata[31:0]", "dir": "S→M", "desc": "읽기 데이터 (다음 클럭에 유효)"}
+      {
+        "name": "addr[31:0]",
+        "dir": "M→S",
+        "desc": "32비트 절대 주소"
+      },
+      {
+        "name": "wdata[31:0]",
+        "dir": "M→S",
+        "desc": "32비트 쓰기 데이터"
+      },
+      {
+        "name": "wen",
+        "dir": "M→S",
+        "desc": "쓰기 활성화 (1클럭 펄스)"
+      },
+      {
+        "name": "ren",
+        "dir": "M→S",
+        "desc": "읽기 활성화 (1클럭 펄스)"
+      },
+      {
+        "name": "rdata[31:0]",
+        "dir": "S→M",
+        "desc": "읽기 데이터 (다음 클럭에 유효)"
+      }
     ],
     "note": "AXI4-Lite 비호환. MicroBlaze V 이식 시 AXI4-Lite 래퍼 추가 필요."
   },
-
   "integration": {
     "bus": "mmio-lite (단독 시뮬레이션용, AXI4-Lite 비호환)",
     "address_map": "custom",
@@ -137,10 +197,12 @@
     "target_map": "mbv-frozen-v2",
     "plan": "이 패키지는 mmio-lite(0x1004_0000)로 단독 동작한다. mbv-frozen-v2 이식 계획: (1) ov7670_sccb_top을 IP 표준(64KB 창, 0xFFF0 ID/VER/IRQ)으로 래핑해 AXI4-Lite 슬레이브로 변환한다. (2) 동결 맵 free_slots 중 [17]=0x4017_0000에 배정을 제안한다([16]은 sensor_hub가 사용). (3) SCCB NA_ERR을 INTC 인터럽트(free intc slot)로 연결한다. (4) PCLK 비동기 리셋에 시스템 리셋 2-FF 동기화 추가가 필요하다.",
     "frozen_mapping": [
-      {"block": "core", "region": "[17] ov7670_sccb  0x4017_0000  (제안, 미동결)"}
+      {
+        "block": "core",
+        "region": "[17] ov7670_sccb  0x4017_0000  (제안, 미동결)"
+      }
     ]
   },
-
   "external_parts": [
     {
       "id": "ov7670_module",
@@ -151,18 +213,16 @@
       "qty": 1,
       "board_resident": false,
       "supply_voltage": 3.3,
-      "level_shift": false,
+      "level_shift": "불필요 (3.3V)",
       "power_note": "모듈 내 LDO로 2.8V/1.5V 자체 생성. VCC=3.3V 공급, GND 공통.",
       "arduino_compatible": true,
       "notes": "IO 전압 3.3V. OV7670은 풀업 4.7 kΩ (SDA/SCL)이 모듈에 포함된 경우가 많으나 없으면 외부 추가. PWDN=0(활성), RESET=1(정상) 고정 또는 GPIO 제어."
     }
   ],
-
   "schematic": {
     "state": "not-written",
     "note": "디지털 계통도(diagram.svg)와 별개. 전기 회로도는 미작성. 연결: OV7670 VCC→3.3V, GND 공통, SIO_C→Pmod JA1, SIO_D↔Pmod JA2(IOBUF), PCLK→JA7, VSYNC→JA8, HREF→JA9, D[7:4]→JA10/JB[1:4], D[3:0]→JB[4]/JC[1:3]. 풀업 저항(4.7 kΩ)은 SDA/SCL에 필요 (모듈 미포함 시)."
   },
-
   "hierarchy": {
     "module": "basys3_top",
     "file": "rtl/basys3_top.v",
@@ -171,14 +231,22 @@
         "module": "ov7670_sccb_top",
         "file": "rtl/ov7670_sccb_top.v",
         "children": [
-          {"module": "sccb_tx",       "file": "rtl/sccb_tx.v"},
-          {"module": "ov7670_capture","file": "rtl/ov7670_capture.v"},
-          {"module": "sync_pulse",    "file": "rtl/sync_pulse.v"}
+          {
+            "module": "sccb_tx",
+            "file": "rtl/sccb_tx.v"
+          },
+          {
+            "module": "ov7670_capture",
+            "file": "rtl/ov7670_capture.v"
+          },
+          {
+            "module": "sync_pulse",
+            "file": "rtl/sync_pulse.v"
+          }
         ]
       }
     ]
   },
-
   "memory_map": [
     {
       "base": "0x1004_0000",
@@ -219,28 +287,33 @@
       ]
     }
   ],
-
   "roadmap": [
     {
       "stage": "T1",
       "state": "done",
       "title": "mmio-uart-gpio-skeleton (기반 단계)",
-      "refs": ["mmio-uart-gpio-skeleton"]
+      "refs": [
+        "mmio-uart-gpio-skeleton"
+      ]
     },
     {
       "stage": "T2",
       "state": "current",
       "title": "mmio-ov7670-sccb-capture (이 패키지)",
-      "refs": ["kwondo99-fpga-vga-photobooth-project", "pkt-gif-custom-vending-machine"]
+      "refs": [
+        "kwondo99-fpga-vga-photobooth-project",
+        "pkt-gif-custom-vending-machine"
+      ]
     },
     {
       "stage": "T3",
       "state": "planned",
       "title": "mmio-ov7670-vga-out: 캡처 픽셀을 VGA 스캔아웃 (라인 버퍼 스트리밍, Pmod VGA)",
-      "refs": ["kwondo99-fpga-vga-photobooth-project"]
+      "refs": [
+        "kwondo99-fpga-vga-photobooth-project"
+      ]
     }
   ],
-
   "references": [
     {
       "card": "kwondo99-fpga-vga-photobooth-project",
@@ -251,7 +324,6 @@
       "why": "mmio-lite 버스 패턴, MMIO 슬레이브 레지스터 설계 참고"
     }
   ],
-
   "sources": {
     "rtl": [
       "rtl/sccb_tx.v",
@@ -271,7 +343,6 @@
       "Makefile"
     ]
   },
-
   "howto": [
     {
       "title": "시뮬레이션 (iverilog)",
@@ -303,12 +374,10 @@
       ]
     }
   ],
-
   "verification": {
     "board": "not-tested",
     "notes": "S3(보드 동작)는 에이전트가 올리지 않는다. 사람이 직접 확인 필요."
   },
-
   "risks": [
     "PCLK 비동기 리셋: ov7670_capture의 prst는 시스템 리셋 신호를 그대로 받는다. PCLK 도메인에서 리셋 메타스태빌리티 위험 — 이식 시 2-FF 동기화 추가 필요",
     "sync_pulse 조건: src 펄스 간격 > 2 dst 클럭 주기 보장 필요. pixel_valid는 PCLK 주기마다 가능하여, 24 MHz PCLK에서 2×(1/100 MHz)=20 ns 미충족 위험. 픽셀마다 pixel_valid를 올리는 현재 설계는 고속 환경에서 CDC 누락 가능 — 고속 전송 시 BRAM FIFO + handshake로 교체 권장",
