@@ -583,3 +583,16 @@
 - https://natalieagus.github.io/50002/fpga/shared-ram-gpu-cpu | SUTD 강의: FPGA GPU·CPU BRAM 공유 메모리, 핑퐁 패턴 (S5 대학 강의) — 미열람 L1 | natalieagus FPGA shared RAM GPU CPU BRAM ping pong
 - https://redpitaya-knowledgebase.readthedocs.io/en/latest/learn_fpga/4_lessons/PingPong.html | Red Pitaya FPGA 교육: 핑퐁 BRAM 버퍼 패턴 실습 (S5 비정형) — 미열람 L1 | redpitaya FPGA ping pong BRAM lesson double buffer
 - https://hackaday.com/2016/06/16/no-frame-buffer-for-fpga-vga-graphics | Hackaday: 프레임버퍼 없는 FPGA VGA 그래픽 (래스터 스캔라인 생성, S4 제약역전 반례) — 미열람 L1 | hackaday no frame buffer FPGA VGA graphics scanline raster
+
+## 2026-11-05 수집 — PWM 기반 RGB LED 색상 혼합 (감마 보정, HSV→RGB 변환 하드웨어)
+
+- https://github.com/MapleSilicon/mapleled-core | card-converted → maplesilicon-mapleled-core.md (L2) | PWM RGB LED 감마보정 질의
+- https://fpga.mit.edu/6205/F25/assignments/week01/led_hw | card-converted → mit-6205-rgb-pwm-week01.md (L2, S6 래치-at-reset 실패 사례) | MIT 6.205 digital systems lab PWM LED 질의
+- https://github.com/olivier-le-sage/camera-filters | card-converted → olivier-le-sage-camera-filters.md (L3, 시프트 기반 감마 보정) | FPGA gamma correction shift approximate 질의
+- https://github.com/birdybro/rgb_conv_verilog | blocked: PROVENANCE_REQUIRED (이번 사이클), RGB→HSV/YCbCr 변환 Verilog (MIT 라이선스) — /verify에서 재시도 | FPGA RGB HSV conversion Verilog 질의
+- https://github.com/pawel2000pl/VerilogLedDriver | blocked: PROVENANCE_REQUIRED (이번 사이클), RGB PWM LED 드라이버 Verilog — /verify에서 재시도 | Verilog RGB PWM LED driver 질의
+- https://www.mikrocontroller.net/topic/260080 | 독일어 포럼 VHDL 감마 LUT 논의(S6): 삼상 출력 에러·Xilinx ROM 초기화 거동 실패 사례 — L3 열람, 카드화 보류(포럼·독일어) | VHDL gamma correction RGB LED Xilinx 질의
+- https://www.nandland.com/vhdl/modules/pwm_generator.html | NandLand VHDL PWM 생성기 튜토리얼 — 미열람(L1), /verify 열람 대상 | VHDL PWM generator tutorial 질의
+- https://www.fpga4fun.com/PWM.html | fpga4fun.com PWM 기초 아티클 — 미열람(L1), 주변장치 패턴 참고 | FPGA PWM tutorial fpga4fun 질의
+- https://github.com/projf/projf-explore | Project F: LED 색상 혼합·VGA 효과 포함 (MIT) — 미열람(L1), /verify 열람 대상 | FPGA LED colour mixing projf 질의
+- https://github.com/georgeyhere/fpga-rgb | FPGA RGB LED Verilog 구현 — 미열람(L1), /verify 열람 대상 | FPGA RGB LED Verilog GitHub 질의

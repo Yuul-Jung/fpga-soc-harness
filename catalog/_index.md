@@ -240,3 +240,6 @@
 | [fcayci-xilinx-vga-framebuffer-ip-core](amd/fcayci-xilinx-vga-framebuffer-ip-core.md) | L2 | T2 | Xilinx (Basys3 needs-port) | 2026-11-05 |
 | [projf-projf-explore](vendor-neutral/projf-projf-explore.md) | L2 | T2 | Arty S7 / iCE40 UP5K (Basys3 needs-port) | 2026-11-05 |
 | [talsania-fpga-image-buffer](vendor-neutral/talsania-fpga-image-buffer.md) | L2 | T2 | 미명시 (Basys3 needs-port) | 2026-11-05 |
+| [maplesilicon-mapleled-core](vendor-neutral/maplesilicon-mapleled-core.md) | L2 | T1 | iCEBreaker / iCE40 UP5K (Basys3 needs-port) | 2026-11-05 |
+| [olivier-le-sage-camera-filters](vendor-neutral/olivier-le-sage-camera-filters.md) | L3 | T4 | Spartan Edge Accelerator XC7S50 (Basys3 needs-port) | 2026-11-05 |
+| [mit-6205-rgb-pwm-week01](papers/mit-6205-rgb-pwm-week01.md) | L2 | T1 | Urbana FPGA (Basys3 needs-port) | 2026-11-05 |

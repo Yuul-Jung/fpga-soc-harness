@@ -1428,3 +1428,33 @@
 - 난이도: 2 (T2 범위, AXI4-Lite 슬레이브 + BRAM TDP 인스턴스 + VGA 타이밍이 전부)
 - 단계: T2
 - S4 제약역전 근거: DDR 없음 → BRAM만으로 가능 → 저해상도 더블 버퍼 → 더 단순하고 결정론적인 RTL
+
+## I-105 글리치 없는 AXI4-Lite RGB PWM IP (래치-at-reset + 감마 보정 LUT)
+- 상태: raw
+- 요약: 내 판단: PWM 카운터 리셋 시점에만 듀티 사이클을 래치하는 글리치 방지 FSM과, BRAM 초기화($readmemh) 기반 감마 보정 LUT(256×8b, 1 BRAM36)를 하나의 AXI4-Lite 슬레이브 IP로 구성. R/G/B 채널 개별 PWM + 감마 테이블 활성화 레지스터 포함. MIT 6.205의 S6 실패 사례와 MapleLED-Core의 감마 LUT 아이디어를 조합.
+- 조합: [pwm-rgb, gamma-lut-bram, axi4-lite]
+- 근거: [mit-6205-rgb-pwm-week01, maplesilicon-mapleled-core]
+- 새로움의 근거: 카탈로그에 래치-at-reset 패턴을 명시한 AXI4-Lite RGB PWM IP 없음. 감마 LUT BRAM 조합도 없음. 두 패턴을 동일 IP 안에 통합하는 것이 새로움.
+- Basys3 적합성의 근거: 8비트 PWM 카운터·BRAM36 1개·AXI4-Lite는 Basys3(XC7A35T) 기본 자원 범위 내. 동결 맵 free_slots에서 64KB 1슬롯 배정 가능. RGB LED Pmod 핀 xdc만 추가.
+- 난이도: 2 / 단계: T1→T2
+- 심사: (미심사)
+
+## I-106 HSV 색상환 → RGB PWM Pmod 드라이버 (하드웨어 FSM, 소수점 없음)
+- 상태: raw
+- 요약: 내 판단: Hue 0~359도를 6개 구간(60도씩)으로 나눠 선형 보간으로 R/G/B를 계산하는 순수 정수·시프트 연산 조합 FSM. S 및 V 채널을 곱셈기 없이 시프트+가산으로 처리(olivier-le-sage 패턴 착안). 출력은 8비트 R/G/B 듀티 사이클로 I-105 PWM IP에 연결 또는 직접 Pmod RGB LED 드라이브.
+- 조합: [hsv-rgb-fsm, pwm-rgb, axi4-lite]
+- 근거: [maplesilicon-mapleled-core, olivier-le-sage-camera-filters]
+- 새로움의 근거: 카탈로그에 HSV→RGB 변환 하드웨어 FSM 카드 없음. 카탈로그 카드 3건 모두 "HSV→RGB 변환 없음"을 한계로 명시 — 직접 이 공백을 채우는 조합.
+- Basys3 적합성의 근거: 순수 FSM, 곱셈기·BRAM 없음. 목표 LUT < 300. 색상환 주기를 Basys3 스위치 16개(HSV 입력) 또는 AXI4-Lite 레지스터로 제어.
+- 난이도: 3 / 단계: T2
+- 심사: (미심사)
+
+## I-107 RGB LED 난이도 사다리 패키지 (기초 PWM → 감마 → HSV → 호흡 → 무지개)
+- 상태: raw
+- 요약: 내 판단: S7 전략으로, 동일 Basys3 대상에서 (a) 단순 8비트 PWM→(b) 감마 보정 LUT→(c) HSV 색상환 소프트 제어→(d) LED 호흡 FSM→(e) 무지개 사이클까지 5단계를 각각 독립 RTL 모듈로 구성하고, 단계별 cocotb 테스트벤치를 갖추는 종합 T1~T2 난이도 사다리 패키지.
+- 조합: [pwm-rgb, gamma-lut-bram, hsv-rgb-fsm, led-breathing, axi4-lite]
+- 근거: [mit-6205-rgb-pwm-week01, maplesilicon-mapleled-core, olivier-le-sage-camera-filters]
+- 새로움의 근거: 카탈로그에 RGB LED 주제로 T1~T2를 단계적으로 연결한 사다리 패키지 없음. I-105·I-106을 하위 모듈로 포함하는 상위 조합.
+- Basys3 적합성의 근거: 각 단계가 Basys3 기본 자원 범위 내(I-105·I-106 참조). 단계별로 Makefile 타겟 분리 → CI에서 단계별 검증 가능.
+- 난이도: 3 / 단계: T1→T2
+- 심사: (미심사)
