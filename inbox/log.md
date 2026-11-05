@@ -5,6 +5,7 @@
 - verify: `YYYY-MM-DD HH:MM | verify | 재열람 N | 수정 M | 불일치 K | 승격 L2→L3 P | ready +R`
 - capstone: `YYYY-MM-DD HH:MM | capstone | <slug> | 등급 S0~S2` 또는 `... | skip: <사유>`
 
+2026-11-06 03:20 | collect | Watchdog 타이머 고급 패턴 (윈도우 WDT, 하트비트, 카운트다운) · S2 조합 탐색(주)+S6 실패 사례(보조) | 카드 +3 (amd-axi-timebase-wdt-pg083 L2·ignaciosim-tt06-triple-watchdog L2·amoghvarsh-axi4-lite-timer-wdt L2) | 아이디어 +3 (I-117 윈도우WDT+7세그, I-118 삼중WDT 비교 패널, I-119 WDT WDTOUT 하트비트 핀) | 큐 잔여 629 | blocked 0
 2026-11-06 02:27 | capstone | I-030 → mmio-onewire-ds18b20-ip | S0 (iverilog/yosys 없음, CI 대기) | 슬롯 [0E] 0x400E_0000 / intc=6 | mbv-frozen-v2 compatible
 2026-11-05 14:38 | capstone | mmio-led-matrix-sound-tilt | fix: adxl_rst_n 복합 리셋 와이어 제거, u_adxl .rst_n(rst_n) 직접 연결 — CI 대기
 2026-11-05 14:33 | capstone | mmio-led-matrix-sound-tilt | skip: CI synth FAIL 3회 소진 (bd81db4, sclk_en proc_dff "Multiple edge sensitive events") | status: broken

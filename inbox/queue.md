@@ -626,3 +626,14 @@
 - https://sean-galloway.github.io/RTLDesignSherpa-DV/components/axil4/ | RTLDesignSherpa AXIL4 MIT CocoTB 버전 — 미열람(L1) | AXI4-Lite CocoTB SystemVerilog MIT
 - https://tinytapeout.com/chips/ttsky26b/294 | TinyTapeout AXI4-Lite 레지스터 데모 — 미열람(L1) | TinyTapeout AXI4-Lite register bank demo
 - https://github.com/juneonii/FPGA_EX | jhcha2004 AXI4-Lite ILA 디버그 한국어 — blocked: PROVENANCE_REQUIRED | AXI4-Lite ILA debug Basys3 Korean FPGA
+
+- https://github.com/Tape-Out/wdt | "Windowed Watchdog Timer" Verilog FPGA 구현 — 미열람(L1), 창 경계 양쪽 적용 WDT | windowed watchdog timer FPGA Verilog GitHub
+- https://github.com/ignaciosim/tt06-triple-watchdog | TinyTapeout 6 삼중 WDT(기본·윈도우·독립 모드) Verilog — L2 카드 작성됨, 추후 L3 승격 대상 | TinyTapeout triple watchdog Verilog window WDT
+- https://github.com/AmoghvarshBhasme-11/axi4-lite-timer | AXI4-Lite 타이머+WDT 모드, 셀프-체킹 TB(Vivado 검증) — L2 카드 작성됨, 라이선스 확인 필요 | AXI4-Lite timer WDT mode Verilog Vivado
+- https://www.microchip.com/en-us/application-notes/an1197 | Microchip "Windowed Watchdog Timer" 앱노트 — 미열람(L1), MCU 윈도우 WDT 타이밍 패턴 참고 | Microchip windowed watchdog timer application note
+- https://ww1.microchip.com/downloads/en/DeviceDoc/AVR1500-XMEGA-Watchdog-01.pdf | XMEGA 워치독 타이머 완전 가이드(Microchip) — 미열람(L1), 창 모드 비트 설정 참조 | XMEGA watchdog timer window mode application note
+- https://stnolting.github.io/neorv32/#_watchdog_timer_wdt | NEORV32 WDT 모듈 공식 문서(WDTCTRL, 잠금 비트, 윈도우 모드) — 미열람(L1), `stnolting-neorv32` L3 승격 근거 | NEORV32 WDT watchdog window mode lock bit
+- https://www.edaboard.com/threads/axi4-lite-watchdog-timer-verilog-implementation.396234 | edaboard AXI4-Lite WDT Verilog 구현 질의응답 — 미열람(L1), 설계 패턴 참고 | AXI4-Lite watchdog timer Verilog implementation edaboard
+- https://www.ti.com/lit/an/slaa661a/slaa661a.pdf | TI 앱노트 "Watchdog Timer Techniques" — 미열람(L1), 하트비트 패턴·실패 사례 정리(S6 보조 출처) | TI watchdog timer techniques heartbeat application note
+- https://github.com/enjoy-digital/litex/blob/master/litex/soc/cores/watchdog.py | LiteX WDT Python 모듈 — 미열람(L1), LiteX SoC의 WDT 통합 방식 참고 | LiteX watchdog timer Python SoC
+- https://github.com/fvutils/pyvsc | unverified: 검색에서 발견한 watchdog verification 관련 — blocked: 주제 연관성 불확실, 재검토 필요 | FPGA watchdog formal verification SVA

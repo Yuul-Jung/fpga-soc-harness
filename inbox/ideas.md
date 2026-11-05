@@ -1575,3 +1575,39 @@
 - 난이도: 2(1단계)/3(2단계)/3(3단계) / 단계: T2
 - 상태: raw
 - 심사: (미심사)
+
+## I-117
+- 제목: 윈도우 WDT + 7세그 카운트다운 가시화 IP (창 열림/닫힘 타이밍 표시)
+- 한 줄 요약: AMD AXI Timebase WDT의 윈도우 모드에서 현재 카운터 값을 7세그에 실시간 표시 — 창이 열리면 세그가 깜박이고, 창 위반 시 "Err" 표시, 정상 서비스 시 "OK" 표시
+- 조합(주변장치): AXI Timebase WDT(윈도우 모드) + 7세그 디스플레이 드라이버 + 상태 FSM(IDLE/OPEN/VIOLATED)
+- 근거 카드: [amd-axi-timebase-wdt-pg083, mij001-axil-timer, chclau-magellan-basys3-axil-regs]
+- 새로움의 근거: 카탈로그에 WDT + 7세그 카운트다운 조합 없음. 윈도우 경계를 7세그로 가시화하면 타이밍 오류를 직관적으로 확인할 수 있어 교육 가치 높음
+- 내 판단: S2(조합 탐색) 전략의 핵심 아이디어. AMD IP를 직접 쓰면 RTL 없이도 Vivado IP 연결만으로 T2 패키지 구성 가능. 7세그 카운트다운은 §10의 `mmio-7seg-adv-ip` 패턴 재사용 가능
+- Basys3 적합성의 근거: Basys3 4자리 7세그, AXI Timebase WDT Vivado IP 카탈로그 기본 제공. MicroBlaze V 펌웨어(C)에서 창 경계값 설정 → 7세그 슬레이브 IP로 카운터 값 전달. 외부 부품 없음
+- 난이도: 3 / 단계: T2
+- 상태: raw
+- 심사: (미심사)
+
+## I-118
+- 제목: 삼중 WDT 채널 비교 패널 (기본·윈도우·소프트웨어 에뮬 3채널 동시 표시)
+- 한 줄 요약: 기본 WDT(AMD IP), 윈도우 WDT(AMD IP 윈도우 모드), 소프트웨어 카운터 에뮬 WDT 세 채널을 동시에 Basys3 LED+7세그로 표시 — 각 채널의 타임아웃 패턴 차이를 직접 비교
+- 조합(주변장치): AXI Timebase WDT(기본 모드) + AXI Timebase WDT(윈도우 모드) + SW 에뮬 WDT 타이머 + LED 3채널 상태 표시 + 7세그 채널 선택
+- 근거 카드: [amd-axi-timebase-wdt-pg083, ignaciosim-tt06-triple-watchdog, mij001-axil-timer]
+- 새로움의 근거: `ignaciosim-tt06-triple-watchdog`(TinyTapeout ASIC)에서 착안. Basys3 MicroBlaze V 버전은 같은 개념을 Vivado IP + C 드라이버로 구성 — ASIC과 FPGA+MCU 구현 방식 비교 가능
+- 내 판단: S2(조합 탐색) + S1(인접 도메인 이식) 복합 아이디어. TinyTapeout 카드가 근거이므로 카드 L3 승격 후 근거 점수 올리면 vetted 가능
+- Basys3 적합성의 근거: Vivado IP 2개(기본+윈도우 모드) + SW 에뮬 타이머 3채널. 각 채널 독립 AXI4-Lite 슬롯 필요(동결 맵 free_slots 3개). XC7A35T LUT 추정 ~300 LUT — 충분
+- 난이도: 3 / 단계: T2
+- 상태: raw
+- 심사: (미심사)
+
+## I-119
+- 제목: WDT 하트비트 핀 출력 + 외부 슈퍼바이저 IC 모의 패턴
+- 한 줄 요약: AMD AXI Timebase WDT의 WDTOUT(하트비트 출력)을 Pmod GPIO 핀으로 내보내고, Basys3 내부에서 소프트웨어 슈퍼바이저를 에뮬레이션 — WDT 하트비트가 끊기면 7세그에 경고, MicroBlaze가 WDT 서비스를 멈추면 리셋 신호 발생
+- 조합(주변장치): AXI Timebase WDT(WDTOUT) + Pmod GPIO 출력 + 소프트웨어 슈퍼바이저 FSM + 7세그 경고 표시
+- 근거 카드: [amd-axi-timebase-wdt-pg083, suoglu-axi-lite-slave, amoghvarsh-axi4-lite-timer-wdt]
+- 새로움의 근거: 하트비트 핀 출력을 외부 슈퍼바이저 IC와 연동하는 패턴을 FPGA 내에서 모의하는 사례 카탈로그에 없음. WDTOUT를 단순 리셋 연결 대신 외부 가시화하는 S4(제약 역전) 아이디어
+- 내 판단: S4(제약 역전) + S2(조합 탐색) 복합 아이디어. 외부 슈퍼바이저 IC(TPS3828 등) 없이 Pmod 핀에 로직 애널라이저/오실로스코프 연결로 하트비트 파형 확인 가능. 보드 동작 확인(S3)이 쉬운 구조
+- Basys3 적합성의 근거: WDTOUT → 최상위 Verilog에서 Pmod 핀 직접 연결. 외부 부품 없이 Basys3 Pmod JA/JB에 출력. 추가 IP 없음(GPIO 핀 연결만)
+- 난이도: 2 / 단계: T2
+- 상태: raw
+- 심사: (미심사)

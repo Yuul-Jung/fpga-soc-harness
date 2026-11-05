@@ -121,7 +121,7 @@
 ## 시스템·아키텍처 (2026-11-04 추가)
 - [x] [B3] 인터럽트 컨트롤러 IP (우선순위 인코더, 마스크 레지스터, 벡터 테이블, AXI4-Lite 접속) — 2026-11-06 01시대 사이클: 카드 3건(ZipCPU icontrol L3, AMD AXI INTC PG099 L3, realisshoon-axi4-lite L2), AMD AXI INTC 자체 RTL은 VHDL 클로즈드, Wishbone→AXI 개조 메모 작성
 - [x] [B3] AXI4-Lite 슬레이브 레지스터 파일 템플릿 (읽기/쓰기 스트로브, 주소 디코더 패턴) — 2026-11-06 02시대 사이클: 카드 3건(zipcpu-wb2axip-easyaxil L3, chclau-magellan-basys3-axil-regs L3, bugratufan-axion-hdl L3), S5(비정형 출처) + S3(빈틈 추적) 전략
-- [ ] [B3] Watchdog 타이머 고급 패턴 (윈도우 WDT, 하트비트 핀 출력, 카운트다운 가시화)
+- [x] [B3] Watchdog 타이머 고급 패턴 (윈도우 WDT, 하트비트 핀 출력, 카운트다운 가시화) — 2026-11-06 03시대 사이클: 카드 3건(amd-axi-timebase-wdt-pg083 L2·ignaciosim-tt06-triple-watchdog L2·amoghvarsh-axi4-lite-timer-wdt L2), S2(조합 탐색)+S6(실패 사례) 전략
 - [ ] [B3] AXI Interconnect 베이스 주소 충돌 회피 패턴 (동결 맵, 주소 레인지 계산, 테스트벤치)
 
 ## SoC 통합 준비 (2026-11-04 추가)

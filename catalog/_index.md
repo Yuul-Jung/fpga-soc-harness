@@ -252,3 +252,6 @@
 | [zipcpu-wb2axip-easyaxil](vendor-neutral/zipcpu-wb2axip-easyaxil.md) | L3 | T2 | 없음 (Basys3 needs-port) | 2026-11-06 |
 | [chclau-magellan-basys3-axil-regs](amd/chclau-magellan-basys3-axil-regs.md) | L3 | T2 | Basys3 | 2026-11-06 |
 | [bugratufan-axion-hdl](vendor-neutral/bugratufan-axion-hdl.md) | L3 | T2 | 없음 (Basys3 needs-port) | 2026-11-06 |
+| [amd-axi-timebase-wdt-pg083](amd/amd-axi-timebase-wdt-pg083.md) | L2 | T2 | Basys3 | 2026-11-05 |
+| [ignaciosim-tt06-triple-watchdog](vendor-neutral/ignaciosim-tt06-triple-watchdog.md) | L2 | T1 | 없음 (Basys3 needs-port) | 2026-11-05 |
+| [amoghvarsh-axi4-lite-timer-wdt](vendor-neutral/amoghvarsh-axi4-lite-timer-wdt.md) | L2 | T2 | 없음 (Basys3 needs-port) | 2026-11-05 |
