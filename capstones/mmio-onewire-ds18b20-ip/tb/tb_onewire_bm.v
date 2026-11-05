@@ -122,15 +122,21 @@ task axi_write;
     input [31:0] addr;
     input [31:0] data;
     begin
+        // 고정 클럭 카운팅 방식 — NBA 경쟁 조건 없음
+        // awready = !aw_done (조합). P1 posedge 직후 활성 영역에서
+        // aw_done NBA가 아직 미적용이라 while(!awready)가 즉시 탈출하는
+        // 경쟁 조건을 피하기 위해 고정 3-클럭 시퀀스를 쓴다.
         @(posedge clk); #1;
         s_awaddr  = addr; s_awvalid = 1;
         s_wdata   = data; s_wvalid  = 1; s_bready = 1;
-        // P1에서 DUT가 AW+W를 수신; awready→0 (aw_done←1)
+        // P1: DUT가 AW+W 캡처 → aw_done/w_done NBA to 1
+        @(posedge clk); #1;
+        s_awvalid = 0; s_wvalid = 0;    // 재캡처 방지
+        // P2: do_write fires → bvalid_r NBA to 1
         @(posedge clk);
-        // B 완료 후 aw_done→0 → awready→1 까지 대기
-        // (awready는 B 핸드셰이크가 aw_done/w_done을 클리어한 뒤 1로 돌아옴)
-        while (!s_awready) @(posedge clk);
-        #1; s_awvalid = 0; s_wvalid = 0; s_bready = 0;
+        // P3: bvalid_r=1 && bready=1 → B-phase → aw_done/w_done/bvalid_r NBA to 0
+        @(posedge clk); #1;
+        s_bready = 0;
     end
 endtask
 
@@ -139,16 +145,19 @@ task axi_read;
     input  [31:0] addr;
     output [31:0] data;
     begin
+        // 고정 클럭 카운팅 방식 — NBA 경쟁 조건 없음
+        // arready = !ar_active (조합). P1 posedge 직후 활성 영역에서
+        // ar_active NBA가 미적용이고 r_rdata NBA도 미적용이라,
+        // while(!arready)가 즉시 탈출 후 stale r_rdata를 읽는 경쟁 조건을 피한다.
         @(posedge clk); #1;
         s_araddr  = addr; s_arvalid = 1; s_rready = 1;
-        // P1에서 DUT가 AR을 수신; ar_active←1, arready→0
-        @(posedge clk);
-        // R 핸드셰이크 완료 후 ar_active←0 → arready→1 까지 대기
-        // (rready=1이므로 P2에서 R이 완료되어 ar_active→0)
-        while (!s_arready) @(posedge clk);
-        // r_rdata 레지스터는 ar_active 클리어 후에도 값이 유지됨
-        data = s_rdata;
-        #1; s_arvalid = 0; s_rready = 0;
+        // P1: DUT가 AR 캡처 → ar_active NBA to 1, r_rdata NBA to new_val
+        @(posedge clk); #1;
+        s_arvalid = 0;              // 재캡처 방지
+        // P2: ar_active=1 && rready=1 → ar_active NBA to 0
+        @(posedge clk); #1;
+        s_rready = 0;
+        data = s_rdata;             // P2 NBA 적용 후 r_rdata = new_val
     end
 endtask
 
