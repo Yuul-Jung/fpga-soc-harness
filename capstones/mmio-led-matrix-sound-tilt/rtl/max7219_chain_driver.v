@@ -227,8 +227,8 @@ module max7219_chain_driver #(
                         row_idx  <= row_idx + 1;
                         chip_idx <= 0;
                         bit_idx  <= 15;
-                        spi_shift <= {ADDR_DIGIT0 + {5'b0, row_idx+1},
-                                      bitmap[(row_idx+1)*16 +: 8]};
+                        spi_shift <= {ADDR_DIGIT0 + {5'b0, (row_idx + 3'd1)},
+                                      bitmap[(row_idx + 3'd1)*16 +: 8]};
                         sclk_cnt <= 0;
                         spi_cs_n <= 0;
                         state    <= S_ROW_SND;

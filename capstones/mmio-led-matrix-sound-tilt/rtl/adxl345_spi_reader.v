@@ -50,6 +50,7 @@ module adxl345_spi_reader #(
     reg [5:0]  bit_cnt;    // 클럭킹된 비트 수
     reg [$clog2(CLK_DIV)-1:0] sclk_cnt;
     reg sclk_en;
+    reg sclk_hi;           // 1=현재 SCLK HIGH 위상, 0=LOW 위상 (spi_sclk 직독 대신 사용)
     reg [55:0] rx_shift;   // 7바이트 수신 (주소1 + 데이터6)
     reg [23:0] read_period; // 읽기 주기 카운터 (~10ms)
 
@@ -59,23 +60,25 @@ module adxl345_spi_reader #(
             wait_cnt  <= 0;
             init_idx  <= 0;
             spi_sclk  <= 1; spi_mosi <= 0; spi_cs_n <= 1;
-            sclk_cnt  <= 0; sclk_en  <= 0;
+            sclk_cnt  <= 0; sclk_en  <= 0; sclk_hi  <= 1;
             bit_cnt   <= 0; rx_shift <= 0; spi_shift <= 0;
             x_tilt    <= 0; y_tilt   <= 0; data_valid <= 0;
             read_period <= 0;
         end else begin
             data_valid <= 0;
 
-            // SPI 클럭 분주
+            // SPI 클럭 분주 — sclk_hi 위상 추적 (spi_sclk 조건 검사 금지)
             if (sclk_en) begin
                 if (sclk_cnt == CLK_DIV-1) begin
                     sclk_cnt <= 0;
                     spi_sclk <= ~spi_sclk;
+                    sclk_hi  <= ~sclk_hi;
                 end else
                     sclk_cnt <= sclk_cnt + 1;
             end else begin
                 sclk_cnt <= 0;
                 spi_sclk <= 1;  // CPOL=1 idle
+                sclk_hi  <= 1;
             end
 
             case (state)
@@ -127,16 +130,17 @@ module adxl345_spi_reader #(
                     spi_mosi  <= 0; // 첫 비트
                     bit_cnt   <= 0;
                     rx_shift  <= 0;
+                    sclk_hi   <= 1; // SCLK idle=HIGH 에서 시작
                     // 7바이트(56비트) 전송: 주소(8b) + 6데이터(48b)
                     sclk_en   <= 1;
                     state     <= S_READ;
                 end
 
                 S_READ: begin
-                    // CPOL=1 CPHA=1: 하강엣지에서 출력, 상승엣지에서 샘플
-                    // 여기서는 spi_sclk 상승/하강을 감지해 처리
-                    // 단순화: sclk_cnt==CLK_DIV-1 에서 샘플/출력 처리
-                    if (sclk_cnt == CLK_DIV-1 && spi_sclk == 0) begin
+                    // CPOL=1 CPHA=1: sclk_hi 위상 추적으로 엣지 판별
+                    // sclk_hi==1 → CLK_DIV-1 도달 시 하강엣지 직전: MOSI 출력
+                    // sclk_hi==0 → CLK_DIV-1 도달 시 상승엣지 직전: MISO 샘플
+                    if (sclk_cnt == CLK_DIV-1 && sclk_hi) begin
                         // 하강엣지 직전 → 출력 비트 설정
                         // 주소 바이트: 0xF2 (R=1, MB=1, addr=0x32)
                         if (bit_cnt < 8)
@@ -145,8 +149,8 @@ module adxl345_spi_reader #(
                             spi_mosi <= 0;  // 읽기 중 MOSI = 0
                     end
 
-                    if (sclk_cnt == CLK_DIV-1 && spi_sclk == 1) begin
-                        // 상승엣지 → MISO 샘플
+                    if (sclk_cnt == CLK_DIV-1 && !sclk_hi) begin
+                        // 상승엣지 직전 → MISO 샘플
                         rx_shift <= {rx_shift[54:0], spi_miso};
                         bit_cnt  <= bit_cnt + 1;
                         if (bit_cnt == 55) begin  // 7바이트 완료
