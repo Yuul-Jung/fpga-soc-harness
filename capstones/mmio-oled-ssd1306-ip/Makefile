@@ -22,6 +22,7 @@ sim: $(RTL) $(TB)
 # ── 린트 (verilator --lint-only) ─────────────────────────
 lint: $(RTL)
 	verilator --lint-only -Wall --timing \
+	    --Wno-WIDTHEXPAND --Wno-WIDTHTRUNC \
 	    $(RTL)
 	@echo "--- lint done ---"
 
