@@ -3,12 +3,10 @@
 // SPI Mode 3 (CPOL=1, CPHA=1). SCLK = clk / (2*CLK_DIV)
 // ADXL345 멀티바이트 읽기: 주소 바이트(R=1, MB=1) + 6바이트 데이터(X0,X1,Y0,Y1,Z0,Z1)
 //
-// CI fix 3/3 — 완전 재작성:
-//   * sclk_hi 제거: spi_sclk 직접 사용 (registered output → NBA로 이전값 읽음)
-//   * data_valid: case 외부 default 대신 ternary 단일 할당
-//   * SCLK 분주: if/else 단일 체인 (별도 if 블록 금지)
-//   * spi_shift 제거 (write-only 미사용)
-//   * $clog2 대신 CNT_W 파라미터
+// CI fix 4/4 — sclk_en wire화:
+//   * sclk_en: reg → wire (state 조합 논리). proc_dff DFF 생성 불필요.
+//     "Multiple edge sensitive events" yosys 오류 근본 해결.
+//   * 이전 변경 유지: spi_sclk 직접 사용, data_valid ternary, spi_shift 제거, CNT_W
 //
 // Verilog-2001. iverilog/verilator/yosys 호환.
 `default_nettype none
@@ -47,9 +45,11 @@ module adxl345_spi_reader #(
     reg [2:0]       init_idx;
     reg [5:0]       bit_cnt;      // 0~55: 56비트 카운터
     reg [CNT_W-1:0] sclk_cnt;    // SCLK 반주기 카운터
-    reg             sclk_en;
     reg [55:0]      rx_shift;     // 7바이트 수신 버퍼
     reg [23:0]      read_period;  // 읽기 주기 카운터 (~10 ms)
+
+    // sclk_en: state 조합 논리 → DFF 불필요, proc_dff 오류 회피
+    wire sclk_en = (state == S_READ_ST) | (state == S_READ);
 
     always @(posedge clk) begin
         if (!rst_n) begin
@@ -60,7 +60,6 @@ module adxl345_spi_reader #(
             spi_mosi    <= 1'b0;
             spi_cs_n    <= 1'b1;
             sclk_cnt    <= 0;
-            sclk_en     <= 1'b0;
             bit_cnt     <= 0;
             rx_shift    <= 0;
             x_tilt      <= 0;
@@ -104,15 +103,14 @@ module adxl345_spi_reader #(
                 S_INIT: begin
                     // 초기화 스텁: 실제 비트뱅 없이 INIT_CNT 사이클 대기
                     // (POWER_CTL/DATA_FORMAT/BW_RATE 순서 근사, 시뮬 호환)
+                    // sclk_en은 wire(state 조합)로 S_INIT 중 항상 0 → SCLK 미동작(스텁 의도)
                     if (init_idx < INIT_CNT) begin
                         spi_cs_n <= 1'b0;
-                        sclk_en  <= 1'b1;
                         init_idx <= init_idx + 1;
                         wait_cnt <= 0;
                         // state = S_INIT 유지 (암묵적 DFF 유지)
                     end else begin
                         spi_cs_n    <= 1'b1;
-                        sclk_en     <= 1'b0;
                         state       <= S_IDLE;
                         read_period <= 0;
                     end
@@ -130,13 +128,12 @@ module adxl345_spi_reader #(
 
                 S_READ_ST: begin
                     // 멀티바이트 읽기 준비: CS 내리기, 56비트 전송 개시
+                    // sclk_en은 wire → S_READ_ST 진입 즉시 1 (state 조합)
                     spi_cs_n <= 1'b0;
                     spi_mosi <= 1'b0;
                     bit_cnt  <= 0;
                     rx_shift <= 0;
-                    sclk_en  <= 1'b1;
                     state    <= S_READ;
-                    // spi_sclk은 SCLK 분주기가 관리 (sclk_en=0→1 전환 직전에 1'b1 보장됨)
                 end
 
                 S_READ: begin
@@ -157,8 +154,8 @@ module adxl345_spi_reader #(
                             rx_shift <= {rx_shift[54:0], spi_miso};
                             bit_cnt  <= bit_cnt + 1;
                             if (bit_cnt == 6'd55) begin  // 56비트(7바이트) 완료
-                                sclk_en <= 1'b0;
-                                state   <= S_READ_EN;
+                                // sclk_en은 wire → state=S_READ_EN 전환 즉시 0
+                                state <= S_READ_EN;
                             end
                         end
                     end

@@ -58,8 +58,8 @@ module axil_led_matrix_slave #(
     reg [ADDR_W-1:0] aw_addr_latch;
     reg              aw_pending;
 
-    // 읽기
-    always @(posedge clk or negedge rst_n) begin
+    // 읽기 (동기 리셋: synth -flatten 후 async DFF가 복합 리셋 wire에 얽히는 것을 방지)
+    always @(posedge clk) begin
         if (!rst_n) begin
             s_awready <= 0; s_wready <= 0;
             s_bvalid  <= 0; s_bresp  <= 0;
