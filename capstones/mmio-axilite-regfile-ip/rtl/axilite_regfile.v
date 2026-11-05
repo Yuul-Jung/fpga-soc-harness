@@ -69,14 +69,15 @@ module axilite_regfile #(
     // apply_wstrb: byte-enable write merge
     // Source: ZipCPU easyaxil pattern (concept; not copied)
     // ----------------------------------------------------------------
-    function [C_S_AXI_DATA_WIDTH-1:0] apply_wstrb;
-        input [C_S_AXI_DATA_WIDTH-1:0]       orig;
-        input [C_S_AXI_DATA_WIDTH-1:0]       wdata;
-        input [(C_S_AXI_DATA_WIDTH/8)-1:0]   wstrb;
-        integer k;
+    function [31:0] apply_wstrb;
+        input [31:0] orig;
+        input [31:0] wdata;
+        input [3:0]  wstrb;
         begin
-            for (k = 0; k < C_S_AXI_DATA_WIDTH/8; k = k + 1)
-                apply_wstrb[k*8 +: 8] = wstrb[k] ? wdata[k*8 +: 8] : orig[k*8 +: 8];
+            apply_wstrb[7:0]   = wstrb[0] ? wdata[7:0]   : orig[7:0];
+            apply_wstrb[15:8]  = wstrb[1] ? wdata[15:8]  : orig[15:8];
+            apply_wstrb[23:16] = wstrb[2] ? wdata[23:16] : orig[23:16];
+            apply_wstrb[31:24] = wstrb[3] ? wdata[31:24] : orig[31:24];
         end
     endfunction
 
