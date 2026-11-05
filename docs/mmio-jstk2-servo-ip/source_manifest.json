@@ -12,8 +12,8 @@
     {
       "group": "rtl",
       "path": "rtl/jstk2_spi.v",
-      "sha256": "b4c8cb5416f3993562ae4b6153281b5ce0d8c0f05900d8f018bb5f1871185072",
-      "lines": 143,
+      "sha256": "df3702a8bab6cef05f63f4116b45c5a632a164723f75f0ddb79807a30020f908",
+      "lines": 144,
       "origin": "first_party"
     },
     {

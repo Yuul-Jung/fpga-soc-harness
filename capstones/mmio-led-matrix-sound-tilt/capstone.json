@@ -1,7 +1,5 @@
 {
   "slug": "mmio-led-matrix-sound-tilt",
-  "status": "broken",
-  "broken_reason": "CI 3회 모두 실패(2026-11-05). 미해결: (1) adxl345_spi_reader.v data_valid — yosys가 단일 always 블록 안에서 두 개의 $adff 셀을 생성해 Multiple edge sensitive events 오류. (2) axil_led_matrix_slave energy 포트 단선 — soc_top 인스턴스 포트 29(energy) floating, AXI 비존재 주소 0x080이 CTRL 값(0xd)을 반환해 DEAD_BEEF 테스트 실패. (3) frame_buf tilt 코너 매핑 — TB2_corner X=511,Y=-512 → (row=7,col=15) 비트 미점등.",
   "title": "소리·기울기 반응 LED 매트릭스 IP",
   "summary": "PDM 마이크로 대역 에너지를 측정하고 ADXL345 기울기와 AXI4-Lite 모드 레지스터로 선택해 MAX7219 8×8 LED 매트릭스 2개(8×16)에 막대 또는 점으로 표시하는 IP. FFT 없이 8-대역 대역통과 필터 뱅크(IIR 2차)로 대역 에너지를 추출한다.",
   "board": "Basys3",

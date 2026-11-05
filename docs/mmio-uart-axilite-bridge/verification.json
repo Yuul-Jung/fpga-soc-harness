@@ -3,21 +3,21 @@
   "slug": "mmio-uart-axilite-bridge",
   "stage": "T2",
   "lint": {
-    "result": "verilator --lint-only -Wall -Wno-fatal --top-module basys3_top rtl/uart_rx.v rtl/uart_tx.v rtl/uart_axilite_bridge.v rtl/basys3_top.v",
-    "detail": ""
+    "result": "skipped",
+    "detail": "verilator 없음"
   },
   "sim": {
-    "result": "iverilog -g2005 -o build/sim.vvp tb/tb_uart_axilite_bridge.v rtl/uart_rx.v rtl/uart_tx.v rtl/uart_axilite_bridge.v && vvp build/sim.vvp | grep -E 'PASS|FAIL'",
-    "detail": ""
+    "result": "skipped",
+    "detail": "iverilog 없음"
   },
   "synth": {
-    "result": "yosys -p 'read_verilog rtl/uart_rx.v rtl/uart_tx.v rtl/uart_axilite_bridge.v rtl/basys3_top.v; synth_xilinx -top basys3_top -family xc7; stat'",
-    "detail": ""
+    "result": "skipped",
+    "detail": "yosys 없음"
   },
   "board": {
     "result": "pending",
     "detail": "사람이 확인한 항목만 pass. 에이전트는 pass로 쓰지 않는다(HARNESS §13.4)"
   },
   "synth_note": "yosys 추정이다. Vivado의 LUT/FF/WNS와 다를 수 있다.",
-  "recorded": ""
+  "recorded": "2026-11-05"
 }

@@ -1,2 +1,2 @@
 id,name,interface,io_voltage_V,supply_V,qty,board_resident,arduino_compatible,level_shift,notes
-cam_ov7670,OV7670 카메라 브레이크아웃,CMOS 패러렐 (PCLK/VSYNC/HREF/D[7:0]),3.3,3.3,1,false,true,False,OV7670 디지털 I/O는 2.8V 허용. 브레이크아웃 보드에 레귤레이터·풀업 내장 여부 확인 필요. 미확인 시 레벨 변환 추가.
+cam_ov7670,OV7670 카메라 브레이크아웃,CMOS 패러렐 (PCLK/VSYNC/HREF/D[7:0]),3.3,3.3,1,false,true,불필요 (3.3V),OV7670 디지털 I/O는 2.8V 허용. 브레이크아웃 보드에 레귤레이터·풀업 내장 여부 확인 필요. 미확인 시 레벨 변환 추가.
