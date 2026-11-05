@@ -679,3 +679,7 @@
 - https://github.com/keatenstokke/FloatingPointLibrary | keatenstokke/FloatingPointLibrary: 부동소수 라이브러리 — 미열람(L1) | floating point library Verilog GitHub
 - https://www.allaboutcircuits.com/ip-cores/arithmetic-core/fixed-point-arithmetic-parameterized/ | All About Circuits: 파라미터화 고정소수점 연산 IP 소개 — 미열람(L1) | fixed-point arithmetic parameterized IP core
 - https://lay007.github.io/zynq-sdr-course/en/blocks/05-implementation/ | zynq-sdr-course Block 5: 고정소수점 모델에서 HDL 구현 — 미열람(L1, block04 후속) | zynq SDR course HDL implementation fixed-point Verilog VHDL
+- https://github.com/WangXuan95/Verilog-FixedPoint | WangXuan95: Verilog 고정소수점 연산 라이브러리 (가산·감산·곱셈·절단·반올림, 중국어 문서) — 미열람(L2 검색 기준), 카드 작성(wangxuan95-verilog-fixedpoint) | fixed point Q format Verilog FPGA saturation arithmetic
+- https://github.com/pyadav1992/RTL-FixedPoint-Arithmetics-MathematicalFunctions | RTL 고정소수점 산술 및 수학함수 라이브러리 (Verilog) — 미열람(L2 검색 기준), 카드 작성(pyadav1992-rtl-fixedpoint-arithmetics) | FPGA fixed point arithmetic Verilog saturation rounding RTL implementation
+- https://github.com/tacari/nn-accelerator | FPGA 신경망 가속기 (고정소수점 MAC 사용) — 미열람(L1) | FPGA fixed point Q8.8 format DSP MAC accumulator Basys3 Artix-7 neural network
+- https://github.com/ansh07verma/fpga-mini-npu | FPGA 미니 NPU (고정소수점 양자화) — 미열람(L1) | FPGA fixed point Q8.8 format DSP MAC accumulator Basys3 Artix-7 neural network

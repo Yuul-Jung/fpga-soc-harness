@@ -1559,7 +1559,7 @@
 - 내 판단: 모든 커스텀 IP의 기반 부품이므로 T2 필수 블록. library/rtl/axil_regs.v가 연습용이고 IP 표준 래퍼가 없어 프로젝트 IP로 쓸 수 없음. 이 아이디어가 그 공백을 채운다
 - Basys3 적합성의 근거: AXI4-Lite 슬레이브만으로 XC7A35T 자원 50 LUT 미만 추정. 추가 외부 부품 없음
 - 난이도: 2 / 단계: T2
-- 상태: ready
+- 상태: used (패키지: mmio-axilite-regfile-ip, 2026-11-06, 2시간 완결 캡스톤 파이프라인)
 - 심사: 2026-11-06 /verify(22차), 첫 raw→vetted 심사(표준, rechecked_at 기준). 근거 0(zipcpu-wb2axip-easyaxil·chclau-magellan-basys3-axil-regs·bugratufan-axion-hdl 모두 rechecked_at 없음) + 새로움 2(IP 표준 래퍼+WSTRB+형식검증 조합 카탈로그 없음) + 적합성 3(50 LUT 미만, 외부 부품 없음, Vivado IP 카탈로그 기본, 근거 카드 Basys3 적합성 L3) + 완결성 2(WSTRB·디코더·faxil_slave 형식검증 범위 명확, RTL+TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 1건이면 근거 1점 추가로 8점 → ready.
 - 차단조건재심사: 2026-11-06 /verify(23차), 근거 3(zipcpu-wb2axip-easyaxil·chclau-magellan-basys3-axil-regs·bugratufan-axion-hdl 카드 3건, rechecked_at 불문) + 새로움 2(IP 표준 래퍼+WSTRB+형식검증 조합 카탈로그 없음) + 적합성 3(50 LUT 미만, 외부 부품 없음, Vivado IP 기본 제공, 근거 카드 Basys3 L3) + 완결성 2(WSTRB·디코더·faxil_slave 범위 명확) = 10점 ≥ 7점 → ready 승격 (사이클 2번째). WebFetch PROVENANCE_REQUIRED 전면 차단(23차 연속) §14.2 차단 조건 적용.
 

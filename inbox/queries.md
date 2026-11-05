@@ -18,3 +18,6 @@
 2026-11-06 | [B3] 고정소수점 Q포맷 | site:github.com Verilog fixed-point saturation rounding Q-format parameterized DSP48 | 유효
 2026-11-06 | [B3] 고정소수점 Q포맷 | FPGA 고정소수점 Q포맷 Verilog 포화연산 반올림 구현 GitHub 한국어 | 빈약
 2026-11-06 | [B3] 고정소수점 Q포맷 | fixed-point arithmetic Verilog "word growth" "guard bits" "saturation" tutorial FPGA 2024 | 유효
+2026-11-06 | 고정소수점 수 체계 | "WangXuan95 Verilog-FixedPoint GitHub fixed point multiplication saturation" | 유효 (저장소 존재 확인)
+2026-11-06 | 고정소수점 수 체계 | "pyadav1992 RTL FixedPoint Arithmetics MathematicalFunctions GitHub Basys3 Verilog saturation" | 유효 (저장소 존재 확인)
+2026-11-06 | 고정소수점 수 체계 | "FPGA fixed point Q8.8 format DSP MAC accumulator Basys3 Artix-7 neural network" | 유효 (NN 가속기 사례 발견)

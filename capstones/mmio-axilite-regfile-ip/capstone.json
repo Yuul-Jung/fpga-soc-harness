@@ -1,0 +1,184 @@
+{
+  "slug": "mmio-axilite-regfile-ip",
+  "title": "AXI4-Lite 슬레이브 레지스터 파일 IP (WSTRB + $clog2 디코더)",
+  "summary": "ZipCPU easyaxil의 apply_wstrb() 패턴과 $clog2 주소 디코더를 MicroBlaze V IP 표준 래퍼에 통합한 Verilog-2001 AXI4-Lite 슬레이브 IP. 4개 레지스터(CTRL·STATUS·DATA·IRQ_MASK)를 0x4016_0000에 매핑하고, DATA 쓰기 시 STATUS[0]를 세트해 INTC 채널 13으로 IRQ를 올린다. 모든 커스텀 IP의 기반 부품.",
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 원본이며 외부 코드를 포함하지 않는다. ZipCPU easyaxil의 apply_wstrb 함수 패턴과 $clog2 디코더 개념을 참고했으며, 코드는 복사하지 않았다. 시뮬레이션·합성 결과는 CI가 기록한다.",
+  "board": "Basys3",
+  "stage": "T2",
+  "goals": [
+    "AXI4-Lite 슬레이브 레지스터 파일 IP: CTRL(0x00)·STATUS(0x04)·DATA(0x08)·IRQ_MASK(0x0C) 4개 레지스터",
+    "WSTRB apply_wstrb() 함수로 바이트 단위 쓰기 지원",
+    "$clog2(NREGS) 기반 파라미터형 주소 디코더",
+    "DATA 쓰기 시 STATUS[0](data_pending) 자동 세트, IRQ_MASK[0] AND로 INTC 채널 13 IRQ 발생",
+    "MicroBlaze V IP 표준 신호(ip2intc_irpt) 준수",
+    "Verilog-2001 iverilog·verilator·yosys 호환 RTL, 자체 점검 테스트벤치"
+  ],
+  "non_goals": [
+    "레지스터 4개 초과 (NREGS=4 고정)",
+    "AXI4 Full(버스트) 지원",
+    "보드 동작 검증(S3): 시뮬레이션 S1까지만",
+    "MicroBlaze V 드라이버 C 코드 제공",
+    "형식 검증(faxil_slave.v) 연동: 향후 확장 항목"
+  ],
+  "architecture": {
+    "clock": "100 MHz 단일 클럭 (s_axi_aclk, W5), 비동기 리셋-해제 (s_axi_aresetn = ~btnC active-low)",
+    "blocks": [
+      {
+        "id": "axil",
+        "name": "AXI4-Lite 슬레이브 레지스터 파일",
+        "kind": "peripheral",
+        "module": "axilite_regfile",
+        "file": "rtl/axilite_regfile.v",
+        "desc": "AXI4-Lite 프로토콜 핸들러 + 레지스터 4개. apply_wstrb()·$clog2 디코더·IRQ 로직 내장",
+        "short": "AXI4-Lite regfile",
+        "side": "left"
+      },
+      {
+        "id": "board",
+        "name": "Basys3 최상위 래퍼",
+        "kind": "top",
+        "module": "basys3_top_regfile",
+        "file": "rtl/basys3_top_regfile.v",
+        "desc": "100 MHz 클럭, btnC 리셋, AXI4-Lite 루프백(테스트용). LED[0]=ip2intc_irpt",
+        "short": "board top",
+        "side": "left"
+      }
+    ],
+    "links": [
+      {
+        "from": "board",
+        "to": "axil",
+        "label": "AXI4-Lite (AW/W/B/AR/R)"
+      },
+      {
+        "from": "axil",
+        "to": "board",
+        "label": "ip2intc_irpt"
+      }
+    ]
+  },
+  "bus_protocol": {
+    "name": "AXI4-Lite",
+    "data_width": 32,
+    "addr_width": 4,
+    "signals": ["AWADDR", "AWPROT", "AWVALID", "AWREADY", "WDATA", "WSTRB", "WVALID", "WREADY", "BRESP", "BVALID", "BREADY", "ARADDR", "ARPROT", "ARVALID", "ARREADY", "RDATA", "RRESP", "RVALID", "RREADY"],
+    "limits": "단일 마스터 가정. 버스트 없음. BRESP/RRESP 항상 2'b00 (OKAY)."
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "mbv-frozen-v2",
+    "compat": "compatible",
+    "plan": "동결 맵 슬롯 [16] (0x4016_0000) 사용. IRQ: INTC 채널 13 (intc_free[0]). 새 IP는 슬롯 [17]부터 배정.",
+    "frozen_mapping": {
+      "axil": "slot_16 (0x4016_0000, 64KB)"
+    }
+  },
+  "external_parts": [],
+  "schematic": {
+    "state": "not-written",
+    "note": "외부 부품 없음(보드 내부 AXI4-Lite 연결만). 회로도 불필요."
+  },
+  "hierarchy": [
+    {
+      "module": "basys3_top_regfile",
+      "file": "rtl/basys3_top_regfile.v",
+      "children": [
+        {
+          "module": "axilite_regfile",
+          "file": "rtl/axilite_regfile.v",
+          "children": []
+        }
+      ]
+    }
+  ],
+  "memory_map": [
+    {
+      "base": "0x4016_0000",
+      "size": "0x10000",
+      "block": "axil",
+      "desc": "AXI4-Lite 슬레이브 레지스터 파일 IP 레지스터 공간 (동결 맵 슬롯 [16])",
+      "regs": [
+        {
+          "off": "0x00",
+          "name": "CTRL",
+          "access": "RW",
+          "desc": "제어 레지스터. bit[31:0] 범용 제어 비트. 현재 버전에서는 소프트웨어 정의."
+        },
+        {
+          "off": "0x04",
+          "name": "STATUS",
+          "access": "RW",
+          "desc": "상태 레지스터. bit[0]=data_pending: DATA 레지스터에 쓸 때 하드웨어가 세트, CPU가 0을 써서 클리어."
+        },
+        {
+          "off": "0x08",
+          "name": "DATA",
+          "access": "RW",
+          "desc": "데이터 레지스터. 쓰기 시 STATUS[0](data_pending)를 자동 세트."
+        },
+        {
+          "off": "0x0C",
+          "name": "IRQ_MASK",
+          "access": "RW",
+          "desc": "IRQ 마스크. bit[0]=data_irq_en: 1이면 STATUS[0] AND IRQ_MASK[0] → ip2intc_irpt."
+        }
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T2",
+      "state": "current",
+      "title": "AXI4-Lite 레지스터 파일 IP (이 패키지)",
+      "refs": ["zipcpu-wb2axip-easyaxil", "chclau-magellan-basys3-axil-regs", "bugratufan-axion-hdl"]
+    },
+    {
+      "stage": "T2+",
+      "state": "planned",
+      "title": "CDC 동기화기 추가 (I-116 단계 2)",
+      "refs": ["bugratufan-axion-hdl", "zipcpu-icontrol"]
+    },
+    {
+      "stage": "T2+",
+      "state": "planned",
+      "title": "faxil_slave.v 형식 검증 연동",
+      "refs": ["zipcpu-wb2axip-easyaxil"]
+    }
+  ],
+  "references": [
+    {
+      "name": "zipcpu-wb2axip-easyaxil",
+      "reason": "apply_wstrb() 함수 패턴과 AXI4-Lite 슬레이브 설계 원칙 참고"
+    },
+    {
+      "name": "chclau-magellan-basys3-axil-regs",
+      "reason": "Basys3 AXI4-Lite 레지스터 뱅크 패턴 참고"
+    },
+    {
+      "name": "bugratufan-axion-hdl",
+      "reason": "파라미터형 AXI4-Lite 슬레이브 IP 구조 참고"
+    }
+  ],
+  "sources": {
+    "rtl": ["rtl/axilite_regfile.v", "rtl/basys3_top_regfile.v"],
+    "tb": ["tb/tb_axilite_regfile.v"],
+    "constraints": ["constr/basys3.xdc"],
+    "build": ["Makefile"]
+  },
+  "howto": {
+    "sim": "make sim  # iverilog + vvp, PASS/FAIL 출력 확인",
+    "lint": "make lint  # verilator --lint-only -g2012",
+    "synth": "make synth  # yosys (Artix-7 추정 LUT 카운트)",
+    "vivado": "Vivado에서 axilite_regfile을 IP 카탈로그에 등록: IP Packager → Port/Interface Map에서 S_AXI 인터페이스 지정 → ip2intc_irpt를 interrupt 타입으로 연결"
+  },
+  "verification": {
+    "board": "not-tested",
+    "notes": "CI: iverilog 시뮬레이션 PASS 목표(S1). yosys 합성 성공 시 S2."
+  },
+  "risks": [
+    "apply_wstrb() 함수의 비트 선택 범위 오류 가능 (TB에서 모든 strobe 조합 검사)",
+    "$clog2 사용은 Verilog-2001 비공식 함수이나 iverilog·verilator·yosys 모두 지원",
+    "STATUS[0] set/clear 경쟁 조건: AXI는 한 번에 한 트랜잭션이므로 문제 없음",
+    "IRQ 등록: MicroBlaze V BSP에서 XIntc_Connect()로 채널 13 핸들러 등록 필요 (드라이버 코드 미포함)"
+  ]
+}

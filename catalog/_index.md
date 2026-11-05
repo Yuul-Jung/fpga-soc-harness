@@ -267,3 +267,6 @@
 | [wangxuan95-fpga-fixedpoint](vendor-neutral/wangxuan95-fpga-fixedpoint.md) | L3 | T4 | 없음 (Basys3 needs-port) | 2026-11-06 |
 | [lay007-zynq-sdr-course-block04](papers/lay007-zynq-sdr-course-block04.md) | L3 | T4 | 없음 (방법론) | 2026-11-06 |
 | [gisselquist-zipcpu-bit-growth](papers/gisselquist-zipcpu-bit-growth.md) | L3 | T4 | 없음 (방법론) | 2026-11-06 |
+| [wangxuan95-verilog-fixedpoint](vendor-neutral/wangxuan95-verilog-fixedpoint.md) | L2 | T0 | 없음 (Basys3 needs-port) | 2026-11-06 |
+| [pyadav1992-rtl-fixedpoint-arithmetics](vendor-neutral/pyadav1992-rtl-fixedpoint-arithmetics.md) | L2 | T0 | 없음 (Basys3 needs-port) | 2026-11-06 |
+| [opencores-verilog-fixed-point-math](vendor-neutral/opencores-verilog-fixed-point-math.md) | L2 | T0 | 없음 (Basys3 needs-port) | 2026-11-06 |
