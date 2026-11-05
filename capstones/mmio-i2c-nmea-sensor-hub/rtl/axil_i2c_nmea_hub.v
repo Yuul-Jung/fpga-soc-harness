@@ -93,7 +93,9 @@ module axil_i2c_nmea_hub #(
     // I2C FSM
     wire        i2c_busy;
     wire [7:0]  i2c_dev_type;    // which device sample
-    wire [47:0] i2c_raw_data;    // 6 bytes from sensor
+    /* verilator lint_off UNUSEDSIGNAL */
+    wire [47:0] i2c_raw_data;    // 6 bytes from sensor; only [31:0] pushed to FIFO
+    /* verilator lint_on UNUSEDSIGNAL */
     wire        i2c_sample_valid;
 
     // UART NMEA RX
@@ -187,15 +189,6 @@ module axil_i2c_nmea_hub #(
     // ---------------------------------------------------------------
     wire fifo_hf = (fifo_cnt >= 5'd8);
 
-    always @(posedge clk) begin
-        if (!rst_n) begin
-            irq_status <= 32'd0;
-        end else begin
-            if (fifo_hf)       irq_status[0] <= 1'b1;
-            if (uart_line_done) irq_status[1] <= 1'b1;
-        end
-    end
-
     assign irq = ctrl_ie & (|irq_status);
 
     // ---------------------------------------------------------------
@@ -214,6 +207,7 @@ module axil_i2c_nmea_hub #(
             ctrl_fifo_clr<= 1'b0;
             i2c_cfg      <= I2C_PERIOD;
             uart_cfg     <= BAUD_DIV;
+            irq_status   <= 32'd0;
         end else begin
             // auto-clear fifo_clr after one cycle
             ctrl_fifo_clr <= 1'b0;
@@ -249,6 +243,10 @@ module axil_i2c_nmea_hub #(
             end
 
             if (s_bvalid && s_bready) s_bvalid <= 1'b0;
+
+            // Hardware-set sticky IRQ bits (single driver for irq_status)
+            if (fifo_hf)        irq_status[0] <= 1'b1;
+            if (uart_line_done) irq_status[1] <= 1'b1;
         end
     end
 
@@ -257,7 +255,7 @@ module axil_i2c_nmea_hub #(
     // ---------------------------------------------------------------
     // FIFO pop on FIFO_DATA_LO read
     reg  fifo_pop_r;
-    reg  [71:0] fifo_dout_latch;
+    reg  [31:0] fifo_dout_latch;   // stores lower 40 bits of FIFO entry as 32-bit [39:8] dropped; see REG_FIFO_LO
     assign fifo_pop = fifo_pop_r;
 
     always @(posedge clk) begin
@@ -267,7 +265,7 @@ module axil_i2c_nmea_hub #(
             s_rdata      <= 32'd0;
             s_rresp      <= 2'b00;
             fifo_pop_r   <= 1'b0;
-            fifo_dout_latch <= 72'd0;
+            fifo_dout_latch <= 32'd0;
         end else begin
             s_arready  <= 1'b0;
             fifo_pop_r <= 1'b0;
@@ -279,15 +277,15 @@ module axil_i2c_nmea_hub #(
                 case (s_araddr)
                     REG_ID:         s_rdata <= ID_VAL;
                     REG_CTRL:       s_rdata <= {29'd0, ctrl_fifo_clr, ctrl_ie, ctrl_en};
-                    REG_STATUS:     s_rdata <= {25'd0, uart_line_rdy, i2c_busy, fifo_full, fifo_cnt};
+                    REG_STATUS:     s_rdata <= {24'd0, uart_line_rdy, i2c_busy, fifo_full, fifo_cnt};
                     REG_IRQ_STATUS: s_rdata <= irq_status;
                     REG_I2C_CFG:    s_rdata <= i2c_cfg;
                     REG_FIFO_HI: begin
-                        fifo_dout_latch <= fifo_dout;
-                        s_rdata <= fifo_dout[71:40];
+                        fifo_dout_latch <= fifo_dout[31:0];  // latch lower 32 bits for FIFO_LO read
+                        s_rdata <= fifo_dout[71:40];         // return timestamp (top 32 bits)
                     end
                     REG_FIFO_LO: begin
-                        s_rdata    <= {fifo_dout_latch[39:8], fifo_dout_latch[7:0]};
+                        s_rdata    <= fifo_dout_latch;       // {type[7:0], data_lo[23:0]} from FIFO_HI latch
                         fifo_pop_r <= !fifo_empty;
                     end
                     REG_UART_CFG:   s_rdata <= {16'd0, uart_cfg};
