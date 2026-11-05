@@ -125,104 +125,37 @@
     "addr_width": 8,
     "data_width": 32,
     "signals": [
-      {
-        "name": "s_awaddr",
-        "dir": "in",
-        "desc": "쓰기 주소"
-      },
-      {
-        "name": "s_awvalid",
-        "dir": "in",
-        "desc": "쓰기 주소 유효"
-      },
-      {
-        "name": "s_awready",
-        "dir": "out",
-        "desc": "쓰기 주소 준비"
-      },
-      {
-        "name": "s_wdata",
-        "dir": "in",
-        "desc": "쓰기 데이터"
-      },
-      {
-        "name": "s_wstrb",
-        "dir": "in",
-        "desc": "쓰기 스트로브"
-      },
-      {
-        "name": "s_wvalid",
-        "dir": "in",
-        "desc": "쓰기 데이터 유효"
-      },
-      {
-        "name": "s_wready",
-        "dir": "out",
-        "desc": "쓰기 데이터 준비"
-      },
-      {
-        "name": "s_bresp",
-        "dir": "out",
-        "desc": "쓰기 응답"
-      },
-      {
-        "name": "s_bvalid",
-        "dir": "out",
-        "desc": "쓰기 응답 유효"
-      },
-      {
-        "name": "s_bready",
-        "dir": "in",
-        "desc": "쓰기 응답 준비"
-      },
-      {
-        "name": "s_araddr",
-        "dir": "in",
-        "desc": "읽기 주소"
-      },
-      {
-        "name": "s_arvalid",
-        "dir": "in",
-        "desc": "읽기 주소 유효"
-      },
-      {
-        "name": "s_arready",
-        "dir": "out",
-        "desc": "읽기 주소 준비"
-      },
-      {
-        "name": "s_rdata",
-        "dir": "out",
-        "desc": "읽기 데이터"
-      },
-      {
-        "name": "s_rresp",
-        "dir": "out",
-        "desc": "읽기 응답"
-      },
-      {
-        "name": "s_rvalid",
-        "dir": "out",
-        "desc": "읽기 데이터 유효"
-      },
-      {
-        "name": "s_rready",
-        "dir": "in",
-        "desc": "읽기 데이터 준비"
-      }
+      "s_awaddr",
+      "s_awvalid",
+      "s_awready",
+      "s_wdata",
+      "s_wstrb",
+      "s_wvalid",
+      "s_wready",
+      "s_bresp",
+      "s_bvalid",
+      "s_bready",
+      "s_araddr",
+      "s_arvalid",
+      "s_arready",
+      "s_rdata",
+      "s_rresp",
+      "s_rvalid",
+      "s_rready"
     ],
     "limits": [
       "단일 비계층 슬레이브. 버스트 불가. WSTRB는 무시(32비트 전체 쓰기).",
       "irq 출력 없음(fault는 STATUS 레지스터 폴링)"
-    ],
-    "note": "AXI4-Lite 슬레이브 포트. ADDR_W=12, DATA_W=32. 한 번에 하나의 트랜잭션만 처리.",
-    "name": "AXI4-Lite"
+    ]
   },
   "integration": {
     "bus": "AXI4-Lite",
-    "address_map": "custom",
-    "compat": "partial",
-    "plan": "free_slots [16] = 0x4016_0000 사용 제안. INTC 입력 13번 (현재 미배정). 프로젝트 인덱스 표 동결 후 확정."
+    "address_map": "mbv-frozen-v2",
+    "compat": "compatible",
+    "plan": "free_slots [16] = 0x4016_0000 사용 제안. INTC 입력 13번 (현재 미배정). 프로젝트 인덱스 표 동결 후 확정.",
+    "frozen_mapping": {
+      "axil_bldc": "free_slots[16] 0x4016_0000"
+    }
   },
   "external_parts": [
     {
@@ -253,28 +186,30 @@
     "state": "not-written",
     "note": "디지털 계통도만 제공. 인버터 전원·게이트 드라이버 배선은 별도 회로도 필요(미작성)."
   },
-  "hierarchy": {
-    "module": "axil_bldc_sixstep",
-    "file": "rtl/axil_bldc_sixstep.v",
-    "children": [
-      {
-        "module": "bldc_hall_fsm",
-        "file": "rtl/bldc_hall_fsm.v",
-        "children": []
-      },
-      {
-        "module": "deadtime_pwm",
-        "file": "rtl/deadtime_pwm.v",
-        "children": []
-      }
-    ]
-  },
+  "hierarchy": [
+    {
+      "module": "axil_bldc_sixstep",
+      "file": "rtl/axil_bldc_sixstep.v",
+      "children": [
+        {
+          "module": "bldc_hall_fsm",
+          "file": "rtl/bldc_hall_fsm.v",
+          "children": []
+        },
+        {
+          "module": "deadtime_pwm",
+          "file": "rtl/deadtime_pwm.v",
+          "children": []
+        }
+      ]
+    }
+  ],
   "memory_map": [
     {
-      "name": "BLDC IP",
       "base": "0x4016_0000",
       "size": "0x10000",
       "block": "axil_bldc",
+      "desc": "BLDC 6스텝 IP 레지스터 공간 (free_slots[16] 제안, 동결 전)",
       "regs": [
         {
           "off": "0x00",
@@ -338,16 +273,16 @@
   ],
   "references": [
     {
-      "card": "arief-2026-ijecbe-artix7-36v-bldc-hall-sixstep",
-      "why": "Artix-7 BLDC 6스텝 홀센서 FSM 구조와 테이블 설계 참조"
+      "name": "arief-2026-ijecbe-artix7-36v-bldc-hall-sixstep",
+      "reason": "Artix-7 BLDC 6스텝 홀센서 FSM 구조와 테이블 설계 참조"
     },
     {
-      "card": "wangxuan95-fpga-foc",
-      "why": "FPGA FOC/6스텝 PWM 타이밍 설계 참조"
+      "name": "wangxuan95-fpga-foc",
+      "reason": "FPGA FOC/6스텝 PWM 타이밍 설계 참조"
     },
     {
-      "card": "mari-upc-2022-fpga-foc-ipmsm-field-weakening",
-      "why": "데드타임 삽입 방식 설계 참조"
+      "name": "mari-upc-2022-fpga-foc-ipmsm-field-weakening",
+      "reason": "데드타임 삽입 방식 설계 참조"
     }
   ],
   "sources": {
@@ -364,32 +299,12 @@
       "Makefile"
     ]
   },
-  "howto": [
-    {
-      "title": "시뮬레이션 (iverilog)",
-      "steps": [
-        "make sim  (iverilog -g2001; 출력에 PASS: 가 나오면 성공)"
-      ]
-    },
-    {
-      "title": "린트 (verilator)",
-      "steps": [
-        "make lint (verilator --lint-only -Wall --Wno-UNUSEDSIGNAL)"
-      ]
-    },
-    {
-      "title": "합성 추정 (yosys)",
-      "steps": [
-        "make synth (yosys -Q; 자원 추정 build/synth.log 참조)"
-      ]
-    },
-    {
-      "title": "Vivado 합성 및 구현",
-      "steps": [
-        "unverified: Basys3 XC7A35T 타겟으로 Vivado 2024.2에서 임포트. free_slots[16] 주소로 MicroBlaze V AXI 인터커넥트에 추가 제안."
-      ]
-    }
-  ],
+  "howto": {
+    "sim": "make sim  (iverilog -g2001; 출력에 PASS: 가 나오면 성공)",
+    "lint": "make lint (verilator --lint-only -Wall --Wno-UNUSEDSIGNAL)",
+    "synth": "make synth (yosys -Q; 자원 추정 build/synth.log 참조)",
+    "vivado": "unverified: Basys3 XC7A35T 타겟으로 Vivado 2024.2에서 임포트. free_slots[16] 주소로 MicroBlaze V AXI 인터커넥트에 추가 제안."
+  },
   "verification": {
     "board": "not-tested",
     "notes": "S3(보드 동작)는 사람이 올린다. CI: lint(verilator), sim(iverilog PASS), synth(yosys)."
@@ -400,6 +315,5 @@
     "데드타임 10 클럭(100 ns)은 대부분의 게이트 드라이버에 충분하나, 실제 소자 스펙 확인 필요.",
     "폴트 감지 후 en=0으로 설정하는 소프트웨어 처리 필수 — 하드웨어는 출력만 차단.",
     "yosys 합성 자원은 추정값. Vivado 타이밍(WNS) 미검증."
-  ],
-  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 원본이며 외부 코드를 포함하지 않는다. 아이디어 근거 카드의 설계 패턴을 참고했으며, 코드는 복사하지 않았다. 시뮬레이션·합성 결과는 CI가 기록한다."
+  ]
 }

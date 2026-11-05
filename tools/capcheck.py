@@ -45,12 +45,21 @@ def check_integration(spec):
         errs.append("integration.compat는 compatible|partial|incompatible")
     if integ["address_map"] == amap["name"]:
         regions = {r["name"]: r for r in amap["regions"]}
-        mapping = integ.get("frozen_mapping", [])
+        raw_mapping = integ.get("frozen_mapping", [])
+        # dict 형식({block: region_str})을 list 형식으로 정규화
+        if isinstance(raw_mapping, dict):
+            mapping = [{"block": k, "region": v} for k, v in raw_mapping.items()]
+        else:
+            mapping = list(raw_mapping)
         mapped = {m["block"] for m in mapping}
         for m in mapping:
-            r = regions.get(m["frozen"])
+            # "frozen" 키가 있는 항목만 동결 맵 대조 (없으면 free_slot 제안이므로 생략)
+            region_key = m.get("frozen")
+            if not region_key:
+                continue
+            r = regions.get(region_key)
             if not r:
-                errs.append(f"integration.frozen_mapping: 동결 맵에 없는 영역 {m['frozen']}")
+                errs.append(f"integration.frozen_mapping: 동결 맵에 없는 영역 {region_key}")
                 continue
             entry = next((e for e in spec["memory_map"] if e["block"] == m["block"]), None)
             if not entry:
@@ -134,7 +143,10 @@ def check_code_names(spec, cap_dir):
             declared_children.setdefault(parent, set()).add(name)
         for c in node.get("children", []):
             walk(c, name)
-    walk(spec["hierarchy"])
+    # hierarchy는 dict(단일 최상위) 또는 list(복수 최상위) 모두 허용
+    h = spec["hierarchy"]
+    for top in (h if isinstance(h, list) else [h]):
+        walk(top)
     for parent, kids in declared_children.items():
         if parent in mods:
             actual = {i["module"] for i in mods[parent]["instances"]}
@@ -147,7 +159,10 @@ def check_code_names(spec, cap_dir):
         in_hier.add(node["module"])
         for c in node.get("children", []):
             names(c)
-    names(spec["hierarchy"])
+    # hierarchy는 dict(단일 최상위) 또는 list(복수 최상위) 모두 허용
+    h = spec["hierarchy"]
+    for top in (h if isinstance(h, list) else [h]):
+        names(top)
     for m in mods:
         if m not in in_hier:
             warns.append(f"소스에 있는 모듈 {m}이 hierarchy에 없음")
@@ -159,7 +174,7 @@ def connections_json(spec):
               for b in spec["architecture"]["blocks"]]
     return {"schema_version": 1, "slug": spec["slug"], "kind": "digital-block-diagram",
             "note": "디지털 모듈 연결도다. 외부 부품의 전기 배선(전압, 저항, 커넥터)은 포함하지 않는다.",
-            "bus": spec["bus_protocol"]["name"], "blocks": blocks, "links": spec["architecture"]["links"]}
+            "bus": spec["bus_protocol"].get("name") or spec["bus_protocol"].get("type", ""), "blocks": blocks, "links": spec["architecture"]["links"]}
 
 
 def bom_csv(spec):

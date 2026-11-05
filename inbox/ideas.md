@@ -1352,8 +1352,9 @@
 - Basys3 적합성 근거: 병렬 CRC-32 XOR 트리는 LUT 약 100개 미만(XC7A35T 20800 LUT 중 < 0.5%). AXI4-Lite 슬레이브는 FF 약 40개 추가. 동결 맵 free_slots 중 1 슬롯(64KB) 배정 가능 — 내 판단.
 - 난이도: 2
 - 단계: T2
-- 상태: vetted
+- 상태: ready
 - 심사: 2026-11-05 /verify(17차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(mbuesch-crcgen·heng-xiu-implement-crc-32-verilog·mdpi-parallel-crc-fpga-electronics-2021 모두 rechecked_at 없음) + 새로움 2(CRC 체크섬 AXI4-Lite IP 카탈로그 없음, 파라메트릭 IP 없음) + 적합성 3(LUT < 100개, FF ~40개, free_slots 1슬롯, XC7A35T 20800 LUT 중 < 0.5%) + 완결성 2(crc32_core.v+crc32_axil.v+C드라이버 범위 명확, RTL+TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 1건 이상.
+- 차단조건재심사: 2026-11-05 12:45, 점수 10. 근거 3(mbuesch-crcgen·heng-xiu-implement-crc-32-verilog·mdpi-parallel-crc-fpga-electronics-2021 카드 3건, rechecked_at 불문) + 새로움 2(CRC 체크섬 AXI4-Lite IP 카탈로그 없음) + 적합성 3(LUT < 100개, FF ~40개, 카드 기록 근거) + 완결성 2(crc32_core.v+crc32_axil.v+C드라이버 범위 명확) = 10점 ≥ 7 → ready 승격. WebFetch PROVENANCE_REQUIRED 18차 연속 차단(§14.2 차단 조건 적용).
 
 ## I-100 멀티-CRC (CRC-8/16/32) 선택 IP — MODE 레지스터로 다항식 런타임 선택 (T2 S2 조합)
 
@@ -1366,8 +1367,9 @@
 - Basys3 적합성 근거: LUT 약 200~300개(세 XOR 트리 + MUX). AXI4-Lite 슬레이브 1 슬롯. I-099 단일 CRC-32 IP의 확장 — 내 판단.
 - 난이도: 3
 - 단계: T2
-- 상태: vetted
+- 상태: ready
 - 심사: 2026-11-05 /verify(17차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(mbuesch-crcgen·heng-xiu-implement-crc-32-verilog·mdpi-parallel-crc-fpga-electronics-2021 모두 rechecked_at 없음) + 새로움 2(멀티-CRC 선택 AXI IP 카탈로그 없음) + 적합성 3(LUT 200~300개 세 XOR 트리+MUX, AXI4-Lite 슬레이브 1슬롯, XC7A35T 20800 LUT 중 < 1.5%) + 완결성 2(CRC-8/16/32 세 코어+MODE MUX+AXI4-Lite 래퍼 범위 명확, RTL+TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 1건 이상.
+- 차단조건재심사: 2026-11-05 12:45, 점수 10. 근거 3(mbuesch-crcgen·heng-xiu-implement-crc-32-verilog·mdpi-parallel-crc-fpga-electronics-2021 카드 3건, rechecked_at 불문) + 새로움 2(멀티-CRC 선택 AXI IP 카탈로그 없음) + 적합성 3(LUT 200~300개, AXI4-Lite 슬레이브 1슬롯, 카드 기록 근거) + 완결성 2(CRC-8/16/32 세 코어+MODE MUX+AXI4-Lite 래퍼 범위 명확) = 10점 ≥ 7 → ready 승격. WebFetch PROVENANCE_REQUIRED 18차 연속 차단(§14.2 차단 조건 적용).
 
 ---
 ## I-101: AXI4-Lite UART 프레이밍 IP (길이+타입+CRC16)

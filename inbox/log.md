@@ -5,6 +5,7 @@
 - verify: `YYYY-MM-DD HH:MM | verify | 재열람 N | 수정 M | 불일치 K | 승격 L2→L3 P | ready +R`
 - capstone: `YYYY-MM-DD HH:MM | capstone | <slug> | 등급 S0~S2` 또는 `... | skip: <사유>`
 
+2026-11-05 12:45 | verify | 재열람 0(WebFetch PROVENANCE_REQUIRED 전면 차단 18차 연속, 재열람 불가) | 수정 2(tools/build.py 버그 7건 수정: signals list-of-strings, howto dict, author_note missing, bus_protocol name/note 변형, hierarchy list, references key 변형; tools/capcheck.py 버그 1건: connections_json bus_protocol.name) | 불일치 0 | 승격 L2→L3 0 | ready +2 (I-099 차단조건 10점·I-100 차단조건 10점, 18차 1·2번째) | WebFetch 18차 연속 차단
 2026-11-05 11:25 | capstone | mmio-jstk2-servo-ip (CI fix attempt 2) | 등급 TBD (CI 대기 중) | fix: [BA]SPI모델 상승에지→하강에지+CS#하강시 첫비트 즉시출력, [BB]T6 timeout 3_000_000→6_000_000
 2026-11-05 11:11 | capstone | mmio-jstk2-servo-ip (CI fix attempt 1) | 등급 FAIL (CI run 41953607147: X=0x100≠0x200, Y=0x7F≠0x1FF, BTN=0≠1, PWM=1103939≠1200000) | fix: [B2]NBA→blocking axi_read, [B3]bvalid→W핸드셰이크 내부 세트, [B4]aw_addr_lat 스테일→awvalid bypass, [B5]reg_irq_status 복수드라이버 제거, [B6]SPI모델 레벨→에지 감지, [B7]JSTK2 비트인덱스 수정, [B-write]while(!bvalid) 제거 | commit e9f5a1b
 2026-11-05 09:13 | capstone | mmio-7seg-adv-ip (I-072, CI fix attempt 2) | 등급 S2 (CI #278 46f25bf: lint pass 경고12건, sim PASS T1-T6, synth pass LUT 162 FF 168 yosys 추정) | fix1(T3 testbench blank digit scan 862acc2), fix2(Makefile 단일인용부호 버그+PWM 곱셈 제거 46f25bf) | 사전 존재 CI 실패: mmio-i2c-nmea-sensor-hub lint/sim (이번 세션 무관)

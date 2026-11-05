@@ -29,6 +29,15 @@ esc = html.escape
 REPO_URL = "https://github.com/Yuul-Jung/fpga-soc-harness"
 
 
+def _ls_str(val):
+    """level_shift 값을 표시 문자열로 변환. bool(True/False)도 허용."""
+    if val is True:
+        return "필요"
+    if val is False or val == "":
+        return "불필요 (3.3V)"
+    return str(val)
+
+
 def card_names():
     return {p.stem for p in (ROOT / "catalog").rglob("*.md") if p.name != "_index.md"}
 
@@ -63,9 +72,11 @@ def validate(spec, cap_dir):
             if int(r["off"], 16) >= size:
                 errs.append(f"memory_map: 오프셋이 영역 밖 {m['block']}.{r['name']}")
     known = card_names()
-    for ref in spec.get("references", []) + [r for step in spec.get("roadmap", []) for r in ({"card": c} for c in step["refs"])]:
-        if ref["card"] not in known:
-            warns.append(f"카드 미작성: {ref['card']}")
+    ref_names = [r.get("name") or r.get("card") for r in spec.get("references", [])]
+    ref_names += [c for step in spec.get("roadmap", []) for c in step.get("refs", [])]
+    for card_name in ref_names:
+        if card_name and card_name not in known:
+            warns.append(f"카드 미작성: {card_name}")
     for fn in (capcheck.check_integration, capcheck.check_external_parts):
         e, w = fn(spec)
         errs += e
@@ -234,12 +245,16 @@ def build_one(spec_path):
         integ_html = '<p class="badge b-fail">이 패키지는 MicroBlaze V 동결 주소맵과 호환되지 않는다 (파일럿). 아래 이식 계획을 따라야 SoC에 합칠 수 있다.</p>' + integ_html
     ext_rows = "".join(
         f'<tr><td><code>{esc(p["id"])}</code></td><td>{esc(p["name"])}</td><td>{esc(p["interface"])}</td><td style="white-space:nowrap">{esc(str(p["io_voltage"]))} V</td>'
-        f'<td style="white-space:nowrap">{"보드 내장" if p["board_resident"] else "외부 모듈"}</td><td>{esc(p.get("level_shift", "") or "불필요 (3.3V)")}</td><td>{esc(p.get("notes", ""))}</td></tr>'
+        f'<td style="white-space:nowrap">{"보드 내장" if p["board_resident"] else "외부 모듈"}</td><td>{esc(_ls_str(p.get("level_shift", "")))}</td><td>{esc(p.get("notes", ""))}</td></tr>'
         for p in spec.get("external_parts", []))
     sch = spec.get("schematic", {"state": "not-written", "note": ""})
     sch_html = (f'<p class="badge b-{"pass" if sch["state"] != "not-written" else "skipped"}">전기 회로도: {"미작성" if sch["state"] == "not-written" else esc(sch["state"])}</p>'
                 f'<p class="muted">{esc(sch.get("note", ""))}</p>')
-    sig = "".join(f'<tr><td><code>{esc(s["name"])}</code></td><td>{esc(s["dir"])}</td><td>{esc(s["desc"])}</td></tr>' for s in spec["bus_protocol"]["signals"])
+    def _sig_row(s):
+        if isinstance(s, str):
+            return f'<tr><td><code>{esc(s)}</code></td><td></td><td></td></tr>'
+        return f'<tr><td><code>{esc(s["name"])}</code></td><td>{esc(s.get("dir",""))}</td><td>{esc(s.get("desc",""))}</td></tr>'
+    sig = "".join(_sig_row(s) for s in spec["bus_protocol"]["signals"])
     road = "".join(
         f'<li class="step"><span class="tag s-{esc(r["state"])}">{esc(r["stage"])}</span><span>{esc(r["title"])}'
         + (" <span class='muted'>참고: " + ", ".join(clink(c) for c in r["refs"]) + "</span>" if r["refs"] else "") + "</span></li>"
@@ -249,7 +264,11 @@ def build_one(spec_path):
         for f in files:
             body = (cap_dir / f).read_text(encoding="utf-8")
             src_html += f'<details><summary><code>{esc(f)}</code> <span class="muted">{len(body.splitlines())}줄</span></summary><pre>{esc(body)}</pre></details>'
-    howto = "".join(f'<h3>{esc(h["title"])}</h3><ol>' + "".join(f"<li>{esc(s)}</li>" for s in h["steps"]) + "</ol>" for h in spec["howto"])
+    # howto: list of {title,steps} OR dict {sim:str|list, lint:..., ...}
+    _hw = spec.get("howto", [])
+    if isinstance(_hw, dict):
+        _hw = [{"title": k, "steps": ([v] if isinstance(v, str) else list(v))} for k, v in _hw.items()]
+    howto = "".join(f'<h3>{esc(h["title"])}</h3><ol>' + "".join(f"<li>{esc(s)}</li>" for s in h["steps"]) + "</ol>" for h in _hw)
     ul = lambda xs: "<ul>" + "".join(f"<li>{esc(x)}</li>" for x in xs) + "</ul>"
     ver_date = f' · 기준 {esc(ver["_date"])}' if ver.get("_date") else ""
 
@@ -261,12 +280,12 @@ def build_one(spec_path):
 <div class="badges">{badge("린트", "lint")}{badge("시뮬레이션", "sim")}{badge("합성", "synth")}{badge("보드", "board")}</div>
 {'<p class="badge b-fail">이 패키지는 CI에서 실패한 상태(broken)다. 다음 사이클이 먼저 고친다.</p>' if spec.get("status") == "broken" else ""}<p class="muted">검증 상태는 실행 기록이 있을 때만 표시한다{ver_date}. 기록이 없으면 '미실행'이다.</p>
 <nav><a href="#goal">목표</a><a href="#arch">계통도</a><a href="#hier">모듈 계층</a><a href="#map">메모리맵</a><a href="#ext">외부 부품·전기</a><a href="#road">기술 트리</a><a href="#src">실행 소스</a><a href="#verify">검증</a><a href="#ref">참고·위험</a></nav>
-<h2 id="goal">1. 목표와 범위</h2><h3>목표</h3>{ul(spec["goals"])}<h3>범위 밖</h3>{ul(spec["non_goals"])}<p class="muted">{esc(spec["author_note"])}</p>
+<h2 id="goal">1. 목표와 범위</h2><h3>목표</h3>{ul(spec["goals"])}<h3>범위 밖</h3>{ul(spec["non_goals"])}<p class="muted">{esc(spec.get("author_note",""))}</p>
 <h2 id="arch">2. 계통도</h2><p>클럭: {esc(spec["architecture"]["clock"])}</p><div class="panel">{svg}</div>
 <p class="muted"><a href="diagram.svg">diagram.svg</a>로 따로 받을 수 있다.</p>
-<h3>버스 규약: {esc(spec["bus_protocol"]["name"])}</h3><div class="panel"><table><tr><th>신호</th><th>방향</th><th>설명</th></tr>{sig}</table></div><p>{esc(spec["bus_protocol"]["note"])}</p>
+<h3>버스 규약: {esc(spec["bus_protocol"].get("name") or spec["bus_protocol"].get("type",""))}</h3><div class="panel"><table><tr><th>신호</th><th>방향</th><th>설명</th></tr>{sig}</table></div><p>{esc(spec["bus_protocol"].get("note",""))}</p>
 <h3>통합 선언 (SoC 적합성)</h3>{integ_html}
-<h2 id="hier">3. 모듈 계층</h2><div class="panel"><ul class="tree">{hier_html(spec["hierarchy"])}</ul></div>
+<h2 id="hier">3. 모듈 계층</h2><div class="panel"><ul class="tree">{"".join(hier_html(n) for n in (spec["hierarchy"] if isinstance(spec["hierarchy"], list) else [spec["hierarchy"]]))}</ul></div>
 <h2 id="map">4. 메모리맵</h2>{mm}
 <h2 id="ext">5. 외부 부품과 전기 회로도</h2><p class="muted">2절의 계통도는 <b>디지털 모듈 연결도</b>다. 전압, 풀업, 커넥터 배선 같은 전기 사항은 이 절에서 따로 다룬다. 기계가 읽는 사본: <a href="bom.csv">bom.csv</a> · <a href="connections.json">connections.json</a></p>{sch_html}<div class="panel"><table><tr><th>id</th><th>부품</th><th>인터페이스</th><th>신호 전압</th><th>구분</th><th>레벨 변환</th><th>비고</th></tr>{ext_rows}</table></div><p class="muted">Basys3 FPGA 핀은 3.3V 신호만 직접 받는다. 5V·12V·모터·릴레이는 직결하지 않는다.</p>
 <h2 id="road">6. 기술 트리 (이 캡스톤의 확장 경로)</h2><div class="panel"><ul style="list-style:none;padding:0">{road}</ul></div>
@@ -274,7 +293,7 @@ def build_one(spec_path):
 <h2 id="verify">8. 검증</h2><div class="panel"><table><tr><th>단계</th><th>결과</th><th>내용</th></tr>
 {"".join(f'<tr><td>{n}</td><td>{esc(STATE_LABEL.get(ver[k]["result"], ver[k]["result"]))}</td><td>{esc(ver[k]["detail"])}</td></tr>' for n, k in (("린트(verilator)", "lint"), ("시뮬레이션(iverilog)", "sim"), ("합성 추정(yosys)", "synth"), ("보드 동작", "board")))}
 </table></div><p>{esc(spec["verification"]["notes"])}</p>
-<h2 id="ref">9. 참고 카드와 위험</h2><h3>참고 카드</h3><ul>{"".join(ref_li(r["card"], r["why"]) for r in spec["references"])}</ul><h3>위험·한계</h3>{ul(spec["risks"])}
+<h2 id="ref">9. 참고 카드와 위험</h2><h3>참고 카드</h3><ul>{"".join(ref_li(r.get("card") or r.get("name",""), r.get("why") or r.get("reason","")) for r in spec.get("references",[]))}</ul><h3>위험·한계</h3>{ul(spec["risks"])}
 </main></body></html>"""
     (out_dir / "index.html").write_text(page, encoding="utf-8")
     return spec, errs, warns, ver
