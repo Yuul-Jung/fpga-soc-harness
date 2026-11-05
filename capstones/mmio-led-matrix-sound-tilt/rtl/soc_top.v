@@ -71,6 +71,12 @@ module led_matrix_sound_tilt_soc (
     // MAX7219 busy
     wire max_busy;
 
+    // 복합 리셋 신호 — synth -flatten 후 yosys proc_dff가 복합 negedge를
+    // 단일 신호의 negedge로 인식할 수 있도록 명시적 wire로 분리한다.
+    wire pdm_rst_n  = rst_n & pdm_clk_en;
+    wire iir_rst_n  = rst_n & ctrl_en;
+    wire adxl_rst_n = rst_n & adxl_en;
+
     // 에너지 언팩
     assign e0 = energy_flat[0*32+:32];
     assign e1 = energy_flat[1*32+:32];
@@ -102,7 +108,7 @@ module led_matrix_sound_tilt_soc (
 
     // PDM CIC 데시메이터
     pdm_cic_decimator #(.R(41), .STAGES(3), .OUT_W(16)) u_pdm (
-        .clk(clk), .rst_n(rst_n & pdm_clk_en),
+        .clk(clk), .rst_n(pdm_rst_n),
         .pdm_clk(pdm_clk_out),
         .pdm_data(pdm_data_in),
         .pcm_out(pcm_data), .pcm_valid(pcm_valid)
@@ -110,14 +116,14 @@ module led_matrix_sound_tilt_soc (
 
     // IIR 대역 에너지
     iir_band_energy #(.N_BANDS(8), .PCM_W(16), .ENERGY_W(32), .WINDOW(128)) u_iir (
-        .clk(clk), .rst_n(rst_n & ctrl_en),
+        .clk(clk), .rst_n(iir_rst_n),
         .pcm_in(pcm_data), .pcm_valid(pcm_valid),
         .energy_flat(energy_flat), .energy_update(energy_update)
     );
 
     // ADXL345 SPI 판독기
     adxl345_spi_reader #(.CLK_DIV(50)) u_adxl (
-        .clk(clk), .rst_n(rst_n & adxl_en),
+        .clk(clk), .rst_n(adxl_rst_n),
         .spi_sclk(adxl_sclk), .spi_mosi(adxl_mosi),
         .spi_miso(adxl_miso), .spi_cs_n(adxl_cs_n),
         .x_tilt(x_tilt), .y_tilt(y_tilt), .data_valid(adxl_valid)

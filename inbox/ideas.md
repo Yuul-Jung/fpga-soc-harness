@@ -329,7 +329,7 @@
 - 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(digikey-forum-jstk2-pmod-controller-vhdl·vhdlwhiz-rc-servo-controller·shashankr-basys3-fpga-robotic-arm, rechecked_at 불문) → 차단 근거 3 + 새로움 2(JSTK2→서보 IP 없음) + 적합성 2(Pmod 2개·서보 전원 분리) + 완결성 2(JSTK2 모델+서보 펄스 비교 명확) = 9점 ≥ 7, 사이클 상한 2건 도달로 vetted 유지. 다음 사이클에서 ready 승격 가능.
 
 ## I-029 상태 표시 OLED IP: SPI 초기화 ROM + 128x32 프레임 버퍼 창, 제어 루프 값(속도·오차)을 글자로 표시, SPI 출력 바이트열 비교 테스트벤치
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: 초기화 명령을 ROM(데이터)으로 두고 FSM은 바이트 전송만 하는 SSD1306 SPI 컨트롤러를 AXI4-Lite 레지스터(시작, 상태, 버퍼 쓰기 창, 전원 순서 대기 파라미터)로 감싼다. 소프트웨어가 엔코더·PID 값을 5x7 글자로 버퍼에 그리면 IP가 페이지 단위로 밀어낸다. 시험은 SPI 출력 바이트열을 기대값과 비교하는 자체 점검 tb.
 - 조합: [Pmod OLED(SSD1306 SPI), 엔코더·PID 값 레지스터, AXI4-Lite 레지스터, 프레임 완료 인터럽트]
 - 근거: [digilent-pmod-oled-reference-manual, lushaylabs-tang-nano-9k-ssd1306-oled, masterplayer-lcd-st7789-sv]
@@ -1383,7 +1383,9 @@
 - Basys3 적합성 근거: LUT 약 300~500개(UART TX/RX + FSM + CRC16), AXI4-Lite 슬롯 1개, Pmod JA UART 핀 사용 가능 — 내 판단.
 - 난이도: 3
 - 단계: T2
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-05 13:49 /verify(18차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(xtrinch-icestick-fpga-uart·codeshaa-16-bit-hdlc-using-vhdl·opencores-auto-baud 모두 rechecked_at 없음) + 새로움 2(하드웨어 패킷 프레이머+CRC16 AXI4-Lite IP 카탈로그 없음) + 적합성 2(LUT 300~500개, AXI4-Lite 슬롯 1개, Pmod JA UART 핀 사용 가능 — 내 판단) + 완결성 2(UART TX/RX + 길이 카운터 FSM + CRC16 + AXI4-Lite 래퍼 범위 명확, RTL+TB 작성 가능) = 6점 → vetted. 보강: 근거 카드 rechecked_at 1건 이상.
+- 차단조건재심사: 2026-11-05 13:49, 점수 9. 근거 3(xtrinch-icestick-fpga-uart·codeshaa-16-bit-hdlc-using-vhdl·opencores-auto-baud 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7, 사이클 상한 2건 도달로 vetted 유지(이 사이클에서 I-104·I-029 ready 승격). 다음 사이클에서 ready 승격 가능. WebFetch PROVENANCE_REQUIRED 18차 연속 차단(§14.2 차단 조건 적용).
 
 ---
 ## I-102: UART 슬립 디텍트 FSM (웨이크업 패턴 하드웨어 감지)
@@ -1397,7 +1399,9 @@
 - Basys3 적합성 근거: LUT < 150개(단순 FSM+비교기), AXI4-Lite 슬롯 1개. 7세그 디스플레이로 상태 표시 추가 가능 — 내 판단.
 - 난이도: 2
 - 단계: T1
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-05 13:49 /verify(18차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(opencores-auto-baud·xtrinch-icestick-fpga-uart 모두 rechecked_at 없음) + 새로움 2(슬립/웨이크업 패턴 감지 FSM IP 카탈로그 없음) + 적합성 3(LUT < 150개로 소량, AXI4-Lite 슬롯 1개, 내부 신호만 추가 Pmod 불필요 — 내 판단) + 완결성 2(슬라이딩 윈도우 패턴 비교기 FSM + AXI4-Lite 레지스터 범위 명확) = 7점 → vetted. 보강: 근거 카드 1건 추가.
+- 차단조건재심사: 2026-11-05 13:49, 점수 9. 근거 2(opencores-auto-baud·xtrinch-icestick-fpga-uart 2건, rechecked_at 불문) + 새로움 2 + 적합성 3 + 완결성 2 = 9점 ≥ 7, 사이클 상한 2건 도달로 vetted 유지. 다음 사이클에서 ready 승격 가능. WebFetch PROVENANCE_REQUIRED 18차 연속 차단(§14.2 차단 조건 적용).
 
 ---
 ## I-103: 오토보드+길이 프레이밍 통합 UART IP (CR 보레이트 감지 → 패킷 수신)
@@ -1411,12 +1415,14 @@
 - Basys3 적합성 근거: LUT 약 500~700개(오토보드 FSM + 프레이머 + CRC + AXI4-Lite), 1 AXI4-Lite free_slot. I-101·I-102를 먼저 만들어 단계적으로 검증 가능 — 내 판단.
 - 난이도: 4
 - 단계: T2
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-05 13:49 /verify(18차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(opencores-auto-baud·xtrinch-icestick-fpga-uart·codeshaa-16-bit-hdlc-using-vhdl 모두 rechecked_at 없음) + 새로움 2(오토보드+패킷 프레이밍 단일 AXI4-Lite IP 없음) + 적합성 2(LUT 500~700개, AXI4-Lite free_slot 1개, I-101·I-102 선행 단계화 가능 — 내 판단) + 완결성 2(3단계 FSM + AXI4-Lite 래퍼 + C 드라이버 범위 명확) = 6점 → vetted. 보강: 근거 카드 rechecked_at 1건, I-101·I-102 선행 완료 후 진행.
+- 차단조건재심사: 2026-11-05 13:49, 점수 9. 근거 3(opencores-auto-baud·xtrinch-icestick-fpga-uart·codeshaa-16-bit-hdlc-using-vhdl 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7, 사이클 상한 2건 도달로 vetted 유지. 다음 사이클에서 ready 승격 가능. WebFetch PROVENANCE_REQUIRED 18차 연속 차단(§14.2 차단 조건 적용).
 
 ## I-104: BRAM 핑퐁 더블 버퍼 VGA 컨트롤러 (Basys3 T2, S4 제약 역전)
 - id: I-104
 - 제목: BRAM 핑퐁 더블 버퍼 VGA 컨트롤러
-- 상태: raw
+- 상태: ready
 - 요약: 내 판단: Basys3의 no-dram 제약을 역전해, 2개의 듀얼포트 BRAM을 핑퐁으로 운용하는 테어링 없는 VGA 프레임버퍼 컨트롤러. 비활성 버퍼에 MicroBlaze V가 AXI4-Lite로 픽셀 쓰기, 활성 버퍼를 VGA 스캔; VSync에서 버퍼 전환. 160×120×8비트 (2버퍼 ≈ 38 KB, 225 KB BRAM 예산 충분).
 - 조합: [video-vga, BRAM]
 - 근거 카드:
@@ -1428,6 +1434,8 @@
 - 난이도: 2 (T2 범위, AXI4-Lite 슬레이브 + BRAM TDP 인스턴스 + VGA 타이밍이 전부)
 - 단계: T2
 - S4 제약역전 근거: DDR 없음 → BRAM만으로 가능 → 저해상도 더블 버퍼 → 더 단순하고 결정론적인 RTL
+- 심사: 2026-11-05 13:49 /verify(18차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(fcayci-xilinx-vga-framebuffer-ip-core·projf-projf-explore·talsania-fpga-image-buffer 모두 L2, rechecked_at 없음) + 새로움 2(더블 버퍼 VGA 패키지 카탈로그 없음) + 적합성 3(BRAM 38.4KB < 225KB 예산 17%, 12비트 VGA 보드 내장, Pmod 불필요 — 내 계산) + 완결성 2(AXI4-Lite 슬레이브 + BRAM TDP + VGA 타이밍, 범위 명확) = 7점 → vetted.
+- 차단조건재심사: 2026-11-05 13:49, 점수 10. 근거 3(fcayci-xilinx-vga-framebuffer-ip-core·projf-projf-explore·talsania-fpga-image-buffer 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 3 + 완결성 2 = 10점 ≥ 7 → ready 승격(사이클 1번째). WebFetch PROVENANCE_REQUIRED 18차 연속 차단(§14.2 차단 조건 적용).
 
 ## I-105 글리치 없는 AXI4-Lite RGB PWM IP (래치-at-reset + 감마 보정 LUT)
 - 상태: raw

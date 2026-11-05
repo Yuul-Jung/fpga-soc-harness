@@ -85,7 +85,7 @@ module frame_buf #(
                             col_r = b * 2 + 1;
                             for (row_idx=0; row_idx<ROWS; row_idx=row_idx+1) begin
                                 // 아래에서 채우기: row ROWS-1 이 맨 아래
-                                if ((ROWS-1 - row_idx) < bar_h) begin
+                                if (bar_h == 3'b111 || (ROWS-1 - row_idx) < bar_h) begin
                                     bitmap[row_idx*COLS + col_l] <= 1;
                                     bitmap[row_idx*COLS + col_r] <= 1;
                                 end
