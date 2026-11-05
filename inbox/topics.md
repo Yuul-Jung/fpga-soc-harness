@@ -126,7 +126,7 @@
 
 ## SoC 통합 준비 (2026-11-04 추가)
 - [x] [B3] MicroBlaze V SoC 주변장치 등록 절차 (xparameters.h 자동 생성, BSP 빌드, 소프트웨어 드라이버 연결) — 2026-11-06 카드 3건(mtvl-for-fpga-standalone-axi-driver, hackster-sha256-microblaze-v-axi-accelerator, salmon1113-vitis-microblaze-gpio-setup)
-- [ ] [B3] 여러 AXI IP 동시 구동 타이밍 분석 (버스 경합, 레이턴시 측정, 성능 카운터)
+- [x] [B3] 여러 AXI IP 동시 구동 타이밍 분석 (버스 경합, 레이턴시 측정, 성능 카운터) — 2026-11-06 카드 3건(zipcpu-wb2axip-axiperf L3, mnemocron-axi-perf-counter-pattern L3, restuccia-ecrts2019-axi-bus-contention L3), S4 제약 역전+S5 비정형 출처 전략
 
 ## NPU 설계 테크트리 — Basys3 기반 (2026-11-04 추가, 위에서부터 소비)
 

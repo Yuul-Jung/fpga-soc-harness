@@ -659,3 +659,11 @@
 - https://www.hackster.io/search?q=MicroBlaze+BSP+Vitis&i=projects | Hackster MicroBlaze Vitis BSP 관련 프로젝트 검색 결과 — 미열람(L1) | MicroBlaze Vitis BSP custom driver Hackster
 - https://support.xilinx.com/s/article/821864 | Xilinx 지원 아티클: AXI GPIO MicroBlaze standalone BSP 사용 패턴 — 미열람(L1) | AXI GPIO BSP standalone driver xparameters Xilinx
 - https://www.fpga4fun.com/MusicBox1.html | fpga4fun 오디오 MicroBlaze 드라이버 예시 — 미열람(L1), S1 인접 도메인(오디오→SoC 드라이버 패턴) | MicroBlaze audio driver AXI peripheral fpga4fun
+
+## 2026-11-06 AXI IP 동시 구동 타이밍 분석 (S4+S5)
+- https://zipcpu.com/blog/2021/08/14/axiperf.html | ZipCPU 블로그: axiperf.v — AXI 레이턴시·처리량·스톨 측정 (읽기 6종·쓰기 15종 bin, AXI-Lite 제어) — L3 열람 → 카드 작성(zipcpu-wb2axip-axiperf) | ZipCPU AXI performance monitor latency throughput stall
+- https://github.com/mnemocron/axi-perf-counter-pattern | mnemocron: VHDL AXI Stream 패턴 매칭 레이턴시 카운터 (GHDL+Vivado 2021.2) — L3 열람 → 카드 작성(mnemocron-axi-perf-counter-pattern) | VHDL AXI performance counter pattern trigger latency
+- https://core.ac.uk/download/343692393.pdf | Restuccia et al. ECRTS 2019: AXI SoC 버스 경합 모델 (SmartConnect 12/11/9 클럭 지연 실측, 190클럭 최악 레이턴시) — L3 열람 → 카드 작성(restuccia-ecrts2019-axi-bus-contention) | AXI bus contention FPGA SoC worst-case latency SmartConnect
+- https://github.com/ZipCPU/wb2axip | ZipCPU/wb2axip: AXI 브리지·유틸리티 라이브러리 (별 422, Apache-2.0, Verilog) — L3 열람 (GitHub 직접 접근 불가, blog 기준) | ZipCPU wb2axip AXI bridge utility Verilog Apache
+- https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ECRTS.2019.24 | ECRTS 2019 Dagstuhl 아티클 페이지 (CC BY 3.0) — 미열람(L1) | ECRTS 2019 AXI bus contention FPGA SoC LIPIcs
+- https://xilinx-wiki.atlassian.net/wiki/spaces/A/pages/18842550/Axi+Performance+Monitor+standalone | Xilinx APM standalone 드라이버 가이드 — L3 열람 (C 드라이버 중심, 하드웨어 세부 미포함) | Xilinx AXI performance monitor standalone driver

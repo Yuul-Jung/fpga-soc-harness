@@ -1706,3 +1706,29 @@
 - Basys3 적합성의 근거: AXI GPIO + XTmrCtr IP 조합은 Basys3 MicroBlaze V에서 완전히 가능. BSP에 포함된 IP 사용만으로 추가 LUT 최소 — 내 판단.
 - 난이도: 2 / 단계: T3 / 상태: raw
 - 심사: 2026-11-06 /harvest(S7). 근거 0(세 근거 카드 rechecked_at 없음) + 새로움 2(세 계층 비교 테스트벤치 카탈로그 없음) + 적합성 3(AXI GPIO+XTmrCtr Basys3 완전 가능, 추가 LUT 최소) + 완결성 2(raw 포인터+Xil_In32/Out32+LookupConfig 세 계층+측정 범위 명확) = 7점 → raw(첫심사). 보강: 근거 카드 rechecked_at 1건 이상.
+
+## I-126 Basys3 AXI-Lite 버스 프로파일러: 여러 IP 동시 접근 레이턴시 측정 (T2)
+
+내 판단: S4 제약 역전 — no-DRAM 제약을 역전시켜 BRAM 슬레이브로만 구성된 순수 AXI-Lite 패브릭에서 버스 경합 레이턴시를 정밀 측정. axiperf.v 아이디어(읽기/쓰기 bin 카운터, AXI-Lite 제어)를 AXI4-Lite 전용으로 단순화해 약 100줄 Verilog로 재구현. MicroBlaze V의 `free_slots`(0xC800_0000)에 연결, C 드라이버로 start/stop → UART 출력.
+
+- id: I-126
+- 조합: [AXI4-Lite 버스 프로파일러 RTL, MicroBlaze V C 드라이버, AXI SmartConnect, BRAM 슬레이브 ×2, UART 출력]
+- 근거 카드: zipcpu-wb2axip-axiperf, restuccia-ecrts2019-axi-bus-contention, amoghvarsh-axi4-lite-timer-wdt
+- 근거 URL: https://zipcpu.com/blog/2021/08/14/axiperf.html, https://core.ac.uk/download/343692393.pdf
+- 새로움의 근거: 카탈로그에 Basys3 순수 PL(no-PS) AXI-Lite 성능 카운터 구현 카드 없음 — 내 판단.
+- Basys3 적합성의 근거: AXI-Lite 카운터 ~100 LUT 추정, AXI SmartConnect+BRAM+MicroBlaze V 모두 Basys3 XC7A35T에 가능 — 내 판단.
+- 난이도: 2 / 단계: T2 / 상태: raw
+- 심사: 2026-11-06 /harvest(S4). 근거 0(근거 카드 rechecked_at 없음, 금번 세션 신규 카드) + 새로움 2(순수 PL AXI-Lite 프로파일러 없음) + 적합성 3(100LUT 추정, Basys3 가능) + 완결성 2(RTL+C드라이버+UART 출력 범위 명확) = 7점 → raw(첫심사). 보강: 근거 카드 rechecked_at 1건 이상.
+
+## I-127 MicroBlaze V 버스 경합 테스트벤치: 복수 AXI 마스터 동시 릴리스로 최악 레이턴시 측정 (T3)
+
+내 판단: S4 제약 역전 + Restuccia ECRTS2019 방법론 Basys3 이식 — 논문의 트래픽 발생기+타이머 접근법을 MicroBlaze V firmware로 재현. 2개 AXI-Lite 슬레이브를 같은 SmartConnect에 연결하고 동시에 write-read 사이클을 수행, XTmrCtr로 왕복 레이턴시 측정.
+
+- id: I-127
+- 조합: [MicroBlaze V C firmware, AXI SmartConnect ×1, AXI-Lite BRAM 슬레이브 ×2, XTmrCtr, UART 결과 출력]
+- 근거 카드: restuccia-ecrts2019-axi-bus-contention, zipcpu-wb2axip-axiperf, mij001-axil-timer
+- 근거 URL: https://core.ac.uk/download/343692393.pdf, https://zipcpu.com/blog/2021/08/14/axiperf.html
+- 새로움의 근거: 카탈로그에 Basys3 firmware-only 버스 경합 측정 패키지 없음 — 내 판단.
+- Basys3 적합성의 근거: firmware만으로 구현(RTL 추가 없음), XTmrCtr BSP 포함, Basys3 MBv SoC에서 완전 가능 — 내 판단.
+- 난이도: 2 / 단계: T3 / 상태: raw
+- 심사: 2026-11-06 /harvest(S4). 근거 0(restuccia 카드 rechecked_at 없음) + 새로움 2(firmware 경합 측정 패키지 없음) + 적합성 3(XTmrCtr BSP 포함, 추가 RTL 없음) + 완결성 2(2슬레이브+타이머+UART 범위 명확) = 7점 → raw(첫심사). 보강: 근거 카드 rechecked_at 1건 이상.

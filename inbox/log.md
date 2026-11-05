@@ -216,3 +216,4 @@
 2026-11-06 06:26 | collect | MicroBlaze V BSP 드라이버 등록 절차 [B3] · S3 갭 추적(주)+S1 인접 도메인(보조) | 카드 +3 (mtvl-for-fpga-standalone-axi-driver L3, hackster-sha256-microblaze-v-axi-accelerator L3, salmon1113-vitis-microblaze-gpio-setup L3) | 아이디어 +3 (I-123~125 raw, 첫심사) | 큐 잔여 659 | blocked 25차 연속 (WebFetch PROVENANCE_REQUIRED 전면 차단)
 2026-11-06 06:42 | verify | 재열람 0 (WebFetch PROVENANCE_REQUIRED 전면 차단 24차 연속) | 수정 1 (ssd1306 capstone memory_map dict→list 형식 수정) | 불일치 1 | 승격 L2→L3 0 | ready +2 (I-115 차단조건재심사 9점, I-116 차단조건재심사 10점) | 차단조건재심사 추가 (I-119 9점·I-120 9점·I-121 9점·I-122 9점·I-056 7점·I-057 8점 한도소진 유지) | 중복상태 정리 (I-055 raw중복 제거, I-113 raw+미심사 중복 제거)
 2026-11-06 07:16 | capstone | mmio-rc-car-arb-ip | CI retry 2/3 | fix: verilator -g2001 제거, hcsr04_drv cnt 21→22비트, timescale 추가, TB DBG print 추가 | 등급 보류(CI 대기)
+2026-11-06 07:24 | collect | AXI IP 동시 구동 타이밍 분석 · S4 제약 역전(주)+S5 비정형 출처(보조) | 카드 +3 | 아이디어 +2 | 큐 잔여 595 | blocked 0
