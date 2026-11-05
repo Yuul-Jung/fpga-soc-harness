@@ -353,12 +353,12 @@
 
 
 ## I-031 블루투스 텔레메트리 브리지 IP: UART 슬롯 위 프레임 송수신 + STATE/EN GPIO, HC-05 응답 모델 테스트벤치
-- 상태: vetted
+- 상태: used (패키지: mmio-bt-hc05-bridge, 2026-11-05)
 - 차단조건재심사: 2026-11-06 /verify(20차), WebFetch PROVENANCE_REQUIRED 20차 연속 차단. 차단 근거 3 + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7 → ready 승격(사이클 1번째). §14.2 차단 조건 적용.
 
 
 ## I-031 블루투스 텔레메트리 브리지 IP: UART 슬롯 위 프레임 송수신 + STATE/EN GPIO, HC-05 응답 모델 테스트벤치
-- 상태: ready
+- 상태: used (패키지: mmio-bt-hc05-bridge, 2026-11-05)
 - 요약: 내 판단: HC-05/06을 동결 맵 UART 영역에 연결하고, 연결 상태(STATE)와 AT 진입(EN)을 GPIO 비트로 두어 제어 루프 값(속도·각도)을 프레임으로 송신, 폰의 명령 1바이트를 수신해 목표값 레지스터에 쓰는 구조. 시험은 9600 bps 비트열을 생성하는 모델로 수신과 프레임 송신을 비교하는 자체 점검 tb.
 - 조합: [HC-05(UART, STATE, EN), AXI4-Lite 레지스터, 수신 인터럽트, 엔코더·PID 값]
 - 근거: [hackster-ee2259-lab8-bluetooth-uart, epfl-prsoc-bluetooth-hc05, ndroid-hc06-at-commandcenter]
