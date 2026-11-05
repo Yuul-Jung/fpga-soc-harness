@@ -5,6 +5,7 @@
 - verify: `YYYY-MM-DD HH:MM | verify | 재열람 N | 수정 M | 불일치 K | 승격 L2→L3 P | ready +R`
 - capstone: `YYYY-MM-DD HH:MM | capstone | <slug> | 등급 S0~S2` 또는 `... | skip: <사유>`
 
+2026-11-06 02:27 | capstone | I-030 → mmio-onewire-ds18b20-ip | S0 (iverilog/yosys 없음, CI 대기) | 슬롯 [0E] 0x400E_0000 / intc=6 | mbv-frozen-v2 compatible
 2026-11-05 14:38 | capstone | mmio-led-matrix-sound-tilt | fix: adxl_rst_n 복합 리셋 와이어 제거, u_adxl .rst_n(rst_n) 직접 연결 — CI 대기
 2026-11-05 14:33 | capstone | mmio-led-matrix-sound-tilt | skip: CI synth FAIL 3회 소진 (bd81db4, sclk_en proc_dff "Multiple edge sensitive events") | status: broken
 2026-11-05 14:29 | capstone | mmio-led-matrix-sound-tilt | skip: broken — CI 4회 연속 실패(synth). 근본 원인 확인: soc_top.v의 adxl_rst_n = rst_n & adxl_en 복합 리셋 와이어가 axil_led_matrix_slave(async rst) 출력인 adxl_en을 포함해, synth -flatten 후 sclk_en에 "Multiple edge sensitive events" 오류. capstone.json에 status=broken 기록. 다음 사이클 수정 방향: soc_top.v u_adxl 인스턴스화 시 .rst_n(rst_n) 직접 사용(adxl_rst_n 제거) 또는 axil_led_matrix_slave 동기 리셋 전환.
