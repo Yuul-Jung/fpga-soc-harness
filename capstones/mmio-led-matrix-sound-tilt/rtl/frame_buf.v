@@ -3,17 +3,16 @@
 // 모드에 따라 IIR 에너지(막대) 또는 ADXL 기울기(점)로 갱신
 // MAX7219 체인 드라이버에 bitmap[127:0] 제공
 //
-// CI fix v4 — energy_stored 내부 래치 + x_hold/bitmap NBA 병합.
+// CI fix v5 — 에너지 블록과 bitmap_reg 블록 완전 병합.
 //
-//   수정 1 (TB1): energy_flat 포트 직접 읽기 대신
-//     energy_stored(flat wide reg)에 1클럭 래치 후 사용.
-//     조합 블록은 energy_stored를 읽으므로 포트 force 타이밍 무관.
-//     energy_pend(1사이클 지연)로 bitmap 갱신 트리거.
+//   근본 원인: iverilog에서 NBA 적용이 별도 always @(posedge clk) 블록에서
+//   일어날 때, 그 NBA를 읽는 always @(*) 블록이 재트리거되지 않는다.
+//   energy_stored가 별도 블록에 있으면 bitmap 캡처 시 bm_next가 0으로 남는다.
 //
-//   수정 2 (TB2_corner): x_hold/y_hold NBA와 bitmap NBA를
-//     같은 always @(posedge clk) 블록에 둔다.
-//     같은 블록 내에서 RHS는 NBA 적용 전 값으로 평가되므로
-//     bitmap <= bm_next 가 x_hold=511(force) 기준 bm_next를 받는다.
+//   수정 (TB1+TB2 모두): energy_stored/energy_pend 를 bitmap_reg 블록에 합침.
+//   모든 상태 레지스터가 한 always 블록 안에 있으면,
+//   NBA 완료 후 always @(*) 가 올바르게 발화해 bm_next가 에너지를 반영한다.
+//   동작 타이밍은 v4와 동일: energy_pend는 energy_update의 1사이클 지연이다.
 //
 // Verilog-2001. iverilog/verilator/yosys 호환.
 `default_nettype none
@@ -46,20 +45,10 @@ module frame_buf #(
     // 에너지 내부 래치 (flat wide reg — 배열 아님)
     // energy_stored: energy_update 클럭에 energy_flat 래치
     // energy_pend:   energy_stored가 유효해진 다음 사이클 표시
+    // (bitmap_reg 블록에서 함께 처리 — 아래 순차 블록 참조)
     // ----------------------------------------------------------------
     reg [N_BANDS*ENERGY_W-1:0] energy_stored;
     reg                         energy_pend;
-
-    always @(posedge clk) begin
-        if (!rst_n || soft_rst) begin
-            energy_stored <= 0;
-            energy_pend   <= 0;
-        end else begin
-            energy_pend <= energy_update;          // 1사이클 지연
-            if (energy_update)
-                energy_stored <= energy_flat;      // 래치
-        end
-    end
 
     // ----------------------------------------------------------------
     // 기울기 보유 레지스터 (조합 블록에서 읽음)
@@ -116,20 +105,32 @@ module frame_buf #(
     end
 
     // ----------------------------------------------------------------
-    // 순차 블록 (통합) — x_hold/y_hold NBA와 bitmap NBA를 같은 블록에서
-    // 처리해 iverilog NBA 순서 비결정성에 의한 경쟁 조건을 제거한다.
+    // 순차 블록 (통합) — energy_stored/energy_pend + x_hold/y_hold +
+    // bitmap + refresh 를 한 블록에서 처리.
     //
-    // bitmap <= bm_next 의 RHS는 같은 블록 내 x_hold NBA 적용 전에
-    // 평가되므로, x_hold가 force로 고정된 값(예: 511)을 사용한다.
+    // 이유: iverilog에서 별도 always 블록의 NBA가 always@(*)를 재트리거하지
+    // 않으므로, 모든 상태 레지스터를 한 블록에 두어야 한다.
+    // bitmap <= bm_next 의 RHS는 NBA 적용 전 bm_next 값으로 평가된다.
+    // → x_hold/y_hold NBA 완료 후 always@(*)가 갱신한 bm_next를
+    //   다음 클럭에 bitmap이 캡처한다(adxl 경로: 2사이클 지연, 정상).
+    // → energy_stored NBA 완료 후 always@(*)가 갱신한 bm_next를
+    //   energy_pend=1인 다음 사이클에 bitmap이 캡처한다(에너지 경로: 정상).
     // ----------------------------------------------------------------
     always @(posedge clk) begin : bitmap_reg
         if (!rst_n || soft_rst) begin
+            energy_stored <= 0;
+            energy_pend   <= 0;
             x_hold  <= 0;
             y_hold  <= 0;
             bitmap  <= 0;
             refresh <= 0;
         end else begin
             refresh <= 0;
+
+            // 에너지 래치 (energy_pend는 1사이클 지연)
+            energy_pend <= energy_update;
+            if (energy_update)
+                energy_stored <= energy_flat;
 
             // ADXL 최신값 갱신
             if (adxl_valid) begin

@@ -25,13 +25,17 @@ module axil_oled_ssd1306 #(
     input  wire        s_awvalid,
     output reg         s_awready,
     input  wire [31:0] s_wdata,
-    input  wire [3:0]  s_wstrb,
+    /* verilator lint_off UNUSEDSIGNAL */
+    input  wire [3:0]  s_wstrb,   // 바이트 활성화 — 현재 미사용 (전 바이트 쓰기만 지원)
+    /* verilator lint_on UNUSEDSIGNAL */
     input  wire        s_wvalid,
     output reg         s_wready,
     output reg  [1:0]  s_bresp,
     output reg         s_bvalid,
     input  wire        s_bready,
-    input  wire [7:0]  s_araddr,
+    /* verilator lint_off UNUSEDSIGNAL */
+    input  wire [7:0]  s_araddr,  // [7:4,1:0] 미사용 (디코드는 [3:2]만 사용)
+    /* verilator lint_on UNUSEDSIGNAL */
     input  wire        s_arvalid,
     output reg         s_arready,
     output reg  [31:0] s_rdata,
@@ -140,8 +144,10 @@ module axil_oled_ssd1306 #(
     reg [1:0]  hdr_idx;     // 페이지 헤더 명령 인덱스 (0..2)
     reg        in_header;   // 헤더 전송 중
 
-    // 갱신 완료 IRQ
+    // 갱신 완료 IRQ (refresh_irq_r은 미래 확장용 선언, 현재 미구동)
+    /* verilator lint_off UNUSEDSIGNAL */
     reg  refresh_irq_r;
+    /* verilator lint_on UNUSEDSIGNAL */
 
     // 리셋 카운터 (10 사이클)
     reg [3:0] rst_cnt;
