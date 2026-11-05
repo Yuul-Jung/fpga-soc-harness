@@ -49,6 +49,16 @@ module adxl345_spi_reader #(
     reg [55:0] rx_shift;   // 7바이트 수신 (주소1 + 데이터6)
     reg [23:0] read_period; // 읽기 주기 카운터 (~10ms)
 
+    // data_valid: 1클럭 펄스 — 별도 always 블록으로 분리해 yosys proc_dff의
+    // "Multiple edge sensitive events" 오류 방지 (동일 블록 내 이중 NBA 충돌)
+    always @(posedge clk) begin
+        if (!rst_n)
+            data_valid <= 1'b0;
+        else
+            data_valid <= (state == S_READ_EN);
+    end
+
+    // 메인 FSM — data_valid 제외한 모든 레지스터
     always @(posedge clk) begin
         if (!rst_n) begin
             state     <= S_RESET;
@@ -57,10 +67,9 @@ module adxl345_spi_reader #(
             spi_sclk  <= 1; spi_mosi <= 0; spi_cs_n <= 1;
             sclk_cnt  <= 0; sclk_en  <= 0; sclk_hi  <= 1;
             bit_cnt   <= 0; rx_shift <= 0; spi_shift <= 0;
-            x_tilt    <= 0; y_tilt   <= 0; data_valid <= 0;
+            x_tilt    <= 0; y_tilt   <= 0;
             read_period <= 0;
         end else begin
-            data_valid <= 0;
 
             // SPI 클럭 분주 — sclk_hi 위상 추적 (spi_sclk 조건 검사 금지)
             if (sclk_en) begin
@@ -168,10 +177,10 @@ module adxl345_spi_reader #(
                     // rx_shift[47:40] = DATAX0, [39:32]=DATAX1
                     // rx_shift[31:24] = DATAY0, [23:16]=DATAY1
                     // 10비트 조합 (right-justified, 2의 보수)
-                    x_tilt     <= {rx_shift[33:32], rx_shift[47:40]};
-                    y_tilt     <= {rx_shift[17:16], rx_shift[31:24]};
-                    data_valid <= 1;
-                    state      <= S_IDLE;
+                    x_tilt <= {rx_shift[33:32], rx_shift[47:40]};
+                    y_tilt <= {rx_shift[17:16], rx_shift[31:24]};
+                    // data_valid는 별도 always 블록이 (state==S_READ_EN)으로 처리
+                    state  <= S_IDLE;
                 end
 
                 default: state <= S_RESET;
