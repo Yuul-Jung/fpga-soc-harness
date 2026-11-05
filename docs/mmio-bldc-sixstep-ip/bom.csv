@@ -1,3 +1,0 @@
-id,name,interface,io_voltage_V,supply_V,qty,board_resident,arduino_compatible,level_shift,notes
-hall_sensor,BLDC 모터 내장 홀 센서,GPIO (디지털 입력 3핀),3.3V,,1,false,false,,3.3V 출력 모터에 한함. 5V 모터 사용 시 레벨 변환 필수. Pmod JA/JB 핀 3개.
-gate_driver,3상 인버터 게이트 드라이버,GPIO (디지털 출력 6핀),3.3V,모터 전원은 Basys3와 분리. GND 공통.,1,false,false,필요 (드라이버 입력 전압에 따라 결정),"IR2110, L6234 등 게이트 드라이버 보드 사용 권장. 직결 금지."

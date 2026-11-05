@@ -1,2 +1,0 @@
-id,name,interface,io_voltage_V,supply_V,qty,board_resident,arduino_compatible,level_shift,notes
-pmod_jb,Pmod JB (16채널 입력용 2×Pmod),GPIO,3.3V,,2,false,false,,"채널 0~7: JB 하단, 채널 8~15: JA 등 추가 Pmod. xdc에서 핀 배정 필요"

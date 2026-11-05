@@ -1,5 +1,0 @@
-id,name,interface,io_voltage_V,supply_V,qty,board_resident,arduino_compatible,level_shift,notes
-enc_a,직교 엔코더 모터 A,quadrature (A/B 2신호),3.3V 또는 5V,5V 또는 12V (모터 전원 별도),1,false,true,5V 신호 사용 시 필요 (TXS0102 등),"Pmod JA 핀 1-2 (ja[0]=ENC_A_A, ja[1]=ENC_A_B)"
-enc_b,직교 엔코더 모터 B,quadrature (A/B 2신호),3.3V 또는 5V,5V 또는 12V,1,false,true,5V 신호 사용 시 필요 (TXS0102 등),"Pmod JB 핀 1-2 (jb[0]=ENC_B_A, jb[1]=ENC_B_B)"
-drv_a,모터 드라이버 A (방향+PWM 입력),PWM + DIR 디지털 출력,3.3V,,1,false,false,,"Pmod JA 핀 3-4 (ja[2]=PWM_A, ja[3]=DIR_A). TB6612FNG 등 호환."
-drv_b,모터 드라이버 B,PWM + DIR 디지털 출력,3.3V,,1,false,false,,"Pmod JB 핀 3-4 (jb[2]=PWM_B, jb[3]=DIR_B)."

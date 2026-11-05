@@ -1,3 +1,0 @@
-id,name,interface,io_voltage_V,supply_V,qty,board_resident,arduino_compatible,level_shift,notes
-ext_pullup_sda,SDA 풀업 저항 4.7 kΩ,I2C,3.3,3.3,1,false,true,불필요 (3.3V),오픈드레인 버스 풀업. 시뮬레이션에서는 불필요.
-ext_pullup_scl,SCL 풀업 저항 4.7 kΩ,I2C,3.3,3.3,1,false,true,불필요 (3.3V),오픈드레인 버스 풀업. 시뮬레이션에서는 불필요.

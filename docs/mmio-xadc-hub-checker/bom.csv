@@ -1,2 +1,0 @@
-id,name,interface,io_voltage_V,supply_V,qty,board_resident,arduino_compatible,level_shift,notes
-pot1,10kΩ 가변저항 (옵션),JXADC(VAUXP4/VAUXN4),3.3,3.3,4,false,true,불필요 (3.3V),테스트벤치는 외부 부품 없이 DRP 모의 모델로 동작함. 보드 실제 측정은 S3 검증(사람 확인).

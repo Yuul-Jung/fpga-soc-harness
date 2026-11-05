@@ -1,2 +1,0 @@
-id,name,interface,io_voltage_V,supply_V,qty,board_resident,arduino_compatible,level_shift,notes
-ov7670_module,OV7670 카메라 모듈 (FIFO 없는 버전),SCCB (SDA/SCL) + 병렬 픽셀 (D[7:0]/PCLK/VSYNC/HREF),3.3,3.3,1,false,true,불필요 (3.3V),"IO 전압 3.3V. OV7670은 풀업 4.7 kΩ (SDA/SCL)이 모듈에 포함된 경우가 많으나 없으면 외부 추가. PWDN=0(활성), RESET=1(정상) 고정 또는 GPIO 제어."

@@ -1,4 +1,0 @@
-id,name,interface,io_voltage_V,supply_V,qty,board_resident,arduino_compatible,level_shift,notes
-p_uart,Basys3 USB-UART (내장),UART 115200 8N1,3.3,,1,true,false,,"FPGA RXD=D4, TXD=C4. 별도 부품 불필요."
-p_led,Basys3 LED 16개,GPIO 출력,3.3,,16,true,false,,"LED[0]=busy, LED[1]=err_flag, LED[15:2]=gpio_data[15:2]"
-p_sw,Basys3 슬라이드 스위치 16개,GPIO 입력,3.3,,16,true,false,,데모 GPIO 슬레이브 읽기 소스

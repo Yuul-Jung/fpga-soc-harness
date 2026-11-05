@@ -1,5 +1,0 @@
-id,name,interface,io_voltage_V,supply_V,qty,board_resident,arduino_compatible,level_shift,notes
-pot0,10 kΩ 트리머 가변저항 (CH0 VAUX0),JXADC 핀 1(P)/7(N) → VAUXP0/VAUXN0,3.3,3.3,1,false,false,"전압 분배기 필요 (33kΩ+10kΩ, 최대 0.77V)",
-pot1,10 kΩ 트리머 가변저항 (CH1 VAUX1),JXADC 핀 2(P)/8(N) → VAUXP1/VAUXN1,3.3,3.3,1,false,false,"전압 분배기 필요 (33kΩ+10kΩ, 최대 0.77V)",
-pot2,10 kΩ 트리머 가변저항 (CH2 VAUX8),JXADC 핀 3(P)/9(N) → VAUXP8/VAUXN8,3.3,3.3,1,false,false,"전압 분배기 필요 (33kΩ+10kΩ, 최대 0.77V)",
-pot3,10 kΩ 트리머 가변저항 (CH3 VAUX9),JXADC 핀 4(P)/10(N) → VAUXP9/VAUXN9,3.3,3.3,1,false,false,"전압 분배기 필요 (33kΩ+10kΩ, 최대 0.77V)",

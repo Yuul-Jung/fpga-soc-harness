@@ -1,5 +1,0 @@
-id,name,interface,io_voltage_V,supply_V,qty,board_resident,arduino_compatible,level_shift,notes
-mpu6050,MPU-6050 6축 IMU 모듈 (3.3V 버전),I2C,3.3,3.3,1,false,true,불필요 (3.3V),I2C 주소 0x68 (AD0=0). 레지스터 0x75(WHO_AM_I)로 순회 확인.
-bmp280,BMP280 기압/온도 모듈 (3.3V 버전),I2C,3.3,3.3,1,false,true,불필요 (3.3V),I2C 주소 0x76 (SDO=GND). 레지스터 0xD0(ID)으로 순회 확인.
-hmc5883l,HMC5883L 3축 나침반 모듈 (3.3V 버전),I2C,3.3,3.3,1,false,true,불필요 (3.3V),I2C 주소 0x1E. 레지스터 0x0A(IRA)로 순회 확인.
-neo6m,NEO-6M GPS 모듈 (UART NMEA),UART,3.3,3.3,1,false,true,불필요 (3.3V),"9600 baud, 8N1. NMEA 문장 $ 시작 \n 종료. RX 핀 1개만 연결."
