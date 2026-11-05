@@ -3,6 +3,9 @@
 // 모드에 따라 IIR 에너지(막대) 또는 ADXL 기울기(점)로 갱신
 // MAX7219 체인 드라이버에 bitmap[127:0] 제공
 //
+// CI fix — 동기 리셋: negedge rst_n 감도 제거 (yosys proc_dff 호환)
+// soft_rst는 동기 조건이므로 @(posedge clk) 블록 내 if(!rst_n||soft_rst) 사용 가능.
+//
 // Verilog-2001. iverilog/verilator/yosys 호환.
 `default_nettype none
 
@@ -40,7 +43,7 @@ module frame_buf #(
     integer b, r, c;
 
     // 에너지 추출 (단일 always 블록으로 yosys 호환성 확보)
-    // CI fix: 동기 리셋으로 변경 — negedge rst_n + soft_rst 혼합 → proc_dff "Multiple edge" 오류 회피
+    // CI fix: 동기 리셋 — negedge rst_n 감도 제거, proc_dff "Multiple edge" 오류 회피
     always @(posedge clk) begin : energy_unpack
         integer gi;
         if (!rst_n) begin
@@ -57,7 +60,7 @@ module frame_buf #(
         else if (adxl_valid) begin x_hold <= x_tilt; y_hold <= y_tilt; end
     end
 
-    // 비트맵 갱신
+    // 비트맵 갱신 (soft_rst는 동기 신호이므로 감도 목록 불필요)
     always @(posedge clk) begin
         if (!rst_n || soft_rst) begin
             bitmap  <= 0;

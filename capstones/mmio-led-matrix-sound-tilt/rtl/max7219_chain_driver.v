@@ -6,6 +6,8 @@
 //
 // 비트맵 레이아웃: bitmap[row*16 + col], col0=칩1 col0, col8=칩2 col0
 //
+// CI fix — 동기 리셋: negedge rst_n 감도 제거 (yosys proc_dff 호환)
+//
 // Verilog-2001. iverilog/verilator/yosys 호환.
 `default_nettype none
 
@@ -73,7 +75,7 @@ module max7219_chain_driver #(
     reg [3:0]  bright_latch;
     reg        do_bright;
 
-    always @(posedge clk or negedge rst_n) begin
+    always @(posedge clk) begin
         if (!rst_n) begin
             state    <= S_RESET;
             wait_cnt <= 0;
