@@ -207,3 +207,4 @@
 2026-11-06 02:42 | collect | AXI4-Lite 슬레이브 레지스터 파일 템플릿 · S5(비정형 출처, 주)+S3(빈틈 추적, 보조) | 카드 +3 (zipcpu-wb2axip-easyaxil L3, chclau-magellan-basys3-axil-regs L3, bugratufan-axion-hdl L3) | 아이디어 +3 (I-114~116) | 큐 잔여 585 | blocked 4 (ZipCPU/wb2axip GitHub, corsair GitHub, axion-hdl GitHub, juneonii/FPGA_EX GitHub — PROVENANCE_REQUIRED)
 
 2026-11-06 03:42 | verify | 재열람 0 (WebFetch PROVENANCE_REQUIRED 전면 차단 22차 연속) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +2 (I-111 차단조건재심사 10점, I-113 차단조건재심사 10점) | vetted +7 (I-112 차단조건재심사 10점 한도소진·유지, I-114 7점, I-115 6점, I-116 6점, I-117 6점, I-118 5점, I-119 7점) | atlas/axil-peripheral-ip.md 신규·soc-map +9카드 갱신
+2026-11-06 04:21 | collect | AXI 크로스바 주소 디코딩·충돌 회피 패턴 [B3] · S2 조합 탐색(주)+S1 인접 도메인 이식(보조) | 카드 +3 (alexforencich-verilog-axi-crossbar L3, dpretet-axi-crossbar L3, zipcpu-wb2axip-crossbar-addrdecode L2) | 아이디어 +3 (I-120~122) | 큐 잔여 605 | blocked 4 (ZipCPU/wb2axip GitHub README — PROVENANCE_REQUIRED)

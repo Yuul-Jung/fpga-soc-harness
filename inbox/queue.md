@@ -637,3 +637,13 @@
 - https://www.ti.com/lit/an/slaa661a/slaa661a.pdf | TI 앱노트 "Watchdog Timer Techniques" — 미열람(L1), 하트비트 패턴·실패 사례 정리(S6 보조 출처) | TI watchdog timer techniques heartbeat application note
 - https://github.com/enjoy-digital/litex/blob/master/litex/soc/cores/watchdog.py | LiteX WDT Python 모듈 — 미열람(L1), LiteX SoC의 WDT 통합 방식 참고 | LiteX watchdog timer Python SoC
 - https://github.com/fvutils/pyvsc | unverified: 검색에서 발견한 watchdog verification 관련 — blocked: 주제 연관성 불확실, 재검토 필요 | FPGA watchdog formal verification SVA
+- https://github.com/alexforencich/verilog-axi | alexforencich/verilog-axi: 파라메트릭 AXI4 크로스바 IP 모음, axi_crossbar_addr.v: elaboration-time 주소 충돌 검출 — L3 열람(axi_crossbar_addr.v 소스 직접) | AXI crossbar address decoding conflict detection Verilog
+- https://github.com/dpretet/axi-crossbar | dpretet/axi-crossbar: MxN AXI4/AXI-Lite 크로스바, 위자드+JSON 설정, DECERR, CDC, SVUT CI — L3 열람(README) | AXI crossbar MxN SystemVerilog wizard DECERR
+- https://zipcpu.com/blog/2019/07/17/crossbar.html | ZipCPU 크로스바 설계 기사: addrdecode.v(SLAVE_ADDR/MASK), 형식 검증, 에러 슬레이브 패턴 — L2(블로그 L3 열람, GitHub 미열람) | ZipCPU AXI crossbar formal verification address decoder
+- https://github.com/ZipCPU/wb2axip/blob/master/rtl/addrdecode.v | ZipCPU/wb2axip addrdecode.v: SLAVE_ADDR+SLAVE_MASK 기반 디코더, Wishbone·AXI-Lite·AXI 공유 — 미열람(PROVENANCE_REQUIRED) | address decoder shared crossbar formal
+- https://docs.amd.com/r/en-US/pg059-axi-interconnect | AMD AXI Interconnect PG059: Vivado AXI 인터커넥트 IP, 주소 디코딩·에러 처리 — 미열람(L1) | AMD AXI Interconnect IP PG059 address conflict
+- https://axion-hdl.readthedocs.io/ | Axion-HDL: Python 기반 레지스터 정의→AXI HDL 생성 도구, 자동 주소 할당+AddressConflictError 검사 — L2 열람(docs 홈) | AXI register address map generator conflict detection Python
+- https://docs.amd.com/r/en-US/ug995-vivado-ip-subsystems-tutorial/Step-7-Using-the-Address-Editor | AMD UG995 Step 7: Vivado 주소 편집기 — L2 열람(절차, 범위 설정) | Vivado address editor AXI address range conflict
+- https://www.github.com/dpretet/axi-crossbar/blob/main/doc/architecture.md | dpretet/axi-crossbar 아키텍처 문서: 주소+ID 디코딩 그림 — 미열람(L1) | AXI crossbar architecture address ID decoding diagram
+- https://github.com/kepler-space/verilog-axi | kepler-space/verilog-axi: alexforencich 포크 추정 — 미열람(L1) | AXI crossbar verilog fork
+- https://arxiv.org/pdf/2502.19215 | "A Multicast-Capable AXI Crossbar for Many-core ML Accelerators" 논문 — 미열람(L1) | AXI crossbar multicast paper many-core

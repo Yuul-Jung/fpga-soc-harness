@@ -255,3 +255,6 @@
 | [amd-axi-timebase-wdt-pg083](amd/amd-axi-timebase-wdt-pg083.md) | L2 | T2 | Basys3 | 2026-11-05 |
 | [ignaciosim-tt06-triple-watchdog](vendor-neutral/ignaciosim-tt06-triple-watchdog.md) | L2 | T1 | 없음 (Basys3 needs-port) | 2026-11-05 |
 | [amoghvarsh-axi4-lite-timer-wdt](vendor-neutral/amoghvarsh-axi4-lite-timer-wdt.md) | L2 | T2 | 없음 (Basys3 needs-port) | 2026-11-05 |
+| [alexforencich-verilog-axi-crossbar](vendor-neutral/alexforencich-verilog-axi-crossbar.md) | L3 | T2 | 없음 (Basys3 needs-port) | 2026-11-06 |
+| [dpretet-axi-crossbar](vendor-neutral/dpretet-axi-crossbar.md) | L3 | T2 | 없음 (Basys3 needs-port) | 2026-11-06 |
+| [zipcpu-wb2axip-crossbar-addrdecode](vendor-neutral/zipcpu-wb2axip-crossbar-addrdecode.md) | L2 | T2 | 없음 (Basys3 needs-port) | 2026-11-06 |

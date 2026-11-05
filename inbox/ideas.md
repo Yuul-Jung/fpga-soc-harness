@@ -1539,6 +1539,9 @@
 - 새로움의 근거: 카탈로그에 단일 주제를 3단계 난이도로 연결한 커리큘럼 패키지 없음. INTC는 모든 SoC에서 필수 블록이므로 교육 가치 높음
 - Basys3 적합성의 근거: 각 단계 모두 XC7A35T 자원 범위 내 (T1: ~20 LUT, T2: ~100 LUT, T3: ~200 LUT 추정)
 - 난이도: 2(T1)/3(T2)/4(T3) / 단계: T1→T3
+- 상태: raw
+- 심사: (미심사)
+- 심사: 2026-11-06 /verify(20차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(근거 카드 모두 rechecked_at 없음) + 새로움 2(어셈블리→C 비교 사례 없음) + 적합성 1(RISC-V asm과 MicroBlaze V가 다른 ISA, Vitis/SDK 환경 별도 필요, 범위 과다) + 완결성 1(세 가지 접근 비교로 범위 과다, 단일 캡스톤으로 명확히 정의 어려움) = 4점 → dropped.
 - 상태: ready
 - 심사: 2026-11-06 /verify(21차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(zipcpu-icontrol·amd-axi-intc-pg099·mij001-axil-timer 모두 rechecked_at 없음) + 새로움 2(T1→T2→T3 단일 주제 3단계 커리큘럼 패키지 카탈로그 없음) + 적합성 3(T1 ~20 LUT, T2 ~100 LUT, T3 ~200 LUT 추정 모두 XC7A35T 20,800 LUT 여유 충분) + 완결성 2(각 단계 독립 RTL+TB, 단계별 Makefile 타겟 명확, 범위 정의됨) = 7점 → vetted. 보강: 근거 카드 rechecked_at 1건.
 - 차단조건재심사: 2026-11-06 /verify(22차), 근거 3(zipcpu-icontrol·amd-axi-intc-pg099·mij001-axil-timer 카드 3건, rechecked_at 불문) + 새로움 2(T1→T2→T3 단일 주제 3단계 커리큘럼 패키지 카탈로그 없음) + 적합성 3(T1 ~20 LUT, T2 ~100 LUT, T3 ~200 LUT 추정 모두 XC7A35T 20,800 LUT 여유 충분) + 완결성 2(각 단계 독립 RTL+TB 범위 명확) = 10점 ≥ 7점 → ready 승격 (사이클 2번째). WebFetch PROVENANCE_REQUIRED 전면 차단(22차 연속) §14.2 차단 조건 적용.
@@ -1614,3 +1617,39 @@
 - 난이도: 2 / 단계: T2
 - 상태: vetted
 - 심사: 2026-11-06 /verify(22차), 첫 raw→vetted 심사(표준, rechecked_at 기준). 근거 1(amd-axi-timebase-wdt-pg083 L2 카드 있음, rechecked_at 없지만 카드 존재) + 새로움 2(WDTOUT 하트비트 외부 출력 + 슈퍼바이저 모의 조합 카탈로그 없음) + 적합성 2(WDTOUT→Pmod 직접 연결 가능, 단 WDTOUT 핀 Basys3 xdc 매핑 미확인) + 완결성 2(WDTOUT→Pmod 출력 + FSM + 7세그 경고 범위 명확, RTL+TB 작성 가능) = 7점 → vetted. 보강: WDTOUT Basys3 xdc 매핑 확인, amd-axi-timebase-wdt-pg083 rechecked_at 추가.
+
+## I-120
+- id: I-120
+- 제목: 동결 맵 AXI 주소 충돌 검사기 IP (Python + Verilog `$error`)
+- 한 줄 요약: 내 판단: `config/soc_address_map.json` 동결 맵을 읽어 주소 중첩을 검사하고, Verilog `parameter`+`$error`/$finish 패턴으로 합성 전 충돌을 차단하는 파이썬 생성기 + RTL 가드 조합
+- 조합: 주변장치: 동결 맵(`config/soc_address_map.json`) + Python 주소 계산기 + Verilog elaboration-time `$error` 가드 + 테스트벤치 (겹침 케이스 자동 주입)
+- 근거 카드: alexforencich-verilog-axi-crossbar (elaboration-time $error 패턴, L3), zipcpu-wb2axip-crossbar-addrdecode (SLAVE_ADDR/MASK 추출, L2), zipcpu-wb2axip-easyaxil (MicroBlaze V AXI4-Lite 슬레이브 패턴, L3)
+- 근거 URL: https://zipcpu.com/blog/2019/07/17/crossbar.html, https://axion-hdl.readthedocs.io/
+- 새로움의 근거: 카탈로그에 "동결 맵 → 주소 충돌 검사 도구" 조합 없음. Python 생성기 + Verilog $error 가드를 한 패키지로 만든 사례 없음
+- Basys3 적합성의 근거: 내 판단: Python 도구는 CI 단계에서 실행, Verilog 가드는 모든 IP에 붙임. 보드 자원 소비 없음. 동결 맵 64KB 슬롯 → M_ADDR_WIDTH=16(최소 12 조건 충족)
+- 난이도: 2 / 단계: T2
+- 상태: raw
+
+## I-121
+- id: I-121
+- 제목: 2M+4S AXI4-Lite 소형 크로스바 IP (MicroBlaze V + 추가 마스터 1개)
+- 한 줄 요약: 내 판단: 동결 맵의 free_slots을 슬레이브 범위로 사용하는 2M+4S Verilog-2001 AXI4-Lite 소형 크로스바. 에러 슬레이브(DECERR), 우선순위 중재, elaboration-time $error 충돌 검출 포함
+- 조합: 주변장치: AXI4-Lite 크로스바 RTL + 에러 슬레이브 + 동결 맵 슬롯 2개 소비 (DMA 마스터 슬롯 + 크로스바 자체) + 형식 검증용 $onehot0 어서션
+- 근거 카드: alexforencich-verilog-axi-crossbar (범위 디코딩 패턴, L3), zipcpu-wb2axip-crossbar-addrdecode (에러 슬레이브·중재 규칙, L2), dpretet-axi-crossbar (라우팅 테이블·DECERR, L3)
+- 근거 URL: https://zipcpu.com/blog/2019/07/17/crossbar.html
+- 새로움의 근거: 카탈로그에 Basys3 대상 소형 AXI4-Lite 크로스바 + 동결 맵 연동 + 형식 어서션 조합 없음
+- Basys3 적합성의 근거: 내 판단: 2M+4S, 32비트 주소 → LUT ~200~400개 추정 (Yosys 추정 필요). 동결 맵 free_slots 2개 소비. BRAM 사용 없음
+- 난이도: 3 / 단계: T2
+- 상태: raw
+
+## I-122
+- id: I-122
+- 제목: AXI 주소 범위 테스트벤치 자동 생성기 (겹침·미매핑·에러 케이스)
+- 한 줄 요약: 내 판단: 동결 맵과 카드에서 주소 범위를 읽어, 범위 경계(base, base+size-1, base+size)와 겹침 케이스를 자동으로 주입하는 Verilog 테스트벤치를 생성하는 Python 도구
+- 조합: 주변장치: Python 테스트벤치 생성기 + AXI4-Lite 슬레이브 DUT + DECERR 경로 검증 + 경계값 자동 주입
+- 근거 카드: alexforencich-verilog-axi-crossbar (접수 제어·DECERR 패턴, L3), zipcpu-wb2axip-crossbar-addrdecode (에러 슬레이브 패턴, L2), zipcpu-wb2axip-easyaxil (AXI4-Lite 슬레이브 레지스터 패턴, L3)
+- 근거 URL: https://github.com/dpretet/axi-crossbar, https://zipcpu.com/blog/2019/07/17/crossbar.html
+- 새로움의 근거: 카탈로그에 경계값 자동 주입 테스트벤치 생성기 패턴 없음. 도구+테스트 조합
+- Basys3 적합성의 근거: 내 판단: Python 도구는 CI에서 실행, 생성된 테스트벤치는 iverilog/verilator로 실행. BRAM/LUT 소비 없음
+- 난이도: 2 / 단계: T2
+- 상태: raw
