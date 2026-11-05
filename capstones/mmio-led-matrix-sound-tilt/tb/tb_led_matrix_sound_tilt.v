@@ -193,10 +193,11 @@ module tb_led_matrix_sound_tilt;
         // CTRL = en=1
         axil_write(12'h000, 32'h0000_0001);
 
-        // 에너지 강제: energy_stored 내부 reg에 직접
-        // (soc_top-level energy_flat/energy_update 는 IIR 모듈이 구동하므로 force 불가)
+        // 에너지 강제: soc_top-level wire(energy_flat, energy_update)를 force해서
+        // RTL 경로(에너지 래칭 → bm_next 재계산 → bitmap 갱신)를 2사이클로 돌린다.
+        // wire force는 driving module(IIR)의 출력을 덮어쓰고 iverilog에서 올바르게 동작한다.
         // energy_stored[bb*ENERGY_W +: ENERGY_W]: band0=[31:0], band7=[255:224]
-        force u_soc.u_frame.energy_stored = {
+        force u_soc.energy_flat = {
             32'h4000_0000,  // band 7: bar_h=2 (상위3비트=010, bit28=0)
             32'h0000_0000,  // band 6: bar_h=0
             32'h0000_0000,  // band 5: bar_h=0
@@ -206,12 +207,14 @@ module tb_led_matrix_sound_tilt;
             32'h0000_0000,  // band 1: bar_h=0
             32'hFFFF_FFFF   // band 0: bar_h=8 (상위3비트=111, bit28=1)
         };
-        #0;  // combinational always@(*) 즉시 재평가 (bm_next 갱신)
-        force u_soc.u_frame.energy_pend = 1;
-        @(posedge clk);  // bitmap <= bm_next
-        force u_soc.u_frame.energy_pend = 0;
+        force u_soc.energy_update = 1;
+        @(posedge clk);  // 사이클1: energy_stored←energy_flat(NBA), energy_pend NBA←1, always@(*) 재평가
+        force u_soc.energy_update = 0;
+        @(posedge clk);  // 사이클2: energy_pend=1 → bitmap <= bm_next (올바름)
+        release u_soc.energy_flat;
+        release u_soc.energy_update;
         // bitmap 갱신 대기
-        repeat(5) @(posedge clk);
+        repeat(3) @(posedge clk);
 
         bm_snap = u_soc.bitmap;
 
@@ -269,8 +272,7 @@ module tb_led_matrix_sound_tilt;
             end
         end
 
-        release u_soc.u_frame.energy_stored;
-        release u_soc.u_frame.energy_pend;
+        // energy_flat / energy_update: 사이클2 직후에 이미 release 완료
 
         // ================================================================
         // TB2: 기울기 점 모드 비트맵 확인
@@ -281,14 +283,17 @@ module tb_led_matrix_sound_tilt;
         axil_write(12'h008, 32'h0000_0001);
 
         // X=0, Y=0 → dot_col = 0[9:6]+8 = 8, dot_row = 0[9:7]+4 = 4
-        force u_soc.u_frame.x_hold = 10'd0;
-        force u_soc.u_frame.y_hold = 10'd0;
-        #0;  // combinational always@(*) 재평가
-        force u_soc.u_frame.energy_pend = 1;
-        @(posedge clk);  // bitmap <= bm_next
-        force u_soc.u_frame.energy_pend = 0;
-        @(posedge clk);
-        repeat(5) @(posedge clk);
+        // soc_top-level wire force: adxl_valid를 2사이클 유지해
+        // x_hold/y_hold NBA 완료 후 bitmap 갱신 (NBA 순서 비결정성 대응)
+        force u_soc.x_tilt     = 10'sd0;
+        force u_soc.y_tilt     = 10'sd0;
+        force u_soc.adxl_valid = 1;
+        @(posedge clk);  // 사이클1: x_hold/y_hold NBA, bitmap <= bm_next(old x_hold — 미갱신)
+        @(posedge clk);  // 사이클2: adxl_valid=1 → bitmap <= bm_next(new x_hold/y_hold) ← 올바름
+        release u_soc.x_tilt;
+        release u_soc.y_tilt;
+        release u_soc.adxl_valid;
+        repeat(3) @(posedge clk);
         bm_snap = u_soc.bitmap;
 
         dot_col_exp = 8; dot_row_exp = 4;
@@ -302,16 +307,16 @@ module tb_led_matrix_sound_tilt;
 
         // X=511(최대 양수 10비트=0x1FF), Y=-512(최소 10비트=0x200)
         // x_hold[9:6] = 0x1FF >> 6 = 0x7 (3'd7) → dot_col = 7+8=15
-        // y_hold[9:7] = 0x200 >> 7 = 0x4 (부호 연장으로 상위 비트=1, 10'b10_0000_0000 >> 7 = 3'd4 → +4 = 8 → 오버플로 클램프=7
-        // y_hold = -512 → 10'b10_0000_0000: [9:7]=3'b100=4(부호 무시, 비트만), 4+4=8 > 7 → clamp=7
-        force u_soc.u_frame.x_hold = 10'h1FF;   // +511
-        force u_soc.u_frame.y_hold = 10'h200;   // -512 (2의 보수)
-        #0;  // combinational always@(*) 재평가
-        force u_soc.u_frame.energy_pend = 1;
-        @(posedge clk);  // bitmap <= bm_next
-        force u_soc.u_frame.energy_pend = 0;
-        @(posedge clk);
-        repeat(5) @(posedge clk);
+        // y_hold[9:7] = 0x200[9:7]=3'b100=4(부호 무시, 비트만), 4+4=8 > 7 → clamp=7
+        force u_soc.x_tilt     = 10'h1FF;   // +511
+        force u_soc.y_tilt     = 10'h200;   // -512 (2의 보수)
+        force u_soc.adxl_valid = 1;
+        @(posedge clk);  // 사이클1: x_hold/y_hold NBA
+        @(posedge clk);  // 사이클2: bitmap <= bm_next(new x_hold/y_hold) ← 올바름
+        release u_soc.x_tilt;
+        release u_soc.y_tilt;
+        release u_soc.adxl_valid;
+        repeat(3) @(posedge clk);
         bm_snap = u_soc.bitmap;
 
         dot_col_exp = 15; dot_row_exp = 7;  // 클램프 후
@@ -322,10 +327,6 @@ module tb_led_matrix_sound_tilt;
             fail_cnt = fail_cnt + 1;
         end else
             $display("  OK TB2_corner: X=511,Y=-512 → (row=7,col=15) 켜짐");
-
-        release u_soc.u_frame.x_hold;
-        release u_soc.u_frame.y_hold;
-        release u_soc.u_frame.energy_pend;
 
         // ================================================================
         // TB4: MAX7219 CS/CLK 활성화 여부
