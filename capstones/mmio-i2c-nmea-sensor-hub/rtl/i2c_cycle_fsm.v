@@ -313,7 +313,7 @@ module i2c_cycle_fsm (
 
                 S_PUSH: begin
                     raw_data     <= data_buf;
-                    dev_type     <= {5'd0, dev_idx};
+                    dev_type     <= {6'd0, dev_idx};  // 6+2=8 bits, matches output reg [7:0]
                     sample_valid <= 1'b1;
                     dev_idx      <= (dev_idx == 2'd2) ? 2'd0 : dev_idx + 1'b1;
                     state        <= S_WAIT;

@@ -181,3 +181,5 @@
 2026-11-05 08:41 | capstone | mmio-7seg-adv-ip (I-072, ready→used) | 등급 S0 (로컬 iverilog·yosys 없음, CI 대기) | AXI4-Lite 7세그 고급 IP: DATA+CTRL 2레지스터, blank[3:0]·dp[3:0]·16단계 PWM 밝기, 1kHz 멀티플렉서 FSM 포함 | schema 수정: mmio-relay-autotune-ip capstone.json 오류 6종 해결(signals 형식·integration compat·howto 형식·author_note·bus_protocol.note·module="-") | 큐 잔여 548
 - 2026-11-05 09:14 | collect | CRC 체크섬 하드웨어 계산기 [B3] · S1 인접 도메인 이식(주)+S3 빈틈 추적(보조) | 카드 +3 (L2) | 아이디어 +2 (I-099, I-100) | 큐 잔여 522 | blocked 0
 2026-11-05 10:16 | verify | 재열람 0 (CI 버그 수정 집중 사이클) | 수정 1 (axil_i2c_nmea_hub.v: irq_status 이중 always 블록 → 단일 블록 통합, STATUS 비트폭 24'd0, fifo_dout_latch [31:0], FIFO_HI/LO 읽기 로직, verilator lint_off) | 불일치 1 (irq_status 이중 드라이버 → T4 FAIL 원인) | 승격 L2→L3 0 | ready +0
+
+2026-11-05 10:24 | verify | 재열람 0 (lint 버그 수정 연속) | 수정 1 (i2c_cycle_fsm.v:316 dev_type <= {5'd0,dev_idx} → {6'd0,dev_idx}, WIDTHEXPAND 7→8비트 fix) | 불일치 1 (dev_type 7비트 → verilator -Wall WIDTHEXPAND 오류) | 승격 L2→L3 0 | ready +0
