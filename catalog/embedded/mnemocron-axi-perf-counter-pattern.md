@@ -16,6 +16,7 @@ stats: {stars: 2, forks: 1, last_update: 2024-01-01}
 doc_language: en
 verification: L3
 checked_at: 2026-11-06
+rechecked_at: 2026-11-06
 sources: [https://github.com/mnemocron/axi-perf-counter-pattern, https://repos.ecosyste.ms/hosts/GitHub/repositories/mnemocron%2Faxi-perf-counter-pattern]
 ---
 

@@ -1,7 +1,7 @@
 # AXI4-Lite 주변장치 IP 비교: INTC·타이머/WDT·레지스터 템플릿
 
-갱신: 2026-11-05 (/verify 25차). 카드 14건 기반.
-인터럽트 컨트롤러(INTC), 타이머·WDT, AXI4-Lite 슬레이브 레지스터 파일, AXI4 크로스바/인터커넥트 사례를 정리한다. 모두 MicroBlaze V SoC의 `free_slots` 배정과 관련된 주제다.
+갱신: 2026-11-06 (/verify 26차). 카드 17건 기반.
+인터럽트 컨트롤러(INTC), 타이머·WDT, AXI4-Lite 슬레이브 레지스터 파일, AXI4 크로스바/인터커넥트, AXI 성능 모니터링 사례를 정리한다. 모두 MicroBlaze V SoC의 `free_slots` 배정과 관련된 주제다.
 
 ---
 
@@ -103,6 +103,35 @@
 
 ---
 
+## 5. AXI 성능 모니터링
+
+(2026-11-06 /verify 26차 추가. 카드 3건 기반: zipcpu-wb2axip-axiperf, mnemocron-axi-perf-counter-pattern, restuccia-ecrts2019-axi-bus-contention)
+
+| 항목 | zipcpu-wb2axip-axiperf | mnemocron-axi-perf-counter-pattern | restuccia-ecrts2019-axi-bus-contention |
+|---|---|---|---|
+| 카드 | [zipcpu-wb2axip-axiperf](../catalog/vendor-neutral/zipcpu-wb2axip-axiperf.md) | [mnemocron-axi-perf-counter-pattern](../catalog/embedded/mnemocron-axi-perf-counter-pattern.md) | [restuccia-ecrts2019-axi-bus-contention](../catalog/papers/restuccia-ecrts2019-axi-bus-contention.md) |
+| 출처 종류 | 저장소 (rtl/axiperf.v) | 저장소 (3개 IP 코어) | 논문 (ECRTS 2019) |
+| 버스 | AXI4(모니터) + AXI4-Lite(제어) | AXI4 W채널 + AXI Stream(트리거) | AXI SmartConnect (Zynq HP 포트) |
+| 언어 | Verilog-2001 | VHDL | Verilog (트래픽 발생기·타이머) |
+| 측정 방식 | 채널별 bin 카운터(레이턴시·처리량·스톨·버스트) | 패턴 매칭(wdata/tdata) → 클럭 카운터 | 사이클 정밀도 트래픽 발생기 + 멀티채널 타이머 |
+| 측정 채널 | 읽기 6종 bin + 쓰기 15종 bin | start/stop 패턴 사이 클럭 주기 수 | 주소/데이터/응답 채널 지연 (실측) |
+| 주요 수치 | 레이턴시 bin, 처리량 %, 최대 미결 버스트 256 | 1회 측정값 (AXI-Lite 레지스터 읽기) | AR=12clk, DW=11clk, B=9clk (100MHz SmartConnect) |
+| 제어 인터페이스 | AXI4-Lite (start/stop/clear) | AXI4-Lite 읽기 레지스터 | AXI GPIO 동시 릴리스 |
+| 형식 검증 | iverilog/verilator/formal (wb2axip 공통) | GHDL 시뮬레이션 | 없음(논문 측정치) |
+| 라이선스 | Apache-2.0 | unknown | CC-BY-3.0 |
+| 등급 | L3 | L3 | L3 |
+| 단계 | T2 | T2 | T4 |
+| Basys3 적합성 | needs-port | needs-port | needs-port |
+
+**패턴 (내 판단):**
+- zipcpu axiperf: 풀 AXI4 버스 모니터로 읽기/쓰기 채널별 21종 bin을 측정한다. Apache-2.0 라이선스이며 Verilog-2001 단일 파일(`rtl/axiperf.v`) 구조라 Basys3 AXI-Lite 패브릭에 삽입 가능성이 가장 높다. 단, AXI4 버스 모니터이므로 AXI-Lite 전용으로 단순화(버스트·ID 카운터 제거)하면 LUT 사용량을 절반 이하로 줄일 수 있다.
+- mnemocron 패턴: AXI Stream TDATA 또는 AXI W채널 wdata 패턴 감지 → 클럭 카운터 방식으로 한 번의 왕복 레이턴시를 측정한다. VHDL 전용이므로 Verilog 환경에서는 래퍼 작성 필요. `axi_event_counter` 핵심 로직(start/stop 트리거 → 카운터)은 Verilog 30~50줄로 재작성 가능하며, MicroBlaze V의 AXI-Lite 쓰기 왕복 레이턴시를 직접 측정하는 단순 IP로 활용할 수 있다.
+- restuccia ECRTS2019: AXI SmartConnect의 채널별 고정 지연(AR=12clk, DW=11clk, B=9clk)을 실측으로 확정한 논문 수치다. Basys3의 MicroBlaze V + AXI SmartConnect 환경에서도 이 수치를 기준 비교값으로 쓸 수 있다. PS 메모리 지연(50/40clk)과 DDR4 환경은 적용 불가이나, AXI SmartConnect 자체 지연 수치는 Vivado IP 버전이 같으면 유효하다(내 판단).
+
+**MicroBlaze V 개조 경로 (내 판단):** axiperf.v의 AXI-Lite 단순화(I-126 아이디어) 버전을 `free_slots`(0xC800_0000 등) 1슬롯에 배정하면 C 드라이버(`Xil_Out32`/`Xil_In32`)로 start/stop/clear를 제어할 수 있다. mnemocron 아이디어(wvalid&wready→start, bvalid&bready→stop)를 Verilog로 재구현하면 더 단순한 쓰기 왕복 레이턴시 측정기가 된다. Restuccia 논문의 firmware 루프 방법론(2개 슬레이브 동시 write-read + XTmrCtr 측정)은 추가 RTL 없이 MicroBlaze V C 코드만으로 버스 경합 측정 패키지(I-127 아이디어)를 구성할 수 있다.
+
+---
+
 ## 조합 아이디어 요약
 
 | 아이디어 | 조합 | 근거 카드 | 상태 |
@@ -119,6 +148,8 @@
 | I-120 동결 맵 AXI 충돌 검사기 | Python 생성기 + Verilog $error 가드 | alexforencich-verilog-axi-crossbar, zipcpu-wb2axip-crossbar-addrdecode, zipcpu-wb2axip-easyaxil | vetted |
 | I-121 2M+4S AXI4-Lite 소형 크로스바 | 에러 슬레이브+중재+형식 어서션 | alexforencich-verilog-axi-crossbar, zipcpu-wb2axip-crossbar-addrdecode, dpretet-axi-crossbar | vetted |
 | I-122 AXI 주소 범위 TB 자동 생성기 | 경계값 주입+DECERR 검증 | alexforencich-verilog-axi-crossbar, zipcpu-wb2axip-crossbar-addrdecode, zipcpu-wb2axip-easyaxil | vetted |
+| I-126 AXI-Lite 버스 프로파일러 | axiperf 단순화 RTL + C드라이버 + UART | zipcpu-wb2axip-axiperf, restuccia-ecrts2019-axi-bus-contention, amoghvarsh-axi4-lite-timer-wdt | vetted |
+| I-127 버스 경합 firmware 측정 | 2슬레이브 동시 접근 + XTmrCtr 왕복 레이턴시 | restuccia-ecrts2019-axi-bus-contention, zipcpu-wb2axip-axiperf, mij001-axil-timer | vetted |
 
 ---
 

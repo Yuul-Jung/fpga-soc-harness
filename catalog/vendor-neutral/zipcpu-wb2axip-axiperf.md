@@ -16,6 +16,7 @@ stats: {stars: 422, forks: 94, last_update: 2026-06-01}
 doc_language: en
 verification: L3
 checked_at: 2026-11-06
+rechecked_at: 2026-11-06
 sources: [https://zipcpu.com/blog/2021/08/14/axiperf.html, https://github.com/ZipCPU/wb2axip, https://repos.ecosyste.ms/hosts/GitHub/repositories/ZipCPU%2Fwb2axip]
 ---
 
