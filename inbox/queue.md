@@ -667,3 +667,15 @@
 - https://github.com/ZipCPU/wb2axip | ZipCPU/wb2axip: AXI 브리지·유틸리티 라이브러리 (별 422, Apache-2.0, Verilog) — L3 열람 (GitHub 직접 접근 불가, blog 기준) | ZipCPU wb2axip AXI bridge utility Verilog Apache
 - https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ECRTS.2019.24 | ECRTS 2019 Dagstuhl 아티클 페이지 (CC BY 3.0) — 미열람(L1) | ECRTS 2019 AXI bus contention FPGA SoC LIPIcs
 - https://xilinx-wiki.atlassian.net/wiki/spaces/A/pages/18842550/Axi+Performance+Monitor+standalone | Xilinx APM standalone 드라이버 가이드 — L3 열람 (C 드라이버 중심, 하드웨어 세부 미포함) | Xilinx AXI performance monitor standalone driver
+
+## 2026-11-06 고정소수점 Q포맷 — 비트 성장·포화·반올림 (S1+S5)
+- https://github.com/enclustra/en_cl_fix | Enclustra en_cl_fix: MIT, VHDL, 7가지 반올림 모드(Trunc/NonSymPos/NonSymNeg/SymInf/SymZero/ConvEven/ConvOdd), 4가지 포화 모드(None/Warn/Sat/SatWarn), [S,I,F] 포맷 — L3 열람(VHDL 전용, Verilog 없음) | VHDL fixed-point rounding saturation enclustra MIT
+- https://opencores.org/project/fixed_point_arithmetic_parameterized | OpenCores: 파라미터화 고정소수점 연산 IP, Verilog, LGPL, N+Q비트 Q포맷, add/mul/div — L2(OpenCores 프로필만 열람) | opencores Verilog fixed-point parameterized LGPL
+- https://opencores.org/project/verilog_fixed_point_math_library | OpenCores: Verilog 고정소수점 수학 라이브러리 — 미열람(L1, 접근 실패 504) | Verilog fixed-point math library opencores
+- https://zipcpu.com/dsp/2017/08/11/simple-filter.html | ZipCPU 블로그: 반올림·포화가 포함된 간단한 FIR 필터 구현 — 미열람(L1) | ZipCPU DSP rounding saturation FIR filter Verilog
+- https://www.mathworks.com/help/hdlcoder/ug/guidelines-for-using-rounding-modes-for-fixed-point.html | MathWorks HDL Coder: 고정소수점 반올림 모드 가이드라인 — 미열람(L1) | MathWorks HDL Coder fixed-point rounding guidelines
+- https://intel.com/content/www/us/en/docs/programmable/683337/24-3/bit-growth.html | Intel DSP Builder 핸드북: FPGA 비트 성장 — 미열람(L1) | Intel FPGA DSP bit growth handbook
+- https://github.com/reconfigureio/fixed | reconfigureio/fixed: Go 언어로 FPGA 고정소수점 — 미열람(L1) | Go FPGA fixed-point reconfigureio
+- https://github.com/keatenstokke/FloatingPointLibrary | keatenstokke/FloatingPointLibrary: 부동소수 라이브러리 — 미열람(L1) | floating point library Verilog GitHub
+- https://www.allaboutcircuits.com/ip-cores/arithmetic-core/fixed-point-arithmetic-parameterized/ | All About Circuits: 파라미터화 고정소수점 연산 IP 소개 — 미열람(L1) | fixed-point arithmetic parameterized IP core
+- https://lay007.github.io/zynq-sdr-course/en/blocks/05-implementation/ | zynq-sdr-course Block 5: 고정소수점 모델에서 HDL 구현 — 미열람(L1, block04 후속) | zynq SDR course HDL implementation fixed-point Verilog VHDL

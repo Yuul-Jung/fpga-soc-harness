@@ -219,3 +219,4 @@
 2026-11-06 07:16 | capstone | mmio-rc-car-arb-ip | CI retry 2/3 | fix: verilator -g2001 제거, hcsr04_drv cnt 21→22비트, timescale 추가, TB DBG print 추가 | 등급 보류(CI 대기)
 2026-11-06 07:24 | collect | AXI IP 동시 구동 타이밍 분석 · S4 제약 역전(주)+S5 비정형 출처(보조) | 카드 +3 | 아이디어 +2 | 큐 잔여 595 | blocked 0
 2026-11-06 08:06 | capstone | mmio-rc-car-arb-ip | 사용자 지시로 수동 수정(예약 작업 아님, CI retry 카운트 외) | 원인: hcsr04_drv가 ECHO 상승 감지 클럭을 세지 않아 5800클럭을 5799로 측정(0 cm), TB는 posedge에서 echo를 바꿔 샘플링 경합 | fix: S_WAIT→S_MEAS 진입 시 cnt<=1, TB echo를 negedge 구동 | 로컬 시뮬레이터 없음, 파이썬 사이클 모델로 5800→1 cm 확인, CI 대기 | 등급 S0 보류
+2026-11-06 08:24 | collect | [B3] 고정소수점 Q포맷·비트성장·포화·반올림 (S1 인접도메인+S5 비정형출처) | 카드 +3 | 아이디어 +3 | 큐 잔여 10건 추가 | blocked 3(dsprelated PROVENANCE_REQUIRED, OpenCores 504, AMD docs 405)

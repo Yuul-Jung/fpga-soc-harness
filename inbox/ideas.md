@@ -1738,3 +1738,42 @@
 - Basys3 적합성의 근거: firmware만으로 구현(RTL 추가 없음), XTmrCtr BSP 포함, Basys3 MBv SoC에서 완전 가능 — 내 판단.
 - 난이도: 2 / 단계: T3 / 상태: raw
 - 심사: 2026-11-06 /harvest(S4). 근거 0(restuccia 카드 rechecked_at 없음) + 새로움 2(firmware 경합 측정 패키지 없음) + 적합성 3(XTmrCtr BSP 포함, 추가 RTL 없음) + 완결성 2(2슬레이브+타이머+UART 범위 명확) = 7점 → raw(첫심사). 보강: 근거 카드 rechecked_at 1건 이상.
+
+## I-128 Basys3 Q포맷 포화 가산기 IP: AXI4-Lite 슬레이브 + 7세그 결과 표시 (T2)
+
+내 판단: S1 인접 도메인 이식 — wangxuan95-fpga-fixedpoint의 fxp_addsub 아이디어를 GPL-3.0으로 복사 없이 재작성, AXI4-Lite 슬레이브로 감싸 동결 맵 free_slots에 연결. MicroBlaze V C 드라이버로 Q8.8 두 값을 써넣으면 덧셈 결과와 upflow 플래그를 읽어 7세그에 표시.
+
+- id: I-128
+- 조합: [Q8.8 포화 가산기 RTL(자체 작성), AXI4-Lite 슬레이브 래퍼, MicroBlaze V C 드라이버, Basys3 7세그 디코더]
+- 근거 카드: wangxuan95-fpga-fixedpoint, gisselquist-zipcpu-bit-growth
+- 근거 URL: https://github.com/WangXuan95/FPGA-FixedPoint, https://zipcpu.com/dsp/2017/07/21/bit-growth.html
+- 새로움의 근거: 카탈로그에 고정소수점 연산 AXI-Lite IP + 7세그 조합 없음 — 내 판단.
+- Basys3 적합성의 근거: Q8.8=16비트 가산기 약 20LUT 추정, AXI4-Lite 슬레이브 약 50LUT, 7세그 BCD 디코더 Basys3 내장 — Basys3 XC7A35T에서 여유 있게 가능 — 내 판단.
+- 난이도: 2 / 단계: T2 / 상태: raw
+- 심사: 2026-11-06 /harvest(S1). 근거 0(근거 카드 rechecked_at 없음, 금번 세션 신규) + 새로움 2(고정소수점 AXI-Lite IP 조합 없음) + 적합성 3(20+50LUT 추정, Basys3 가능) + 완결성 2(RTL+래퍼+드라이버+7세그 범위 명확) = 7점 → raw(첫심사). 보강: 근거 카드 rechecked_at 1건 이상.
+
+## I-129 Basys3 파라미터화 FIR 필터 고정소수점 MAC 유닛 (T4)
+
+내 판단: S2 조합 탐색 — lay007-zynq-sdr-course-block04의 비트 성장 규칙(계수 Q1.15, 누산기 Q4.28, 출력 Q1.15)을 적용한 Basys3 FIR 필터. DSP48E1으로 Q포맷 곱셈을 추론시키고, 가드 비트 계산을 capstone.json에 명시. 계수 배열은 BRAM에 저장.
+
+- id: I-129
+- 조합: [Q1.15 FIR 계수 BRAM, Q4.28 누산기, DSP48E1 추론 곱셈, Q1.15 출력 포화+반올림, AXI4-Stream 인터페이스]
+- 근거 카드: lay007-zynq-sdr-course-block04, wangxuan95-fpga-fixedpoint, gisselquist-zipcpu-bit-growth
+- 근거 URL: https://lay007.github.io/zynq-sdr-course/en/blocks/04-fixed-point-workflow/
+- 새로움의 근거: 카탈로그에 Basys3 순수 PL FIR + DSP48E1 + Q포맷 명세 패키지 없음 — 내 판단.
+- Basys3 적합성의 근거: 탭 16개 FIR → DSP48E1 16개 → XC7A35T 90개 중 18%, BRAM 1개, LUT ~200 추정 — 내 판단.
+- 난이도: 3 / 단계: T4 / 상태: raw
+- 심사: 2026-11-06 /harvest(S2). 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(Basys3 FIR Q포맷 명세 패키지 없음) + 적합성 3(DSP48E1×16 XC7A35T 가능) + 완결성 1(AXI-Stream 인터페이스 추가 정의 필요) = 6점 → raw(첫심사). 보강: AXI-Stream 인터페이스 범위 확정 + 근거 카드 rechecked_at.
+
+## I-130 고정소수점 비트폭 계산기: 덧셈·곱셈·FIR 가드 비트 자동 산출 웹 도구 (T0)
+
+내 판단: S5 비정형 출처 — gisselquist-zipcpu-bit-growth와 lay007-zynq-sdr-course-block04의 비트 성장 규칙을 근거로, Basys3 캡스톤 설계 보조 도구를 만든다. Q포맷 입력(I, F, 연산 종류, 탭 수)을 넣으면 필요 비트폭을 자동 계산해 capstone.json `memory_map` 필드에 붙여 넣을 수 있는 형태로 출력.
+
+- id: I-130
+- 조합: [Python/HTML 웹 계산기, Q포맷 비트 성장 공식, FIR 가드 비트 공식, capstone.json 출력 템플릿]
+- 근거 카드: gisselquist-zipcpu-bit-growth, lay007-zynq-sdr-course-block04
+- 근거 URL: https://zipcpu.com/dsp/2017/07/21/bit-growth.html, https://lay007.github.io/zynq-sdr-course/en/blocks/04-fixed-point-workflow/
+- 새로움의 근거: 카탈로그에 capstone.json 연동 비트폭 보조 도구 없음 — 내 판단.
+- Basys3 적합성의 근거: 소프트웨어 도구(RTL 불필요), 하네스 tools/ 디렉터리에 추가 — 내 판단.
+- 난이도: 1 / 단계: T0 / 상태: raw
+- 심사: 2026-11-06 /harvest(S5). 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(capstone.json 연동 도구 없음) + 적합성 3(소프트웨어 도구, 하드웨어 불필요) + 완결성 2(계산 공식·출력 형식 명확) = 7점 → raw(첫심사). 보강: 근거 카드 rechecked_at 1건 이상.

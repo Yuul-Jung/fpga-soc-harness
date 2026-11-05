@@ -264,3 +264,6 @@
 | [zipcpu-wb2axip-axiperf](vendor-neutral/zipcpu-wb2axip-axiperf.md) | L3 | T2 | 없음 (Basys3 needs-port) | 2026-11-06 |
 | [mnemocron-axi-perf-counter-pattern](embedded/mnemocron-axi-perf-counter-pattern.md) | L3 | T2 | 없음 (Basys3 needs-port) | 2026-11-06 |
 | [restuccia-ecrts2019-axi-bus-contention](papers/restuccia-ecrts2019-axi-bus-contention.md) | L3 | T4 | Zynq-7020/ZCU102 (Basys3 needs-port) | 2026-11-06 |
+| [wangxuan95-fpga-fixedpoint](vendor-neutral/wangxuan95-fpga-fixedpoint.md) | L3 | T4 | 없음 (Basys3 needs-port) | 2026-11-06 |
+| [lay007-zynq-sdr-course-block04](papers/lay007-zynq-sdr-course-block04.md) | L3 | T4 | 없음 (방법론) | 2026-11-06 |
+| [gisselquist-zipcpu-bit-growth](papers/gisselquist-zipcpu-bit-growth.md) | L3 | T4 | 없음 (방법론) | 2026-11-06 |
