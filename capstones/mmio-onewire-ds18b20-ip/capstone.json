@@ -1,0 +1,311 @@
+{
+  "slug": "mmio-onewire-ds18b20-ip",
+  "title": "AXI4-Lite 1-Wire 비트 마스터 IP (DS18B20)",
+  "summary": "DS18B20 온도 센서를 위한 1-Wire 비트 마스터 하드웨어 IP. RST/WR_BIT/RD_BIT 세 연산을 AXI4-Lite MMIO 인터페이스로 노출하고, 온도 변환 명령 시퀀스와 스크래치패드 읽기는 소프트웨어(데모 FSM)가 담당한다. 슬롯 [0E] 0x400E_0000, intc=6.",
+  "board": "Basys3",
+  "stage": "T2",
+  "goals": [
+    "DS18B20 1-Wire 비트 마스터 연산(RST, WR_BIT, RD_BIT)을 AXI4-Lite MMIO IP로 구현",
+    "동결 맵 슬롯 [0E] 0x400E_0000 / intc=6 사용, mbv-frozen-v2 호환",
+    "DS18B20 존재 감지(presence pulse) 및 비트 단위 읽기/쓰기 타이밍을 100 MHz 클럭 기준 하드웨어 FSM으로 처리",
+    "IRQ 기반 비동기 완료 통지 (IRQ_EN, ICLR 레지스터)",
+    "iverilog 시뮬레이션에서 DS18B20 행동 모델과 RST→WR→RD 시퀀스 PASS 확인"
+  ],
+  "non_goals": [
+    "CRC-8 계산 (소프트웨어에서 처리)",
+    "온도 변환 명령 시퀀스 자동화 (소프트웨어 드라이버 담당)",
+    "멀티 드롭 주소 지정 (단일 DS18B20 가정)",
+    "기생 전원 공급 (외부 풀업 + 별도 VDD 가정)",
+    "보드 동작 확인 (S3 — 사람만 올릴 수 있음)"
+  ],
+  "architecture": {
+    "clock": "100 MHz 시스템 클럭(clk); active-low 동기 리셋(rst_n). 1-Wire 타이밍은 CLK_MHZ 파라미터로 조정.",
+    "blocks": [
+      {
+        "id": "top",
+        "name": "basys3_top_onewire",
+        "kind": "board_wrapper",
+        "module": "basys3_top_onewire",
+        "file": "rtl/basys3_top_onewire.v",
+        "desc": "Basys3 보드 최상위 래퍼 — clk, reset, Pmod JA 오픈드레인 I/O",
+        "short": "Board Top",
+        "side": "top"
+      },
+      {
+        "id": "ow",
+        "name": "axil_onewire_bm",
+        "kind": "peripheral",
+        "module": "axil_onewire_bm",
+        "file": "rtl/axil_onewire_bm.v",
+        "desc": "AXI4-Lite 1-Wire 비트 마스터 — RST/WR_BIT/RD_BIT FSM, 4개 레지스터",
+        "short": "1-Wire BM",
+        "side": "right"
+      },
+      {
+        "id": "demo",
+        "name": "demo_onewire",
+        "kind": "controller",
+        "module": null,
+        "file": "rtl/basys3_top_onewire.v",
+        "desc": "Demo FSM (basys3_top_onewire 내장) — 존재 감지 후 SKIP ROM + CONVERT T + READ SCRATCHPAD 9바이트 시퀀스",
+        "short": "Demo FSM",
+        "side": "left"
+      },
+      {
+        "id": "pmod",
+        "name": "pmod_onewire",
+        "kind": "external",
+        "module": null,
+        "file": null,
+        "desc": "Pmod JA 1번 핀 → DS18B20 DQ (오픈드레인, 외부 4.7 kΩ 풀업 to 3.3V)",
+        "short": "Pmod 1-Wire",
+        "side": "right"
+      },
+      {
+        "id": "ds18b20",
+        "name": "DS18B20",
+        "kind": "external",
+        "module": null,
+        "file": null,
+        "desc": "Dallas/Maxim DS18B20 1-Wire 온도 센서 — 3.3V VDD, DQ, GND",
+        "short": "DS18B20",
+        "side": "right"
+      }
+    ],
+    "links": [
+      {
+        "from": "top",
+        "to": "ow",
+        "label": "AXI4-Lite (CTRL/STATUS/START/ICLR)"
+      },
+      {
+        "from": "top",
+        "to": "demo",
+        "label": "clk, rst_n, AXI4-Lite write"
+      },
+      {
+        "from": "demo",
+        "to": "ow",
+        "label": "s_axil_* (awaddr, wdata, START=1)"
+      },
+      {
+        "from": "ow",
+        "to": "pmod",
+        "label": "ow_drive (pull-low), ow_sense (read)"
+      },
+      {
+        "from": "pmod",
+        "to": "ds18b20",
+        "label": "DQ 1-Wire (4.7kΩ pull-up to 3.3V)"
+      },
+      {
+        "from": "ow",
+        "to": "top",
+        "label": "irq (INTC ch.6)"
+      }
+    ]
+  },
+  "bus_protocol": {
+    "type": "AXI4-Lite",
+    "data_width": 32,
+    "addr_width": 32,
+    "signals": [
+      "s_axil_awaddr[31:0]", "s_axil_awvalid", "s_axil_awready",
+      "s_axil_wdata[31:0]", "s_axil_wstrb[3:0]", "s_axil_wvalid", "s_axil_wready",
+      "s_axil_bresp[1:0]", "s_axil_bvalid", "s_axil_bready",
+      "s_axil_araddr[31:0]", "s_axil_arvalid", "s_axil_arready",
+      "s_axil_rdata[31:0]", "s_axil_rresp[1:0]", "s_axil_rvalid", "s_axil_rready"
+    ],
+    "limits": [
+      "쓰기 채널: AW/W 순서 무관(aw_done/w_done 각각 래치). bresp 항상 OKAY(2'b00)",
+      "읽기 채널: arvalid 단일 사이클 등록 → rvalid 다음 사이클. rresp 항상 OKAY",
+      "START 레지스터(0x08): WO, bit[0]=1 쓰기 한 사이클 → start_trig 콤비네이셔널 펄스",
+      "ICLR 레지스터(0x0C): WO, bit[0]=1 쓰기 한 사이클 → irq_pend 클리어",
+      "CTRL, STATUS는 연속 쓰기/읽기 가능. BUSY=1일 때 START 무시됨"
+    ]
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "mbv-frozen-v2",
+    "compat": "compatible",
+    "plan": "동결 맵 슬롯 [0E] 0x400E_0000 (64KB) / intc=6 그대로 사용. 추가 슬롯 불필요.",
+    "frozen_mapping": {
+      "ow": "[0E] 0x400E_0000"
+    }
+  },
+  "external_parts": [
+    {
+      "id": "u_ds18b20",
+      "name": "DS18B20 1-Wire 디지털 온도 센서",
+      "block": "ds18b20",
+      "interface": "1-Wire (open-drain, single-pin DQ)",
+      "io_voltage": "3.3V",
+      "supply_voltage": "3.0V–5.5V (VDD 모드)",
+      "qty": 1,
+      "board_resident": false,
+      "level_shift": false,
+      "power_note": "DS18B20 VDD를 보드 3.3V 레일에 연결. GND 공통. 기생 전원(DQ로만 전력 공급) 미사용.",
+      "arduino_compatible": true,
+      "notes": "TO-92 패키지. DQ 핀에 4.7 kΩ 풀업 저항(3.3V)을 직렬로 연결. Pmod JA 1번 핀 사용."
+    },
+    {
+      "id": "r_pullup",
+      "name": "4.7 kΩ 풀업 저항",
+      "block": "pmod",
+      "interface": "DQ ↔ 3.3V",
+      "io_voltage": "3.3V",
+      "qty": 1,
+      "board_resident": false,
+      "level_shift": false,
+      "power_note": "DQ 오픈드레인 풀업. 1/4 W 이상."
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "디지털 계통도(diagram.svg)와 별개. 전기 회로도 미작성 — 외부 부품 절에서 DQ 핀 풀업 연결 기술."
+  },
+  "hierarchy": [
+    {
+      "module": "basys3_top_onewire",
+      "file": "rtl/basys3_top_onewire.v",
+      "children": [
+        {
+          "module": "axil_onewire_bm",
+          "file": "rtl/axil_onewire_bm.v",
+          "children": []
+        }
+      ]
+    }
+  ],
+  "_note_hierarchy": "demo_onewire FSM은 basys3_top_onewire 모듈 내부에 always 블록으로 구현됨. 별도 모듈 미분리.",
+  "memory_map": [
+    {
+      "region": "onewire",
+      "base": "0x400E_0000",
+      "size": "0x10000",
+      "block": "ow",
+      "regs": [
+        {
+          "off": "0x0000",
+          "name": "CTRL",
+          "access": "RW",
+          "desc": "[1:0]=OP(00=NOP,01=RST,10=WR_BIT,11=RD_BIT) [2]=WBIT [16]=IRQ_EN"
+        },
+        {
+          "off": "0x0004",
+          "name": "STATUS",
+          "access": "RO",
+          "desc": "[0]=BUSY [1]=PRESENCE [2]=RBIT [3]=IRQ"
+        },
+        {
+          "off": "0x0008",
+          "name": "START",
+          "access": "WO",
+          "desc": "bit[0]=1 → 연산 시작 (self-clearing 콤비네이셔널)"
+        },
+        {
+          "off": "0x000C",
+          "name": "ICLR",
+          "access": "WO",
+          "desc": "bit[0]=1 → IRQ 클리어"
+        }
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T1",
+      "state": "done",
+      "title": "UART+GPIO 기초 SoC",
+      "refs": ["mmio-uart-gpio-skeleton"]
+    },
+    {
+      "stage": "T2",
+      "state": "current",
+      "title": "1-Wire 비트 마스터 AXI4-Lite IP (DS18B20)",
+      "refs": []
+    },
+    {
+      "stage": "T2",
+      "state": "planned",
+      "title": "1-Wire 바이트 마스터 — ROM Search, 멀티 드롭, CRC HW 체커",
+      "refs": []
+    },
+    {
+      "stage": "T3",
+      "state": "planned",
+      "title": "MicroBlaze V 드라이버 통합 — C 드라이버 + FreeRTOS 태스크",
+      "refs": []
+    }
+  ],
+  "references": [
+    {
+      "card": "analog-maxim-interfacing-ds18x20",
+      "why": "DS18B20 1-Wire 타이밍 명세 (RST 480µs, WR0 71µs, WR1 70µs, RD 샘플 9µs) 참조"
+    },
+    {
+      "card": "cvut-pehnelt-2014-vhdl-periferie-nexys4",
+      "why": "VHDL 1-Wire 마스터 FSM 상태 분할 패턴 참조 (비트 마스터/바이트 마스터 분리)"
+    },
+    {
+      "card": "opencores-onewire-ds1820",
+      "why": "오픈소스 1-Wire 마스터 AXI 인터페이스 구조 참조 (사양만, 코드 미복사)"
+    }
+  ],
+  "sources": {
+    "rtl": [
+      "rtl/axil_onewire_bm.v",
+      "rtl/basys3_top_onewire.v"
+    ],
+    "tb": [
+      "tb/tb_onewire_bm.v"
+    ],
+    "constraints": [
+      "constr/basys3_onewire.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
+  },
+  "howto": [
+    {
+      "title": "시뮬레이션 (iverilog)",
+      "steps": [
+        "make lint  — RTL 문법 검사 (iverilog -tnull)",
+        "make sim   — DS18B20 행동 모델과 RST/WR/RD 시퀀스 검증; 'PASS: ...' 출력 확인",
+        "make synth — yosys로 자원 추정 (XC7A35T 기준)"
+      ]
+    },
+    {
+      "title": "Vivado 합성",
+      "steps": [
+        "Vivado에서 rtl/axil_onewire_bm.v, rtl/basys3_top_onewire.v를 프로젝트에 추가한다.",
+        "constr/basys3_onewire.xdc를 제약 파일로 추가한다.",
+        "top=basys3_top_onewire으로 합성·구현한다.",
+        "합성 후 LUT/FF/BRAM 사용량과 WNS를 기록한다."
+      ]
+    },
+    {
+      "title": "보드 연결 (참고)",
+      "steps": [
+        "DS18B20 DQ → Pmod JA 1번 핀 (JA[0]) + 4.7 kΩ 풀업 to 3.3V",
+        "DS18B20 VDD → Pmod JA 6번 핀 (3.3V)",
+        "DS18B20 GND → Pmod JA 5번 핀 (GND)",
+        "CTRL 레지스터에 OP=01(RST), START=1 쓰기 → PRESENCE 비트로 감지 확인",
+        "소프트웨어: CC(SKIP ROM) → 44(CONVERT T) → RST → CC → BE(READ SCRATCHPAD) 순서로 9바이트 읽기"
+      ]
+    }
+  ],
+  "verification": {
+    "board": "not-tested",
+    "notes": "시뮬레이션: DS18B20 행동 모델(presence pulse + 비트 에코)과 RST→WR→RD 3단계 검증. S3(보드 동작)는 미수행."
+  },
+  "risks": [
+    "1-Wire 타이밍이 정확해야 함: CLK_MHZ != 100이면 TRSTL 등 상수를 재계산해야 함",
+    "오픈드레인 풀업 필수: ow_drive=1이 DQ를 Low로 구동하므로 외부 4.7 kΩ 풀업 없이는 동작 안 됨",
+    "기생 전원 미지원: DS18B20 VDD 별도 공급 필요",
+    "비트 마스터만 제공: 바이트 시퀀스(SKIP ROM, CONVERT T, READ SCRATCHPAD)는 소프트웨어/데모 FSM 담당",
+    "IRQ 미사용 시: IRQ_EN=0이면 폴링(BUSY 비트) 방식으로 완료 확인"
+  ],
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 Verilog-2001 원본이며 외부 코드를 포함하지 않는다. DS18B20 데이터시트 타이밍을 직접 구현. 테스트벤치는 행동 모델(DS18B20 presence pulse, 비트 에코)을 포함한 자체 점검형."
+}

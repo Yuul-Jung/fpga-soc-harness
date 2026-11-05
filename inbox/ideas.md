@@ -340,8 +340,7 @@
 - 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(digilent-pmod-oled-reference-manual·lushaylabs-tang-nano-9k-ssd1306-oled·masterplayer-lcd-st7789-sv, rechecked_at 불문) → 차단 근거 3 + 새로움 2(OLED IP 없음) + 적합성 2(Pmod 1개·512 B BRAM 소량) + 완결성 2(초기화 ROM+버퍼 범위 명확) = 9점 ≥ 7, 사이클 상한 2건 도달로 vetted 유지. 다음 사이클에서 ready 승격 가능.
 
 ## I-030 1-Wire 온도 IP: 비트 마스터 하드웨어 + 스크래치패드·CRC 소프트웨어 분담, DS18B20 모델 포함 테스트벤치
-- 상태: vetted
-- 상태: ready
+- 상태: used (패키지: mmio-onewire-ds18b20-ip, 2026-11-06 /capstone)
 - 요약: 내 판단: 리셋·쓰기 비트·읽기 비트만 FSM으로 구현한 1-Wire 비트 마스터를 AXI4-Lite 레지스터(명령, 데이터, 상태, 완료 인터럽트)로 노출하고, Convert T 대기·CRC·ROM 선택은 소프트웨어가 맡는다. 테스트벤치는 DS18B20 응답 모델로 프레즌스와 스크래치패드 바이트열을 비교한다.
 - 조합: [DS18B20(1-Wire), AXI4-Lite 레지스터, 타이머 인터럽트, 7세그/UART 표시]
 - 근거: [cvut-pehnelt-2014-vhdl-periferie-nexys4, analog-maxim-interfacing-ds18x20, opencores-onewire-ds1820]
