@@ -127,7 +127,7 @@ module tb_rc_car_arb;
         // 에코 드라이버: L/C/R 각각 5800 클럭(= 1 cm)
         for (i = 0; i < 3; i = i + 1) begin
             $display("DBG: waiting for trig[%0d]", i);
-            @(posedge trig);            // TRIG 상승
+            if (!trig) @(posedge trig); // TRIG 상승 (이미 high면 skip)
             $display("DBG: trig[%0d] high at %0t", i, $time);
             @(negedge trig);            // TRIG 하강 (1000 클럭 후)
             $display("DBG: trig[%0d] low, sending echo", i);

@@ -21,7 +21,9 @@ module motor_ctrl (
     output reg        bin2,
     output wire       pwm_b
 );
+    /* verilator lint_off UNUSEDPARAM */
     localparam DIR_STOP  = 2'b00;
+    /* verilator lint_on UNUSEDPARAM */
     localparam DIR_FWD   = 2'b01;
     localparam DIR_BWD   = 2'b10;
     localparam DIR_SPINL = 2'b11;
