@@ -647,3 +647,15 @@
 - https://www.github.com/dpretet/axi-crossbar/blob/main/doc/architecture.md | dpretet/axi-crossbar 아키텍처 문서: 주소+ID 디코딩 그림 — 미열람(L1) | AXI crossbar architecture address ID decoding diagram
 - https://github.com/kepler-space/verilog-axi | kepler-space/verilog-axi: alexforencich 포크 추정 — 미열람(L1) | AXI crossbar verilog fork
 - https://arxiv.org/pdf/2502.19215 | "A Multicast-Capable AXI Crossbar for Many-core ML Accelerators" 논문 — 미열람(L1) | AXI crossbar multicast paper many-core
+
+## 2026-11-06 MicroBlaze V BSP 드라이버 등록 절차 (S3+S1)
+- https://docs.amd.com/r/en-US/ug1400-vitis-embedded/Creating-a-Platform-Project | AMD UG1400 Vitis Unified Platform 프로젝트 생성 공식 가이드 — 미열람(L1) | Vitis Unified Platform project BSP XSA MicroBlaze
+- https://docs.amd.com/r/en-US/ug1400-vitis-embedded/Libraries-and-Drivers | AMD UG1400 BSP 라이브러리·드라이버 절차 — 미열람(L1) | Vitis BSP driver library standalone xparameters
+- https://docs.amd.com/viewer/book-id/UG1137 | AMD UG1137 Vitis 임베디드 소프트웨어 개발 가이드 (BSP 커스터마이제이션 포함) — 미열람(L1) | Vitis BSP customization driver MicroBlaze xparameters
+- https://docs.amd.com/r/en-US/pg144-axi-gpio | AMD PG144 AXI GPIO v2.0 Product Guide — 미열람(L1), AXI GPIO IP 레지스터 맵, XPAR 매크로 발생 메커니즘 | AXI GPIO MicroBlaze XPAR xparameters register map
+- https://docs.amd.com/r/en-US/pg021-axi-uart-lite | AMD PG021 AXI UART Lite Product Guide — 미열람(L1), UART IP 레지스터·XPAR 매크로 예시 | AXI UART Lite XPAR register map MicroBlaze
+- https://github.com/kimdh315/soc_axi_microblaze | MicroBlaze SoC AXI 주변장치 한국어 GitHub — 미열람(L1) | MicroBlaze Basys3 AXI SoC Korean
+- https://github.com/taeseong-dev/axi4-lite-custom-peripherals | AXI4-Lite 커스텀 주변장치(I2C+SPI+MicroBlaze) 한국어 — 미열람(L1) | AXI4-Lite MicroBlaze custom peripheral Korean GitHub
+- https://www.hackster.io/search?q=MicroBlaze+BSP+Vitis&i=projects | Hackster MicroBlaze Vitis BSP 관련 프로젝트 검색 결과 — 미열람(L1) | MicroBlaze Vitis BSP custom driver Hackster
+- https://support.xilinx.com/s/article/821864 | Xilinx 지원 아티클: AXI GPIO MicroBlaze standalone BSP 사용 패턴 — 미열람(L1) | AXI GPIO BSP standalone driver xparameters Xilinx
+- https://www.fpga4fun.com/MusicBox1.html | fpga4fun 오디오 MicroBlaze 드라이버 예시 — 미열람(L1), S1 인접 도메인(오디오→SoC 드라이버 패턴) | MicroBlaze audio driver AXI peripheral fpga4fun

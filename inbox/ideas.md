@@ -1661,3 +1661,42 @@
 - 난이도: 2 / 단계: T2
 - 상태: vetted
 - 심사: 2026-11-06 /verify(23차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·zipcpu-wb2axip-easyaxil 모두 rechecked_at 없음) + 새로움 2(경계값 자동 주입 테스트벤치 생성기 패턴 카탈로그 없음) + 적합성 2(Python CI 도구, iverilog/verilator 실행, BRAM/LUT 소비 없음이나 생성기 도구 사례 미확인) + 완결성 2(경계값 주입+DECERR 검증+TB 생성 범위 명확) = 6점 → vetted. 보강: 근거 카드 rechecked_at 추가.
+
+## I-123 Vitis BSP 커스텀 AXI4-Lite 드라이버 등록 단계별 캡스톤 (mdd/tcl + sinit.c 패턴, T3)
+
+내 판단: S3 빈틈 추적 — 카탈로그 T3 갭 중 "Vitis BSP에 커스텀 AXI4-Lite 드라이버를 등록하는 단계별 패키지"가 없다. mtvl-for-fpga 블로그의 mdd/tcl 구조(data/ + src/)와 hackster SHA-256의 xparameters.h XPAR 패턴을 조합하면, MicroBlaze V + Vitis 2024.2 환경에서 libgen이 `XPAR_<IP>_0_BASEADDR`를 자동 생성하는 전 과정을 T3 캡스톤으로 구성할 수 있다.
+
+- id: I-123
+- 조합: [커스텀 AXI4-Lite 슬레이브 IP(Verilog), mdd/tcl 드라이버 메타데이터, Vitis BSP 빌드, xparameters.h XPAR 매크로 검증 TB]
+- 근거 카드: mtvl-for-fpga-standalone-axi-driver, hackster-sha256-microblaze-v-axi-accelerator, salmon1113-vitis-microblaze-gpio-setup
+- 근거 URL: https://mtvl-for-fpga.blogspot.com/2019/02/how-to-create-standalone-driver-to.html, https://www.hackster.io/raymondkelly454/sha-256-hardware-accelerator-for-microblaze-v-zybo-7000-eb4e99
+- 새로움의 근거: 카탈로그에 mdd/tcl+sinit.c 패턴을 처음부터 만드는 MicroBlaze V Vitis 2024.2 캡스톤 없음 — 내 판단.
+- Basys3 적합성의 근거: 커스텀 AXI4-Lite 슬레이브 LUT < 300개, 동결 맵 free_slots 1슬롯. BSP 드라이버 등록은 소프트웨어 흐름이므로 보드 자원 증가 최소 — 내 판단.
+- 난이도: 3 / 단계: T3 / 상태: raw
+- 심사: 2026-11-06 /harvest(S3+S1). 근거 0(세 근거 카드 rechecked_at 없음) + 새로움 2(mdd/tcl+sinit.c 단계별 T3 캡스톤 없음) + 적합성 2(AXI4-Lite free_slots 1슬롯, BSP 소프트웨어 흐름, Basys3 가능) + 완결성 2(mdd/tcl+sinit.c+LookupConfig+TB 범위 명확) = 6점 → raw(첫심사). 보강: 근거 카드 rechecked_at 1건 이상.
+
+## I-124 MicroBlaze V xparameters.h XPAR 매크로 자동 검증 CI 스크립트 (T3)
+
+내 판단: S1 인접 도메인 이식 — hackster SHA-256의 `XPAR_SHA256_COMPRESSION_0_BASEADDR`와 salmon1113의 `XPAR_AXI_GPIO_0_BASEADDR` 패턴을 근거로, Vitis BSP 빌드 후 생성된 xparameters.h의 XPAR 매크로 베이스 주소가 동결 맵(`config/soc_address_map.json`)의 `free_slots` 배정 주소와 일치하는지 CI에서 자동 검사하는 Python 스크립트 아이디어. 소프트웨어와 하드웨어 주소 맵이 어긋나는 버그를 BSP 빌드 단계에서 조기에 차단할 수 있다.
+
+- id: I-124
+- 조합: [Python CI 스크립트, xparameters.h 파서, config/soc_address_map.json 동결 맵 비교, XPAR 매크로 베이스 주소 검증]
+- 근거 카드: mtvl-for-fpga-standalone-axi-driver, hackster-sha256-microblaze-v-axi-accelerator, salmon1113-vitis-microblaze-gpio-setup
+- 근거 URL: https://mtvl-for-fpga.blogspot.com/2019/02/how-to-create-standalone-driver-to.html
+- 새로움의 근거: 카탈로그에 xparameters.h XPAR 매크로를 동결 맵과 자동 대조하는 CI 도구 없음 — 내 판단.
+- Basys3 적합성의 근거: Python 도구이므로 보드 자원 소비 없음. CI iverilog 실행 환경에서 그대로 활용 가능 — 내 판단.
+- 난이도: 2 / 단계: T3 / 상태: raw
+- 심사: 2026-11-06 /harvest(S1+S3). 근거 0(세 근거 카드 rechecked_at 없음) + 새로움 2(XPAR 매크로 동결 맵 자동 대조 도구 없음) + 적합성 3(Python CI 도구, 보드 자원 없음, 동결 맵과 직접 연동 가능) + 완결성 2(Python 파서+비교기+리포트 범위 명확) = 7점 → raw(첫심사). 보강: 근거 카드 rechecked_at 1건 이상.
+
+## I-125 AXI GPIO 직접 접근 vs Xil_In32/Out32 vs 고수준 드라이버 성능 비교 테스트벤치 (T3)
+
+내 판단: S7 난이도 사다리 — salmon1113 GPIO 카드의 레지스터 직접 접근(오프셋 0x00/0x04)과 hackster SHA-256의 `Xil_Out32`/`Xil_In32` 패턴, 그리고 mtvl-for-fpga의 `LookupConfig → CfgInitialize` 고수준 드라이버를 같은 GPIO IP에 단계별로 적용해 성능(사이클 수)을 비교하는 C 소프트웨어 테스트벤치. MicroBlaze V 위에서 실제 구현 비용 차이를 수치로 보여주는 T3 학습용 패키지.
+
+- id: I-125
+- 조합: [AXI GPIO IP, raw 포인터 직접 접근, Xil_Out32/Xil_In32 래퍼, LookupConfig+CfgInitialize 고수준 드라이버, XTmrCtr 사이클 카운터, C 소프트웨어 비교 TB]
+- 근거 카드: salmon1113-vitis-microblaze-gpio-setup, hackster-sha256-microblaze-v-axi-accelerator, mtvl-for-fpga-standalone-axi-driver
+- 근거 URL: https://salmon1113.tistory.com/140, https://www.hackster.io/raymondkelly454/sha-256-hardware-accelerator-for-microblaze-v-zybo-7000-eb4e99
+- 새로움의 근거: 카탈로그에 세 가지 AXI GPIO 접근 계층 비교 테스트벤치 없음 — 내 판단.
+- Basys3 적합성의 근거: AXI GPIO + XTmrCtr IP 조합은 Basys3 MicroBlaze V에서 완전히 가능. BSP에 포함된 IP 사용만으로 추가 LUT 최소 — 내 판단.
+- 난이도: 2 / 단계: T3 / 상태: raw
+- 심사: 2026-11-06 /harvest(S7). 근거 0(세 근거 카드 rechecked_at 없음) + 새로움 2(세 계층 비교 테스트벤치 카탈로그 없음) + 적합성 3(AXI GPIO+XTmrCtr Basys3 완전 가능, 추가 LUT 최소) + 완결성 2(raw 포인터+Xil_In32/Out32+LookupConfig 세 계층+측정 범위 명확) = 7점 → raw(첫심사). 보강: 근거 카드 rechecked_at 1건 이상.

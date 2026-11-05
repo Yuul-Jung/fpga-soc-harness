@@ -258,3 +258,6 @@
 | [alexforencich-verilog-axi-crossbar](vendor-neutral/alexforencich-verilog-axi-crossbar.md) | L3 | T2 | 없음 (Basys3 needs-port) | 2026-11-06 |
 | [dpretet-axi-crossbar](vendor-neutral/dpretet-axi-crossbar.md) | L3 | T2 | 없음 (Basys3 needs-port) | 2026-11-06 |
 | [zipcpu-wb2axip-crossbar-addrdecode](vendor-neutral/zipcpu-wb2axip-crossbar-addrdecode.md) | L2 | T2 | 없음 (Basys3 needs-port) | 2026-11-06 |
+| [mtvl-for-fpga-standalone-axi-driver](amd/mtvl-for-fpga-standalone-axi-driver.md) | L3 | T3 | Artix-7 (Basys3 needs-port) | 2026-11-06 |
+| [hackster-sha256-microblaze-v-axi-accelerator](amd/hackster-sha256-microblaze-v-axi-accelerator.md) | L3 | T4 | Zybo 7000 (Basys3 needs-port) | 2026-11-06 |
+| [salmon1113-vitis-microblaze-gpio-setup](amd/salmon1113-vitis-microblaze-gpio-setup.md) | L3 | T3 | Basys3 (needs-port) | 2026-11-06 |

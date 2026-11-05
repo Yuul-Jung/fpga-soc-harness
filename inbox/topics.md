@@ -125,7 +125,7 @@
 - [x] [B3] AXI Interconnect 베이스 주소 충돌 회피 패턴 (동결 맵, 주소 레인지 계산, 테스트벤치) — 2026-11-05 /capstone 사이클 (수집 단계, L1/L2 큐 등록만); 2026-11-06 카드 3건(alexforencich-verilog-axi-crossbar, dpretet-axi-crossbar, zipcpu-wb2axip-crossbar-addrdecode)
 
 ## SoC 통합 준비 (2026-11-04 추가)
-- [ ] [B3] MicroBlaze V SoC 주변장치 등록 절차 (xparameters.h 자동 생성, BSP 빌드, 소프트웨어 드라이버 연결)
+- [x] [B3] MicroBlaze V SoC 주변장치 등록 절차 (xparameters.h 자동 생성, BSP 빌드, 소프트웨어 드라이버 연결) — 2026-11-06 카드 3건(mtvl-for-fpga-standalone-axi-driver, hackster-sha256-microblaze-v-axi-accelerator, salmon1113-vitis-microblaze-gpio-setup)
 - [ ] [B3] 여러 AXI IP 동시 구동 타이밍 분석 (버스 경합, 레이턴시 측정, 성능 카운터)
 
 ## NPU 설계 테크트리 — Basys3 기반 (2026-11-04 추가, 위에서부터 소비)
