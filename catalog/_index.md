@@ -237,3 +237,6 @@
 | [wangxuan95-fpga-uart](embedded/wangxuan95-fpga-uart.md) | L2 | T1 | 없음 (Basys3 needs-port) | 2026-11-05 |
 | [alexforencich-verilog-uart](embedded/alexforencich-verilog-uart.md) | L2 | T1 | 없음 (Basys3 needs-port) | 2026-11-05 |
 | [mightypork-tinyframe](embedded/mightypork-tinyframe.md) | L2 | T1 | 없음 (C 라이브러리) | 2026-11-05 |
+| [fcayci-xilinx-vga-framebuffer-ip-core](amd/fcayci-xilinx-vga-framebuffer-ip-core.md) | L2 | T2 | Xilinx (Basys3 needs-port) | 2026-11-05 |
+| [projf-projf-explore](vendor-neutral/projf-projf-explore.md) | L2 | T2 | Arty S7 / iCE40 UP5K (Basys3 needs-port) | 2026-11-05 |
+| [talsania-fpga-image-buffer](vendor-neutral/talsania-fpga-image-buffer.md) | L2 | T2 | 미명시 (Basys3 needs-port) | 2026-11-05 |

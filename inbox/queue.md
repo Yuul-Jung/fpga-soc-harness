@@ -571,3 +571,15 @@
 - https://github.com/halftop/Interface-Protocol-in-Verilog | halftop/Interface-Protocol-in-Verilog: 다양한 인터페이스 프로토콜 Verilog 구현(UART 포함) — 미열람 L1 | UART framing protocol header payload checksum FPGA Verilog
 - https://github.com/MightyPork/TinyFrame | MightyPork/TinyFrame: 임베디드 직렬 프레이밍 프레임워크(C, 헤더+길이+체크섬+SLIP) — 미열람 L1(C 라이브러리, 참고) | UART framing tiny frame SLIP detect checksum embedded
 - https://opencores.org/project,auto_baud | OpenCores auto_baud: FPGA 자동 보드레이트 검출 IP — 미열람 L1 | auto baud rate detection FPGA Verilog slip framing UART
+
+## VGA 더블 버퍼링 사이클 (2026-11-05)
+- https://github.com/fcayci/xilinx_vga_framebuffer_ip_core | Xilinx VGA IP 코어: 듀얼포트 BRAM 프레임버퍼 (CPU·VGA 공유 접근), Verilog — L2 카드 작성 완료 | Basys3 VGA double buffering BRAM dual port Verilog GitHub FPGA
+- https://github.com/projf/projf-explore | Project F: FPGA 그래픽 교육 저장소, BRAM 기반 애니메이션·VGA 타이밍, SystemVerilog — L2 카드 작성 완료 | projf-explore FPGA framebuffer BRAM VGA double buffer SystemVerilog
+- https://github.com/talsania/fpga-image-buffer | 듀얼포트 BRAM 프레임버퍼 + UART 이미지 로더, Verilog VGA 출력 — L2 카드 작성 완료 | fpga image buffer BRAM uart loader VGA
+- https://github.com/tallenintegsys/framebuffer | FPGA 비디오 프레임버퍼 + VGA 출력 — 미열람 L1 | framebuffer VGA FPGA BRAM output video controller
+- https://github.com/opengateware-modules/video-framebuffer | SystemVerilog BRAM 비디오 프레임버퍼, 화면 회전·HDMI/VGA 지원 — 미열람 L1 | opengateware video-framebuffer SystemVerilog BRAM HDMI rotation
+- https://forum.digilent.com/topic/13461-vga-graphics-sprite-animation-and-double-buffering/ | Digilent 포럼: Basys3 VGA 스프라이트 애니메이션과 더블 버퍼링 질의·답변 — 미열람 L1 | digilent VGA graphics sprite animation double buffering Basys3
+- https://docs.numato.com/kb/simple-hdmi-vga-framebuffer-design-example-on-neso-artix-7-fpga-board/ | Numato Artix-7 HDMI/VGA BRAM 프레임버퍼 설계 예제 (Neso 보드, S5 비정형) — 미열람 L1 | numato artix-7 framebuffer BRAM design example VGA HDMI
+- https://natalieagus.github.io/50002/fpga/shared-ram-gpu-cpu | SUTD 강의: FPGA GPU·CPU BRAM 공유 메모리, 핑퐁 패턴 (S5 대학 강의) — 미열람 L1 | natalieagus FPGA shared RAM GPU CPU BRAM ping pong
+- https://redpitaya-knowledgebase.readthedocs.io/en/latest/learn_fpga/4_lessons/PingPong.html | Red Pitaya FPGA 교육: 핑퐁 BRAM 버퍼 패턴 실습 (S5 비정형) — 미열람 L1 | redpitaya FPGA ping pong BRAM lesson double buffer
+- https://hackaday.com/2016/06/16/no-frame-buffer-for-fpga-vga-graphics | Hackaday: 프레임버퍼 없는 FPGA VGA 그래픽 (래스터 스캔라인 생성, S4 제약역전 반례) — 미열람 L1 | hackaday no frame buffer FPGA VGA graphics scanline raster

@@ -1410,3 +1410,19 @@
 - 난이도: 4
 - 단계: T2
 - 상태: raw
+
+## I-104: BRAM 핑퐁 더블 버퍼 VGA 컨트롤러 (Basys3 T2, S4 제약 역전)
+- id: I-104
+- 제목: BRAM 핑퐁 더블 버퍼 VGA 컨트롤러
+- 상태: raw
+- 요약: 내 판단: Basys3의 no-dram 제약을 역전해, 2개의 듀얼포트 BRAM을 핑퐁으로 운용하는 테어링 없는 VGA 프레임버퍼 컨트롤러. 비활성 버퍼에 MicroBlaze V가 AXI4-Lite로 픽셀 쓰기, 활성 버퍼를 VGA 스캔; VSync에서 버퍼 전환. 160×120×8비트 (2버퍼 ≈ 38 KB, 225 KB BRAM 예산 충분).
+- 조합: [video-vga, BRAM]
+- 근거 카드:
+  - fcayci-xilinx-vga-framebuffer-ip-core (L2, 듀얼포트 BRAM 공유 접근 패턴)
+  - projf-projf-explore (L2, BRAM 기반 VGA 그래픽 교육 사례)
+  - talsania-fpga-image-buffer (L2, BRAM 프레임버퍼 + 로더 패턴)
+- 새로움의 근거: 카탈로그에 더블 버퍼 VGA 패키지 없음; 기존 VGA 카드(oakland-ece378-group4-keyboard2vga 등)는 단일 버퍼 또는 직접 렌더링만 다룸.
+- Basys3 적합성의 근거: Basys3 XC7A35T — BRAM 50개(225 KB 총 용량); 160×120×1 byte×2 버퍼 = 38.4 KB로 BRAM 예산 17% 사용. 12비트 VGA 저항 DAC 직결. Pmod 추가 불필요. 내 계산.
+- 난이도: 2 (T2 범위, AXI4-Lite 슬레이브 + BRAM TDP 인스턴스 + VGA 타이밍이 전부)
+- 단계: T2
+- S4 제약역전 근거: DDR 없음 → BRAM만으로 가능 → 저해상도 더블 버퍼 → 더 단순하고 결정론적인 RTL
