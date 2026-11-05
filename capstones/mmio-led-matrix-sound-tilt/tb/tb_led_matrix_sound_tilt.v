@@ -188,27 +188,27 @@ module tb_led_matrix_sound_tilt;
         // ================================================================
         $display("=== TB1: 소리 막대 모드 ===");
 
-        // CI fix v5: energy_stored 직접 강제 → mode write로 always@(*) 트리거
-        // (force on output-driven wire는 iverilog에서 무효; force on reg + 외부 이벤트 필요)
-        // 1) energy_stored를 mode write 전에 강제 (reg 직접 접근)
+        // MODE = 00 (소리 막대)
+        axil_write(12'h008, 32'h0000_0000);
+        // CTRL = en=1
+        axil_write(12'h000, 32'h0000_0001);
+
+        // 에너지 강제: energy_stored 내부 reg에 직접
+        // (soc_top-level energy_flat/energy_update 는 IIR 모듈이 구동하므로 force 불가)
+        // energy_stored[bb*ENERGY_W +: ENERGY_W]: band0=[31:0], band7=[255:224]
         force u_soc.u_frame.energy_stored = {
-            32'h4000_0000,  // band 7: bar_h=2 (상위3비트=010)
+            32'h4000_0000,  // band 7: bar_h=2 (상위3비트=010, bit28=0)
             32'h0000_0000,  // band 6: bar_h=0
             32'h0000_0000,  // band 5: bar_h=0
             32'h0000_0000,  // band 4: bar_h=0
             32'h0000_0000,  // band 3: bar_h=0
             32'h0000_0000,  // band 2: bar_h=0
             32'h0000_0000,  // band 1: bar_h=0
-            32'hFFFF_FFFF   // band 0: bar_h=7 (상위3비트=111)
+            32'hFFFF_FFFF   // band 0: bar_h=8 (상위3비트=111, bit28=1)
         };
-        // 2) mode=00 AXI 쓰기 → mode 와이어 변화 → always@(*) 재평가
-        //    → forced energy_stored 값으로 bm_next 계산됨
-        axil_write(12'h008, 32'h0000_0000);
-        // 3) CTRL 쓰기
-        axil_write(12'h000, 32'h0000_0001);
-        // 4) energy_pend 강제로 bitmap 갱신 트리거 (1클럭 펄스)
+        #0;  // combinational always@(*) 즉시 재평가 (bm_next 갱신)
         force u_soc.u_frame.energy_pend = 1;
-        @(posedge clk);
+        @(posedge clk);  // bitmap <= bm_next
         force u_soc.u_frame.energy_pend = 0;
         // bitmap 갱신 대기
         repeat(5) @(posedge clk);
@@ -283,9 +283,10 @@ module tb_led_matrix_sound_tilt;
         // X=0, Y=0 → dot_col = 0[9:6]+8 = 8, dot_row = 0[9:7]+4 = 4
         force u_soc.u_frame.x_hold = 10'd0;
         force u_soc.u_frame.y_hold = 10'd0;
-        force u_soc.adxl_valid = 1;
-        @(posedge clk);
-        force u_soc.adxl_valid = 0;
+        #0;  // combinational always@(*) 재평가
+        force u_soc.u_frame.energy_pend = 1;
+        @(posedge clk);  // bitmap <= bm_next
+        force u_soc.u_frame.energy_pend = 0;
         @(posedge clk);
         repeat(5) @(posedge clk);
         bm_snap = u_soc.bitmap;
@@ -305,12 +306,10 @@ module tb_led_matrix_sound_tilt;
         // y_hold = -512 → 10'b10_0000_0000: [9:7]=3'b100=4(부호 무시, 비트만), 4+4=8 > 7 → clamp=7
         force u_soc.u_frame.x_hold = 10'h1FF;   // +511
         force u_soc.u_frame.y_hold = 10'h200;   // -512 (2의 보수)
-        // CI fix v5: reg force는 always@(*) 비트리거 → mode 토글로 bm_next 재계산
-        axil_write(12'h008, 32'h0000_0000);  // mode 01→00: tilt 비활성화
-        axil_write(12'h008, 32'h0000_0001);  // mode 00→01: forced x_hold/y_hold로 corner dot 계산
-        force u_soc.adxl_valid = 1;
-        @(posedge clk);
-        force u_soc.adxl_valid = 0;
+        #0;  // combinational always@(*) 재평가
+        force u_soc.u_frame.energy_pend = 1;
+        @(posedge clk);  // bitmap <= bm_next
+        force u_soc.u_frame.energy_pend = 0;
         @(posedge clk);
         repeat(5) @(posedge clk);
         bm_snap = u_soc.bitmap;
@@ -326,7 +325,7 @@ module tb_led_matrix_sound_tilt;
 
         release u_soc.u_frame.x_hold;
         release u_soc.u_frame.y_hold;
-        release u_soc.adxl_valid;
+        release u_soc.u_frame.energy_pend;
 
         // ================================================================
         // TB4: MAX7219 CS/CLK 활성화 여부

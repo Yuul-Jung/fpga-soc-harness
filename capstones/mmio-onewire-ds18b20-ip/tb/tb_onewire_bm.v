@@ -122,21 +122,18 @@ task axi_write;
     input [31:0] addr;
     input [31:0] data;
     begin
-        // 고정 클럭 카운팅 방식 — NBA 경쟁 조건 없음
-        // awready = !aw_done (조합). P1 posedge 직후 활성 영역에서
-        // aw_done NBA가 아직 미적용이라 while(!awready)가 즉시 탈출하는
-        // 경쟁 조건을 피하기 위해 고정 3-클럭 시퀀스를 쓴다.
+        // awready가 1(=aw_done=0)인 것을 확인한 뒤 주소/데이터 제시
         @(posedge clk); #1;
+        while (!s_awready) begin @(posedge clk); #1; end
         s_awaddr  = addr; s_awvalid = 1;
-        s_wdata   = data; s_wvalid  = 1; s_bready = 1;
-        // P1: DUT가 AW+W 캡처 → aw_done/w_done NBA to 1
-        @(posedge clk); #1;
-        s_awvalid = 0; s_wvalid = 0;    // 재캡처 방지
-        // P2: do_write fires → bvalid_r NBA to 1
-        @(posedge clk);
-        // P3: bvalid_r=1 && bready=1 → B-phase → aw_done/w_done/bvalid_r NBA to 0
-        @(posedge clk); #1;
-        s_bready = 0;
+        s_wdata   = data; s_wstrb   = 4'hF; s_wvalid = 1;
+        s_bready  = 1;
+        @(posedge clk); #1;  // DUT가 AW+W 캡처 (aw_done/w_done ← 1)
+        s_awvalid = 0; s_wvalid = 0;
+        // bvalid가 올 때까지 대기 (do_write → bvalid_r ← 1)
+        while (!s_bvalid) begin @(posedge clk); #1; end
+        @(posedge clk); #1;  // B 핸드셰이크 완료 (bvalid=1,bready=1 → 클리어)
+        s_bready  = 0;
     end
 endtask
 
@@ -145,19 +142,17 @@ task axi_read;
     input  [31:0] addr;
     output [31:0] data;
     begin
-        // 고정 클럭 카운팅 방식 — NBA 경쟁 조건 없음
-        // arready = !ar_active (조합). P1 posedge 직후 활성 영역에서
-        // ar_active NBA가 미적용이고 r_rdata NBA도 미적용이라,
-        // while(!arready)가 즉시 탈출 후 stale r_rdata를 읽는 경쟁 조건을 피한다.
+        // arready가 1(=ar_active=0)인 것을 확인한 뒤 주소 제시
         @(posedge clk); #1;
+        while (!s_arready) begin @(posedge clk); #1; end
         s_araddr  = addr; s_arvalid = 1; s_rready = 1;
-        // P1: DUT가 AR 캡처 → ar_active NBA to 1, r_rdata NBA to new_val
-        @(posedge clk); #1;
-        s_arvalid = 0;              // 재캡처 방지
-        // P2: ar_active=1 && rready=1 → ar_active NBA to 0
-        @(posedge clk); #1;
-        s_rready = 0;
-        data = s_rdata;             // P2 NBA 적용 후 r_rdata = new_val
+        @(posedge clk); #1;  // DUT가 AR 캡처 (ar_active←1)
+        s_arvalid = 0;
+        // rvalid(=ar_active)가 올 때까지 대기
+        while (!s_rvalid) begin @(posedge clk); #1; end
+        data = s_rdata;
+        @(posedge clk); #1;  // R 핸드셰이크 완료 (ar_active←0)
+        s_rready  = 0;
     end
 endtask
 
