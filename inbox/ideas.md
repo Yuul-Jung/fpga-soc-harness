@@ -1229,9 +1229,10 @@
 - 새로움의 근거: 카탈로그에 디바운스 3방식을 같은 테스트벤치로 비교하는 아이디어 없음. 기존 카드들은 각자 단일 방식을 다루며 비교 연구 조합 없음.
 - Basys3 적합성의 근거: 순수 Verilog 시뮬레이션으로 보드 없이 검증 가능(iverilog/verilator). RTL 약 200줄 이내. 비교 출력을 7세그에 연결하면 T1 보드 실험도 가능.
 - 내 판단: S4 제약 역전 사례 — FPGA는 세 모듈이 동일 클럭에서 병렬 동작하므로 비교 테스트벤치 작성이 MCU에서보다 훨씬 간단. 디바운스 방식 선택의 근거를 실측 사이클 수로 보여주는 교육 가치가 높음(내 판단). 하네스 CI의 iverilog에서 바로 실행 가능.
-- 난이도: 2 / 단계: T0-T1 / 상태: vetted
+- 난이도: 2 / 단계: T0-T1 / 상태: ready
 - 심사: 2026-11-05 /verify(14차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(nandland-project4-debounce-switch·byu-ecen220-lab08-debounce-basys3 모두 rechecked_at 없음) + 새로움 2(디바운스 3방식을 같은 테스트벤치로 비교하는 아이디어 카탈로그 없음; 기존 카드들은 각자 단일 방식만 다룸) + 적합성 3(순수 Verilog 시뮬레이션으로 보드 없이 iverilog/verilator 검증 가능, RTL ~200줄 이내, 하네스 CI 직접 실행 가능) + 완결성 2(3방식 모듈 + 단일 테스트벤치 범위 명확, 10ms 채터→15ms 안정→1ms 추가 채터 패턴 명세, $display 사이클 수 비교 출력 TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득, SR래치 방식 RTL 상세 명세화.
 - 차단조건재심사: 2026-11-05, /verify(17차), 모든 WebFetch PROVENANCE_REQUIRED 차단(17차 연속). 근거 카드 총 2건(nandland-project4-debounce-switch, byu-ecen220-lab08-debounce-basys3, rechecked_at 불문) → 근거 2 + 새로움 2 + 적합성 3 + 완결성 2 = 9점 ≥ 7, 사이클 한도(2건) 소진 → vetted 유지.
+- 차단조건재심사: 2026-11-05 /verify(25차), 모든 WebFetch PROVENANCE_REQUIRED 차단(25차 연속). 근거 카드 총 2건(nandland-project4-debounce-switch, byu-ecen220-lab08-debounce-basys3, rechecked_at 불문) → 근거 2 + 새로움 2(디바운스 3방식을 같은 테스트벤치로 비교하는 아이디어 카탈로그 없음) + 적합성 3(순수 Verilog 시뮬레이션으로 보드 없이 iverilog/verilator 검증 가능, RTL ~200줄 이내, 하네스 CI 직접 실행 가능) + 완결성 2(3방식 모듈 + 단일 테스트벤치 범위 명확, $display 사이클 수 비교 출력 TB 작성 가능) = 9점 ≥ 7 → ready 승격. 25차 1번째. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-090 BRAM 더블 버퍼 DMA + VGA 라인 스트리밍 (S2 조합: DMA + 디스플레이)
 
@@ -1242,9 +1243,10 @@
 - 근거 URL: [https://xilinx.github.io/xup_embedded_system_design_flow/lab7.html]
 - 새로움의 근거: 카탈로그에 AXI CDMA + VGA 더블 버퍼 조합 아이디어 없음. 기존 VGA 카드들은 BRAM 단일 버퍼 또는 OV7670 직결 방식이고, CDMA 하드웨어 블록 복사를 VGA 파이프라인에 연결하는 패턴 없음.
 - Basys3 적합성의 근거: Basys3 BRAM 50블록 × 18Kb = 225Kb 가용. 320×240 1bpp 흑백 = 9.375Kb(1블록 미만), 320×240 8bpp = 75Kb(5블록). AXI CDMA는 DDR 없이 BRAM-to-BRAM 전송 가능(free_slots 2슬롯). VGA 타이밍 카운터는 T2 수준 기존 RTL 재사용.
-- 난이도: 3 / 단계: T3 / 상태: vetted
+- 난이도: 3 / 단계: T3 / 상태: ready
 - 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(AXI CDMA+VGA 더블 버퍼 조합 없음) + 적합성 2(BRAM 계산 명시, DDR 불필요) + 완결성 1(CDMA 슬롯 2개 배정 범위 미결) = 5점. 보강: 근거 카드 rechecked_at 1건 이상.
 - 차단조건재심사: 2026-11-05, /verify(17차). 근거 카드 총 2건(xilinx-xup-cdma-lab7, digilent-forum-21706-basys3-mb-io, rechecked_at 불문) → 근거 2 + 새로움 2 + 적합성 2 + 완결성 1 = 7점 ≥ 7, 사이클 한도(2건) 소진 → vetted 유지.
+- 차단조건재심사: 2026-11-05 /verify(25차), 모든 WebFetch PROVENANCE_REQUIRED 차단(25차 연속). 근거 카드 총 2건(xilinx-xup-cdma-lab7, digilent-forum-21706-basys3-mb-io, rechecked_at 불문) → 근거 2 + 새로움 2(AXI CDMA+VGA 더블 버퍼 조합 카탈로그 없음) + 적합성 2(BRAM 50블록×18Kb=225Kb, 320×240 8bpp=75Kb=5블록 여유, DDR 불필요) + 완결성 1(CDMA 슬롯 2개 배정 범위 미결이나 TB 구조 명확) = 7점 ≥ 7 → ready 승격. 25차 2번째 (사이클 상한 채움). WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-091 인터럽트 없는 폴링 DMA 엔진 순수 FSM — CPU 오프로드 블록 복사 (S2 조합: DMA + 베어메탈)
 
@@ -1625,6 +1627,7 @@
 - 심사: 2026-11-06 /verify(22차), 첫 raw→vetted 심사(표준, rechecked_at 기준). 근거 1(amd-axi-timebase-wdt-pg083 L2 카드 있음, rechecked_at 없지만 카드 존재) + 새로움 2(WDTOUT 하트비트 외부 출력 + 슈퍼바이저 모의 조합 카탈로그 없음) + 적합성 2(WDTOUT→Pmod 직접 연결 가능, 단 WDTOUT 핀 Basys3 xdc 매핑 미확인) + 완결성 2(WDTOUT→Pmod 출력 + FSM + 7세그 경고 범위 명확, RTL+TB 작성 가능) = 7점 → vetted. 보강: WDTOUT Basys3 xdc 매핑 확인, amd-axi-timebase-wdt-pg083 rechecked_at 추가.
 - 차단조건재심사: 2026-11-06 /verify(23차), 근거 3(amd-axi-timebase-wdt-pg083·suoglu-axi-lite-slave·amoghvarsh-axi4-lite-timer-wdt 카드 3건, rechecked_at 불문) + 새로움 2(WDTOUT 하트비트 외부 출력+슈퍼바이저 모의 조합 카탈로그 없음) + 적합성 2(WDTOUT→Pmod 직접 연결 가능이나 xdc 매핑 미확인) + 완결성 2(출력+FSM+7세그 경고 범위 명확) = 9점 ≥ 7점. 단, 사이클 한도(ready +2) 소진(I-112·I-114 먼저 승격)으로 vetted 유지. 다음 사이클 ready 후보.
 - 차단조건재심사: 2026-11-06 /verify(24차), 근거 3(amd-axi-timebase-wdt-pg083·suoglu-axi-lite-slave·amoghvarsh-axi4-lite-timer-wdt 카드 3건, rechecked_at 불문) + 새로움 2(WDTOUT 하트비트 외부 출력+슈퍼바이저 모의 조합 카탈로그 없음) + 적합성 2(WDTOUT→Pmod 직접 연결 가능이나 xdc 매핑 미확인) + 완결성 2(출력+FSM+7세그 경고 범위 명확) = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-115·I-116 승격)으로 vetted 유지. 다음 사이클 ready 후보.
+- 차단조건재심사: 2026-11-05 /verify(25차), 모든 WebFetch PROVENANCE_REQUIRED 차단(25차 연속). 근거 3(amd-axi-timebase-wdt-pg083·suoglu-axi-lite-slave·amoghvarsh-axi4-lite-timer-wdt 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-089·I-090 승격)으로 vetted 유지. 다음 사이클 ready 1순위 후보.
 
 ## I-120
 - id: I-120
@@ -1639,6 +1642,7 @@
 - 상태: vetted
 - 심사: 2026-11-06 /verify(23차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·zipcpu-wb2axip-easyaxil 모두 rechecked_at 없음) + 새로움 2(동결 맵 → 주소 충돌 검사기 조합 카탈로그 없음, Python 생성기+Verilog $error 가드 패키지 사례 없음) + 적합성 2(Python CI 도구+Verilog $error 가드 보드 자원 없음이나 동결 맵→Verilog parameter 변환 도구 사례 미확인) + 완결성 2(Python 생성기+Verilog 가드+TB 범위 명확) = 6점 → vetted. 보강: 근거 카드 rechecked_at 추가.
 - 차단조건재심사: 2026-11-06 /verify(24차), 근거 3(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·zipcpu-wb2axip-easyaxil 카드 3건, rechecked_at 불문) + 새로움 2(동결 맵→주소 충돌 검사기 조합 카탈로그 없음) + 적합성 2(Python CI 도구+Verilog $error 가드 보드 자원 없음이나 도구 사례 미확인) + 완결성 2(Python 생성기+Verilog 가드+TB 범위 명확) = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-115·I-116 승격)으로 vetted 유지. 다음 사이클 ready 후보.
+- 차단조건재심사: 2026-11-05 /verify(25차), 모든 WebFetch PROVENANCE_REQUIRED 차단(25차 연속). 근거 3(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·zipcpu-wb2axip-easyaxil 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-089·I-090 승격)으로 vetted 유지. 다음 사이클 ready 2순위 후보.
 
 ## I-121
 - id: I-121
@@ -1653,6 +1657,7 @@
 - 상태: vetted
 - 심사: 2026-11-06 /verify(23차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·dpretet-axi-crossbar 모두 rechecked_at 없음) + 새로움 2(Basys3 대상 소형 AXI4-Lite 크로스바+동결 맵 연동+형식 어서션 조합 카탈로그 없음) + 적합성 2(LUT ~200~400개 추정이나 Yosys 미검증, free_slots 2개 소비 여유 미확인) + 완결성 2(2M+4S 에러 슬레이브+중재 RTL+TB 범위 명확) = 6점 → vetted. 보강: Yosys LUT 추정 확인, free_slots 여유 확인.
 - 차단조건재심사: 2026-11-06 /verify(24차), 근거 3(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·dpretet-axi-crossbar 카드 3건, rechecked_at 불문) + 새로움 2(Basys3 대상 소형 AXI4-Lite 크로스바+동결 맵 연동+형식 어서션 조합 카탈로그 없음) + 적합성 2(LUT ~200~400개 추정이나 Yosys 미검증, free_slots 2개 소비 여유 미확인) + 완결성 2(2M+4S 에러 슬레이브+중재 RTL+TB 범위 명확) = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-115·I-116 승격)으로 vetted 유지. 다음 사이클 ready 후보.
+- 차단조건재심사: 2026-11-05 /verify(25차), 모든 WebFetch PROVENANCE_REQUIRED 차단(25차 연속). 근거 3(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·dpretet-axi-crossbar 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-089·I-090 승격)으로 vetted 유지. 다음 사이클 ready 3순위 후보.
 
 ## I-122
 - id: I-122
@@ -1667,6 +1672,7 @@
 - 상태: vetted
 - 심사: 2026-11-06 /verify(23차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·zipcpu-wb2axip-easyaxil 모두 rechecked_at 없음) + 새로움 2(경계값 자동 주입 테스트벤치 생성기 패턴 카탈로그 없음) + 적합성 2(Python CI 도구, iverilog/verilator 실행, BRAM/LUT 소비 없음이나 생성기 도구 사례 미확인) + 완결성 2(경계값 주입+DECERR 검증+TB 생성 범위 명확) = 6점 → vetted. 보강: 근거 카드 rechecked_at 추가.
 - 차단조건재심사: 2026-11-06 /verify(24차), 근거 3(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·zipcpu-wb2axip-easyaxil 카드 3건, rechecked_at 불문) + 새로움 2(경계값 자동 주입 테스트벤치 생성기 패턴 카탈로그 없음) + 적합성 2(Python CI 도구, iverilog/verilator 실행, BRAM/LUT 소비 없음이나 생성기 도구 사례 미확인) + 완결성 2(경계값 주입+DECERR 검증+TB 생성 범위 명확) = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-115·I-116 승격)으로 vetted 유지. 다음 사이클 ready 후보.
+- 차단조건재심사: 2026-11-05 /verify(25차), 모든 WebFetch PROVENANCE_REQUIRED 차단(25차 연속). 근거 3(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·zipcpu-wb2axip-easyaxil 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-089·I-090 승격)으로 vetted 유지. 다음 사이클 ready 4순위 후보.
 
 ## I-123 Vitis BSP 커스텀 AXI4-Lite 드라이버 등록 단계별 캡스톤 (mdd/tcl + sinit.c 패턴, T3)
 
@@ -1678,8 +1684,8 @@
 - 근거 URL: https://mtvl-for-fpga.blogspot.com/2019/02/how-to-create-standalone-driver-to.html, https://www.hackster.io/raymondkelly454/sha-256-hardware-accelerator-for-microblaze-v-zybo-7000-eb4e99
 - 새로움의 근거: 카탈로그에 mdd/tcl+sinit.c 패턴을 처음부터 만드는 MicroBlaze V Vitis 2024.2 캡스톤 없음 — 내 판단.
 - Basys3 적합성의 근거: 커스텀 AXI4-Lite 슬레이브 LUT < 300개, 동결 맵 free_slots 1슬롯. BSP 드라이버 등록은 소프트웨어 흐름이므로 보드 자원 증가 최소 — 내 판단.
-- 난이도: 3 / 단계: T3 / 상태: raw
-- 심사: 2026-11-06 /harvest(S3+S1). 근거 0(세 근거 카드 rechecked_at 없음) + 새로움 2(mdd/tcl+sinit.c 단계별 T3 캡스톤 없음) + 적합성 2(AXI4-Lite free_slots 1슬롯, BSP 소프트웨어 흐름, Basys3 가능) + 완결성 2(mdd/tcl+sinit.c+LookupConfig+TB 범위 명확) = 6점 → raw(첫심사). 보강: 근거 카드 rechecked_at 1건 이상.
+- 난이도: 3 / 단계: T3 / 상태: vetted
+- 심사: 2026-11-06 /harvest(S3+S1). 근거 0(세 근거 카드 rechecked_at 없음) + 새로움 2(mdd/tcl+sinit.c 단계별 T3 캡스톤 없음) + 적합성 2(AXI4-Lite free_slots 1슬롯, BSP 소프트웨어 흐름, Basys3 가능) + 완결성 2(mdd/tcl+sinit.c+LookupConfig+TB 범위 명확) = 6점 → vetted. 보강: 근거 카드 rechecked_at 1건 이상. (첫심사 오기재 수정: 2026-11-05 /verify(25차) — 5~7점 → vetted 처리)
 
 ## I-124 MicroBlaze V xparameters.h XPAR 매크로 자동 검증 CI 스크립트 (T3)
 
@@ -1691,8 +1697,8 @@
 - 근거 URL: https://mtvl-for-fpga.blogspot.com/2019/02/how-to-create-standalone-driver-to.html
 - 새로움의 근거: 카탈로그에 xparameters.h XPAR 매크로를 동결 맵과 자동 대조하는 CI 도구 없음 — 내 판단.
 - Basys3 적합성의 근거: Python 도구이므로 보드 자원 소비 없음. CI iverilog 실행 환경에서 그대로 활용 가능 — 내 판단.
-- 난이도: 2 / 단계: T3 / 상태: raw
-- 심사: 2026-11-06 /harvest(S1+S3). 근거 0(세 근거 카드 rechecked_at 없음) + 새로움 2(XPAR 매크로 동결 맵 자동 대조 도구 없음) + 적합성 3(Python CI 도구, 보드 자원 없음, 동결 맵과 직접 연동 가능) + 완결성 2(Python 파서+비교기+리포트 범위 명확) = 7점 → raw(첫심사). 보강: 근거 카드 rechecked_at 1건 이상.
+- 난이도: 2 / 단계: T3 / 상태: vetted
+- 심사: 2026-11-06 /harvest(S1+S3). 근거 0(세 근거 카드 rechecked_at 없음) + 새로움 2(XPAR 매크로 동결 맵 자동 대조 도구 없음) + 적합성 3(Python CI 도구, 보드 자원 없음, 동결 맵과 직접 연동 가능) + 완결성 2(Python 파서+비교기+리포트 범위 명확) = 7점 → vetted. 보강: 근거 카드 rechecked_at 1건 이상. (첫심사 오기재 수정: 2026-11-05 /verify(25차) — 5~7점 → vetted 처리)
 
 ## I-125 AXI GPIO 직접 접근 vs Xil_In32/Out32 vs 고수준 드라이버 성능 비교 테스트벤치 (T3)
 
@@ -1704,8 +1710,8 @@
 - 근거 URL: https://salmon1113.tistory.com/140, https://www.hackster.io/raymondkelly454/sha-256-hardware-accelerator-for-microblaze-v-zybo-7000-eb4e99
 - 새로움의 근거: 카탈로그에 세 가지 AXI GPIO 접근 계층 비교 테스트벤치 없음 — 내 판단.
 - Basys3 적합성의 근거: AXI GPIO + XTmrCtr IP 조합은 Basys3 MicroBlaze V에서 완전히 가능. BSP에 포함된 IP 사용만으로 추가 LUT 최소 — 내 판단.
-- 난이도: 2 / 단계: T3 / 상태: raw
-- 심사: 2026-11-06 /harvest(S7). 근거 0(세 근거 카드 rechecked_at 없음) + 새로움 2(세 계층 비교 테스트벤치 카탈로그 없음) + 적합성 3(AXI GPIO+XTmrCtr Basys3 완전 가능, 추가 LUT 최소) + 완결성 2(raw 포인터+Xil_In32/Out32+LookupConfig 세 계층+측정 범위 명확) = 7점 → raw(첫심사). 보강: 근거 카드 rechecked_at 1건 이상.
+- 난이도: 2 / 단계: T3 / 상태: vetted
+- 심사: 2026-11-06 /harvest(S7). 근거 0(세 근거 카드 rechecked_at 없음) + 새로움 2(세 계층 비교 테스트벤치 카탈로그 없음) + 적합성 3(AXI GPIO+XTmrCtr Basys3 완전 가능, 추가 LUT 최소) + 완결성 2(raw 포인터+Xil_In32/Out32+LookupConfig 세 계층+측정 범위 명확) = 7점 → vetted. 보강: 근거 카드 rechecked_at 1건 이상. (첫심사 오기재 수정: 2026-11-05 /verify(25차) — 5~7점 → vetted 처리)
 
 ## I-126 Basys3 AXI-Lite 버스 프로파일러: 여러 IP 동시 접근 레이턴시 측정 (T2)
 

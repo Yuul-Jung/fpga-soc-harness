@@ -1,6 +1,6 @@
 # AXI4-Lite 주변장치 IP 비교: INTC·타이머/WDT·레지스터 템플릿
 
-갱신: 2026-11-06 (/verify 23차). 카드 13건 기반.
+갱신: 2026-11-05 (/verify 25차). 카드 14건 기반.
 인터럽트 컨트롤러(INTC), 타이머·WDT, AXI4-Lite 슬레이브 레지스터 파일, AXI4 크로스바/인터커넥트 사례를 정리한다. 모두 MicroBlaze V SoC의 `free_slots` 배정과 관련된 주제다.
 
 ---
@@ -30,21 +30,21 @@
 
 ## 2. 타이머 / WDT
 
-| 항목 | amd-axi-timebase-wdt-pg083 | amoghvarsh-axi4-lite-timer-wdt | mij001-axil-timer |
-|---|---|---|---|
-| 카드 | [amd-axi-timebase-wdt-pg083](../catalog/amd/amd-axi-timebase-wdt-pg083.md) | [amoghvarsh-axi4-lite-timer-wdt](../catalog/vendor-neutral/amoghvarsh-axi4-lite-timer-wdt.md) | [mij001-axil-timer](../catalog/vendor-neutral/mij001-axil-timer.md) |
-| 보드 | Basys3 | 중립 | 중립 |
-| 버스 | AXI4-Lite | AXI4-Lite | AXI4-Lite |
-| 언어 | Verilog(IP) | Verilog | SystemVerilog |
-| 기능 | 기본WDT+윈도우WDT+WDTOUT | 범용타이머+WDT모드 | 주기·원샷·카운트다운+IRQ |
-| 테스트벤치 | 없음(IP) | OKAY/SLVERR/DECERR 셀프체킹 | SVA+Python UVM 1.2 |
-| 형식 검증 | 없음 | 없음 | SVA 단언 |
-| 라이선스 | Xilinx IP 라이선스 | unknown | MIT |
-| 등급 | L2 | L2 | L3 |
-| 단계 | T2 | T2 | T2 |
-| Basys3 적합성 | yes | needs-port | needs-port |
+| 항목 | amd-axi-timebase-wdt-pg083 | amoghvarsh-axi4-lite-timer-wdt | mij001-axil-timer | ignaciosim-tt06-triple-watchdog |
+|---|---|---|---|---|
+| 카드 | [amd-axi-timebase-wdt-pg083](../catalog/amd/amd-axi-timebase-wdt-pg083.md) | [amoghvarsh-axi4-lite-timer-wdt](../catalog/vendor-neutral/amoghvarsh-axi4-lite-timer-wdt.md) | [mij001-axil-timer](../catalog/vendor-neutral/mij001-axil-timer.md) | [ignaciosim-tt06-triple-watchdog](../catalog/vendor-neutral/ignaciosim-tt06-triple-watchdog.md) |
+| 보드 | Basys3 | 중립 | 중립 | ASIC(sky130) |
+| 버스 | AXI4-Lite | AXI4-Lite | AXI4-Lite | none(FSM) |
+| 언어 | Verilog(IP) | Verilog | SystemVerilog | Verilog |
+| 기능 | 기본WDT+윈도우WDT+WDTOUT | 범용타이머+WDT모드 | 주기·원샷·카운트다운+IRQ | 기본WDT+윈도우WDT+독립WDT 삼중 채널 |
+| 테스트벤치 | 없음(IP) | OKAY/SLVERR/DECERR 셀프체킹 | SVA+Python UVM 1.2 | 미확인(ASIC 타겟) |
+| 형식 검증 | 없음 | 없음 | SVA 단언 | 없음(미확인) |
+| 라이선스 | Xilinx IP 라이선스 | unknown | MIT | unknown |
+| 등급 | L2 | L2 | L3 | L2 |
+| 단계 | T2 | T2 | T2 | T1 |
+| Basys3 적합성 | yes | needs-port | needs-port | needs-port |
 
-**패턴 (내 판단):** AMD WDT IP는 윈도우 모드와 WDTOUT 하트비트 핀 출력이 특징적이며 Vivado에서 IP 추가만으로 동작한다. amoghvarsh 타이머는 소스 미열람(L2)이나 셀프체킹 TB가 하네스 CI 패턴에 맞는다. mij001 타이머는 SystemVerilog UVM 환경이 풍부하여 AXI4-Lite 슬레이브 IP 테스트 패턴 참고용으로 가치가 높고, MIT 라이선스라 개조 허용 범위가 넓다.
+**패턴 (내 판단):** AMD WDT IP는 윈도우 모드와 WDTOUT 하트비트 핀 출력이 특징적이며 Vivado에서 IP 추가만으로 동작한다. amoghvarsh 타이머는 소스 미열람(L2)이나 셀프체킹 TB가 하네스 CI 패턴에 맞는다. mij001 타이머는 SystemVerilog UVM 환경이 풍부하여 AXI4-Lite 슬레이브 IP 테스트 패턴 참고용으로 가치가 높고, MIT 라이선스라 개조 허용 범위가 넓다. ignaciosim-tt06-triple-watchdog은 TinyTapeout 6 ASIC 타겟 Verilog FSM으로 기본·윈도우·독립 세 가지 WDT 모드를 하나의 소형 IP에 구현한 사례 — 버스 없이 FSM 전용이므로 AXI4-Lite 래퍼를 추가해야 MicroBlaze V SoC에 연결 가능하나, 세 모드 비교 실습(I-118 아이디어)의 RTL 참조 패턴으로 가치가 있다(내 판단).
 
 **MicroBlaze V 개조 경로 (내 판단):** 세 카드 모두 AXI4-Lite 슬레이브로 `free_slots`에 직접 배정 가능하다. AMD IP(axi_timebase_wdt)를 쓰면 Vivado IP 카탈로그에서 즉시 연결 가능하나 소스 비공개. mij001 타이머는 MIT 라이선스이므로 Verilog-2001로 재작성 후 IP 표준 래퍼 적용 경로가 가능하다. WDTOUT 핀 출력을 Pmod에 연결해 외부 슈퍼바이저 모의(I-119 아이디어)를 테스트할 수 있다.
 
@@ -111,8 +111,8 @@
 | I-112 UART+INTC 연동 | UART RX not-empty 인터럽트 | amd-axi-intc-pg099, realisshoon, opencores-auto-baud | ready |
 | I-113 INTC 난이도 사다리 | T1 OR→T2 icontrol→T3 AXI INTC | zipcpu-icontrol, amd-axi-intc-pg099, mij001-axil-timer | ready |
 | I-114 AXI4-Lite 레지스터 파일 IP | WSTRB+$clog2+faxil_slave | zipcpu-wb2axip-easyaxil, chclau-magellan, bugratufan-axion | ready |
-| I-115 JTAG-to-AXI 디버그 하네스 | JTAG-to-AXI + TCL 패턴 | chclau-magellan, zipcpu-easyaxil, amd-axi-intc-pg099 | vetted |
-| I-116 AXI4-Lite 슬레이브 사다리 | RW뱅크→CDC→인터럽트 소스 | zipcpu-wb2axip-easyaxil, bugratufan-axion, zipcpu-icontrol | vetted |
+| I-115 JTAG-to-AXI 디버그 하네스 | JTAG-to-AXI + TCL 패턴 | chclau-magellan, zipcpu-easyaxil, amd-axi-intc-pg099 | ready |
+| I-116 AXI4-Lite 슬레이브 사다리 | RW뱅크→CDC→인터럽트 소스 | zipcpu-wb2axip-easyaxil, bugratufan-axion, zipcpu-icontrol | ready |
 | I-117 WDT + 7세그 가시화 | 윈도우 WDT + 7세그 FSM | amd-axi-timebase-wdt-pg083, mij001-axil-timer, chclau-magellan | vetted |
 | I-118 삼중 WDT 비교 패널 | 기본+윈도우+SW에뮬 WDT | amd-axi-timebase-wdt-pg083, ignaciosim-tt06, mij001-axil-timer | vetted |
 | I-119 WDT 하트비트 핀 출력 | WDTOUT→Pmod+슈퍼바이저 FSM | amd-axi-timebase-wdt-pg083, suoglu-axi-lite-slave, amoghvarsh | vetted |

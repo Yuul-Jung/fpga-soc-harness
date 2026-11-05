@@ -5,6 +5,7 @@
 - verify: `YYYY-MM-DD HH:MM | verify | 재열람 N | 수정 M | 불일치 K | 승격 L2→L3 P | ready +R`
 - capstone: `YYYY-MM-DD HH:MM | capstone | <slug> | 등급 S0~S2` 또는 `... | skip: <사유>`
 
+2026-11-06 07:45 | verify | 재열람 0 (WebFetch PROVENANCE_REQUIRED 전면 차단 25차 연속) | 수정 1 (capstone/mmio-rc-car-arb-ip/capstone.json block id 불일치 수정, build.py KeyError 해결) | 불일치 1 (integration.frozen_mapping·memory_map.block이 block name 참조 → id 참조로 정정) | 승격 L2→L3 0 | vetted +3 (I-123,I-124,I-125 raw→vetted 오기재 수정) | ready +2 (I-089 디바운스 비교 TB, I-090 BRAM 더블버퍼 DMA+VGA, §14.2 차단조건 25차) | atlas 갱신 (axil-peripheral-ip.md: ignaciosim-tt06 WDT표 추가, I-115·I-116 ready 반영)
 2026-11-06 06:36 | capstone | I-037 → mmio-rc-car-arb-ip | S0 (verilator/iverilog/yosys 없음, CI 대기) | 슬롯 [21] 0x4021_0000 / intc=13 | mbv-frozen-v2 compatible | 6 RTL 모듈 + 자체점검 TB(13항목) | WebFetch PROVENANCE_REQUIRED 차단 §14.2 차단조건재심사로 ready 승격
 2026-11-06 04:51 | capstone | I-029 → mmio-ssd1306-oled-spi-ip | S0 (iverilog/yosys 없음, CI 대기) | 슬롯 [16] 0x4016_0000 / intc=13 | mbv-frozen-v2 compatible
 2026-11-06 04:29 | capstone | I-029 → mmio-oled-ssd1306-ip | S0 (iverilog/yosys 없음, CI 대기) | 슬롯 [20] 0x4020_0000 / intc=13 | address_map=custom (free_slot_20 제안) | WebFetch PROVENANCE_REQUIRED 차단 23차 연속

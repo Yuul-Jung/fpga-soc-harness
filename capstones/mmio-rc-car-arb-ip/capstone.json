@@ -151,7 +151,7 @@
     "compat": "compatible",
     "plan": "free_slots [21] = 0x4021_0000 사용 제안. INTC 입력 13번 (현재 미배정). 프로젝트 인덱스 표 동결 후 확정.",
     "frozen_mapping": {
-      "axil_rc_arb": "free_slots[21] 0x4021_0000"
+      "axil_rc": "free_slots[21] 0x4021_0000"
     }
   },
   "external_parts": [
@@ -219,7 +219,7 @@
     {
       "base": "0x4021_0000",
       "size": "0x10000",
-      "block": "axil_rc_arb",
+      "block": "axil_rc",
       "desc": "RC카 중재 IP 레지스터 공간 (free_slots[21] 제안, 동결 전)",
       "regs": [
         {"off": "0x00", "name": "CTRL",      "access": "RW", "desc": "[0]=EN(1=활성화) [2:1]=DIR(00=STOP,01=FWD,10=BWD,11=SPIN_L) [11:4]=SPEED[7:0] [12]=SCAN_START(펄스, 1클럭)"},
