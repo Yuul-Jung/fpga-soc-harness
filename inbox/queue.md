@@ -566,3 +566,8 @@
 - https://github.com/dpretet/axi-lite-uart | dpretet/axi-lite-uart AXI4-Lite UART — L1 미열람 | AXI4-Lite UART Verilog FPGA packet protocol wrapper
 - https://hackaday.io/project/166882-uart-packet-protocol-for-fpga | Hackaday UART 패킷 프로토콜 FPGA 프로젝트 (S5 비정형 출처) — L1 미열람 | UART packet protocol FPGA framing length header checksum
 - https://github.com/hdl-util/uart | hdl-util/uart 고속 UART IP — L1 미열람 | UART Verilog SystemVerilog FPGA framing AXI protocol
+- https://github.com/alexforencich/verilog-uart | alexforencich/verilog-uart: AXI-Stream 호환 파라메트릭 UART TX/RX, 프레이밍 없음 — 미열람 L1 | UART packet framing Verilog AXI4-Lite FPGA receiver state machine checksum
+- https://github.com/FlorianFrank/Verilog-UART-Custom-IP | FlorianFrank/Verilog-UART-Custom-IP: 사용자 정의 UART IP — 미열람 L1 | UART framing Verilog AXI custom IP
+- https://github.com/halftop/Interface-Protocol-in-Verilog | halftop/Interface-Protocol-in-Verilog: 다양한 인터페이스 프로토콜 Verilog 구현(UART 포함) — 미열람 L1 | UART framing protocol header payload checksum FPGA Verilog
+- https://github.com/MightyPork/TinyFrame | MightyPork/TinyFrame: 임베디드 직렬 프레이밍 프레임워크(C, 헤더+길이+체크섬+SLIP) — 미열람 L1(C 라이브러리, 참고) | UART framing tiny frame SLIP detect checksum embedded
+- https://opencores.org/project,auto_baud | OpenCores auto_baud: FPGA 자동 보드레이트 검출 IP — 미열람 L1 | auto baud rate detection FPGA Verilog slip framing UART

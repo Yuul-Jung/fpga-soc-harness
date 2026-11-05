@@ -234,3 +234,6 @@
 | [opencores-auto-baud](vendor-neutral/opencores-auto-baud.md) | L3 | T1 | XC2V200 (Basys3 needs-port) | 2026-11-05 |
 | [codeshaa-16-bit-hdlc-using-vhdl](amd/codeshaa-16-bit-hdlc-using-vhdl.md) | L3 | T2 | Xilinx ISE 범용 (Basys3 needs-port) | 2026-11-05 |
 | [xtrinch-icestick-fpga-uart](lattice/xtrinch-icestick-fpga-uart.md) | L3 | T2 | iCEstick (Basys3 needs-port) | 2026-11-05 |
+| [wangxuan95-fpga-uart](embedded/wangxuan95-fpga-uart.md) | L2 | T1 | 없음 (Basys3 needs-port) | 2026-11-05 |
+| [alexforencich-verilog-uart](embedded/alexforencich-verilog-uart.md) | L2 | T1 | 없음 (Basys3 needs-port) | 2026-11-05 |
+| [mightypork-tinyframe](embedded/mightypork-tinyframe.md) | L2 | T1 | 없음 (C 라이브러리) | 2026-11-05 |

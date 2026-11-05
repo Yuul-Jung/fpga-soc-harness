@@ -317,7 +317,8 @@
 - 차단조건재심사: 2026-11-04 13:38 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 4건(columbia-4840-tiles-tutorial, zipcpu-llvga-video-timing, microchip-an532-dc-servo-pid, ubc-elex2117-lab6-quadrature-encoder, rechecked_at 불문) → 근거 3 + 새로움 2(제어 루프 타일 VGA 계기판 없음) + 적합성 3(VGA 보드 내장 Pmod 불필요, 타일 메모리 16KB < Basys3 BRAM 225KB, Columbia 131,456bit 근거 있음) + 완결성 2(타일맵 렌더러+숫자·막대 타일+레지스터 접근 범위 명확) = 10점 ≥ 7 → ready 승격.
 
 ## I-028 조이스틱 서보 로봇팔 IP: PmodJSTK2 SPI 판독 → 2축 서보 PWM, 범위·모의 시험 모델 테스트벤치
-- 상태: ready
+- 상태: used
+- slug: mmio-jstk2-servo-ip
 - 요약: 내 판단: JSTK2 SPI 판독 IP(X/Y/버튼 레지스터)와 서보 PWM IP(채널별 최소·최대 펄스 폭, 위치 레지스터)를 AXI4-Lite로 나누고, 소프트웨어 루프가 조이스틱 값을 서보 위치로 매핑하며 기울기 제한으로 급가속을 막는다. 테스트벤치는 JSTK2 응답 모델이 7바이트 패킷을 돌려주고 서보 펄스 폭을 `!==`로 검사한다.
 - 조합: [Pmod JSTK2(SPI), 서보 PWM 2채널, AXI4-Lite 레지스터, 타이머 인터럽트]
 - 근거: [digikey-forum-jstk2-pmod-controller-vhdl, vhdlwhiz-rc-servo-controller, shashankr-basys3-fpga-robotic-arm]

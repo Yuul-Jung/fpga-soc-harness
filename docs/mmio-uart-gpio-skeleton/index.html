@@ -48,8 +48,8 @@ header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
 </style></head><body><header class="top"><a class="brand" href="../hub.html">FPGA SoC 하네스</a><a href="../hub.html">메인</a><a href="../hub.html#capstones">캡스톤</a><a href="../soc-map/tech-tree.html">기술 트리</a><a href="../catalog/index.html">카탈로그</a><a href="../inbox/ideas.html">아이디어</a><a href="../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main>
 <p class="muted">캡스톤 패키지 · Digilent Basys3 (XC7A35T) · 단계 T1</p>
 <h1>MMIO 뼈대 SoC: GPIO + UART (Basys3)</h1><p>CPU 슬롯이 비어 있는 최소 SoC. 단일 마스터 버스(mmio-lite)에 GPIO와 UART 송신기를 붙이고, 마스터 자리에는 데모 FSM을 둔다. 이후 이 슬롯을 PicoRV32 같은 코어로 교체하는 것이 목표다.</p>
-<div class="badges"><span class="badge b-not-run">린트: 미실행</span><span class="badge b-not-run">시뮬레이션: 미실행</span><span class="badge b-not-run">합성: 미실행</span><span class="badge b-not-run">보드: 미실행</span></div>
-<p class="muted">검증 상태는 실행 기록이 있을 때만 표시한다. 기록이 없으면 '미실행'이다.</p>
+<div class="badges"><span class="badge b-skipped">린트: 건너뜀 (verilator 없음)</span><span class="badge b-skipped">시뮬레이션: 건너뜀 (iverilog 없음)</span><span class="badge b-skipped">합성: 건너뜀 (yosys 없음)</span><span class="badge b-not-run">보드: 미실행</span></div>
+<p class="muted">검증 상태는 실행 기록이 있을 때만 표시한다 · 기준 2026-11-05. 기록이 없으면 '미실행'이다.</p>
 <nav><a href="#goal">목표</a><a href="#arch">계통도</a><a href="#hier">모듈 계층</a><a href="#map">메모리맵</a><a href="#ext">외부 부품·전기</a><a href="#road">기술 트리</a><a href="#src">실행 소스</a><a href="#verify">검증</a><a href="#ref">참고·위험</a></nav>
 <h2 id="goal">1. 목표와 범위</h2><h3>목표</h3><ul><li>스위치 값을 버스로 읽어 LED에 쓴다.</li><li>버튼을 누르면 스위치 하위 8비트를 UART(115200 8N1)로 송신한다.</li><li>마스터 포트를 분리해 CPU로 교체할 수 있게 한다.</li></ul><h3>범위 밖</h3><ul><li>CPU 구현 (다음 단계)</li><li>UART 수신, 인터럽트, DMA</li><li>외부 메모리 (Basys3에는 DRAM이 없다)</li></ul><p class="muted">이 패키지의 소스는 하네스가 직접 작성한 원본이며 외부 코드를 포함하지 않는다. 시뮬레이션·합성 결과는 CI가 기록한다.</p>
 <h2 id="arch">2. 계통도</h2><p>클럭: 100 MHz 단일 클럭 (clk, W5), 동기 리셋 (btnC, 2단 동기화)</p><div class="panel"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 974 290" role="img" aria-label="블록 다이어그램">
@@ -515,7 +515,7 @@ clean:
 	rm -rf build
 </pre></details><h3>시뮬레이션</h3><ol><li>iverilog, verilator, yosys 설치</li><li>make -C capstones/mmio-uart-gpio-skeleton lint sim synth</li></ol><h3>Vivado 빌드 (Basys3)</h3><ol><li>새 RTL 프로젝트, 파트 xc7a35tcpg236-1</li><li>rtl/*.v 추가 (tb 제외), constr/basys3.xdc 추가, 최상위 basys3_top</li><li>Generate Bitstream 후 Program Device</li><li>SW를 켜 LED 반응 확인, 터미널(115200 8N1)을 열고 btnU를 누르면 SW[7:0]이 바이트로 도착</li></ol>
 <h2 id="verify">8. 검증</h2><div class="panel"><table><tr><th>단계</th><th>결과</th><th>내용</th></tr>
-<tr><td>린트(verilator)</td><td>미실행</td><td></td></tr><tr><td>시뮬레이션(iverilog)</td><td>미실행</td><td></td></tr><tr><td>합성 추정(yosys)</td><td>미실행</td><td></td></tr><tr><td>보드 동작</td><td>미실행</td><td></td></tr>
+<tr><td>린트(verilator)</td><td>건너뜀</td><td>verilator 없음</td></tr><tr><td>시뮬레이션(iverilog)</td><td>건너뜀</td><td>iverilog 없음</td></tr><tr><td>합성 추정(yosys)</td><td>건너뜀</td><td>yosys 없음</td></tr><tr><td>보드 동작</td><td>미실행</td><td></td></tr>
 </table></div><p>시뮬레이션·합성은 CI가 실행하면 자동으로 채워진다. 보드 동작은 수동 확인 후 이 파일의 board 값을 pass로 바꾸고 날짜를 notes에 적는다.</p>
 <h2 id="ref">9. 참고 카드와 위험</h2><h3>참고 카드</h3><ul><li><code>fanguoc2len-risc-v-computer</code> — PicoRV32 + Basys3 구성의 비교 대상 <span class="muted">(카드 미작성)</span></li><li><code>pkt-gif-custom-vending-machine</code> — CPU 없이 AXI4-Lite로 주변장치를 묶은 사례 <span class="muted">(카드 미작성)</span></li></ul><h3>위험·한계</h3><ul><li>xdc 핀 배치는 Digilent 마스터 XDC와 대조하지 않았다.</li><li>버튼 디바운스가 없어 한 번 눌러도 여러 번 송신될 수 있다.</li><li>미매핑 주소를 오류로 처리하지 않는다.</li></ul>
 </main></body></html>
