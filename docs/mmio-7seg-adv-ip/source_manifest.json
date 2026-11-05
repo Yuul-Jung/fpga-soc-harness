@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-7seg-adv-ip",
+  "files": [
+    {
+      "group": "rtl",
+      "path": "rtl/axil_7seg_ip.v",
+      "sha256": "45ff1055e8738c27d1652e384a218868b9e90fcff05fa31ef459877b5ddd483c",
+      "lines": 293,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/basys3_top_7seg.v",
+      "sha256": "4c17a5534c220e5fbeb7689c1138775f07d1930a3ebd111a6313cbe0c92fb465",
+      "lines": 81,
+      "origin": "first_party"
+    },
+    {
+      "group": "tb",
+      "path": "tb/tb_axil_7seg_ip.v",
+      "sha256": "0ef84186bca9039c37e0a028188528c0328db072b743553ed43e56f0468b150a",
+      "lines": 339,
+      "origin": "first_party"
+    },
+    {
+      "group": "constraints",
+      "path": "constr/basys3_7seg.xdc",
+      "sha256": "ee67bebfd09d7d1bd1437158628e9d6e9452c6b2ffce47680dc5b9cafb6cf76c",
+      "lines": 36,
+      "origin": "first_party"
+    },
+    {
+      "group": "build",
+      "path": "Makefile",
+      "sha256": "c7c6f33f89bda9fc0637b104711233af894956be21409b1a98e31e00021e3d00",
+      "lines": 49,
+      "origin": "first_party"
+    }
+  ],
+  "note": "소스는 하네스가 직접 쓴 원본이다. 외부 저장소 코드는 포함하지 않는다(HARNESS §13.3)."
+}

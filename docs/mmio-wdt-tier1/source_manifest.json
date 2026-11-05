@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-wdt-tier1",
+  "files": [
+    {
+      "group": "rtl",
+      "path": "rtl/wdt_core.v",
+      "sha256": "c08c7cfcc1c437f22586feb0fe51fcbbfb7bd924346cd3b828b3b1d9e18d856c",
+      "lines": 118,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/axil_wdt_wrap.v",
+      "sha256": "54d67bf2d244c6c5bf44c2a07b4e5d73a71e2a2782f7fdbbaa34596974a41fd3",
+      "lines": 212,
+      "origin": "first_party"
+    },
+    {
+      "group": "tb",
+      "path": "tb/tb_axil_wdt_wrap.v",
+      "sha256": "8d2d341a1ec98089d43f46006c16d576106e1b89959f87313e7968ad7e1105b4",
+      "lines": 271,
+      "origin": "first_party"
+    },
+    {
+      "group": "constraints",
+      "path": "constr/basys3_wdt.xdc",
+      "sha256": "468c61d16f070740fe377a370b8e56925d8456feff36a1a8da15e80f8363c2d4",
+      "lines": 12,
+      "origin": "first_party"
+    },
+    {
+      "group": "build",
+      "path": "Makefile",
+      "sha256": "4380054a55efc62f3b3d8373d04b1240343b690dd566fd64629706e9dab63aa0",
+      "lines": 46,
+      "origin": "first_party"
+    }
+  ],
+  "note": "소스는 하네스가 직접 쓴 원본이다. 외부 저장소 코드는 포함하지 않는다(HARNESS §13.3)."
+}

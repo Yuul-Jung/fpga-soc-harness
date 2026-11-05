@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-bldc-sixstep-ip",
+  "kind": "digital-block-diagram",
+  "note": "디지털 모듈 연결도다. 외부 부품의 전기 배선(전압, 저항, 커넥터)은 포함하지 않는다.",
+  "bus": "AXI4-Lite",
+  "blocks": [
+    {
+      "id": "cpu",
+      "name": "CPU (MicroBlaze V)",
+      "kind": "external",
+      "module": null,
+      "file": null
+    },
+    {
+      "id": "axil_bldc",
+      "name": "axil_bldc_sixstep",
+      "kind": "rtl",
+      "module": "axil_bldc_sixstep",
+      "file": "rtl/axil_bldc_sixstep.v"
+    },
+    {
+      "id": "hall_fsm",
+      "name": "bldc_hall_fsm",
+      "kind": "rtl",
+      "module": "bldc_hall_fsm",
+      "file": "rtl/bldc_hall_fsm.v"
+    },
+    {
+      "id": "dt_pwm",
+      "name": "deadtime_pwm",
+      "kind": "rtl",
+      "module": "deadtime_pwm",
+      "file": "rtl/deadtime_pwm.v"
+    },
+    {
+      "id": "hall_pins",
+      "name": "홀 센서 (외부)",
+      "kind": "external",
+      "module": null,
+      "file": null
+    },
+    {
+      "id": "inv_pins",
+      "name": "인버터 게이트 (외부)",
+      "kind": "external",
+      "module": null,
+      "file": null
+    }
+  ],
+  "links": [
+    {
+      "from": "cpu",
+      "to": "axil_bldc",
+      "label": "AXI4-Lite"
+    },
+    {
+      "from": "axil_bldc",
+      "to": "hall_fsm",
+      "label": "en/dir/hall[2:0]"
+    },
+    {
+      "from": "hall_fsm",
+      "to": "dt_pwm",
+      "label": "ph_hi[2:0]/ph_lo[2:0]"
+    },
+    {
+      "from": "axil_bldc",
+      "to": "dt_pwm",
+      "label": "duty[9:0]/dead[7:0]"
+    },
+    {
+      "from": "dt_pwm",
+      "to": "axil_bldc",
+      "label": "fault"
+    },
+    {
+      "from": "hall_pins",
+      "to": "axil_bldc",
+      "label": "hall_i[2:0]"
+    },
+    {
+      "from": "dt_pwm",
+      "to": "inv_pins",
+      "label": "pwm_hi[2:0]/pwm_lo[2:0]"
+    }
+  ]
+}

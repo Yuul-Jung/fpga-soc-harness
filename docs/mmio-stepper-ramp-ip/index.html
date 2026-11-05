@@ -1,0 +1,946 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>스텝모터 사다리꼴 가감속 IP</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+
+.colhead{font:600 11px sans-serif;fill:var(--muted)}
+.link{fill:none;stroke:var(--line);stroke-width:1.5}.arrow{fill:var(--line)}
+.lbl{font:11px sans-serif;fill:var(--muted)}
+.bname{font:600 13px sans-serif;fill:var(--text)}.bdesc{font:11px sans-serif;fill:var(--muted)}
+.k-cpu rect{fill:var(--c-cpu);stroke:var(--c-cpu-s)}.k-bus rect{fill:var(--c-bus);stroke:var(--c-bus-s)}
+.k-periph rect,.k-memory rect{fill:var(--c-per);stroke:var(--c-per-s)}
+.k-external rect{fill:var(--c-ext);stroke:var(--c-ext-s);stroke-dasharray:4 3}
+.k-clock rect{fill:var(--c-clk);stroke:var(--c-clk-s)}
+</style></head><body><header class="top"><a class="brand" href="../hub.html">FPGA SoC 하네스</a><a href="../hub.html">메인</a><a href="../hub.html#capstones">캡스톤</a><a href="../soc-map/tech-tree.html">기술 트리</a><a href="../catalog/index.html">카탈로그</a><a href="../inbox/ideas.html">아이디어</a><a href="../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main>
+<p class="muted">캡스톤 패키지 · Basys3 · 단계 T2</p>
+<h1>스텝모터 사다리꼴 가감속 IP</h1><p>AXI4-Lite 슬레이브 IP로 28BYJ-48(ULN2003) 또는 A4988(STEP/DIR) 스텝모터 드라이버를 제어하는 사다리꼴 가감속(trapezoidal ramp) 프로파일 IP. 주기 기반(period-countdown) DDA 알고리즘으로 곱셈/나눗셈 없이 가속·감속 구간을 제어하고, IP 표준 Rev.1 관리 레지스터(ID/VER/IRQ_STATUS/IRQ_ENABLE)를 포함한다. 아이디어 I-018 (ready, 9점)으로 생성됨 (2026-11-04).</p>
+<div class="badges"><span class="badge b-not-run">린트: 미실행</span><span class="badge b-not-run">시뮬레이션: 미실행</span><span class="badge b-not-run">합성: 미실행</span><span class="badge b-not-tested">보드: not-tested</span></div>
+<p class="muted">검증 상태는 실행 기록이 있을 때만 표시한다. 기록이 없으면 '미실행'이다.</p>
+<nav><a href="#goal">목표</a><a href="#arch">계통도</a><a href="#hier">모듈 계층</a><a href="#map">메모리맵</a><a href="#ext">외부 부품·전기</a><a href="#road">기술 트리</a><a href="#src">실행 소스</a><a href="#verify">검증</a><a href="#ref">참고·위험</a></nav>
+<h2 id="goal">1. 목표와 범위</h2><h3>목표</h3><ul><li>IP 표준 Rev.1(관리 레지스터 0xFFF0~FFFC)을 따르는 axil_stepper AXI4-Lite 슬레이브 IP 설계</li><li>주기 기반 사다리꼴 가감속: 가속(ACCEL)→감속(DECEL) 2단계 FSM, 곱셈·나눗셈 없음</li><li>4선식 모드(28BYJ-48 ULN2003 전상·반상): coil[3:0] 출력</li><li>STEP/DIR 모드(A4988 호환): step_out + dir_out 출력</li><li>done IRQ: IRQ_STATUS[0](W1C), IRQ_ENABLE[0]으로 마스크</li><li>iverilog 시뮬레이션 PASS, yosys 합성 성공(S2)</li></ul><h3>범위 밖</h3><ul><li>실제 보드 모터 연결 확인(S3는 사람이 한다)</li><li>폐루프 위치·속도 제어(오픈 루프 프로파일만)</li><li>다축 동기화(단일 채널 IP)</li><li>마이크로스텝(1/4, 1/8 등)</li><li>가속 계산에 나눗셈·곱셈 사용</li></ul><p class="muted">이 패키지의 소스는 하네스가 직접 작성한 Verilog-2001 원본이며 외부 코드를 포함하지 않는다. 시뮬레이션·합성 결과는 CI가 기록한다.</p>
+<h2 id="arch">2. 계통도</h2><p>클럭: 100 MHz (clk), 동기 리셋 active-high (rst)</p><div class="panel"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 974 372" role="img" aria-label="블록 다이어그램">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arrow"/></marker></defs>
+<text x="24" y="16" class="colhead">클럭·입력·마스터</text>
+<text x="274" y="16" class="colhead">버스</text>
+<text x="524" y="16" class="colhead">주변장치</text>
+<text x="774" y="16" class="colhead">외부</text>
+<path d="M200,63.0 C362.0,63.0 362.0,63.0 524,63.0" class="link" marker-end="url(#ar)"/>
+<text x="362.0" y="56.0" class="lbl" text-anchor="middle">AXI4-Lite (0x4016_0000)</text>
+<path d="M612.0,92 L612.0,116" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="104.0" class="lbl" text-anchor="middle">start/stop/params</text>
+<path d="M612.0,174 L612.0,198" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="186.0" class="lbl" text-anchor="middle">step_pulse, dir</text>
+<path d="M612.0,174 L612.0,34" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="104.0" class="lbl" text-anchor="middle">busy, done, state[1:0]</text>
+<path d="M700,227.0 C737.0,227.0 737.0,63.0 774,63.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="138.0" class="lbl" text-anchor="middle">coil[3:0]</text>
+<path d="M524,63.0 C464,8 260,8 200,63.0" class="link" marker-end="url(#ar)"/>
+<text x="362.0" y="16" class="lbl" text-anchor="middle">irq (INTC 13)</text>
+<g class="k-cpu"><rect x="24" y="34" width="176" height="58" rx="8"/><text x="112.0" y="58" text-anchor="middle" class="bname">MicroBlaze V</text><text x="112.0" y="76" text-anchor="middle" class="bdesc">CPU</text></g>
+<g class="k-ip"><rect x="524" y="34" width="176" height="58" rx="8"/><text x="612.0" y="58" text-anchor="middle" class="bname">axil_stepper</text><text x="612.0" y="76" text-anchor="middle" class="bdesc">AXI4-Lite IP</text></g>
+<g class="k-submodule"><rect x="524" y="116" width="176" height="58" rx="8"/><text x="612.0" y="140" text-anchor="middle" class="bname">step_ramp_core</text><text x="612.0" y="158" text-anchor="middle" class="bdesc">Ramp FSM</text></g>
+<g class="k-submodule"><rect x="524" y="198" width="176" height="58" rx="8"/><text x="612.0" y="222" text-anchor="middle" class="bname">seq_4wire</text><text x="612.0" y="240" text-anchor="middle" class="bdesc">4-Wire Seq</text></g>
+<g class="k-wrapper"><rect x="524" y="280" width="176" height="58" rx="8"/><text x="612.0" y="304" text-anchor="middle" class="bname">basys3_top</text><text x="612.0" y="322" text-anchor="middle" class="bdesc">Board Top</text></g>
+<g class="k-external"><rect x="774" y="34" width="176" height="58" rx="8"/><text x="862.0" y="58" text-anchor="middle" class="bname">28BYJ-48 + ULN2003</text><text x="862.0" y="76" text-anchor="middle" class="bdesc">Motor</text></g>
+</svg></div>
+<p class="muted"><a href="diagram.svg">diagram.svg</a>로 따로 받을 수 있다.</p>
+<h3>버스 규약: AXI4-Lite</h3><div class="panel"><table><tr><th>신호</th><th>방향</th><th>설명</th></tr><tr><td><code>s_awaddr[15:0]</code></td><td>master→slave</td><td>쓰기 주소</td></tr><tr><td><code>s_awvalid</code></td><td>master→slave</td><td>주소 유효</td></tr><tr><td><code>s_awready</code></td><td>slave→master</td><td>주소 수락</td></tr><tr><td><code>s_wdata[31:0]</code></td><td>master→slave</td><td>쓰기 데이터</td></tr><tr><td><code>s_wvalid</code></td><td>master→slave</td><td>데이터 유효</td></tr><tr><td><code>s_wready</code></td><td>slave→master</td><td>데이터 수락</td></tr><tr><td><code>s_bresp[1:0]</code></td><td>slave→master</td><td>응답 (00=OKAY)</td></tr><tr><td><code>s_bvalid</code></td><td>slave→master</td><td>응답 유효</td></tr><tr><td><code>s_bready</code></td><td>master→slave</td><td>응답 수락</td></tr><tr><td><code>s_araddr[15:0]</code></td><td>master→slave</td><td>읽기 주소</td></tr><tr><td><code>s_arvalid</code></td><td>master→slave</td><td>읽기 주소 유효</td></tr><tr><td><code>s_arready</code></td><td>slave→master</td><td>읽기 주소 수락</td></tr><tr><td><code>s_rdata[31:0]</code></td><td>slave→master</td><td>읽기 데이터</td></tr><tr><td><code>s_rresp[1:0]</code></td><td>slave→master</td><td>읽기 응답</td></tr><tr><td><code>s_rvalid</code></td><td>slave→master</td><td>읽기 데이터 유효</td></tr><tr><td><code>s_rready</code></td><td>master→slave</td><td>읽기 데이터 수락</td></tr></table></div><p>awready/wready 상시 1(단순 슬레이브). bresp=OKAY(0). 없는 주소 읽으면 0. 32비트 접근만; wstrb는 수신하나 무시.</p>
+<h3>통합 선언 (SoC 적합성)</h3><p class="badge b-fail">이 패키지는 MicroBlaze V 동결 주소맵과 호환되지 않는다 (파일럿). 아래 이식 계획을 따라야 SoC에 합칠 수 있다.</p><div class="panel"><table><tr><th style="white-space:nowrap">버스</th><td><code>AXI4-Lite</code></td></tr><tr><th style="white-space:nowrap">주소맵</th><td><code>custom-stepper-ramp-v1</code> → 동결 맵 <code>mbv-frozen-v2</code> 적합 여부: <b>부분 적합</b></td></tr><tr><th style="white-space:nowrap">이식 계획</th><td>free_slots 첫 빈 칸 [16]=0x4016_0000 제안(아직 미동결). INTC 13 사용(free_intc 첫 빈 번호). IP 표준 Rev.1 준수. 기존 stepper [15]=ip_stepper(단순 시퀀서); 이 IP는 가감속 프로파일 추가. 사용자가 mbv-frozen-v2에 stepper_ramp 항목 추가 후 compat를 compatible로 갱신 가능.</td></tr></table></div>
+<h2 id="hier">3. 모듈 계층</h2><div class="panel"><ul class="tree"><li><code>basys3_top</code> <span class="muted">(rtl/basys3_top.v)</span><ul><li><code>axil_stepper</code> <span class="muted">(rtl/axil_stepper.v)</span><ul><li><code>step_ramp_core</code> <span class="muted">(rtl/step_ramp_core.v)</span></li><li><code>seq_4wire</code> <span class="muted">(rtl/seq_4wire.v)</span></li></ul></li></ul></li></ul></div>
+<h2 id="map">4. 메모리맵</h2><h3>axil_stepper <code>0x4016_0000</code> <span class="muted">크기 0x10000</span></h3><div class="panel"><table><tr><th>오프셋</th><th>이름</th><th>접근</th><th>설명</th></tr><tr><td><code>0x00</code></td><td>CTRL</td><td>RW</td><td>W: [0]=START(펄스), [1]=STOP(즉시정지). R: [0]=BUSY, [1]=DONE, [3:2]=STATE[1:0](0=IDLE,1=ACCEL,2=DECEL,3=DONE)</td></tr><tr><td><code>0x04</code></td><td>TARGET_STEPS</td><td>RW</td><td>[23:0] 총 스텝 수 (최대 16M). 0이면 START 무시.</td></tr><tr><td><code>0x08</code></td><td>MIN_PERIOD</td><td>RW</td><td>[23:0] 최소 주기(최고속, 클럭 수). 최소 2 권장. 예: 500 → 100MHz/500=200kHz</td></tr><tr><td><code>0x0C</code></td><td>MAX_PERIOD</td><td>RW</td><td>[23:0] 최대 주기(시작 속도). MIN_PERIOD 이상이어야 함. 예: 50000 → 2kHz</td></tr><tr><td><code>0x10</code></td><td>DELTA_PERIOD</td><td>RW</td><td>[15:0] 스텝당 주기 감소량(가속시)/증가량(감속시). 0이면 가속 없음.</td></tr><tr><td><code>0x14</code></td><td>MODE</td><td>RW</td><td>[0]=STEP_DIR(0=4선 ULN2003, 1=STEP/DIR A4988). [1]=HALF_STEP(0=전상, 1=반상). START 전에 설정.</td></tr><tr><td><code>0xFFF0</code></td><td>ID</td><td>RO</td><td>0x53545050 (&#x27;STPP&#x27;) — IP 식별자</td></tr><tr><td><code>0xFFF4</code></td><td>VER</td><td>RO</td><td>0x01000100 — 표준 Rev.1, IP ver1.0</td></tr><tr><td><code>0xFFF8</code></td><td>IRQ_STATUS</td><td>RW</td><td>[0]=done. W1C: 1을 쓰면 클리어. IRQ_ENABLE과 AND하여 irq 출력 생성.</td></tr><tr><td><code>0xFFFC</code></td><td>IRQ_ENABLE</td><td>RW</td><td>[0]=done_irq_en. 1이면 done IRQ 활성화.</td></tr></table></div>
+<h2 id="ext">5. 외부 부품과 전기 회로도</h2><p class="muted">2절의 계통도는 <b>디지털 모듈 연결도</b>다. 전압, 풀업, 커넥터 배선 같은 전기 사항은 이 절에서 따로 다룬다. 기계가 읽는 사본: <a href="bom.csv">bom.csv</a> · <a href="connections.json">connections.json</a></p><p class="badge b-skipped">전기 회로도: 미작성</p><p class="muted">ULN2003 IN1~IN4를 Pmod JA에 직결. 외부 5V 전원과 GND 공유. 별도 회로도 미작성.</p><div class="panel"><table><tr><th>id</th><th>부품</th><th>인터페이스</th><th>신호 전압</th><th>구분</th><th>레벨 변환</th><th>비고</th></tr><tr><td><code>u1</code></td><td>28BYJ-48 스텝모터 + ULN2003 드라이버 보드</td><td>4선 단극성 (IN1~IN4)</td><td style="white-space:nowrap">5V (로직 신호 IN1~IN4는 3.3V 호환, ULN2003 입력 임계치 ~1V) V</td><td style="white-space:nowrap">외부 모듈</td><td>불필요 (3.3V)</td><td>Pmod JA[3:0]에 ULN2003 IN1~IN4 연결. GND 공통. 역기전력 보호는 ULN2003 내장 플라이백 다이오드.</td></tr></table></div><p class="muted">Basys3 FPGA 핀은 3.3V 신호만 직접 받는다. 5V·12V·모터·릴레이는 직결하지 않는다.</p>
+<h2 id="road">6. 기술 트리 (이 캡스톤의 확장 경로)</h2><div class="panel"><ul style="list-style:none;padding:0"><li class="step"><span class="tag s-done">T1</span><span>mmio-uart-gpio-skeleton <span class='muted'>참고: <a href="../catalog/amd/digilent-basys-3-getting-started-microblaze.html"><code>digilent-basys-3-getting-started-microblaze</code></a></span></span></li><li class="step"><span class="tag s-current">T2</span><span>mmio-stepper-ramp-ip (이 패키지) <span class='muted'>참고: <code>jtec-lam-ehkan-stepper-trapezoid-fpga</code>, <code>hackaday-fpga-cnc-stepper</code></span></span></li><li class="step"><span class="tag s-planned">T3</span><span>mmio-stepper-pid-position</span></li></ul></div>
+<h2 id="src">7. 실행 소스</h2><p>저장소의 <code>capstones/mmio-stepper-ramp-ip/</code>에 있는 파일 그대로다. 이 문서는 파일에서 읽어 넣은 것이므로 항상 일치한다. <a href="mmio-stepper-ramp-ip.zip">소스 전체 내려받기 (.zip)</a> · <a href="https://github.com/Yuul-Jung/fpga-soc-harness/tree/main/capstones/mmio-stepper-ramp-ip">GitHub에서 보기</a></p><details><summary><code>rtl/basys3_top.v</code> <span class="muted">130줄</span></summary><pre>// basys3_top.v — Basys3 보드 래퍼
+// 100MHz 시스템 클럭, btnC 리셋, Pmod JA 모터 출력
+// 내장 AXI4-Lite 데모 마스터: 리셋 후 레지스터 설정 → 모터 1회 가동
+// 출처: 하네스 직접 작성 Verilog-2001 원본
+`default_nettype none
+`timescale 1ns/1ps
+
+module basys3_top (
+    input  wire       clk,          // 100 MHz
+    input  wire       btnC,         // synchronous reset (active high)
+    input  wire [1:0] sw,           // sw[0]=STEP_DIR mode, sw[1]=HALF_STEP
+    output wire [3:0] jaMon,        // Pmod JA[3:0] → ULN2003 IN1~IN4
+    output wire       jaStep,       // Pmod JA[4] → A4988 STEP (STEP/DIR mode)
+    output wire       jaDir,        // Pmod JA[5] → A4988 DIR
+    output wire [3:0] led,          // LED[3:0] = coil 패턴
+    output wire       led_irq,      // LED[15] = IRQ 상태
+    output wire       led_busy      // LED[14] = BUSY
+);
+    wire rst = btnC;
+
+    // ── AXI4-Lite 버스 ───────────────────────────────────────────
+    reg  [15:0] m_awaddr;  reg  m_awvalid;  wire m_awready;
+    reg  [31:0] m_wdata;   reg  m_wvalid;   wire m_wready;
+    wire [1:0]  m_bresp;   wire m_bvalid;   reg  m_bready;
+    reg  [15:0] m_araddr;  reg  m_arvalid;  wire m_arready;
+    wire [31:0] m_rdata;   wire [1:0] m_rresp; wire m_rvalid; reg m_rready;
+
+    wire [3:0] coil_w;
+    wire       step_w, dir_w, irq_w;
+
+    axil_stepper u_ip (
+        .clk(clk), .rst(rst),
+        .s_awaddr(m_awaddr), .s_awvalid(m_awvalid), .s_awready(m_awready),
+        .s_wdata(m_wdata),   .s_wvalid(m_wvalid),   .s_wready(m_wready),
+        .s_bresp(m_bresp),   .s_bvalid(m_bvalid),   .s_bready(m_bready),
+        .s_araddr(m_araddr), .s_arvalid(m_arvalid), .s_arready(m_arready),
+        .s_rdata(m_rdata),   .s_rresp(m_rresp),     .s_rvalid(m_rvalid),
+        .s_rready(m_rready),
+        .coil(coil_w), .step_out(step_w), .dir_out(dir_w), .irq(irq_w)
+    );
+
+    assign jaMon  = coil_w;
+    assign jaStep = step_w;
+    assign jaDir  = dir_w;
+    assign led      = coil_w;
+    assign led_irq  = irq_w;
+    assign led_busy = 1&#x27;b0; // core_busy는 IP 내부 — 별도 읽기 생략
+
+    // ── 데모 마스터 FSM ──────────────────────────────────────────
+    // 리셋 후 순서: 레지스터 5개 쓰기 → CTRL START → 대기
+    localparam W0 = 4&#x27;d0, W1 = 4&#x27;d1, W2 = 4&#x27;d2, W3 = 4&#x27;d3, W4 = 4&#x27;d4,
+               W5 = 4&#x27;d5, WAIT_B = 4&#x27;d6, START = 4&#x27;d7,
+               WAIT_B2 = 4&#x27;d8, IDLE2 = 4&#x27;d9;
+
+    reg [3:0] ms;
+    reg       wr_sent;
+
+    // 보드에서 TARGET=32768(반상 8바퀴), MIN=200000, MAX=5000000, DELTA=10000
+    // 시뮬에선 tb가 직접 AXI를 구동하므로 basys3_top은 보드 전용
+    localparam T_TARGET = 24&#x27;d32768;
+    localparam T_MIN_P  = 24&#x27;d200000;
+    localparam T_MAX_P  = 24&#x27;d5000000;
+    localparam T_DELTA  = 16&#x27;d10000;
+
+    always @(posedge clk) begin
+        if (rst) begin
+            ms        &lt;= W0;
+            m_awvalid &lt;= 1&#x27;b0; m_wvalid  &lt;= 1&#x27;b0; m_bready  &lt;= 1&#x27;b1;
+            m_arvalid &lt;= 1&#x27;b0; m_rready  &lt;= 1&#x27;b1;
+            m_awaddr  &lt;= 16&#x27;b0; m_wdata  &lt;= 32&#x27;b0;
+            wr_sent   &lt;= 1&#x27;b0;
+        end else begin
+            // bresp 자동 수락
+            if (m_bvalid &amp;&amp; m_bready) begin
+                m_awvalid &lt;= 1&#x27;b0;
+                m_wvalid  &lt;= 1&#x27;b0;
+            end
+
+            case (ms)
+            W0: begin // TARGET_STEPS
+                m_awaddr &lt;= 16&#x27;h0004; m_wdata &lt;= {8&#x27;b0, T_TARGET};
+                m_awvalid &lt;= 1&#x27;b1; m_wvalid &lt;= 1&#x27;b1;
+                if (m_awready &amp;&amp; m_awvalid) ms &lt;= W1;
+            end
+            W1: begin // MIN_PERIOD
+                m_awaddr &lt;= 16&#x27;h0008; m_wdata &lt;= {8&#x27;b0, T_MIN_P};
+                m_awvalid &lt;= 1&#x27;b1; m_wvalid &lt;= 1&#x27;b1;
+                if (m_awready &amp;&amp; m_awvalid) ms &lt;= W2;
+            end
+            W2: begin // MAX_PERIOD
+                m_awaddr &lt;= 16&#x27;h000C; m_wdata &lt;= {8&#x27;b0, T_MAX_P};
+                m_awvalid &lt;= 1&#x27;b1; m_wvalid &lt;= 1&#x27;b1;
+                if (m_awready &amp;&amp; m_awvalid) ms &lt;= W3;
+            end
+            W3: begin // DELTA
+                m_awaddr &lt;= 16&#x27;h0010; m_wdata &lt;= {16&#x27;b0, T_DELTA};
+                m_awvalid &lt;= 1&#x27;b1; m_wvalid &lt;= 1&#x27;b1;
+                if (m_awready &amp;&amp; m_awvalid) ms &lt;= W4;
+            end
+            W4: begin // MODE (from switches)
+                m_awaddr &lt;= 16&#x27;h0014; m_wdata &lt;= {30&#x27;b0, sw};
+                m_awvalid &lt;= 1&#x27;b1; m_wvalid &lt;= 1&#x27;b1;
+                if (m_awready &amp;&amp; m_awvalid) ms &lt;= W5;
+            end
+            W5: begin // IRQ_ENABLE
+                m_awaddr &lt;= 16&#x27;hFFFC; m_wdata &lt;= 32&#x27;h1;
+                m_awvalid &lt;= 1&#x27;b1; m_wvalid &lt;= 1&#x27;b1;
+                if (m_awready &amp;&amp; m_awvalid) ms &lt;= START;
+            end
+            START: begin // CTRL START
+                m_awaddr &lt;= 16&#x27;h0000; m_wdata &lt;= 32&#x27;h1;
+                m_awvalid &lt;= 1&#x27;b1; m_wvalid &lt;= 1&#x27;b1;
+                if (m_awready &amp;&amp; m_awvalid) ms &lt;= IDLE2;
+            end
+            IDLE2: begin
+                m_awvalid &lt;= 1&#x27;b0; m_wvalid &lt;= 1&#x27;b0;
+                // IRQ가 오면 클리어 (간단 구현: IRQ 발생 시 W1C)
+                if (irq_w &amp;&amp; !wr_sent) begin
+                    m_awaddr &lt;= 16&#x27;hFFF8; m_wdata &lt;= 32&#x27;h1;
+                    m_awvalid &lt;= 1&#x27;b1; m_wvalid &lt;= 1&#x27;b1;
+                    wr_sent &lt;= 1&#x27;b1;
+                end
+            end
+            default: ms &lt;= W0;
+            endcase
+        end
+    end
+
+endmodule
+`default_nettype wire
+</pre></details><details><summary><code>rtl/axil_stepper.v</code> <span class="muted">225줄</span></summary><pre>// axil_stepper.v — AXI4-Lite 스텝모터 가감속 IP
+// IP 표준 Rev.1: ID=0xFFF0, VER=0xFFF4, IRQ_STATUS=0xFFF8(W1C), IRQ_ENABLE=0xFFFC
+// 출처: 하네스 직접 작성 Verilog-2001 원본
+`default_nettype none
+`timescale 1ns/1ps
+
+module axil_stepper (
+    input  wire        clk,
+    input  wire        rst,          // active-high synchronous
+    // ── AXI4-Lite 슬레이브 ────────────────────────────────────────
+    input  wire [15:0] s_awaddr,
+    input  wire        s_awvalid,
+    output reg         s_awready,
+    input  wire [31:0] s_wdata,
+    input  wire [3:0]  s_wstrb,
+    input  wire        s_wvalid,
+    output reg         s_wready,
+    output reg  [1:0]  s_bresp,
+    output reg         s_bvalid,
+    input  wire        s_bready,
+    input  wire [15:0] s_araddr,
+    input  wire        s_arvalid,
+    output reg         s_arready,
+    output reg  [31:0] s_rdata,
+    output reg  [1:0]  s_rresp,
+    output reg         s_rvalid,
+    input  wire        s_rready,
+    // ── 모터 출력 ────────────────────────────────────────────────
+    output wire [3:0]  coil,         // 4선 모드
+    output wire        step_out,     // STEP/DIR 모드
+    output wire        dir_out,      // STEP/DIR 방향
+    // ── 인터럽트 ─────────────────────────────────────────────────
+    output wire        irq
+);
+    // ── 레지스터 주소 ────────────────────────────────────────────
+    localparam A_CTRL        = 16&#x27;h0000;
+    localparam A_TARGET      = 16&#x27;h0004;
+    localparam A_MIN_PERIOD  = 16&#x27;h0008;
+    localparam A_MAX_PERIOD  = 16&#x27;h000C;
+    localparam A_DELTA       = 16&#x27;h0010;
+    localparam A_MODE        = 16&#x27;h0014;
+    localparam A_ID          = 16&#x27;hFFF0;
+    localparam A_VER         = 16&#x27;hFFF4;
+    localparam A_IRQ_STATUS  = 16&#x27;hFFF8;
+    localparam A_IRQ_ENABLE  = 16&#x27;hFFFC;
+
+    localparam IP_ID  = 32&#x27;h53545050; // &quot;STPP&quot;
+    localparam IP_VER = 32&#x27;h01000100; // std rev1, ip v1.0
+
+    // ── 사용자 레지스터 ──────────────────────────────────────────
+    reg [23:0] r_target;      // TARGET_STEPS
+    reg [23:0] r_min_period;  // MIN_PERIOD
+    reg [23:0] r_max_period;  // MAX_PERIOD
+    reg [15:0] r_delta;       // DELTA_PERIOD
+    reg [1:0]  r_mode;        // MODE[1:0]
+    reg        r_irq_en;      // IRQ_ENABLE[0]
+    reg        r_irq_status;  // IRQ_STATUS[0] (W1C)
+    reg        core_done_d;   // done 상승 엣지 검출용
+
+    // ── step_ramp_core 연결 ──────────────────────────────────────
+    wire       core_step_pulse;
+    wire       core_dir;
+    wire [1:0] core_state;
+    wire       core_busy;
+    wire       core_done;
+    reg        core_start; // 1펄스
+    reg        core_stop;  // 1펄스
+
+    step_ramp_core u_ramp (
+        .clk        (clk),
+        .rst        (rst),
+        .start      (core_start),
+        .stop       (core_stop),
+        .i_target   (r_target),
+        .i_min_period(r_min_period),
+        .i_max_period(r_max_period),
+        .i_delta    (r_delta),
+        .step_pulse (core_step_pulse),
+        .dir        (core_dir),
+        .state      (core_state),
+        .busy       (core_busy),
+        .done       (core_done)
+    );
+
+    // ── seq_4wire 연결 (4선 모드) ────────────────────────────────
+    seq_4wire u_seq (
+        .clk       (clk),
+        .rst       (rst),
+        .step_pulse(core_step_pulse),
+        .dir       (core_dir),
+        .half_step (r_mode[1]),
+        .coil      (coil)
+    );
+
+    // ── STEP/DIR 출력 (r_mode[0]=1 시 사용) ─────────────────────
+    assign step_out = core_step_pulse;
+    assign dir_out  = core_dir;
+
+    // ── IRQ ──────────────────────────────────────────────────────
+    assign irq = r_irq_status &amp; r_irq_en;
+
+    // ── 임시 버퍼(write 주소/데이터 비동기 도착 대응) ────────────
+    reg [15:0] aw_buf;
+    reg        aw_got;
+    reg [31:0] w_buf;
+    reg [3:0]  wstrb_buf;
+    reg        w_got;
+    reg        wr_fire;   // 이번 사이클에 쓰기 실행
+
+    // ── AXI4-Lite 쓰기 채널 ─────────────────────────────────────
+    always @(posedge clk) begin
+        if (rst) begin
+            s_awready  &lt;= 1&#x27;b1;
+            s_wready   &lt;= 1&#x27;b1;
+            s_bvalid   &lt;= 1&#x27;b0;
+            s_bresp    &lt;= 2&#x27;b00;
+            aw_got     &lt;= 1&#x27;b0;
+            w_got      &lt;= 1&#x27;b0;
+            wr_fire    &lt;= 1&#x27;b0;
+            core_start &lt;= 1&#x27;b0;
+            core_stop  &lt;= 1&#x27;b0;
+            r_target      &lt;= 24&#x27;d1000;
+            r_min_period  &lt;= 24&#x27;d500;
+            r_max_period  &lt;= 24&#x27;d50000;
+            r_delta       &lt;= 16&#x27;d100;
+            r_mode        &lt;= 2&#x27;b00;
+            r_irq_en      &lt;= 1&#x27;b0;
+            r_irq_status  &lt;= 1&#x27;b0;
+            core_done_d   &lt;= 1&#x27;b0;
+        end else begin
+            core_start &lt;= 1&#x27;b0;
+            core_stop  &lt;= 1&#x27;b0;
+            wr_fire    &lt;= 1&#x27;b0;
+
+            // done 상승 엣지 검출
+            core_done_d &lt;= core_done;
+
+            // IRQ_STATUS: W1C 우선, 그 다음 done 상승 엣지에서 set
+            if (aw_got &amp;&amp; w_got &amp;&amp; (aw_buf == A_IRQ_STATUS) &amp;&amp; w_buf[0])
+                r_irq_status &lt;= 1&#x27;b0;  // W1C 우선
+            else if (core_done &amp;&amp; !core_done_d)
+                r_irq_status &lt;= 1&#x27;b1;  // 상승 엣지에서만 set
+
+            // 주소 수신
+            if (s_awvalid &amp;&amp; s_awready) begin
+                aw_buf    &lt;= s_awaddr;
+                aw_got    &lt;= 1&#x27;b1;
+                s_awready &lt;= 1&#x27;b0;
+            end
+            // 데이터 수신
+            if (s_wvalid &amp;&amp; s_wready) begin
+                w_buf     &lt;= s_wdata;
+                wstrb_buf &lt;= s_wstrb;
+                w_got     &lt;= 1&#x27;b1;
+                s_wready  &lt;= 1&#x27;b0;
+            end
+
+            // 주소+데이터 모두 수신 → 레지스터 쓰기
+            if (aw_got &amp;&amp; w_got) begin
+                aw_got    &lt;= 1&#x27;b0;
+                w_got     &lt;= 1&#x27;b0;
+                s_awready &lt;= 1&#x27;b1;
+                s_wready  &lt;= 1&#x27;b1;
+                wr_fire   &lt;= 1&#x27;b1;
+                s_bvalid  &lt;= 1&#x27;b1;
+                s_bresp   &lt;= 2&#x27;b00;
+
+                case (aw_buf)
+                A_CTRL: begin
+                    if (w_buf[0]) core_start &lt;= 1&#x27;b1;
+                    if (w_buf[1]) core_stop  &lt;= 1&#x27;b1;
+                end
+                A_TARGET:     r_target     &lt;= w_buf[23:0];
+                A_MIN_PERIOD: r_min_period &lt;= w_buf[23:0];
+                A_MAX_PERIOD: r_max_period &lt;= w_buf[23:0];
+                A_DELTA:      r_delta      &lt;= w_buf[15:0];
+                A_MODE:       r_mode       &lt;= w_buf[1:0];
+                A_IRQ_ENABLE: r_irq_en &lt;= w_buf[0];
+                default: ; // 없는 주소: 무시
+                endcase
+            end
+
+            // bresp handshake
+            if (s_bvalid &amp;&amp; s_bready)
+                s_bvalid &lt;= 1&#x27;b0;
+        end
+    end
+
+    // ── AXI4-Lite 읽기 채널 ─────────────────────────────────────
+    wire [31:0] ctrl_rd = {26&#x27;b0, core_state, core_done, core_busy};
+
+    always @(posedge clk) begin
+        if (rst) begin
+            s_arready &lt;= 1&#x27;b1;
+            s_rvalid  &lt;= 1&#x27;b0;
+            s_rdata   &lt;= 32&#x27;b0;
+            s_rresp   &lt;= 2&#x27;b00;
+        end else begin
+            if (s_arvalid &amp;&amp; s_arready) begin
+                s_arready &lt;= 1&#x27;b0;
+                s_rvalid  &lt;= 1&#x27;b1;
+                s_rresp   &lt;= 2&#x27;b00;
+                case (s_araddr)
+                A_CTRL:        s_rdata &lt;= ctrl_rd;
+                A_TARGET:      s_rdata &lt;= {8&#x27;b0, r_target};
+                A_MIN_PERIOD:  s_rdata &lt;= {8&#x27;b0, r_min_period};
+                A_MAX_PERIOD:  s_rdata &lt;= {8&#x27;b0, r_max_period};
+                A_DELTA:       s_rdata &lt;= {16&#x27;b0, r_delta};
+                A_MODE:        s_rdata &lt;= {30&#x27;b0, r_mode};
+                A_ID:          s_rdata &lt;= IP_ID;
+                A_VER:         s_rdata &lt;= IP_VER;
+                A_IRQ_STATUS:  s_rdata &lt;= {31&#x27;b0, r_irq_status};
+                A_IRQ_ENABLE:  s_rdata &lt;= {31&#x27;b0, r_irq_en};
+                default:       s_rdata &lt;= 32&#x27;b0;
+                endcase
+            end
+            if (s_rvalid &amp;&amp; s_rready) begin
+                s_rvalid  &lt;= 1&#x27;b0;
+                s_arready &lt;= 1&#x27;b1;
+            end
+        end
+    end
+
+endmodule
+`default_nettype wire
+</pre></details><details><summary><code>rtl/step_ramp_core.v</code> <span class="muted">130줄</span></summary><pre>// step_ramp_core.v — 사다리꼴 가감속 FSM
+// 출처: 하네스 직접 작성 Verilog-2001 원본 (외부 코드 없음)
+// 알고리즘: 주기 기반(period-countdown) DDA. 곱셈·나눗셈 없음.
+//   ACCEL: 스텝마다 current_period -= delta (MIN_PERIOD에서 클램프)
+//   DECEL: 스텝마다 current_period += delta (MAX_PERIOD에서 클램프)
+//   전환: step_cnt &gt;= target&gt;&gt;1 이면 ACCEL→DECEL
+//   완료: step_cnt &gt;= target 이면 DONE
+`default_nettype none
+`timescale 1ns/1ps
+
+module step_ramp_core (
+    input  wire        clk,
+    input  wire        rst,          // active-high synchronous
+    // 제어
+    input  wire        start,        // 1펄스 → IDLE에서 ACCEL로
+    input  wire        stop,         // 1펄스 → 즉시 IDLE
+    // 파라미터 (start 전에 설정)
+    input  wire [23:0] i_target,     // 총 스텝 수. 0이면 무시.
+    input  wire [23:0] i_min_period, // 최소 주기(클럭), 최소 2
+    input  wire [23:0] i_max_period, // 최대 주기(클럭)
+    input  wire [15:0] i_delta,      // 스텝당 주기 변화량
+    // 출력
+    output reg         step_pulse,   // 1클럭 펄스, 스텝 1회
+    output wire        dir,          // 방향 (상시 1 = CW, 추후 확장)
+    output reg  [1:0]  state,        // 0=IDLE,1=ACCEL,2=DECEL,3=DONE
+    output wire        busy,
+    output reg         done          // 완료 플래그 (레지스터가 읽고 클리어)
+);
+    localparam IDLE  = 2&#x27;d0;
+    localparam ACCEL = 2&#x27;d1;
+    localparam DECEL = 2&#x27;d2;
+    localparam S_DONE = 2&#x27;d3;
+
+    assign dir  = 1&#x27;b1;
+    assign busy = (state == ACCEL) || (state == DECEL);
+
+    // ── 내부 레지스터 ──────────────────────────────────────────────
+    reg [23:0] step_cnt;      // 완료된 스텝 수
+    reg [23:0] period_cnt;    // 현재 스텝의 남은 클럭 수
+    reg [23:0] cur_period;    // 현재 적용 주기
+
+    // ── 다음 주기 계산 (조합) ──────────────────────────────────────
+    wire [24:0] accel_sub = {1&#x27;b0, cur_period} - {8&#x27;b0, i_delta};
+    wire [24:0] decel_add = {1&#x27;b0, cur_period} + {8&#x27;b0, i_delta};
+
+    wire [23:0] nxt_accel =
+        (accel_sub[24] || accel_sub[23:0] &lt; i_min_period)
+            ? i_min_period : accel_sub[23:0];
+
+    wire [23:0] nxt_decel =
+        (decel_add[24] || decel_add[23:0] &gt; i_max_period)
+            ? i_max_period : decel_add[23:0];
+
+    // ── 다음 step_cnt (조합) ──────────────────────────────────────
+    wire [23:0] nxt_cnt = step_cnt + 24&#x27;d1;
+
+    // ── FSM + 주기 카운터 (1개 always) ────────────────────────────
+    always @(posedge clk) begin
+        if (rst) begin
+            state      &lt;= IDLE;
+            step_cnt   &lt;= 24&#x27;d0;
+            period_cnt &lt;= 24&#x27;d0;
+            cur_period &lt;= 24&#x27;d0;
+            step_pulse &lt;= 1&#x27;b0;
+            done       &lt;= 1&#x27;b0;
+        end else begin
+            step_pulse &lt;= 1&#x27;b0; // 기본: 펄스 없음
+
+            case (state)
+
+            IDLE: begin
+                done &lt;= 1&#x27;b0;
+                if (start &amp;&amp; (i_target != 24&#x27;d0)) begin
+                    cur_period &lt;= i_max_period;
+                    period_cnt &lt;= i_max_period;
+                    step_cnt   &lt;= 24&#x27;d0;
+                    state      &lt;= ACCEL;
+                end
+            end
+
+            ACCEL, DECEL: begin
+                if (stop) begin
+                    state &lt;= IDLE;
+                end else if (period_cnt == 24&#x27;d1) begin
+                    // ── 이번 사이클에 스텝 발생 ──
+                    step_pulse &lt;= 1&#x27;b1;
+
+                    if (nxt_cnt &gt;= i_target) begin
+                        // 목표 완료
+                        state      &lt;= S_DONE;
+                        step_cnt   &lt;= nxt_cnt;
+                        done       &lt;= 1&#x27;b1;
+                        period_cnt &lt;= 24&#x27;d1;
+                    end else begin
+                        step_cnt &lt;= nxt_cnt;
+                        if (state == ACCEL) begin
+                            // 절반 이상 왔으면 DECEL로 전환
+                            if (nxt_cnt &gt;= (i_target &gt;&gt; 1))
+                                state &lt;= DECEL;
+                            cur_period &lt;= nxt_accel;
+                            period_cnt &lt;= nxt_accel;
+                        end else begin
+                            // DECEL
+                            cur_period &lt;= nxt_decel;
+                            period_cnt &lt;= nxt_decel;
+                        end
+                    end
+                end else begin
+                    period_cnt &lt;= period_cnt - 24&#x27;d1;
+                end
+            end
+
+            S_DONE: begin
+                // done 플래그는 외부(axil_stepper)가 읽고 클리어
+                if (start &amp;&amp; (i_target != 24&#x27;d0)) begin
+                    // 재시작
+                    cur_period &lt;= i_max_period;
+                    period_cnt &lt;= i_max_period;
+                    step_cnt   &lt;= 24&#x27;d0;
+                    state      &lt;= ACCEL;
+                    done       &lt;= 1&#x27;b0;
+                end
+            end
+
+            endcase
+        end
+    end
+
+endmodule
+`default_nettype wire
+</pre></details><details><summary><code>rtl/seq_4wire.v</code> <span class="muted">66줄</span></summary><pre>// seq_4wire.v — 4선식 스텝모터 시퀀서 (28BYJ-48 / ULN2003)
+// 출처: 하네스 직접 작성 Verilog-2001 원본
+// 전상(full-step, 4단계): 0001 → 0010 → 0100 → 1000 → ...
+// 반상(half-step, 8단계): 0001 → 0011 → 0010 → 0110 → 0100 → 1100 → 1000 → 1001 → ...
+// dir=1: CW(전진), dir=0: CCW(후진)
+`default_nettype none
+`timescale 1ns/1ps
+
+module seq_4wire (
+    input  wire       clk,
+    input  wire       rst,
+    input  wire       step_pulse, // 1클럭 펄스 → 1스텝 전진
+    input  wire       dir,        // 1=CW, 0=CCW
+    input  wire       half_step,  // 0=전상(4), 1=반상(8)
+    output reg  [3:0] coil        // ULN2003 IN1~IN4
+);
+    // 전상 테이블 (4단계)
+    reg [3:0] full_tbl [0:3];
+    // 반상 테이블 (8단계)
+    reg [3:0] half_tbl [0:7];
+
+    initial begin
+        full_tbl[0] = 4&#x27;b0001;
+        full_tbl[1] = 4&#x27;b0010;
+        full_tbl[2] = 4&#x27;b0100;
+        full_tbl[3] = 4&#x27;b1000;
+
+        half_tbl[0] = 4&#x27;b0001;
+        half_tbl[1] = 4&#x27;b0011;
+        half_tbl[2] = 4&#x27;b0010;
+        half_tbl[3] = 4&#x27;b0110;
+        half_tbl[4] = 4&#x27;b0100;
+        half_tbl[5] = 4&#x27;b1100;
+        half_tbl[6] = 4&#x27;b1000;
+        half_tbl[7] = 4&#x27;b1001;
+    end
+
+    reg [2:0] idx; // 0~7 (반상), 0~3 (전상)
+
+    always @(posedge clk) begin
+        if (rst) begin
+            idx  &lt;= 3&#x27;d0;
+            coil &lt;= 4&#x27;b0001;
+        end else if (step_pulse) begin
+            if (half_step) begin
+                // 반상: 8단계
+                if (dir)
+                    idx &lt;= (idx == 3&#x27;d7) ? 3&#x27;d0 : idx + 3&#x27;d1;
+                else
+                    idx &lt;= (idx == 3&#x27;d0) ? 3&#x27;d7 : idx - 3&#x27;d1;
+                coil &lt;= half_tbl[(dir) ? ((idx == 3&#x27;d7) ? 3&#x27;d0 : idx + 3&#x27;d1)
+                                       : ((idx == 3&#x27;d0) ? 3&#x27;d7 : idx - 3&#x27;d1)];
+            end else begin
+                // 전상: 4단계 (idx[1:0] 사용)
+                if (dir)
+                    idx[1:0] &lt;= (idx[1:0] == 2&#x27;d3) ? 2&#x27;d0 : idx[1:0] + 2&#x27;d1;
+                else
+                    idx[1:0] &lt;= (idx[1:0] == 2&#x27;d0) ? 2&#x27;d3 : idx[1:0] - 2&#x27;d1;
+                coil &lt;= full_tbl[(dir) ? ((idx[1:0] == 2&#x27;d3) ? 2&#x27;d0 : idx[1:0] + 2&#x27;d1)
+                                       : ((idx[1:0] == 2&#x27;d0) ? 2&#x27;d3 : idx[1:0] - 2&#x27;d1)];
+            end
+        end
+    end
+
+endmodule
+`default_nettype wire
+</pre></details><details><summary><code>tb/tb_axil_stepper.v</code> <span class="muted">212줄</span></summary><pre>// tb_axil_stepper.v — axil_stepper 자체 점검 테스트벤치
+// 출처: 하네스 직접 작성 Verilog-2001 원본
+// 검증 항목:
+//  1) AXI4-Lite 쓰기/읽기 기능
+//  2) TARGET=8 스텝, 가감속 프로파일 완료
+//  3) step_pulse 카운트 == TARGET
+//  4) coil 패턴 변화 (전상 4단계 순환)
+//  5) DONE 비트, IRQ_STATUS 발생 확인
+//  6) IRQ_STATUS W1C 클리어, irq 소등 확인
+//  7) ID/VER 레지스터 값 확인
+// 판정: 모든 항목 통과 시 PASS, 하나라도 실패 시 FAIL
+`default_nettype none
+`timescale 1ns/1ps
+
+module tb_axil_stepper;
+    // ── 클럭/리셋 ────────────────────────────────────────────────
+    reg clk, rst;
+    localparam CLK_HALF = 5; // 10ns 주기 = 100MHz
+
+    initial clk = 0;
+    always #CLK_HALF clk = ~clk;
+
+    // ── DUT 포트 ────────────────────────────────────────────────
+    reg  [15:0] s_awaddr;  reg  s_awvalid;  wire s_awready;
+    reg  [31:0] s_wdata;   reg  s_wvalid;   wire s_wready;
+    wire [1:0]  s_bresp;   wire s_bvalid;   reg  s_bready;
+    reg  [15:0] s_araddr;  reg  s_arvalid;  wire s_arready;
+    wire [31:0] s_rdata;   wire [1:0] s_rresp; wire s_rvalid; reg s_rready;
+    wire [3:0]  coil;
+    wire        step_out, dir_out, irq;
+
+    axil_stepper dut (
+        .clk(clk), .rst(rst),
+        .s_awaddr(s_awaddr), .s_awvalid(s_awvalid), .s_awready(s_awready),
+        .s_wdata(s_wdata),   .s_wvalid(s_wvalid),   .s_wready(s_wready),
+        .s_bresp(s_bresp),   .s_bvalid(s_bvalid),   .s_bready(s_bready),
+        .s_araddr(s_araddr), .s_arvalid(s_arvalid), .s_arready(s_arready),
+        .s_rdata(s_rdata),   .s_rresp(s_rresp),     .s_rvalid(s_rvalid),
+        .s_rready(s_rready),
+        .coil(coil), .step_out(step_out), .dir_out(dir_out), .irq(irq)
+    );
+
+    // ── 계수기 ──────────────────────────────────────────────────
+    integer step_count;    // step_pulse 계수
+    integer coil_changes;  // coil 변화 횟수
+    reg [3:0] prev_coil;
+    integer fail_count;
+
+    // step_pulse 감시
+    always @(posedge clk) begin
+        if (rst) begin
+            step_count   &lt;= 0;
+            coil_changes &lt;= 0;
+            prev_coil    &lt;= 4&#x27;b0001;
+        end else begin
+            if (step_out) step_count &lt;= step_count + 1;
+            if (coil !== prev_coil) begin
+                coil_changes &lt;= coil_changes + 1;
+                prev_coil    &lt;= coil;
+            end
+        end
+    end
+
+    // ── AXI4-Lite 태스크 ────────────────────────────────────────
+    task axil_write;
+        input [15:0] addr;
+        input [31:0] data;
+        begin
+            @(negedge clk);
+            s_awaddr  = addr;   s_awvalid = 1&#x27;b1;
+            s_wdata   = data;   s_wvalid  = 1&#x27;b1;
+            s_bready  = 1&#x27;b1;
+            // 주소 handshake
+            @(posedge clk);
+            while (!s_awready) @(posedge clk);
+            @(negedge clk); s_awvalid = 1&#x27;b0;
+            // 데이터 handshake (wready는 항상 1이므로 즉시)
+            s_wvalid = 1&#x27;b0;
+            // bresp 대기
+            @(posedge clk);
+            while (!s_bvalid) @(posedge clk);
+            @(negedge clk); s_bready = 1&#x27;b0;
+        end
+    endtask
+
+    task axil_read;
+        input  [15:0] addr;
+        output [31:0] data;
+        begin
+            @(negedge clk);
+            s_araddr  = addr;   s_arvalid = 1&#x27;b1;
+            s_rready  = 1&#x27;b1;
+            @(posedge clk);
+            while (!s_arready) @(posedge clk);
+            @(negedge clk); s_arvalid = 1&#x27;b0;
+            @(posedge clk);
+            while (!s_rvalid) @(posedge clk);
+            data = s_rdata;
+            @(negedge clk); s_rready = 1&#x27;b0;
+        end
+    endtask
+
+    task check;
+        input [255:0] name;
+        input         cond;
+        begin
+            if (!cond) begin
+                $display(&quot;FAIL: %0s&quot;, name);
+                fail_count = fail_count + 1;
+            end else begin
+                $display(&quot;ok:   %0s&quot;, name);
+            end
+        end
+    endtask
+
+    // ── 메인 테스트 ──────────────────────────────────────────────
+    reg [31:0] rval;
+    integer    timeout;
+
+    initial begin
+        // 초기화
+        rst = 1; fail_count = 0; step_count = 0; coil_changes = 0;
+        s_awvalid = 0; s_wvalid = 0; s_bready = 1;
+        s_arvalid = 0; s_rready = 1;
+        s_awaddr = 0; s_wdata = 0; s_araddr = 0;
+        repeat(4) @(posedge clk);
+        rst = 0;
+        repeat(2) @(posedge clk);
+
+        // ── 테스트 1: ID/VER 확인 ──────────────────────────────
+        axil_read(16&#x27;hFFF0, rval);
+        check(&quot;ID == 0x53545050&quot;, rval === 32&#x27;h53545050);
+
+        axil_read(16&#x27;hFFF4, rval);
+        check(&quot;VER == 0x01000100&quot;, rval === 32&#x27;h01000100);
+
+        // ── 테스트 2: 레지스터 쓰기/읽기 ──────────────────────
+        // TARGET=8, MIN_PERIOD=2, MAX_PERIOD=10, DELTA=2, MODE=0(전상,4선)
+        axil_write(16&#x27;h0004, 32&#x27;d8);       // TARGET_STEPS
+        axil_write(16&#x27;h0008, 32&#x27;d2);       // MIN_PERIOD
+        axil_write(16&#x27;h000C, 32&#x27;d10);      // MAX_PERIOD
+        axil_write(16&#x27;h0010, 32&#x27;d2);       // DELTA_PERIOD
+        axil_write(16&#x27;h0014, 32&#x27;d0);       // MODE = 전상·4선
+        axil_write(16&#x27;hFFFC, 32&#x27;d1);       // IRQ_ENABLE[0] = 1
+
+        axil_read(16&#x27;h0004, rval);
+        check(&quot;TARGET_STEPS readback&quot;, rval === 32&#x27;d8);
+
+        axil_read(16&#x27;hFFFC, rval);
+        check(&quot;IRQ_ENABLE readback&quot;, rval === 32&#x27;d1);
+
+        // ── 테스트 3: CTRL 초기값 (BUSY=0, DONE=0) ───────────
+        axil_read(16&#x27;h0000, rval);
+        check(&quot;CTRL BUSY=0 before start&quot;, rval[0] === 1&#x27;b0);
+
+        // ── 테스트 4: 모터 가동 ────────────────────────────────
+        axil_write(16&#x27;h0000, 32&#x27;h1); // CTRL START
+
+        // DONE 대기 (최대 500 클럭)
+        timeout = 0;
+        rval = 32&#x27;b0;
+        while (rval[1] !== 1&#x27;b1 &amp;&amp; timeout &lt; 500) begin
+            @(posedge clk);
+            axil_read(16&#x27;h0000, rval);
+            timeout = timeout + 1;
+        end
+        check(&quot;DONE bit set within 500 clk&quot;, rval[1] === 1&#x27;b1);
+        check(&quot;BUSY=0 after done&quot;, rval[0] === 1&#x27;b0);
+
+        // ── 테스트 5: step_pulse 카운트 == TARGET ─────────────
+        // step_out 과 step_pulse가 같으므로 step_count 사용
+        check(&quot;step_count == 8&quot;, step_count === 8);
+
+        // ── 테스트 6: coil 패턴 변화 (전상: 8번 변화) ──────────
+        // coil_changes: 초기값 포함 최대 9번(reset→첫패턴 1 + 8스텝)
+        // step_pulse마다 coil 변화하므로 step_count와 동일하거나 +1
+        check(&quot;coil_changes &gt;= 8&quot;, coil_changes &gt;= 8);
+
+        // ── 테스트 7: IRQ_STATUS[0] 발생 ──────────────────────
+        axil_read(16&#x27;hFFF8, rval);
+        check(&quot;IRQ_STATUS[0]=1 after done&quot;, rval[0] === 1&#x27;b1);
+        check(&quot;irq output asserted&quot;, irq === 1&#x27;b1);
+
+        // ── 테스트 8: W1C 클리어 ──────────────────────────────
+        axil_write(16&#x27;hFFF8, 32&#x27;h1); // W1C
+        @(posedge clk); @(posedge clk);
+
+        axil_read(16&#x27;hFFF8, rval);
+        check(&quot;IRQ_STATUS cleared by W1C&quot;, rval[0] === 1&#x27;b0);
+        check(&quot;irq deasserted after clear&quot;, irq === 1&#x27;b0);
+
+        // ── 판정 ──────────────────────────────────────────────
+        $display(&quot;---&quot;);
+        if (fail_count === 0) begin
+            $display(&quot;PASS: 모든 항목 통과 (%0d checks)&quot;, 10);
+        end else begin
+            $display(&quot;FAIL: %0d 항목 실패&quot;, fail_count);
+        end
+
+        #100;
+        $finish;
+    end
+
+    // ── 타임아웃 가드 ────────────────────────────────────────────
+    initial begin
+        #100000;
+        $display(&quot;FAIL: 시뮬레이션 타임아웃 (100000 ns)&quot;);
+        $finish;
+    end
+
+endmodule
+`default_nettype wire
+</pre></details><details><summary><code>constr/basys3.xdc</code> <span class="muted">50줄</span></summary><pre>## basys3.xdc — Basys3 XC7A35T 핀 제약
+## axil_stepper IP 보드 테스트용 (스텝모터 사다리꼴 가감속 IP)
+
+## 클럭 100 MHz
+set_property PACKAGE_PIN W5    [get_ports clk]
+set_property IOSTANDARD  LVCMOS33 [get_ports clk]
+create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports clk]
+
+## 리셋: btnC
+set_property PACKAGE_PIN U18   [get_ports btnC]
+set_property IOSTANDARD  LVCMOS33 [get_ports btnC]
+
+## 슬라이드 스위치 SW[1:0]
+set_property PACKAGE_PIN V17   [get_ports {sw[0]}]
+set_property PACKAGE_PIN V16   [get_ports {sw[1]}]
+set_property IOSTANDARD  LVCMOS33 [get_ports {sw[0]}]
+set_property IOSTANDARD  LVCMOS33 [get_ports {sw[1]}]
+
+## LED[3:0] (coil 패턴 표시)
+set_property PACKAGE_PIN U16   [get_ports {led[0]}]
+set_property PACKAGE_PIN E19   [get_ports {led[1]}]
+set_property PACKAGE_PIN U19   [get_ports {led[2]}]
+set_property PACKAGE_PIN V19   [get_ports {led[3]}]
+set_property IOSTANDARD  LVCMOS33 [get_ports {led[0]}]
+set_property IOSTANDARD  LVCMOS33 [get_ports {led[1]}]
+set_property IOSTANDARD  LVCMOS33 [get_ports {led[2]}]
+set_property IOSTANDARD  LVCMOS33 [get_ports {led[3]}]
+
+## LED[14] busy, LED[15] IRQ
+set_property PACKAGE_PIN U14   [get_ports led_busy]
+set_property PACKAGE_PIN V14   [get_ports led_irq]
+set_property IOSTANDARD  LVCMOS33 [get_ports led_busy]
+set_property IOSTANDARD  LVCMOS33 [get_ports led_irq]
+
+## Pmod JA — ULN2003 IN1~IN4 (4선 모드) 또는 STEP/DIR (STEP/DIR 모드)
+## JA[0]~JA[3] = coil[0]~coil[3] = ULN2003 IN1~IN4
+set_property PACKAGE_PIN J1    [get_ports {jaMon[0]}]
+set_property PACKAGE_PIN L2    [get_ports {jaMon[1]}]
+set_property PACKAGE_PIN J2    [get_ports {jaMon[2]}]
+set_property PACKAGE_PIN G2    [get_ports {jaMon[3]}]
+set_property IOSTANDARD  LVCMOS33 [get_ports {jaMon[0]}]
+set_property IOSTANDARD  LVCMOS33 [get_ports {jaMon[1]}]
+set_property IOSTANDARD  LVCMOS33 [get_ports {jaMon[2]}]
+set_property IOSTANDARD  LVCMOS33 [get_ports {jaMon[3]}]
+
+## JA[4]=STEP, JA[5]=DIR (STEP/DIR 모드)
+set_property PACKAGE_PIN H1    [get_ports jaStep]
+set_property PACKAGE_PIN K2    [get_ports jaDir]
+set_property IOSTANDARD  LVCMOS33 [get_ports jaStep]
+set_property IOSTANDARD  LVCMOS33 [get_ports jaDir]
+</pre></details><details><summary><code>Makefile</code> <span class="muted">41줄</span></summary><pre>## Makefile — mmio-stepper-ramp-ip
+## 사용법: make lint | sim | synth | all
+## 도구: iverilog, yosys (Ubuntu: sudo apt install iverilog yosys)
+
+SLUG    := mmio-stepper-ramp-ip
+BUILD   := ../../build/$(SLUG)
+RTL     := rtl/axil_stepper.v rtl/step_ramp_core.v rtl/seq_4wire.v rtl/basys3_top.v
+TB      := tb/tb_axil_stepper.v
+SIM_TOP := tb_axil_stepper
+
+.PHONY: all lint sim synth clean
+
+all: lint sim synth
+
+## ── 린트 (iverilog -Wall -g2001 -tnull) ─────────────────────────
+lint:
+	@mkdir -p $(BUILD)
+	iverilog -Wall -Wno-timescale -g2001 -tnull \
+	    $(RTL) $(TB) 2&gt;&amp;1 | tee $(BUILD)/lint.log
+	@echo &quot;--- lint done ---&quot;
+
+## ── 시뮬레이션 ────────────────────────────────────────────────
+sim:
+	@mkdir -p $(BUILD)
+	iverilog -g2001 -o $(BUILD)/sim.vvp \
+	    $(RTL) $(TB) 2&gt;&amp;1 | tee $(BUILD)/sim_compile.log
+	vvp $(BUILD)/sim.vvp 2&gt;&amp;1 | tee $(BUILD)/sim.log
+	@grep -E &quot;^(PASS|FAIL)&quot; $(BUILD)/sim.log || \
+	    (echo &quot;FAIL: PASS/FAIL not found in sim output&quot; &amp;&amp; exit 1)
+
+## ── yosys 합성 (자원 추정) ────────────────────────────────────
+synth:
+	@mkdir -p $(BUILD)
+	yosys -p &quot;read_verilog $(RTL); \
+	          synth_xilinx -top basys3_top -flatten; \
+	          stat&quot; \
+	    2&gt;&amp;1 | tee $(BUILD)/synth.log
+	@echo &quot;--- synth done ---&quot;
+
+clean:
+	rm -rf $(BUILD)
+</pre></details><h3>시뮬레이션</h3><ol><li>iverilog, yosys 설치 (Ubuntu: sudo apt install iverilog yosys)</li><li>make -C capstones/mmio-stepper-ramp-ip lint sim synth</li><li>build/sim.log 에서 &#x27;PASS&#x27; 확인</li></ol><h3>Vivado 빌드 (Basys3 보드 테스트)</h3><ol><li>새 RTL 프로젝트, 파트 xc7a35tcpg236-1</li><li>rtl/*.v (tb/ 제외) + constr/basys3.xdc 추가, 최상위 basys3_top</li><li>Generate Bitstream 후 Program Device</li><li>btnC 리셋 후 모터가 8바퀴(4096 × 8 = 32768 반상 스텝) 사다리꼴 가감속 후 정지 확인</li><li>LED[3:0] = coil 패턴, LED[15] = irq 소등 후 완료</li></ol>
+<h2 id="verify">8. 검증</h2><div class="panel"><table><tr><th>단계</th><th>결과</th><th>내용</th></tr>
+<tr><td>린트(verilator)</td><td>미실행</td><td></td></tr><tr><td>시뮬레이션(iverilog)</td><td>미실행</td><td></td></tr><tr><td>합성 추정(yosys)</td><td>미실행</td><td></td></tr><tr><td>보드 동작</td><td>not-tested</td><td></td></tr>
+</table></div><p>S3는 사람이 Basys3에서 직접 확인해야 한다. CI가 S1(린트+시뮬)과 S2(합성)를 기록한다.</p>
+<h2 id="ref">9. 참고 카드와 위험</h2><h3>참고 카드</h3><ul><li><code>jtec-lam-ehkan-stepper-trapezoid-fpga</code> — Altera DE2 사다리꼴 FSM 구조 참고: ACCEL/CONST/DECEL 상태, 15.88µm/step, 주기 기반 제어 <span class="muted">(카드 미작성)</span></li><li><code>hackaday-fpga-cnc-stepper</code> — FPGA CNC 스텝 DDA 알고리즘, 주기 기반 pulse generation 패턴 <span class="muted">(카드 미작성)</span></li><li><a href="../catalog/electronics/zbotic-backem-flyback-protection.html"><code>zbotic-backem-flyback-protection</code></a> — 역기전력 보호(플라이백 다이오드) — ULN2003 내장 다이오드 활용 근거</li><li><a href="../catalog/electronics/lcsc-mosfet-selection-motor-control.html"><code>lcsc-mosfet-selection-motor-control</code></a> — 모터 드라이버 선택 근거 — ULN2003(단극성) vs A4988(양극성) 비교</li></ul><h3>위험·한계</h3><ul><li>MIN_PERIOD가 너무 작으면 모터 탈조 — 28BYJ-48 최대 속도 약 500 PPS(기어 비 1:64 기준), MIN_PERIOD &gt;= 200000(100MHz/500)</li><li>DELTA_PERIOD=0이면 가속 없이 MAX_PERIOD 고정 속도로 동작 — 무한 ACCEL 상태 진입 방지를 위해 period가 MIN에 도달하면 DECEL 전환 조건만 적용</li><li>TARGET_STEPS=0이면 START를 무시하도록 구현 — 0 스텝 동작 방지</li><li>MAX_PERIOD &lt; MIN_PERIOD 설정 시 동작 미정의 — 사용자가 설정값 검증 필요</li><li>4선 모드에서 급정지(STOP) 시 코일 에너지 — ULN2003 내장 플라이백 다이오드로 보호</li><li>STEP/DIR 모드(A4988) 연결 시 보드 외부 5V 모터 전원 필요, 레벨 변환 불필요(ULN2003 경우)</li></ul>
+</main></body></html>

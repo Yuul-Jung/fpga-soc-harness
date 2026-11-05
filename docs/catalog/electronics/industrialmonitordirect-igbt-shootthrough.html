@@ -1,0 +1,46 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>industrialmonitordirect-igbt-shootthrough</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../../hub.html">FPGA SoC 하네스</a><a href="../../hub.html">메인</a><a href="../../hub.html#capstones">캡스톤</a><a href="../../soc-map/tech-tree.html">기술 트리</a><a href="../../catalog/index.html">카탈로그</a><a href="../../inbox/ideas.html">아이디어</a><a href="../../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/catalog/electronics/industrialmonitordirect-igbt-shootthrough.md">GitHub 원본: catalog/electronics/industrialmonitordirect-igbt-shootthrough.md</a></p><h1>industrialmonitordirect-igbt-shootthrough</h1><div class="panel fm"><table><tr><td>name</td><td><a href="industrialmonitordirect-igbt-shootthrough.html">industrialmonitordirect-igbt-shootthrough</a></td></tr><tr><td>url</td><td>https://industrialmonitordirect.com/blogs/knowledgebase/igbt-h-bridge-shoot-through-fixing-pwm-timing-driver-issues</td></tr><tr><td>source_type</td><td>article</td></tr><tr><td>vendor</td><td>neutral</td></tr><tr><td>board</td><td>[]</td></tr><tr><td>fit_basys3</td><td>needs-port</td></tr><tr><td>cpu</td><td>none(전자회로·게이트 드라이버)</td></tr><tr><td>language</td><td>[]</td></tr><tr><td>tools</td><td>[]</td></tr><tr><td>bus</td><td>none</td></tr><tr><td>peripherals</td><td>[gate-driver, h-bridge, deadtime, igbt, shoot-through]</td></tr><tr><td>stage</td><td>T2</td></tr><tr><td>license</td><td>unknown</td></tr><tr><td>stats</td><td>{}</td></tr><tr><td>doc_language</td><td>en</td></tr><tr><td>verification</td><td>L3</td></tr><tr><td>checked_at</td><td>2026-11-04</td></tr><tr><td>sources</td><td>[https://industrialmonitordirect.com/blogs/knowledgebase/igbt-h-bridge-shoot-through-fixing-pwm-timing-driver-issues]</td></tr></table></div><h2>요약</h2>
+<p>IGBT H-브리지 슛스루 원인과 수정 방법 가이드. PWM 타이밍 오류, 게이트 드라이버 구성 실수, 부족한 데드타임에 의한 슛스루 메커니즘을 설명하고 최소 데드타임 계산식, 통합 하프브리지 드라이버 대안을 제시한다.</p>
+<h2>구조</h2>
+<ul><li style="margin-left:0.0em">슛스루 메커니즘: 같은 레그의 두 스위치가 스위칭 천이 중 동시에 도통 → 버스-GND 단락. 최악 200A+ 스파이크, 수 마이크로초 내 IGBT 파손</li><li style="margin-left:0.0em">최소 데드타임 계산: <code>t_dt(min) = t_fall(max) + t_propagation(off) + 여유</code>; 20A IGBT 예시 → 약 340 ns → 실용 권장 500 ns–1 µs</li><li style="margin-left:0.0em">소자별 최소 데드타임: 600V IGBT 500 ns–1 µs / SiC MOSFET 100–200 ns (최대 100 kHz PWM 가능)</li><li style="margin-left:0.0em">통합 드라이버 (슛스루 보호 내장): IR2304, FAN7390, UCC27710(적응 데드타임 450 ns)</li><li style="margin-left:0.0em">50% 듀티 제한: 보완 PWM에서 레그당 듀티 50% 초과 불가 — 초과하면 데드타임에 무관하게 슛스루</li></ul>
+<h2>검증·재현성</h2>
+<ul><li style="margin-left:0.0em">본문 직접 열람(L3). 계산 예시, 고장 메커니즘, 드라이버 IC 목록 포함</li><li style="margin-left:0.0em">하드웨어 시험 기록 없음(가이드 성격 블로그)</li><li style="margin-left:0.0em">주의: 본문 IR2110 핀 테이블(HIN/LIN 배선)이 내부적으로 일관성 없음 — 내 판단: 데이터시트 직접 대조 필수</li></ul>
+<h2>한계·위험</h2>
+<ul><li style="margin-left:0.0em">FPGA 전용 고려사항 미포함 — FPGA → 게이트 드라이버 인터페이스(3.3V 로직 레벨, 전파 지연, Pmod 전류 한계)는 별도 검토 필요</li><li style="margin-left:0.0em">IR2110 핀 표 오류 가능성 (본문 자체 경고 수준) — 반드시 Infineon 공식 데이터시트 확인</li><li style="margin-left:0.0em">외부 명령 지시문 없음 (안전)</li></ul>
+<h2>재사용 메모</h2>
+<p>Basys3 Pmod(3.3V) → IRS2110/IR2304 HIN-LIN 연결 시 적용: Pmod 전류(최대 1mA per pin) 한계 → 버퍼(74HC244 등) 삽입 권장. 데드타임 RTL 구현: 100MHz 클럭 기준 500 ns = 50 클럭 틱 (카운터 6비트), 1 µs = 100 틱 (7비트 충분). 개조: FPGA에서 HIN·LIN 보완 쌍을 생성하는 RTL 모듈 + 데드타임 삽입 FSM을 MicroBlaze V SoC의 AXI4-Lite IP로 래핑. 슛스루 감시 assertion (<code>!(pwmA &amp;&amp; pwmB)</code>)을 testbench에 추가해 CI에서 타이밍 오류 자동 검출. SiC MOSFET 대상 100–200 ns 데드타임은 Basys3 100MHz 클럭 기준 10–20 클럭 틱으로 충분히 구현 가능. 참고: [<a href="industrialmonitordirect-irs2110-half-bridge.html">industrialmonitordirect-irs2110-half-bridge</a>]</p></main></body></html>

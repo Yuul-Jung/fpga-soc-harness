@@ -1,0 +1,46 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>zipcpu-ziptimer</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../../hub.html">FPGA SoC 하네스</a><a href="../../hub.html">메인</a><a href="../../hub.html#capstones">캡스톤</a><a href="../../soc-map/tech-tree.html">기술 트리</a><a href="../../catalog/index.html">카탈로그</a><a href="../../inbox/ideas.html">아이디어</a><a href="../../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/catalog/vendor-neutral/zipcpu-ziptimer.md">GitHub 원본: catalog/vendor-neutral/zipcpu-ziptimer.md</a></p><h1>zipcpu-ziptimer</h1><div class="panel fm"><table><tr><td>name</td><td><a href="zipcpu-ziptimer.html">zipcpu-ziptimer</a></td></tr><tr><td>url</td><td>https://github.com/ZipCPU/zipcpu/blob/master/rtl/peripherals/ziptimer.v</td></tr><tr><td>source_type</td><td>repo</td></tr><tr><td>vendor</td><td>neutral</td></tr><tr><td>board</td><td>[]</td></tr><tr><td>fit_basys3</td><td>needs-port</td></tr><tr><td>cpu</td><td>none(IP 코어, ZipCPU 버스 직결)</td></tr><tr><td>language</td><td>Verilog</td></tr><tr><td>tools</td><td>[sby (Symbiyosys formal), yosys]</td></tr><tr><td>bus</td><td>ZipCPU 버스 (Wishbone 유사, 단일 32비트 레지스터)</td></tr><tr><td>peripherals</td><td>[timer-countdown, timer-irq, timer-periodic, timer-oneshot]</td></tr><tr><td>stage</td><td>T1</td></tr><tr><td>license</td><td>GPLv3</td></tr><tr><td>stats</td><td>{stars: 1636, commits: 826, last_update: 2024-10}</td></tr><tr><td>doc_language</td><td>en</td></tr><tr><td>verification</td><td>L3</td></tr><tr><td>checked_at</td><td>2026-11-05</td></tr><tr><td>sources</td><td>[https://zipcpu.com/zipcpu/2018/04/17/ziptimer.html, https://github.com/ZipCPU/zipcpu/tree/master/rtl/peripherals]</td></tr></table></div><h2>요약 (3줄 이내)</h2>
+<p>ZipCPU 프로세서의 주변장치 타이머 IP. 단일 32비트 레지스터 하나로 카운트다운 타이머를 제어하며, 0에 도달하면 <code>o_int</code> 인터럽트를 발생한다. 원샷과 주기(자동 재로드) 모드를 파라미터·비트 설정으로 선택한다.</p>
+<h2>구조</h2>
+<ul><li style="margin-left:0.0em">단일 소스 파일: <code>rtl/peripherals/ziptimer.v</code></li><li style="margin-left:0.0em">파라미터:</li><li style="margin-left:1.2em"><code>BW</code> (버스 폭, 기본 32): 비트 폭</li><li style="margin-left:1.2em"><code>VW</code> (카운터 폭, <code>BW-1</code>=31): 실제 카운트 폭</li><li style="margin-left:1.2em"><code>RELOADABLE</code> (1=주기 모드 가능, 0=원샷만): 주기 모드 활성화</li><li style="margin-left:0.0em">주요 포트 (블로그 2018-04-17 기준):</li><li style="margin-left:1.2em"><code>i_clk</code>, <code>i_reset</code>: 클럭·리셋</li><li style="margin-left:1.2em"><code>i_ce</code>: 클럭 인에이블 (분주 가능)</li><li style="margin-left:1.2em"><code>i_wb_cyc</code>, <code>i_wb_stb</code>, <code>i_wb_we</code>, <code>i_wb_data[BW-1:0]</code>: 버스 쓰기</li><li style="margin-left:1.2em"><code>o_wb_ack</code>, <code>o_wb_data[BW-1:0]</code>: 버스 읽기</li><li style="margin-left:1.2em"><code>o_int</code>: 인터럽트 출력</li><li style="margin-left:0.0em">단일 레지스터 (오프셋 없음):</li><li style="margin-left:1.2em">쓰기: <code>{reload_flag, count[VW-1:0]}</code> → 카운터 로드 &amp; 시작</li><li style="margin-left:1.2em">읽기: 현재 카운터 값 반환</li><li style="margin-left:1.2em">비트31=0 → 원샷 (0에 도달하면 멈춤), 비트31=1 → 주기 (자동 재로드, <code>RELOADABLE=1</code> 필요)</li><li style="margin-left:0.0em">클럭 인에이블(<code>i_ce</code>)을 외부 분주기에 연결하면 프리스케일러 없이 긴 주기 구현 가능</li></ul>
+<h2>검증·재현성</h2>
+<ul><li style="margin-left:0.0em">Symbiyosys 공식 검증(sby) 적용 — 블로그에서 formal proof 언급 확인</li><li style="margin-left:0.0em">별도 시뮬레이션 테스트벤치 없음 (formal 중심)</li><li style="margin-left:0.0em">ZipCPU 전체 SoC에서 수년간 프로덕션 사용 (1,636 stars, 826 commits)</li><li style="margin-left:0.0em">iverilog·verilator 린트 통과 여부: <code>unverified: 직접 확인 안 함</code></li></ul>
+<h2>한계·위험</h2>
+<ul><li style="margin-left:0.0em"><strong>GPLv3</strong>: 소스 반입 시 하네스 전체가 GPLv3 영향을 받을 수 있음 — 반입 전 사용자 승인 및 라이선스 검토 필수</li><li style="margin-left:0.0em"><strong>ZipCPU 전용 버스</strong>: AXI4-Lite가 아닌 ZipCPU 내부 버스. MicroBlaze V 연결을 위해 버스 프로토콜 변환 래퍼 필요</li><li style="margin-left:0.0em">비교(compare) 출력 없음 — 원샷·주기·인터럽트만 지원</li><li style="margin-left:0.0em">캡처 입력 없음 — 외부 이벤트 타임스탬프 불가</li><li style="margin-left:0.0em">README에 Vivado 합성 자원 없음 — <code>unverified: 미합성</code></li></ul>
+<h2>재사용 메모</h2>
+<ul><li style="margin-left:0.0em">GPLv3이므로 소스 직접 복사 금지 (자동 모드 §16.3 G4). 사양(레지스터 비트 정의, FSM 동작)만 뽑아 자체 RTL 작성에 참고한다.</li><li style="margin-left:0.0em">가져올 수 있는 설계 패턴: 단일 레지스터 카운트다운 패턴, 재로드 비트를 활용한 원샷/주기 토글 방식, 클럭 인에이블 기반 프리스케일러 아이디어</li><li style="margin-left:0.0em">주기 타이머 구현의 최소 복잡도 기준점으로 활용 (약 50~80줄 Verilog 예상)</li><li style="margin-left:0.0em">개조: 버스 인터페이스를 AXI4-Lite(또는 IP 표준 직결 버스)로 교체하고, 레지스터를 오프셋 기반 복수 레지스터(CTRL, LOAD, STATUS)로 확장. 나머지 카운트다운 FSM과 인터럽트 로직(<code>o_int</code> 토글)은 직접 이식 가능. 캡처·비교가 필요하면 EF_TCC32 패턴 추가.</li></ul></main></body></html>

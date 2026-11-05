@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-i2c-nmea-sensor-hub",
+  "files": [
+    {
+      "group": "rtl",
+      "path": "rtl/axil_i2c_nmea_hub.v",
+      "sha256": "3b3654a4d36164a684aad2d68a3cf0769224896d25372487fdf022ce2d7f4ba0",
+      "lines": 300,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/i2c_cycle_fsm.v",
+      "sha256": "275a7afba8fa008cd51a1923171a50f71af660785a7b1034824291a9a3208b04",
+      "lines": 328,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/nmea_uart_rx.v",
+      "sha256": "adf4246fe7f141c8de5ed5f06a363602c0a48024eb9883d221d9a4f19d6038d9",
+      "lines": 136,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/ts_fifo.v",
+      "sha256": "b58b75deb1f78b0477ea5667c3906129dd451698eff78b1de3ced9cd8d5a642f",
+      "lines": 52,
+      "origin": "first_party"
+    },
+    {
+      "group": "tb",
+      "path": "tb/tb_i2c_nmea_hub.v",
+      "sha256": "b34700c31ba764347bad86c817779a2253ff47c6b7d3ae778bbb0a081e1eb7ce",
+      "lines": 276,
+      "origin": "first_party"
+    },
+    {
+      "group": "constraints",
+      "path": "constr/basys3.xdc",
+      "sha256": "7c52676da9026128a3cc1b5b8ba401ff0b1ab0562fcd4fa818944758c022104b",
+      "lines": 43,
+      "origin": "first_party"
+    },
+    {
+      "group": "build",
+      "path": "Makefile",
+      "sha256": "4c4d47877d20ae1d0f04f60a4835212409e220016006c7a1428184cf76826e1e",
+      "lines": 35,
+      "origin": "first_party"
+    }
+  ],
+  "note": "소스는 하네스가 직접 쓴 원본이다. 외부 저장소 코드는 포함하지 않는다(HARNESS §13.3)."
+}

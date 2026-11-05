@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-motor-safety-wrapper",
+  "stage": "T2",
+  "lint": {
+    "result": "not-run",
+    "detail": ""
+  },
+  "sim": {
+    "result": "not-run",
+    "detail": ""
+  },
+  "synth": {
+    "result": "not-run",
+    "detail": ""
+  },
+  "board": {
+    "result": "not-tested",
+    "detail": "사람이 확인한 항목만 pass. 에이전트는 pass로 쓰지 않는다(HARNESS §13.4)"
+  },
+  "synth_note": "yosys 추정이다. Vivado의 LUT/FF/WNS와 다를 수 있다.",
+  "recorded": ""
+}

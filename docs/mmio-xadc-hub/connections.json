@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-xadc-hub",
+  "kind": "digital-block-diagram",
+  "note": "디지털 모듈 연결도다. 외부 부품의 전기 배선(전압, 저항, 커넥터)은 포함하지 않는다.",
+  "bus": "AXI4-Lite",
+  "blocks": [
+    {
+      "id": "cpu",
+      "name": "MicroBlaze V",
+      "kind": "external",
+      "module": null,
+      "file": null
+    },
+    {
+      "id": "xadc_hub",
+      "name": "axil_xadc_hub",
+      "kind": "rtl",
+      "module": "axil_xadc_hub",
+      "file": "rtl/axil_xadc_hub.v"
+    },
+    {
+      "id": "xadc_prim",
+      "name": "XADC (Basys3 최상위)",
+      "kind": "ip",
+      "module": "basys3_xadc_top",
+      "file": "rtl/basys3_xadc_top.v"
+    },
+    {
+      "id": "jxadc",
+      "name": "JXADC 헤더",
+      "kind": "external",
+      "module": null,
+      "file": null
+    }
+  ],
+  "links": [
+    {
+      "from": "cpu",
+      "to": "xadc_hub",
+      "label": "AXI4-Lite"
+    },
+    {
+      "from": "xadc_hub",
+      "to": "xadc_prim",
+      "label": "DRP(Digital Reconfiguration Port)"
+    },
+    {
+      "from": "jxadc",
+      "to": "xadc_prim",
+      "label": "analog 0–0.77 V (전압 분배 후)"
+    }
+  ]
+}

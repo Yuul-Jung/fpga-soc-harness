@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-spwm-deadtime-ip",
+  "files": [
+    {
+      "group": "rtl",
+      "path": "rtl/spwm_ip.v",
+      "sha256": "107217c3666456a63885229f213affdcb3e0222af82d27e822ac59cc214c75ed",
+      "lines": 386,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/basys3_top.v",
+      "sha256": "a7ad5d6bc4fbcafce52264fddabf00498c32366bad13182c26bcad72035e8887",
+      "lines": 212,
+      "origin": "first_party"
+    },
+    {
+      "group": "tb",
+      "path": "tb/tb_spwm_ip.v",
+      "sha256": "f41e01b7f4ecbfce914ba42a7e87fcb8f9d735435648167c45ea18f547e54080",
+      "lines": 312,
+      "origin": "first_party"
+    },
+    {
+      "group": "constraints",
+      "path": "constr/basys3.xdc",
+      "sha256": "e06671a4283c65122d47b26c61d0294410ff24d87915fbf6dff9936c0a04aa05",
+      "lines": 41,
+      "origin": "first_party"
+    },
+    {
+      "group": "build",
+      "path": "Makefile",
+      "sha256": "087bb2f0cc71636dd0f4ad5613a3e90e93530f77df571721329b6e5865ca88f9",
+      "lines": 47,
+      "origin": "first_party"
+    }
+  ],
+  "note": "소스는 하네스가 직접 쓴 원본이다. 외부 저장소 코드는 포함하지 않는다(HARNESS §13.3)."
+}

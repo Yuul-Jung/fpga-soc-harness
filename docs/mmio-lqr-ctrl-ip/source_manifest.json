@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-lqr-ctrl-ip",
+  "files": [
+    {
+      "group": "rtl",
+      "path": "rtl/lqr_ip.v",
+      "sha256": "d001ec2932a306860311f94465c403c9920e29938a6ff2cf51d2ffdb0c2a79d2",
+      "lines": 139,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/axil_lqr.v",
+      "sha256": "9efef4e3258569406ac0db4e70ae93ec1df22c92bbacf63690ec2ef00a47c0ae",
+      "lines": 181,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/basys3_lqr_top.v",
+      "sha256": "7e9474382ba78b1a6cb62cf304a524667a067e2f96ce16ecfff55ff8f112c1e8",
+      "lines": 77,
+      "origin": "first_party"
+    },
+    {
+      "group": "tb",
+      "path": "tb/tb_lqr_ctrl.v",
+      "sha256": "9bf43fa94410709e8d685eaa3e35330863c7825772186a706a32a0c994e97b6a",
+      "lines": 155,
+      "origin": "first_party"
+    },
+    {
+      "group": "constraints",
+      "path": "constr/basys3_lqr.xdc",
+      "sha256": "7ecf89ba6f328970a94db15cdc8398dbafe0d15d720ce490bb69e215cf414b18",
+      "lines": 43,
+      "origin": "first_party"
+    },
+    {
+      "group": "build",
+      "path": "Makefile",
+      "sha256": "f4a67cb226b27b1ccc9b5a831f909d801bd76faba09311a81322924b6c0ebdd2",
+      "lines": 47,
+      "origin": "first_party"
+    }
+  ],
+  "note": "소스는 하네스가 직접 쓴 원본이다. 외부 저장소 코드는 포함하지 않는다(HARNESS §13.3)."
+}

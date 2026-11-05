@@ -1,0 +1,2 @@
+id,name,interface,io_voltage_V,supply_V,qty,board_resident,arduino_compatible,level_shift,notes
+gate_drv,IRS2110 또는 IR2110 게이트 드라이버 (2개),PMOD JB,3.3,15.0,2,false,false,IRS2110 내장 로직 대응 (별도 레벨 시프터 불필요),Pmod 3.3V → IRS2110 HIN/LIN 입력 호환. 출력 전압(HO/LO)은 부트스트랩 회로로 15V. 레벨 변환은 IRS2110 내장 로직으로 대신한다. 별도 레벨 시프터 불필요.

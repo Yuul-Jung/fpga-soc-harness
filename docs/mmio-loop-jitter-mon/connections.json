@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-loop-jitter-mon",
+  "kind": "digital-block-diagram",
+  "note": "디지털 모듈 연결도다. 외부 부품의 전기 배선(전압, 저항, 커넥터)은 포함하지 않는다.",
+  "bus": "mmio-lite",
+  "blocks": [
+    {
+      "id": "clk",
+      "name": "CLK_100 100 MHz",
+      "kind": "clock",
+      "module": "-",
+      "file": null
+    },
+    {
+      "id": "x_btnc",
+      "name": "BTNC",
+      "kind": "external",
+      "module": "-",
+      "file": null
+    },
+    {
+      "id": "x_led",
+      "name": "LED[15:0]",
+      "kind": "external",
+      "module": "-",
+      "file": null
+    },
+    {
+      "id": "tick_gen",
+      "name": "tick_gen (내부 카운터)",
+      "kind": "internal",
+      "module": "basys3_jitter_mon_top",
+      "file": "rtl/basys3_jitter_mon_top.v"
+    },
+    {
+      "id": "cfg_fsm",
+      "name": "cfg_fsm (스타트업 설정)",
+      "kind": "internal",
+      "module": "basys3_jitter_mon_top",
+      "file": "rtl/basys3_jitter_mon_top.v"
+    },
+    {
+      "id": "jmon",
+      "name": "loop_jitter_mon",
+      "kind": "ip",
+      "module": "loop_jitter_mon",
+      "file": "rtl/loop_jitter_mon.v"
+    }
+  ],
+  "links": [
+    {
+      "from": "clk",
+      "to": "tick_gen",
+      "label": "clk"
+    },
+    {
+      "from": "clk",
+      "to": "jmon",
+      "label": "clk"
+    },
+    {
+      "from": "x_btnc",
+      "to": "jmon",
+      "label": "rst"
+    },
+    {
+      "from": "tick_gen",
+      "to": "jmon",
+      "label": "tick_in"
+    },
+    {
+      "from": "cfg_fsm",
+      "to": "jmon",
+      "label": "sel/we/offset/wdata"
+    },
+    {
+      "from": "jmon",
+      "to": "x_led",
+      "label": "irq / 내부 rdata"
+    }
+  ]
+}

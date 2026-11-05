@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-sla-bram-capture",
+  "kind": "digital-block-diagram",
+  "note": "디지털 모듈 연결도다. 외부 부품의 전기 배선(전압, 저항, 커넥터)은 포함하지 않는다.",
+  "bus": "AXI4-Lite",
+  "blocks": [
+    {
+      "id": "wrap",
+      "name": "axil_sla_wrap",
+      "kind": "rtl",
+      "module": "axil_sla_wrap",
+      "file": "rtl/axil_sla_wrap.v"
+    },
+    {
+      "id": "core",
+      "name": "sla_core",
+      "kind": "rtl",
+      "module": "sla_core",
+      "file": "rtl/sla_core.v"
+    },
+    {
+      "id": "bram_ext",
+      "name": "BRAM (Xilinx Block RAM)",
+      "kind": "external",
+      "module": "-",
+      "file": null
+    },
+    {
+      "id": "ch_input",
+      "name": "16ch Digital Input",
+      "kind": "external",
+      "module": "-",
+      "file": null
+    }
+  ],
+  "links": [
+    {
+      "from": "wrap",
+      "to": "core",
+      "label": "arm/force/srst/trig_ch/trig_pol/pretrig/ch_en/rd_addr"
+    },
+    {
+      "from": "core",
+      "to": "wrap",
+      "label": "sample_out/armed/capturing/full/trig_found/trig_addr"
+    },
+    {
+      "from": "core",
+      "to": "bram_ext",
+      "label": "inferred BRAM r/w"
+    },
+    {
+      "from": "ch_input",
+      "to": "core",
+      "label": "ch_in[15:0]"
+    }
+  ]
+}

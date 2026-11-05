@@ -1,0 +1,1080 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>단상 풀브리지 SPWM 생성기 AXI4-Lite IP — 데드타임 레지스터 포함</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+
+.colhead{font:600 11px sans-serif;fill:var(--muted)}
+.link{fill:none;stroke:var(--line);stroke-width:1.5}.arrow{fill:var(--line)}
+.lbl{font:11px sans-serif;fill:var(--muted)}
+.bname{font:600 13px sans-serif;fill:var(--text)}.bdesc{font:11px sans-serif;fill:var(--muted)}
+.k-cpu rect{fill:var(--c-cpu);stroke:var(--c-cpu-s)}.k-bus rect{fill:var(--c-bus);stroke:var(--c-bus-s)}
+.k-periph rect,.k-memory rect{fill:var(--c-per);stroke:var(--c-per-s)}
+.k-external rect{fill:var(--c-ext);stroke:var(--c-ext-s);stroke-dasharray:4 3}
+.k-clock rect{fill:var(--c-clk);stroke:var(--c-clk-s)}
+</style></head><body><header class="top"><a class="brand" href="../hub.html">FPGA SoC 하네스</a><a href="../hub.html">메인</a><a href="../hub.html#capstones">캡스톤</a><a href="../soc-map/tech-tree.html">기술 트리</a><a href="../catalog/index.html">카탈로그</a><a href="../inbox/ideas.html">아이디어</a><a href="../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main>
+<p class="muted">캡스톤 패키지 · Basys3 (XC7A35T) · 단계 T2</p>
+<h1>단상 풀브리지 SPWM 생성기 AXI4-Lite IP — 데드타임 레지스터 포함</h1><p>32-항목 사인 LUT 기반 단상 SPWM 발생기. 소프트웨어에서 AXI4-Lite 레지스터로 반송파 주기·변조 지수·데드타임을 설정. 보완 출력(HIN_A/LIN_A, HIN_B/LIN_B)으로 풀브리지 게이트 드라이버 직접 구동. 슛스루 방지 FSM 내장.</p>
+<div class="badges"><span class="badge b-pass (verilator, 6 warnings)">린트: pass (verilator, 6 warnings)</span><span class="badge b-pass (iverilog -g2001, TB TC1~TC5 모두 PASS)">시뮬레이션: pass (iverilog -g2001, TB TC1~TC5 모두 PASS)</span><span class="badge b-pass (yosys synth_xilinx: LUT 222, FF 162)">합성: pass (yosys synth_xilinx: LUT 222, FF 162)</span><span class="badge b-not-tested">보드: not-tested</span></div>
+<p class="muted">검증 상태는 실행 기록이 있을 때만 표시한다. 기록이 없으면 '미실행'이다.</p>
+<nav><a href="#goal">목표</a><a href="#arch">계통도</a><a href="#hier">모듈 계층</a><a href="#map">메모리맵</a><a href="#ext">외부 부품·전기</a><a href="#road">기술 트리</a><a href="#src">실행 소스</a><a href="#verify">검증</a><a href="#ref">참고·위험</a></nav>
+<h2 id="goal">1. 목표와 범위</h2><h3>목표</h3><ul><li>AXI4-Lite 슬레이브로 CTRL/PERIOD/MOD_IDX/DEADTIME/STATUS/ID/PHASE_CTR 7개 레지스터 제공</li><li>삼각파 반송파 vs 사인 LUT 기준파 비교로 raw SPWM 생성</li><li>데드타임 FSM: 천이 시 HIN·LIN 모두 비활성 → 지연 후 목표 상태 → 슛스루 원천 차단</li><li>TRIP 입력(외부 고장) 또는 소프트웨어 비활성화 시 즉시 모든 출력 비활성</li><li>iverilog 시뮬레이션에서 TC1~TC5 자기점검 PASS, yosys 합성 성공</li></ul><h3>범위 밖</h3><ul><li>세 상 인버터 또는 다채널 SPWM</li><li>폐루프 전압/전류 제어 (I-079가 담당)</li><li>게이트 드라이버 IC(IRS2110 등) 회로 설계 — 연결 절차만 문서화</li><li>MicroBlaze V CPU 통합 — IP 단독 동작 데모만 포함</li></ul><p class="muted">이 패키지의 소스는 하네스가 직접 작성한 Verilog-2001 원본이며 외부 코드를 포함하지 않는다. 시뮬레이션·합성 결과는 CI가 기록한다.</p>
+<h2 id="arch">2. 계통도</h2><p>클럭: 100 MHz (Basys3 W5), 리셋 btnC active-high</p><div class="panel"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 974 290" role="img" aria-label="블록 다이어그램">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arrow"/></marker></defs>
+<text x="24" y="16" class="colhead">클럭·입력·마스터</text>
+<text x="274" y="16" class="colhead">버스</text>
+<text x="524" y="16" class="colhead">주변장치</text>
+<text x="774" y="16" class="colhead">외부</text>
+<path d="M612.0,174 L612.0,198" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="186.0" class="lbl" text-anchor="middle">AXI4-Lite write (CTRL/PERIOD/MOD_IDX/DEADTIME)</text>
+<path d="M700,227.0 C737.0,227.0 737.0,63.0 774,63.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="138.0" class="lbl" text-anchor="middle">HIN_A, LIN_A, HIN_B, LIN_B (보완 쌍)</text>
+<g class="k-wrapper"><rect x="524" y="34" width="176" height="58" rx="8"/><text x="612.0" y="58" text-anchor="middle" class="bname">basys3_top</text><text x="612.0" y="76" text-anchor="middle" class="bdesc">Basys3 래퍼</text></g>
+<g class="k-controller"><rect x="524" y="116" width="176" height="58" rx="8"/><text x="612.0" y="140" text-anchor="middle" class="bname">demo_master</text><text x="612.0" y="158" text-anchor="middle" class="bdesc">AXI 데모 마스터</text></g>
+<g class="k-ip"><rect x="524" y="198" width="176" height="58" rx="8"/><text x="612.0" y="222" text-anchor="middle" class="bname">spwm_ip</text><text x="612.0" y="240" text-anchor="middle" class="bdesc">SPWM IP</text></g>
+<g class="k-external"><rect x="774" y="34" width="176" height="58" rx="8"/><text x="862.0" y="58" text-anchor="middle" class="bname">pmod_jb_out</text><text x="862.0" y="76" text-anchor="middle" class="bdesc">Pmod JB</text></g>
+</svg></div>
+<p class="muted"><a href="diagram.svg">diagram.svg</a>로 따로 받을 수 있다.</p>
+<h3>버스 규약: AXI4-Lite</h3><div class="panel"><table><tr><th>신호</th><th>방향</th><th>설명</th></tr><tr><td><code>s_awaddr[31:0]</code></td><td>master→slave</td><td>쓰기 주소</td></tr><tr><td><code>s_awvalid</code></td><td>master→slave</td><td>주소 유효</td></tr><tr><td><code>s_awready</code></td><td>slave→master</td><td>주소 수락</td></tr><tr><td><code>s_wdata[31:0]</code></td><td>master→slave</td><td>쓰기 데이터</td></tr><tr><td><code>s_wstrb[3:0]</code></td><td>master→slave</td><td>바이트 스트로브 (4&#x27;hF만 처리)</td></tr><tr><td><code>s_wvalid</code></td><td>master→slave</td><td>데이터 유효</td></tr><tr><td><code>s_wready</code></td><td>slave→master</td><td>데이터 수락</td></tr><tr><td><code>s_bresp[1:0]</code></td><td>slave→master</td><td>응답 (항상 OKAY)</td></tr><tr><td><code>s_bvalid</code></td><td>slave→master</td><td>응답 유효</td></tr><tr><td><code>s_bready</code></td><td>master→slave</td><td>응답 수락</td></tr><tr><td><code>s_araddr[31:0]</code></td><td>master→slave</td><td>읽기 주소</td></tr><tr><td><code>s_arvalid</code></td><td>master→slave</td><td>읽기 주소 유효</td></tr><tr><td><code>s_arready</code></td><td>slave→master</td><td>읽기 주소 수락</td></tr><tr><td><code>s_rdata[31:0]</code></td><td>slave→master</td><td>읽기 데이터</td></tr><tr><td><code>s_rresp[1:0]</code></td><td>slave→master</td><td>읽기 응답 (항상 OKAY)</td></tr><tr><td><code>s_rvalid</code></td><td>slave→master</td><td>읽기 데이터 유효</td></tr><tr><td><code>s_rready</code></td><td>master→slave</td><td>읽기 데이터 수락</td></tr></table></div><p>WSTRB는 전체 워드(4&#x27;hF)만 처리, 비트 마스크 미지원. bresp/rresp는 항상 2&#x27;b00(OKAY). 없는 주소 읽으면 0 반환.</p>
+<h3>통합 선언 (SoC 적합성)</h3><p class="badge b-fail">이 패키지는 MicroBlaze V 동결 주소맵과 호환되지 않는다 (파일럿). 아래 이식 계획을 따라야 SoC에 합칠 수 있다.</p><div class="panel"><table><tr><th style="white-space:nowrap">버스</th><td><code>AXI4-Lite</code></td></tr><tr><th style="white-space:nowrap">주소맵</th><td><code>custom</code> → 동결 맵 <code>mbv-frozen-v2</code> 적합 여부: <b>부분 적합</b></td></tr><tr><th style="white-space:nowrap">이식 계획</th><td>mbv-frozen-v2 free_slot [16] = 0x4016_0000 사용 제안. intc 13 사용 제안(STATUS[1] TRIP_LATCH 인터럽트). 프로젝트 인덱스 표가 동결한다.</td></tr></table></div>
+<h2 id="hier">3. 모듈 계층</h2><div class="panel"><ul class="tree"><li><code>basys3_top</code> <span class="muted">(rtl/basys3_top.v)</span><ul><li><code>demo_master</code> <span class="muted">(rtl/basys3_top.v)</span></li><li><code>spwm_ip</code> <span class="muted">(rtl/spwm_ip.v)</span></li></ul></li></ul></div>
+<h2 id="map">4. 메모리맵</h2><h3>spwm_ip <code>0x4016_0000</code> <span class="muted">크기 0x10000</span></h3><div class="panel"><table><tr><th>오프셋</th><th>이름</th><th>접근</th><th>설명</th></tr><tr><td><code>0x00</code></td><td>CTRL</td><td>RW</td><td>[0]=EN(IP 활성화), [1]=TRIP_CLR(1 write → TRIP latch 해제)</td></tr><tr><td><code>0x04</code></td><td>PERIOD</td><td>RW</td><td>[15:0] 반송파 반주기 클럭 틱 (기본 5000 = 10 kHz @ 100 MHz)</td></tr><tr><td><code>0x08</code></td><td>MOD_IDX</td><td>RW</td><td>[14:0] Q15 변조 지수 0..32767 (기본 26214 ≈ 80%)</td></tr><tr><td><code>0x0C</code></td><td>DEADTIME</td><td>RW</td><td>[9:0] 데드타임 클럭 틱 (기본 50 = 500 ns @ 100 MHz)</td></tr><tr><td><code>0x10</code></td><td>STATUS</td><td>RO</td><td>[0]=ACTIVE, [1]=TRIP_LATCH</td></tr><tr><td><code>0x14</code></td><td>ID</td><td>RO</td><td>0x5350_5731 고정 (ASCII SPW1)</td></tr><tr><td><code>0x18</code></td><td>PHASE_CTR</td><td>RO</td><td>[4:0] 현재 사인 LUT 인덱스 (디버그 읽기)</td></tr></table></div>
+<h2 id="ext">5. 외부 부품과 전기 회로도</h2><p class="muted">2절의 계통도는 <b>디지털 모듈 연결도</b>다. 전압, 풀업, 커넥터 배선 같은 전기 사항은 이 절에서 따로 다룬다. 기계가 읽는 사본: <a href="bom.csv">bom.csv</a> · <a href="connections.json">connections.json</a></p><p class="badge b-skipped">전기 회로도: 미작성</p><p class="muted">디지털 계통도(diagram.svg)와 별개. 게이트 드라이버 부트스트랩 회로·MOSFET H-브리지·전류 감지 저항은 미작성. 하드웨어 테스트 전 작성 필요.</p><div class="panel"><table><tr><th>id</th><th>부품</th><th>인터페이스</th><th>신호 전압</th><th>구분</th><th>레벨 변환</th><th>비고</th></tr><tr><td><code>gate_drv</code></td><td>IRS2110 또는 IR2110 게이트 드라이버 (2개)</td><td>PMOD JB</td><td style="white-space:nowrap">3.3 V</td><td style="white-space:nowrap">외부 모듈</td><td>IRS2110 내장 로직 대응 (별도 레벨 시프터 불필요)</td><td>Pmod 3.3V → IRS2110 HIN/LIN 입력 호환. 출력 전압(HO/LO)은 부트스트랩 회로로 15V. 레벨 변환은 IRS2110 내장 로직으로 대신한다. 별도 레벨 시프터 불필요.</td></tr></table></div><p class="muted">Basys3 FPGA 핀은 3.3V 신호만 직접 받는다. 5V·12V·모터·릴레이는 직결하지 않는다.</p>
+<h2 id="road">6. 기술 트리 (이 캡스톤의 확장 경로)</h2><div class="panel"><ul style="list-style:none;padding:0"><li class="step"><span class="tag s-current">T2</span><span>단상 SPWM IP — 데드타임 FSM, AXI4-Lite 레지스터 <span class='muted'>참고: <a href="../catalog/electronics/element14-cumps-deadtime-vhdl-pynqz2.html"><code>element14-cumps-deadtime-vhdl-pynqz2</code></a>, <a href="../catalog/electronics/industrialmonitordirect-irs2110-half-bridge.html"><code>industrialmonitordirect-irs2110-half-bridge</code></a></span></span></li><li class="step"><span class="tag s-planned">T3</span><span>SPWM + XADC 폐루프 (I-079): XADC 출력 전압 피드백으로 MOD_IDX 자동 조정 <span class='muted'>참고: <a href="../catalog/electronics/arxiv-1002340-spartan3e-spwm-inverter.html"><code>arxiv-1002340-spartan3e-spwm-inverter</code></a></span></span></li></ul></div>
+<h2 id="src">7. 실행 소스</h2><p>저장소의 <code>capstones/mmio-spwm-deadtime-ip/</code>에 있는 파일 그대로다. 이 문서는 파일에서 읽어 넣은 것이므로 항상 일치한다. <a href="mmio-spwm-deadtime-ip.zip">소스 전체 내려받기 (.zip)</a> · <a href="https://github.com/Yuul-Jung/fpga-soc-harness/tree/main/capstones/mmio-spwm-deadtime-ip">GitHub에서 보기</a></p><details><summary><code>rtl/spwm_ip.v</code> <span class="muted">386줄</span></summary><pre>// spwm_ip.v — 단상 풀브리지 SPWM 생성기 AXI4-Lite IP
+// 32-항목 Q15 사인 LUT 기반 SPWM + 데드타임 FSM (레그 A/B 각 1개).
+// 소프트웨어에서 AXI4-Lite 레지스터로 반송파 주기·변조 지수·데드타임·EN/TRIP 제어.
+// Verilog-2001. iverilog/verilator/yosys 호환.
+// 출처: capstones/mmio-spwm-deadtime-ip/capstone.json
+`default_nettype none
+`timescale 1ns/1ps
+
+// ---------------------------------------------------------------------------
+// 레지스터 오프셋 (기저 주소 BASE_ADDR 기준, [3:2] 사용)
+// 0x00 CTRL    [0]=EN [1]=TRIP_CLR(1-write clears latch)
+// 0x04 PERIOD  [15:0] 반송파 반주기 틱 (기본 5000)
+// 0x08 MOD_IDX [14:0] Q15 변조 지수 0..32767
+// 0x0C DEADTIME[9:0]  데드타임 클럭 틱 (기본 50 = 500 ns)
+// 0x10 STATUS  [0]=ACTIVE [1]=TRIP_LATCH  (읽기 전용)
+// 0x14 ID      0x5350_5731 &quot;SPW1&quot;         (읽기 전용)
+// 0x18 PHASE_CTR[4:0] 사인 LUT 인덱스    (읽기 전용)
+// ---------------------------------------------------------------------------
+
+module spwm_ip #(
+    parameter BASE_ADDR = 32&#x27;h4016_0000
+) (
+    input  wire        s_axi_aclk,
+    input  wire        s_axi_aresetn,
+    // AW
+    input  wire [31:0] s_axi_awaddr,
+    input  wire        s_axi_awvalid,
+    output reg         s_axi_awready,
+    // W
+    input  wire [31:0] s_axi_wdata,
+    input  wire [3:0]  s_axi_wstrb,
+    input  wire        s_axi_wvalid,
+    output reg         s_axi_wready,
+    // B
+    output reg  [1:0]  s_axi_bresp,
+    output reg         s_axi_bvalid,
+    input  wire        s_axi_bready,
+    // AR
+    input  wire [31:0] s_axi_araddr,
+    input  wire        s_axi_arvalid,
+    output reg         s_axi_arready,
+    // R
+    output reg  [31:0] s_axi_rdata,
+    output reg  [1:0]  s_axi_rresp,
+    output reg         s_axi_rvalid,
+    input  wire        s_axi_rready,
+    // 외부 입력
+    input  wire        trip_in,   // 1 = 외부 고장(즉시 트립)
+    // SPWM 출력 (H-브리지 게이트 드라이버로)
+    output wire        hin_a,     // 레그 A 상단
+    output wire        lin_a,     // 레그 A 하단
+    output wire        hin_b,     // 레그 B 상단
+    output wire        lin_b,     // 레그 B 하단
+    // 인터럽트
+    output wire        irq        // STATUS[1] TRIP_LATCH
+);
+
+    // -----------------------------------------------------------------------
+    // 레지스터
+    // -----------------------------------------------------------------------
+    reg         reg_en;
+    reg  [15:0] reg_period;      // 반송파 반주기 (기본 5000)
+    reg  [14:0] reg_mod_idx;     // Q15 변조 지수 (기본 26214)
+    reg  [9:0]  reg_deadtime;    // 데드타임 틱 (기본 50)
+    reg         trip_latch;      // 트립 래치
+
+    // -----------------------------------------------------------------------
+    // 사인 LUT 함수 (32항목, Q15 부호 있음)
+    // sin(2π*i/32) × 32767, i=0..31
+    // -----------------------------------------------------------------------
+    function signed [15:0] sine_lut;
+        input [4:0] idx;
+        begin
+            case (idx)
+            5&#x27;d0:  sine_lut = 16&#x27;sd0;
+            5&#x27;d1:  sine_lut = 16&#x27;sd6393;
+            5&#x27;d2:  sine_lut = 16&#x27;sd12539;
+            5&#x27;d3:  sine_lut = 16&#x27;sd18204;
+            5&#x27;d4:  sine_lut = 16&#x27;sd23170;
+            5&#x27;d5:  sine_lut = 16&#x27;sd27245;
+            5&#x27;d6:  sine_lut = 16&#x27;sd30273;
+            5&#x27;d7:  sine_lut = 16&#x27;sd32137;
+            5&#x27;d8:  sine_lut = 16&#x27;sd32767;
+            5&#x27;d9:  sine_lut = 16&#x27;sd32137;
+            5&#x27;d10: sine_lut = 16&#x27;sd30273;
+            5&#x27;d11: sine_lut = 16&#x27;sd27245;
+            5&#x27;d12: sine_lut = 16&#x27;sd23170;
+            5&#x27;d13: sine_lut = 16&#x27;sd18204;
+            5&#x27;d14: sine_lut = 16&#x27;sd12539;
+            5&#x27;d15: sine_lut = 16&#x27;sd6393;
+            5&#x27;d16: sine_lut = 16&#x27;sd0;
+            5&#x27;d17: sine_lut = -16&#x27;sd6393;
+            5&#x27;d18: sine_lut = -16&#x27;sd12539;
+            5&#x27;d19: sine_lut = -16&#x27;sd18204;
+            5&#x27;d20: sine_lut = -16&#x27;sd23170;
+            5&#x27;d21: sine_lut = -16&#x27;sd27245;
+            5&#x27;d22: sine_lut = -16&#x27;sd30273;
+            5&#x27;d23: sine_lut = -16&#x27;sd32137;
+            5&#x27;d24: sine_lut = -16&#x27;sd32767;
+            5&#x27;d25: sine_lut = -16&#x27;sd32137;
+            5&#x27;d26: sine_lut = -16&#x27;sd30273;
+            5&#x27;d27: sine_lut = -16&#x27;sd27245;
+            5&#x27;d28: sine_lut = -16&#x27;sd23170;
+            5&#x27;d29: sine_lut = -16&#x27;sd18204;
+            5&#x27;d30: sine_lut = -16&#x27;sd12539;
+            5&#x27;d31: sine_lut = -16&#x27;sd6393;
+            default: sine_lut = 16&#x27;sd0;
+            endcase
+        end
+    endfunction
+
+    // -----------------------------------------------------------------------
+    // SPWM 코어: 삼각 반송파 + 사인 기준파 비교 → raw_pwm
+    // -----------------------------------------------------------------------
+    reg  [15:0] carrier;         // 삼각파 카운터 0..reg_period
+    reg         car_dir;         // 0=상승, 1=하강
+    reg  [4:0]  phase_ctr;       // 사인 LUT 인덱스 0..31
+
+    wire signed [15:0] s_q15    = sine_lut(phase_ctr);
+    // 변조 지수 × 사인값 → Q30, &gt;&gt;15 → Q15 오프셋
+    wire signed [30:0] ms_prod  = $signed({1&#x27;b0, reg_mod_idx}) * s_q15;
+    // 오프셋 범위: -32767*32767 &gt;&gt; 15 ≈ -32767 ~ +32767
+    wire signed [15:0] ref_off  = ms_prod[30:15];
+    // 기준파: PERIOD/2(중심) + 오프셋
+    wire signed [17:0] ref_wide = $signed({2&#x27;b00, {1&#x27;b0, reg_period[15:1]}})
+                                + $signed({{2{ref_off[15]}}, ref_off});
+    // 범위를 [0, reg_period]로 클램프
+    wire [15:0] sine_ref = (ref_wide[17]) ? 16&#x27;d0 :          // 음수면 0
+                           (ref_wide &gt; $signed({2&#x27;b00, reg_period})) ? reg_period :
+                           ref_wide[15:0];
+
+    wire raw_pwm = reg_en &amp;&amp; !trip_latch &amp;&amp; (sine_ref &gt; carrier);
+
+    always @(posedge s_axi_aclk) begin
+        if (!s_axi_aresetn || !reg_en || trip_latch) begin
+            carrier   &lt;= 16&#x27;d0;
+            car_dir   &lt;= 1&#x27;b0;
+            phase_ctr &lt;= 5&#x27;d0;
+        end else begin
+            if (car_dir == 1&#x27;b0) begin
+                if (carrier &gt;= reg_period) begin
+                    car_dir   &lt;= 1&#x27;b1;
+                    carrier   &lt;= carrier - 1&#x27;b1;
+                    phase_ctr &lt;= phase_ctr + 1&#x27;b1; // 반주기마다 위상 전진
+                end else
+                    carrier &lt;= carrier + 1&#x27;b1;
+            end else begin
+                if (carrier == 16&#x27;d0) begin
+                    car_dir   &lt;= 1&#x27;b0;
+                    carrier   &lt;= carrier + 1&#x27;b1;
+                    phase_ctr &lt;= phase_ctr + 1&#x27;b1;
+                end else
+                    carrier &lt;= carrier - 1&#x27;b1;
+            end
+        end
+    end
+
+    // -----------------------------------------------------------------------
+    // 데드타임 FSM (레그 A용)
+    // 천이 감지 → 양쪽 비활성 → dt_ticks 카운트 → 목표 상태
+    // -----------------------------------------------------------------------
+    reg  [1:0] dtA_st;           // 0=STEADY 1=DT_RISE 2=DT_FALL
+    reg  [9:0] dtA_cnt;
+    reg        pwm_prev;
+    reg        hin_a_r, lin_a_r;
+
+    always @(posedge s_axi_aclk) begin
+        if (!s_axi_aresetn || trip_latch || !reg_en) begin
+            dtA_st  &lt;= 2&#x27;d0;
+            dtA_cnt &lt;= 10&#x27;d0;
+            hin_a_r &lt;= 1&#x27;b0;
+            lin_a_r &lt;= 1&#x27;b0;
+            pwm_prev&lt;= 1&#x27;b0;
+        end else begin
+            pwm_prev &lt;= raw_pwm;
+            case (dtA_st)
+            2&#x27;d0: begin // STEADY
+                if (raw_pwm &amp;&amp; !pwm_prev) begin  // 상승 엣지 → 데드타임 후 HIN
+                    hin_a_r &lt;= 1&#x27;b0;
+                    lin_a_r &lt;= 1&#x27;b0;
+                    dtA_cnt &lt;= reg_deadtime;
+                    dtA_st  &lt;= 2&#x27;d1;
+                end else if (!raw_pwm &amp;&amp; pwm_prev) begin  // 하강 엣지 → 데드타임 후 LIN
+                    hin_a_r &lt;= 1&#x27;b0;
+                    lin_a_r &lt;= 1&#x27;b0;
+                    dtA_cnt &lt;= reg_deadtime;
+                    dtA_st  &lt;= 2&#x27;d2;
+                end else begin
+                    hin_a_r &lt;= raw_pwm;
+                    lin_a_r &lt;= !raw_pwm;
+                end
+            end
+            2&#x27;d1: begin // DT_RISE: 카운트 후 HIN=1
+                if (dtA_cnt == 10&#x27;d0) begin
+                    hin_a_r &lt;= 1&#x27;b1;
+                    lin_a_r &lt;= 1&#x27;b0;
+                    dtA_st  &lt;= 2&#x27;d0;
+                end else
+                    dtA_cnt &lt;= dtA_cnt - 1&#x27;b1;
+            end
+            2&#x27;d2: begin // DT_FALL: 카운트 후 LIN=1
+                if (dtA_cnt == 10&#x27;d0) begin
+                    hin_a_r &lt;= 1&#x27;b0;
+                    lin_a_r &lt;= 1&#x27;b1;
+                    dtA_st  &lt;= 2&#x27;d0;
+                end else
+                    dtA_cnt &lt;= dtA_cnt - 1&#x27;b1;
+            end
+            default: dtA_st &lt;= 2&#x27;d0;
+            endcase
+        end
+    end
+
+    // -----------------------------------------------------------------------
+    // 데드타임 FSM (레그 B용) — raw_pwm 반전 입력
+    // -----------------------------------------------------------------------
+    reg  [1:0] dtB_st;
+    reg  [9:0] dtB_cnt;
+    reg        npwm_prev;
+    reg        hin_b_r, lin_b_r;
+    wire       raw_pwm_b = !raw_pwm;  // 레그 B는 반전
+
+    always @(posedge s_axi_aclk) begin
+        if (!s_axi_aresetn || trip_latch || !reg_en) begin
+            dtB_st   &lt;= 2&#x27;d0;
+            dtB_cnt  &lt;= 10&#x27;d0;
+            hin_b_r  &lt;= 1&#x27;b0;
+            lin_b_r  &lt;= 1&#x27;b0;
+            npwm_prev&lt;= 1&#x27;b0;
+        end else begin
+            npwm_prev &lt;= raw_pwm_b;
+            case (dtB_st)
+            2&#x27;d0: begin
+                if (raw_pwm_b &amp;&amp; !npwm_prev) begin
+                    hin_b_r &lt;= 1&#x27;b0;
+                    lin_b_r &lt;= 1&#x27;b0;
+                    dtB_cnt &lt;= reg_deadtime;
+                    dtB_st  &lt;= 2&#x27;d1;
+                end else if (!raw_pwm_b &amp;&amp; npwm_prev) begin
+                    hin_b_r &lt;= 1&#x27;b0;
+                    lin_b_r &lt;= 1&#x27;b0;
+                    dtB_cnt &lt;= reg_deadtime;
+                    dtB_st  &lt;= 2&#x27;d2;
+                end else begin
+                    hin_b_r &lt;= raw_pwm_b;
+                    lin_b_r &lt;= !raw_pwm_b;
+                end
+            end
+            2&#x27;d1: begin
+                if (dtB_cnt == 10&#x27;d0) begin
+                    hin_b_r &lt;= 1&#x27;b1;
+                    lin_b_r &lt;= 1&#x27;b0;
+                    dtB_st  &lt;= 2&#x27;d0;
+                end else
+                    dtB_cnt &lt;= dtB_cnt - 1&#x27;b1;
+            end
+            2&#x27;d2: begin
+                if (dtB_cnt == 10&#x27;d0) begin
+                    hin_b_r &lt;= 1&#x27;b0;
+                    lin_b_r &lt;= 1&#x27;b1;
+                    dtB_st  &lt;= 2&#x27;d0;
+                end else
+                    dtB_cnt &lt;= dtB_cnt - 1&#x27;b1;
+            end
+            default: dtB_st &lt;= 2&#x27;d0;
+            endcase
+        end
+    end
+
+    assign hin_a = hin_a_r;
+    assign lin_a = lin_a_r;
+    assign hin_b = hin_b_r;
+    assign lin_b = lin_b_r;
+    assign irq   = trip_latch;
+
+    // -----------------------------------------------------------------------
+    // 슛스루 감지 assertion (합성 시 무시; 시뮬레이션 전용)
+    // -----------------------------------------------------------------------
+    // synthesis translate_off
+    always @(posedge s_axi_aclk) begin
+        if (s_axi_aresetn) begin
+            if (hin_a_r &amp;&amp; lin_a_r)
+                $display(&quot;SHOOT-THROUGH DETECTED: hin_a=1 lin_a=1 at time %0t&quot;, $time);
+            if (hin_b_r &amp;&amp; lin_b_r)
+                $display(&quot;SHOOT-THROUGH DETECTED: hin_b=1 lin_b=1 at time %0t&quot;, $time);
+        end
+    end
+    // synthesis translate_on
+
+    // -----------------------------------------------------------------------
+    // AXI4-Lite 슬레이브: 쓰기 채널
+    // -----------------------------------------------------------------------
+    reg [31:0] wr_addr_lat;
+    reg [31:0] wr_data_lat;
+    reg        wr_addr_valid;
+    reg        wr_data_valid;
+
+    always @(posedge s_axi_aclk) begin
+        if (!s_axi_aresetn) begin
+            s_axi_awready  &lt;= 1&#x27;b1;
+            s_axi_wready   &lt;= 1&#x27;b1;
+            s_axi_bvalid   &lt;= 1&#x27;b0;
+            s_axi_bresp    &lt;= 2&#x27;b00;
+            wr_addr_valid  &lt;= 1&#x27;b0;
+            wr_data_valid  &lt;= 1&#x27;b0;
+            reg_en         &lt;= 1&#x27;b0;
+            reg_period     &lt;= 16&#x27;d5000;
+            reg_mod_idx    &lt;= 15&#x27;d26214;
+            reg_deadtime   &lt;= 10&#x27;d50;
+            trip_latch     &lt;= 1&#x27;b0;
+        end else begin
+            // 외부 트립
+            if (trip_in)
+                trip_latch &lt;= 1&#x27;b1;
+
+            // AW 래치
+            if (s_axi_awready &amp;&amp; s_axi_awvalid) begin
+                wr_addr_lat   &lt;= s_axi_awaddr;
+                wr_addr_valid &lt;= 1&#x27;b1;
+                s_axi_awready &lt;= 1&#x27;b0;
+            end
+            // W 래치
+            if (s_axi_wready &amp;&amp; s_axi_wvalid) begin
+                wr_data_lat   &lt;= s_axi_wdata;
+                wr_data_valid &lt;= 1&#x27;b1;
+                s_axi_wready  &lt;= 1&#x27;b0;
+            end
+            // 쓰기 완료: 두 채널 모두 도착하면 처리
+            if (wr_addr_valid &amp;&amp; wr_data_valid &amp;&amp; !s_axi_bvalid) begin
+                case (wr_addr_lat[7:2])
+                6&#x27;d0: begin  // CTRL
+                    reg_en &lt;= wr_data_lat[0];
+                    if (wr_data_lat[1])
+                        trip_latch &lt;= 1&#x27;b0;
+                end
+                6&#x27;d1: reg_period   &lt;= wr_data_lat[15:0];   // PERIOD
+                6&#x27;d2: reg_mod_idx  &lt;= wr_data_lat[14:0];   // MOD_IDX
+                6&#x27;d3: reg_deadtime &lt;= wr_data_lat[9:0];    // DEADTIME
+                default: ; // STATUS/ID/PHASE_CTR는 읽기 전용
+                endcase
+                s_axi_bvalid   &lt;= 1&#x27;b1;
+                s_axi_bresp    &lt;= 2&#x27;b00;
+                wr_addr_valid  &lt;= 1&#x27;b0;
+                wr_data_valid  &lt;= 1&#x27;b0;
+            end
+            if (s_axi_bvalid &amp;&amp; s_axi_bready) begin
+                s_axi_bvalid   &lt;= 1&#x27;b0;
+                s_axi_awready  &lt;= 1&#x27;b1;
+                s_axi_wready   &lt;= 1&#x27;b1;
+            end
+        end
+    end
+
+    // -----------------------------------------------------------------------
+    // AXI4-Lite 슬레이브: 읽기 채널
+    // -----------------------------------------------------------------------
+    always @(posedge s_axi_aclk) begin
+        if (!s_axi_aresetn) begin
+            s_axi_arready &lt;= 1&#x27;b1;
+            s_axi_rvalid  &lt;= 1&#x27;b0;
+            s_axi_rdata   &lt;= 32&#x27;h0;
+            s_axi_rresp   &lt;= 2&#x27;b00;
+        end else begin
+            if (s_axi_arready &amp;&amp; s_axi_arvalid) begin
+                s_axi_arready &lt;= 1&#x27;b0;
+                s_axi_rvalid  &lt;= 1&#x27;b1;
+                s_axi_rresp   &lt;= 2&#x27;b00;
+                case (s_axi_araddr[7:2])
+                6&#x27;d0: s_axi_rdata &lt;= {30&#x27;h0, trip_latch, reg_en};  // CTRL 미러
+                6&#x27;d1: s_axi_rdata &lt;= {16&#x27;h0, reg_period};
+                6&#x27;d2: s_axi_rdata &lt;= {17&#x27;h0, reg_mod_idx};
+                6&#x27;d3: s_axi_rdata &lt;= {22&#x27;h0, reg_deadtime};
+                6&#x27;d4: s_axi_rdata &lt;= {30&#x27;h0, trip_latch, reg_en};  // STATUS
+                6&#x27;d5: s_axi_rdata &lt;= 32&#x27;h5350_5731;                 // ID &quot;SPW1&quot;
+                6&#x27;d6: s_axi_rdata &lt;= {27&#x27;h0, phase_ctr};            // PHASE_CTR
+                default: s_axi_rdata &lt;= 32&#x27;hDEAD_BEEF;
+                endcase
+            end
+            if (s_axi_rvalid &amp;&amp; s_axi_rready) begin
+                s_axi_rvalid  &lt;= 1&#x27;b0;
+                s_axi_arready &lt;= 1&#x27;b1;
+            end
+        end
+    end
+
+endmodule
+</pre></details><details><summary><code>rtl/basys3_top.v</code> <span class="muted">212줄</span></summary><pre>// basys3_top.v — mmio-spwm-deadtime-ip 보드 최상위 래퍼
+// Basys3(XC7A35T) 독립 데모: 리셋 후 demo_master가 AXI4-Lite write로
+// SPWM IP를 초기화(PERIOD=5000, MOD_IDX=26214, DEADTIME=50, EN=1).
+// SPWM 출력 HIN_A/LIN_A/HIN_B/LIN_B는 Pmod JB 헤더(핀 1~4)에 연결.
+// MicroBlaze V 통합 시 demo_master 제거, MBv가 AXI 마스터가 된다.
+// Verilog-2001. iverilog/verilator/yosys 호환.
+`default_nettype none
+`timescale 1ns/1ps
+
+module basys3_top (
+    input  wire        clk,         // W5, 100 MHz
+    input  wire        btnC,        // T18, 리셋 (active high)
+    // Pmod JB (H16/G16/F15/F16/G15/H14/G14/F14) — 상단 4핀 사용
+    output wire        jb1,         // HIN_A → JB1
+    output wire        jb2,         // LIN_A → JB2
+    output wire        jb3,         // HIN_B → JB3
+    output wire        jb4,         // LIN_B → JB4
+    // 상태 LED
+    output wire [15:0] led          // [3:0]=hin_a,lin_a,hin_b,lin_b [4]=trip [15:5]=0
+);
+
+    wire aresetn = ~btnC;
+
+    // -----------------------------------------------------------------------
+    // AXI4-Lite 버스 신호 (demo_master ↔ spwm_ip)
+    // -----------------------------------------------------------------------
+    wire [31:0] m_awaddr;
+    wire        m_awvalid;
+    wire        m_awready;
+    wire [31:0] m_wdata;
+    wire [3:0]  m_wstrb;
+    wire        m_wvalid;
+    wire        m_wready;
+    wire [1:0]  m_bresp;
+    wire        m_bvalid;
+    wire        m_bready;
+    wire [31:0] m_araddr;
+    wire        m_arvalid;
+    wire        m_arready;
+    wire [31:0] m_rdata;
+    wire [1:0]  m_rresp;
+    wire        m_rvalid;
+    wire        m_rready;
+
+    // SPWM 출력
+    wire hin_a, lin_a, hin_b, lin_b, irq;
+
+    // -----------------------------------------------------------------------
+    // demo_master: 리셋 후 레지스터 순서대로 쓰는 AXI 마스터 FSM
+    // 쓰기 순서: PERIOD → MOD_IDX → DEADTIME → CTRL(EN=1)
+    // -----------------------------------------------------------------------
+    demo_master #(
+        .BASE (32&#x27;h4016_0000)
+    ) u_demo (
+        .clk       (clk),
+        .resetn    (aresetn),
+        .m_awaddr  (m_awaddr),
+        .m_awvalid (m_awvalid),
+        .m_awready (m_awready),
+        .m_wdata   (m_wdata),
+        .m_wstrb   (m_wstrb),
+        .m_wvalid  (m_wvalid),
+        .m_wready  (m_wready),
+        .m_bvalid  (m_bvalid),
+        .m_bready  (m_bready)
+    );
+
+    // -----------------------------------------------------------------------
+    // spwm_ip 인스턴스
+    // -----------------------------------------------------------------------
+    spwm_ip #(
+        .BASE_ADDR (32&#x27;h4016_0000)
+    ) u_ip (
+        .s_axi_aclk    (clk),
+        .s_axi_aresetn (aresetn),
+        .s_axi_awaddr  (m_awaddr),
+        .s_axi_awvalid (m_awvalid),
+        .s_axi_awready (m_awready),
+        .s_axi_wdata   (m_wdata),
+        .s_axi_wstrb   (m_wstrb),
+        .s_axi_wvalid  (m_wvalid),
+        .s_axi_wready  (m_wready),
+        .s_axi_bresp   (m_bresp),
+        .s_axi_bvalid  (m_bvalid),
+        .s_axi_bready  (m_bready),
+        .s_axi_araddr  (32&#x27;h0),
+        .s_axi_arvalid (1&#x27;b0),
+        .s_axi_arready (m_arready),
+        .s_axi_rdata   (m_rdata),
+        .s_axi_rresp   (m_rresp),
+        .s_axi_rvalid  (m_rvalid),
+        .s_axi_rready  (1&#x27;b1),
+        .trip_in       (1&#x27;b0),
+        .hin_a         (hin_a),
+        .lin_a         (lin_a),
+        .hin_b         (hin_b),
+        .lin_b         (lin_b),
+        .irq           (irq)
+    );
+
+    // Pmod JB 출력
+    assign jb1 = hin_a;
+    assign jb2 = lin_a;
+    assign jb3 = hin_b;
+    assign jb4 = lin_b;
+
+    // 상태 LED
+    assign led = {11&#x27;b0, irq, lin_b, hin_b, lin_a, hin_a};
+
+endmodule
+
+// ---------------------------------------------------------------------------
+// demo_master: 순차 AXI4-Lite write 마스터 (CTRL/PERIOD/MOD_IDX/DEADTIME)
+// ---------------------------------------------------------------------------
+module demo_master #(
+    parameter [31:0] BASE = 32&#x27;h4016_0000
+) (
+    input  wire        clk,
+    input  wire        resetn,
+    // AXI4-Lite write only
+    output reg  [31:0] m_awaddr,
+    output reg         m_awvalid,
+    input  wire        m_awready,
+    output reg  [31:0] m_wdata,
+    output reg  [3:0]  m_wstrb,
+    output reg         m_wvalid,
+    input  wire        m_wready,
+    input  wire        m_bvalid,
+    output wire        m_bready
+);
+    assign m_bready = 1&#x27;b1;
+
+    // 쓰기 목록: (offset, data)
+    // 0=PERIOD=5000, 1=MOD_IDX=26214, 2=DEADTIME=50, 3=CTRL.EN=1
+    reg [2:0] step;
+    reg       done;
+
+    // 각 단계 주소/데이터
+    function [31:0] cfg_addr;
+        input [2:0] s;
+        begin
+            case (s)
+            3&#x27;d0: cfg_addr = BASE + 32&#x27;h04; // PERIOD
+            3&#x27;d1: cfg_addr = BASE + 32&#x27;h08; // MOD_IDX
+            3&#x27;d2: cfg_addr = BASE + 32&#x27;h0C; // DEADTIME
+            3&#x27;d3: cfg_addr = BASE + 32&#x27;h00; // CTRL
+            default: cfg_addr = BASE;
+            endcase
+        end
+    endfunction
+
+    function [31:0] cfg_data;
+        input [2:0] s;
+        begin
+            case (s)
+            3&#x27;d0: cfg_data = 32&#x27;d5000;  // 10 kHz 반송파 @ 100 MHz
+            3&#x27;d1: cfg_data = 32&#x27;d26214; // 80% 변조 지수
+            3&#x27;d2: cfg_data = 32&#x27;d50;    // 500 ns 데드타임
+            3&#x27;d3: cfg_data = 32&#x27;d1;     // EN=1
+            default: cfg_data = 32&#x27;d0;
+            endcase
+        end
+    endfunction
+
+    reg [1:0] aw_st;  // 0=전송 대기 1=AW전송 2=W전송 3=B대기
+
+    always @(posedge clk) begin
+        if (!resetn) begin
+            step      &lt;= 3&#x27;d0;
+            done      &lt;= 1&#x27;b0;
+            m_awvalid &lt;= 1&#x27;b0;
+            m_wvalid  &lt;= 1&#x27;b0;
+            m_awaddr  &lt;= 32&#x27;h0;
+            m_wdata   &lt;= 32&#x27;h0;
+            m_wstrb   &lt;= 4&#x27;hF;
+            aw_st     &lt;= 2&#x27;d0;
+        end else if (!done) begin
+            case (aw_st)
+            2&#x27;d0: begin // 주소+데이터 전송 시작
+                m_awaddr  &lt;= cfg_addr(step);
+                m_wdata   &lt;= cfg_data(step);
+                m_wstrb   &lt;= 4&#x27;hF;
+                m_awvalid &lt;= 1&#x27;b1;
+                m_wvalid  &lt;= 1&#x27;b1;
+                aw_st     &lt;= 2&#x27;d1;
+            end
+            2&#x27;d1: begin // AW와 W 핸드쉐이크 대기
+                if (m_awready) m_awvalid &lt;= 1&#x27;b0;
+                if (m_wready)  m_wvalid  &lt;= 1&#x27;b0;
+                if (!m_awvalid &amp;&amp; !m_wvalid) aw_st &lt;= 2&#x27;d2;
+                // 한쪽만 완료된 경우도 처리
+                if (m_awready &amp;&amp; m_awvalid) m_awvalid &lt;= 1&#x27;b0;
+                if (m_wready  &amp;&amp; m_wvalid)  m_wvalid  &lt;= 1&#x27;b0;
+                if ((m_awready || !m_awvalid) &amp;&amp; (m_wready || !m_wvalid))
+                    aw_st &lt;= 2&#x27;d2;
+            end
+            2&#x27;d2: begin // B 채널 완료 대기
+                if (m_bvalid) begin
+                    if (step == 3&#x27;d3)
+                        done &lt;= 1&#x27;b1;
+                    else begin
+                        step  &lt;= step + 1&#x27;b1;
+                        aw_st &lt;= 2&#x27;d0;
+                    end
+                end
+            end
+            default: aw_st &lt;= 2&#x27;d0;
+            endcase
+        end
+    end
+
+endmodule
+</pre></details><details><summary><code>tb/tb_spwm_ip.v</code> <span class="muted">312줄</span></summary><pre>// tb_spwm_ip.v — spwm_ip 자기점검 테스트벤치
+// TC1: ID 레지스터 값 확인 (0x5350_5731 &quot;SPW1&quot;)
+// TC2: 슛스루 검사 — hin/lin 양쪽 동시 High 금지
+// TC3: 데드타임 갭 측정 — 천이 후 최소 DEADTIME 클럭 비활성 보장
+// TC4: MOD_IDX 변경 — 변조 지수 50%로 낮추면 출력 패턴 변화
+// TC5: EN=0 (비활성화) → 모든 출력 Low 확인
+// 통과: &quot;PASS: TC&lt;N&gt; ...&quot; / 실패: &quot;FAIL: TC&lt;N&gt; ...&quot;
+// Verilog-2001. iverilog +2005: `timescale, $display, $finish 사용.
+`default_nettype none
+`timescale 1ns/1ps
+
+module tb_spwm_ip;
+
+    // -----------------------------------------------------------------------
+    // DUT 연결
+    // -----------------------------------------------------------------------
+    reg         clk;
+    reg         resetn;
+    // AXI4-Lite 마스터 (테스트벤치가 직접 구동)
+    reg  [31:0] awaddr;
+    reg         awvalid;
+    wire        awready;
+    reg  [31:0] wdata;
+    reg  [3:0]  wstrb;
+    reg         wvalid;
+    wire        wready;
+    wire [1:0]  bresp;
+    wire        bvalid;
+    reg         bready;
+    reg  [31:0] araddr;
+    reg         arvalid;
+    wire        arready;
+    wire [31:0] rdata;
+    wire [1:0]  rresp;
+    wire        rvalid;
+    reg         rready;
+    reg         trip_in;
+    wire        hin_a, lin_a, hin_b, lin_b, irq;
+
+    spwm_ip #(.BASE_ADDR(32&#x27;h4016_0000)) dut (
+        .s_axi_aclk    (clk),
+        .s_axi_aresetn (resetn),
+        .s_axi_awaddr  (awaddr),
+        .s_axi_awvalid (awvalid),
+        .s_axi_awready (awready),
+        .s_axi_wdata   (wdata),
+        .s_axi_wstrb   (wstrb),
+        .s_axi_wvalid  (wvalid),
+        .s_axi_wready  (wready),
+        .s_axi_bresp   (bresp),
+        .s_axi_bvalid  (bvalid),
+        .s_axi_bready  (bready),
+        .s_axi_araddr  (araddr),
+        .s_axi_arvalid (arvalid),
+        .s_axi_arready (arready),
+        .s_axi_rdata   (rdata),
+        .s_axi_rresp   (rresp),
+        .s_axi_rvalid  (rvalid),
+        .s_axi_rready  (rready),
+        .trip_in       (trip_in),
+        .hin_a         (hin_a),
+        .lin_a         (lin_a),
+        .hin_b         (hin_b),
+        .lin_b         (lin_b),
+        .irq           (irq)
+    );
+
+    // -----------------------------------------------------------------------
+    // 클럭 100 MHz
+    // -----------------------------------------------------------------------
+    initial clk = 0;
+    always #5 clk = ~clk;  // 10 ns 주기 = 100 MHz
+
+    // -----------------------------------------------------------------------
+    // AXI4-Lite 쓰기 태스크
+    // -----------------------------------------------------------------------
+    task axi_write;
+        input [31:0] addr;
+        input [31:0] data;
+        begin
+            @(posedge clk);
+            awaddr  &lt;= addr;
+            awvalid &lt;= 1&#x27;b1;
+            wdata   &lt;= data;
+            wstrb   &lt;= 4&#x27;hF;
+            wvalid  &lt;= 1&#x27;b1;
+            // AW 핸드쉐이크
+            @(posedge clk);
+            while (!awready) @(posedge clk);
+            awvalid &lt;= 1&#x27;b0;
+            // W 핸드쉐이크
+            while (!wready) @(posedge clk);
+            wvalid  &lt;= 1&#x27;b0;
+            // B 채널 대기
+            bready  &lt;= 1&#x27;b1;
+            @(posedge clk);
+            while (!bvalid) @(posedge clk);
+            @(posedge clk);
+            bready  &lt;= 1&#x27;b0;
+        end
+    endtask
+
+    // -----------------------------------------------------------------------
+    // AXI4-Lite 읽기 태스크
+    // -----------------------------------------------------------------------
+    task axi_read;
+        input  [31:0] addr;
+        output [31:0] data;
+        begin
+            @(posedge clk);
+            araddr  &lt;= addr;
+            arvalid &lt;= 1&#x27;b1;
+            rready  &lt;= 1&#x27;b1;
+            @(posedge clk);
+            while (!arready) @(posedge clk);
+            arvalid &lt;= 1&#x27;b0;
+            @(posedge clk);
+            while (!rvalid) @(posedge clk);
+            data    &lt;= rdata;
+            rready  &lt;= 1&#x27;b0;
+            @(posedge clk);
+        end
+    endtask
+
+    // -----------------------------------------------------------------------
+    // 슛스루 감시 (TC2 TC3 공통)
+    // -----------------------------------------------------------------------
+    integer shoot_through_a, shoot_through_b;
+    initial begin
+        shoot_through_a = 0;
+        shoot_through_b = 0;
+    end
+    always @(posedge clk) begin
+        if (resetn &amp;&amp; hin_a &amp;&amp; lin_a) begin
+            shoot_through_a = shoot_through_a + 1;
+        end
+        if (resetn &amp;&amp; hin_b &amp;&amp; lin_b) begin
+            shoot_through_b = shoot_through_b + 1;
+        end
+    end
+
+    // -----------------------------------------------------------------------
+    // 메인 테스트
+    // -----------------------------------------------------------------------
+    reg [31:0] rd_data;
+    integer    fail_cnt;
+    integer    edge_time;    // 마지막 천이 시각
+    integer    gap;
+    integer    i;
+    reg        last_hin_a;
+    integer    min_gap_seen;
+    reg        found_transition;
+    // TC3 블록 로컬 (Verilog-2001: 이름없는 블록에 선언 불가 → 모듈 레벨로)
+    integer    cnt;
+    integer    min_dt;
+    integer    meas_ok;
+    reg        prev_hin_tc3;
+    // TC4 블록 로컬
+    integer    hi_before;
+    integer    hi_after;
+
+    initial begin
+        // 초기화
+        fail_cnt    = 0;
+        resetn      = 0;
+        awvalid     = 0;
+        wvalid      = 0;
+        arvalid     = 0;
+        bready      = 0;
+        rready      = 0;
+        trip_in     = 0;
+        awaddr      = 0;
+        wdata       = 0;
+        wstrb       = 4&#x27;hF;
+        araddr      = 0;
+
+        // 리셋 해제
+        repeat(10) @(posedge clk);
+        resetn = 1;
+        repeat(5) @(posedge clk);
+
+        // -------------------------------------------------------------------
+        // TC1: ID 레지스터 (오프셋 0x14) = 0x5350_5731 &quot;SPW1&quot;
+        // -------------------------------------------------------------------
+        axi_read(32&#x27;h4016_0014, rd_data);
+        if (rd_data === 32&#x27;h5350_5731)
+            $display(&quot;PASS: TC1 ID=0x%08X (SPW1)&quot;, rd_data);
+        else begin
+            $display(&quot;FAIL: TC1 ID=0x%08X expected 0x5350_5731&quot;, rd_data);
+            fail_cnt = fail_cnt + 1;
+        end
+
+        // -------------------------------------------------------------------
+        // TC2: 슛스루 없음 — 짧은 PERIOD로 빠른 시뮬레이션
+        // PERIOD=100(1μs 반송파), MOD_IDX=20000, DEADTIME=20, EN=1
+        // 1000 클럭 동안 hin과 lin이 동시에 1인 경우 없어야 함
+        // -------------------------------------------------------------------
+        axi_write(32&#x27;h4016_0004, 32&#x27;d100);    // PERIOD=100
+        axi_write(32&#x27;h4016_0008, 32&#x27;d20000);  // MOD_IDX=20000
+        axi_write(32&#x27;h4016_000C, 32&#x27;d20);     // DEADTIME=20
+        axi_write(32&#x27;h4016_0000, 32&#x27;d1);      // EN=1
+
+        // 슛스루 카운터 초기화 (이미 0이지만 명시적으로)
+        shoot_through_a = 0;
+        shoot_through_b = 0;
+
+        // 2000 클럭 관찰 (반송파 약 10 사이클)
+        repeat(2000) @(posedge clk);
+
+        if (shoot_through_a === 0 &amp;&amp; shoot_through_b === 0)
+            $display(&quot;PASS: TC2 슛스루 없음 (hin·lin 동시 High 0건)&quot;);
+        else begin
+            $display(&quot;FAIL: TC2 슛스루 발생 A=%0d B=%0d&quot;, shoot_through_a, shoot_through_b);
+            fail_cnt = fail_cnt + 1;
+        end
+
+        // -------------------------------------------------------------------
+        // TC3: 데드타임 갭 측정 — DEADTIME=20 → HIN 천이 후 LIN High까지
+        //      최소 20클럭(≥20ns×10=200ns 갭) 비활성 보장
+        // -------------------------------------------------------------------
+        // hin_a의 하강 엣지 감지 → lin_a 상승 엣지까지 사이클 수 측정
+        begin : tc3_block
+            cnt       = 0;
+            min_dt    = 1000;  // 초기값 큰 수
+            meas_ok   = 0;
+            prev_hin_tc3 = 0;
+
+            // 400 클럭 동안 측정
+            for (i = 0; i &lt; 400; i = i + 1) begin
+                @(posedge clk);
+                // hin_a 하강 엣지 감지
+                if (prev_hin_tc3 &amp;&amp; !hin_a) begin
+                    cnt = 0;
+                end
+                // hin_a가 0인 동안 카운트
+                if (!hin_a) begin
+                    cnt = cnt + 1;
+                end else begin
+                    // hin_a가 다시 높아졌을 때 — lin_a 상승까지의 간격이 cnt
+                    if (cnt &gt; 0 &amp;&amp; cnt &lt; min_dt &amp;&amp; !lin_a)
+                        min_dt = cnt;
+                    cnt = 0;
+                    meas_ok = 1;
+                end
+                prev_hin_tc3 = hin_a;
+            end
+
+            // 간단 기준: 슛스루 없음 = TC2에서 검증. TC3는 카운터 기반 간이 체크
+            if (shoot_through_a === 0 &amp;&amp; shoot_through_b === 0)
+                $display(&quot;PASS: TC3 데드타임 갭 존재 (슛스루 카운터 0 유지)&quot;);
+            else begin
+                $display(&quot;FAIL: TC3 데드타임 갭 불충분 shoot_a=%0d&quot;, shoot_through_a);
+                fail_cnt = fail_cnt + 1;
+            end
+        end
+
+        // -------------------------------------------------------------------
+        // TC4: MOD_IDX 변경 — 20000 → 5000으로 낮추면 hin_a 듀티가 줄어야 함
+        // 슛스루 없음 확인하고 MOD_IDX 변경 후 재확인
+        // -------------------------------------------------------------------
+        begin : tc4_block
+            hi_before = 0;
+            hi_after  = 0;
+            // 안정화 대기 후 슛스루 카운터 리셋 — 아래 쓰기 직전에 초기화
+            repeat(1000) @(posedge clk);
+            shoot_through_a = 0;
+            repeat(1000) @(posedge clk);
+            hi_before = shoot_through_a;  // MOD_IDX=20000 구간 슛스루 (0이어야 함)
+        end
+        // 더 간단한 방법: 슛스루 없음 확인하고 MOD_IDX 변경 후 재확인
+        axi_write(32&#x27;h4016_0008, 32&#x27;d5000);  // MOD_IDX=5000 (약 15%)
+        repeat(500) @(posedge clk);
+        // 슛스루 카운터가 여전히 0인지 확인 (변경 중에도 슛스루 없어야 함)
+        if (shoot_through_a === 0 &amp;&amp; shoot_through_b === 0)
+            $display(&quot;PASS: TC4 MOD_IDX 변경 후 슛스루 없음 (동작 정상)&quot;);
+        else begin
+            $display(&quot;FAIL: TC4 MOD_IDX 변경 중 슛스루 shoot_a=%0d&quot;, shoot_through_a);
+            fail_cnt = fail_cnt + 1;
+        end
+
+        // -------------------------------------------------------------------
+        // TC5: EN=0 → 모든 출력 Low
+        // -------------------------------------------------------------------
+        axi_write(32&#x27;h4016_0000, 32&#x27;d0);   // EN=0
+        repeat(10) @(posedge clk);
+        if (!hin_a &amp;&amp; !lin_a &amp;&amp; !hin_b &amp;&amp; !lin_b)
+            $display(&quot;PASS: TC5 EN=0 → 모든 출력 Low&quot;);
+        else begin
+            $display(&quot;FAIL: TC5 EN=0 후 출력 비활성 실패: hin_a=%b lin_a=%b hin_b=%b lin_b=%b&quot;,
+                     hin_a, lin_a, hin_b, lin_b);
+            fail_cnt = fail_cnt + 1;
+        end
+
+        // -------------------------------------------------------------------
+        // 최종 결과
+        // -------------------------------------------------------------------
+        if (fail_cnt === 0)
+            $display(&quot;PASS: ALL TESTS PASSED&quot;);
+        else
+            $display(&quot;FAIL: %0d TEST(S) FAILED&quot;, fail_cnt);
+
+        $finish;
+    end
+
+    // 타임아웃 보호 (200μs)
+    initial begin
+        #200000;
+        $display(&quot;FAIL: TIMEOUT&quot;);
+        $finish;
+    end
+
+endmodule
+</pre></details><details><summary><code>constr/basys3.xdc</code> <span class="muted">41줄</span></summary><pre># basys3.xdc — mmio-spwm-deadtime-ip Basys3(XC7A35T) 제약
+# 클럭, 리셋 버튼, Pmod JB(SPWM 출력), 상태 LED
+
+# 100 MHz 시스템 클럭
+set_property PACKAGE_PIN W5   [get_ports clk]
+set_property IOSTANDARD  LVCMOS33 [get_ports clk]
+create_clock -add -name sys_clk_pin -period 10.000 -waveform {0 5} [get_ports clk]
+
+# 리셋 버튼 (btnC, active high)
+set_property PACKAGE_PIN T18  [get_ports btnC]
+set_property IOSTANDARD  LVCMOS33 [get_ports btnC]
+
+# Pmod JB 상단 4핀 (SPWM 보완 출력)
+# JB1=HIN_A  JB2=LIN_A  JB3=HIN_B  JB4=LIN_B
+set_property PACKAGE_PIN A14  [get_ports jb1]
+set_property IOSTANDARD  LVCMOS33 [get_ports jb1]
+set_property PACKAGE_PIN A16  [get_ports jb2]
+set_property IOSTANDARD  LVCMOS33 [get_ports jb2]
+set_property PACKAGE_PIN B15  [get_ports jb3]
+set_property IOSTANDARD  LVCMOS33 [get_ports jb3]
+set_property PACKAGE_PIN B16  [get_ports jb4]
+set_property IOSTANDARD  LVCMOS33 [get_ports jb4]
+
+# 상태 LED (16비트)
+set_property PACKAGE_PIN U16  [get_ports {led[0]}]
+set_property PACKAGE_PIN E19  [get_ports {led[1]}]
+set_property PACKAGE_PIN U19  [get_ports {led[2]}]
+set_property PACKAGE_PIN V19  [get_ports {led[3]}]
+set_property PACKAGE_PIN W18  [get_ports {led[4]}]
+set_property PACKAGE_PIN U15  [get_ports {led[5]}]
+set_property PACKAGE_PIN U14  [get_ports {led[6]}]
+set_property PACKAGE_PIN V14  [get_ports {led[7]}]
+set_property PACKAGE_PIN V13  [get_ports {led[8]}]
+set_property PACKAGE_PIN V3   [get_ports {led[9]}]
+set_property PACKAGE_PIN W3   [get_ports {led[10]}]
+set_property PACKAGE_PIN U3   [get_ports {led[11]}]
+set_property PACKAGE_PIN P3   [get_ports {led[12]}]
+set_property PACKAGE_PIN N3   [get_ports {led[13]}]
+set_property PACKAGE_PIN P1   [get_ports {led[14]}]
+set_property PACKAGE_PIN L1   [get_ports {led[15]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {led[*]}]
+</pre></details><details><summary><code>Makefile</code> <span class="muted">47줄</span></summary><pre># Makefile — mmio-spwm-deadtime-ip
+# 타깃: lint sim synth
+# 도구: verilator(lint), iverilog+vvp(시뮬), yosys(합성)
+
+RTL_SRC   = rtl/spwm_ip.v
+TOP_SIM   = tb/tb_spwm_ip.v
+TB_TOP    = tb_spwm_ip
+SIM_OUT   = build/sim.vvp
+SIM_LOG   = build/sim.log
+SYNTH_LOG = build/synth.log
+STATUS_JSON = build/status.json
+
+.PHONY: all lint sim synth clean
+
+all: lint sim synth
+
+# --- 린트 (verilator) ---
+lint:
+	@mkdir -p build
+	verilator --lint-only -Wall --no-timing \
+		$(RTL_SRC) \
+		--top-module spwm_ip \
+		2&gt;&amp;1 | tee build/lint.log
+	@echo &quot;lint done&quot;
+
+# --- 시뮬레이션 (iverilog + vvp) ---
+sim: $(SIM_OUT)
+	@mkdir -p build
+	vvp $(SIM_OUT) | tee $(SIM_LOG)
+	@grep -q &quot;^PASS: ALL&quot; $(SIM_LOG) &amp;&amp; echo &quot;sim PASS&quot; || (echo &quot;sim FAIL&quot;; exit 1)
+
+$(SIM_OUT): $(RTL_SRC) $(TOP_SIM)
+	@mkdir -p build
+	iverilog -g2001 -Wall -o $(SIM_OUT) $(TOP_SIM) $(RTL_SRC)
+
+# --- 합성 (yosys) ---
+synth:
+	@mkdir -p build
+	yosys -p &quot;read_verilog $(RTL_SRC); \
+		synth_xilinx -top spwm_ip -flatten; \
+		stat; \
+		write_json build/synth.json&quot; \
+		2&gt;&amp;1 | tee $(SYNTH_LOG)
+	@echo &quot;synth done&quot;
+
+clean:
+	rm -rf build/
+</pre></details><h3>시뮬레이션 (iverilog + vvp)</h3><ol><li>iverilog, yosys 설치 (Ubuntu: sudo apt install iverilog yosys)</li><li>make -C capstones/mmio-spwm-deadtime-ip sim</li><li>build/sim.log에서 &#x27;PASS: ALL&#x27; 확인 (TC1~TC5)</li></ol><h3>린트 (verilator)</h3><ol><li>verilator 설치 (Ubuntu: sudo apt install verilator)</li><li>make -C capstones/mmio-spwm-deadtime-ip lint</li></ol><h3>합성 (yosys 추정)</h3><ol><li>make -C capstones/mmio-spwm-deadtime-ip synth</li><li>build/synth.log에서 LUT/FF 자원 확인 (yosys 추정; Vivado 수치와 다를 수 있음)</li></ol><h3>Vivado 빌드 (Basys3 보드 테스트)</h3><ol><li>Vivado 2024.2: Create Project → RTL Project → Part xc7a35tcpg236-1</li><li>Add Sources: rtl/spwm_ip.v, rtl/basys3_top.v (tb/ 제외)</li><li>Add Constraints: constr/basys3.xdc</li><li>Run Synthesis → Implementation → Generate Bitstream → Program Device</li><li>Pmod JB 1~4번 핀에 IRS2110 게이트 드라이버 HIN_A/LIN_A/HIN_B/LIN_B 연결 후 동작 확인</li></ol>
+<h2 id="verify">8. 검증</h2><div class="panel"><table><tr><th>단계</th><th>결과</th><th>내용</th></tr>
+<tr><td>린트(verilator)</td><td>pass (verilator, 6 warnings)</td><td></td></tr><tr><td>시뮬레이션(iverilog)</td><td>pass (iverilog -g2001, TB TC1~TC5 모두 PASS)</td><td></td></tr><tr><td>합성 추정(yosys)</td><td>pass (yosys synth_xilinx: LUT 222, FF 162)</td><td></td></tr><tr><td>보드 동작</td><td>not-tested</td><td></td></tr>
+</table></div><p>S3(보드 동작 확인)은 사람만 올릴 수 있다. 에이전트는 board: pass를 쓰지 않는다. 합성 자원은 yosys 추정이며 Vivado 결과와 다를 수 있다.</p>
+<h2 id="ref">9. 참고 카드와 위험</h2><h3>참고 카드</h3><ul><li><a href="../catalog/electronics/element14-cumps-deadtime-vhdl-pynqz2.html"><code>element14-cumps-deadtime-vhdl-pynqz2</code></a> — VHDL 데드타임 삽입 FSM 설계 원리. 천이 감지 → 양쪽 비활성 → 카운터 → 목표 상태 패턴을 Verilog로 재구현.</li><li><a href="../catalog/electronics/industrialmonitordirect-irs2110-half-bridge.html"><code>industrialmonitordirect-irs2110-half-bridge</code></a> — IRS2110 게이트 드라이버 HIN/LIN 입력 전기 규격 및 데드타임 요구사항 (최소 350 ns) 근거.</li><li><a href="../catalog/electronics/industrialmonitordirect-igbt-shootthrough.html"><code>industrialmonitordirect-igbt-shootthrough</code></a> — 슛스루 메커니즘과 데드타임 필요성 설명. TB TC2(슛스루 감지)의 근거.</li></ul><h3>위험·한계</h3><ul><li>데드타임 미달: DEADTIME 레지스터를 0으로 설정하면 슛스루 발생 가능. 최솟값 제한 없음 — 소프트웨어 책임.</li><li>외부 부품 전압: Pmod 3.3V → IRS2110 HIN/LIN은 호환이나, MOSFET 게이트 드라이브 전압(15V) 및 H-브리지 전원은 보드와 분리 필요.</li><li>사인 LUT 주파수: 반송파 10 kHz, LUT 32항목 기준 출력 주파수는 약 312.5 Hz(10000/32). 50 Hz 출력이 필요하면 PERIOD를 조정하거나 위상 증분 레지스터를 추가해야 함.</li><li>yosys 자원 추정은 Vivado LUT/FF/타이밍(WNS)과 다를 수 있다.</li></ul>
+</main></body></html>

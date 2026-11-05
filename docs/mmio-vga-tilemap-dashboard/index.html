@@ -1,0 +1,928 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VGA 타일맵 계기판 IP: 제어 루프 상태를 타일 글자와 막대로 표시 (프레임 버퍼 없음)</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+
+.colhead{font:600 11px sans-serif;fill:var(--muted)}
+.link{fill:none;stroke:var(--line);stroke-width:1.5}.arrow{fill:var(--line)}
+.lbl{font:11px sans-serif;fill:var(--muted)}
+.bname{font:600 13px sans-serif;fill:var(--text)}.bdesc{font:11px sans-serif;fill:var(--muted)}
+.k-cpu rect{fill:var(--c-cpu);stroke:var(--c-cpu-s)}.k-bus rect{fill:var(--c-bus);stroke:var(--c-bus-s)}
+.k-periph rect,.k-memory rect{fill:var(--c-per);stroke:var(--c-per-s)}
+.k-external rect{fill:var(--c-ext);stroke:var(--c-ext-s);stroke-dasharray:4 3}
+.k-clock rect{fill:var(--c-clk);stroke:var(--c-clk-s)}
+</style></head><body><header class="top"><a class="brand" href="../hub.html">FPGA SoC 하네스</a><a href="../hub.html">메인</a><a href="../hub.html#capstones">캡스톤</a><a href="../soc-map/tech-tree.html">기술 트리</a><a href="../catalog/index.html">카탈로그</a><a href="../inbox/ideas.html">아이디어</a><a href="../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main>
+<p class="muted">캡스톤 패키지 · Basys3 · 단계 T3</p>
+<h1>VGA 타일맵 계기판 IP: 제어 루프 상태를 타일 글자와 막대로 표시 (프레임 버퍼 없음)</h1><p>80×60 타일맵(256 타일, 16색 팔레트)을 AXI4-Lite 슬레이브로 노출한다. CPU가 타일 인덱스와 속성을 써넣으면 렌더러가 줄 단위로 화소를 만들어 VGA로 내보낸다. 프레임 버퍼 BRAM이 없어 자원을 절약하고, 프레임 끝 인터럽트로 제어 루프와 동기화한다.</p>
+<div class="badges"><span class="badge b-not-run">린트: 미실행</span><span class="badge b-not-run">시뮬레이션: 미실행</span><span class="badge b-not-run">합성: 미실행</span><span class="badge b-not-tested">보드: not-tested</span></div>
+<p class="muted">검증 상태는 실행 기록이 있을 때만 표시한다. 기록이 없으면 '미실행'이다.</p>
+<nav><a href="#goal">목표</a><a href="#arch">계통도</a><a href="#hier">모듈 계층</a><a href="#map">메모리맵</a><a href="#ext">외부 부품·전기</a><a href="#road">기술 트리</a><a href="#src">실행 소스</a><a href="#verify">검증</a><a href="#ref">참고·위험</a></nav>
+<h2 id="goal">1. 목표와 범위</h2><h3>목표</h3><ul><li>AXI4-Lite 슬레이브로 80×60 타일맵과 8×8 폰트를 프로그래밍 가능하게 한다</li><li>16색 팔레트 레지스터를 제공해 각 타일의 전경/배경색을 개별 설정한다</li><li>스캔라인 렌더러로 프레임 버퍼 BRAM 없이 640×480 VGA를 출력한다</li><li>프레임 끝(vsync 하강) 인터럽트를 intc 슬롯 13에 연결한다</li><li>자체 점검 테스트벤치에서 AXI 레지스터 쓰기 → 화소 출력을 PASS/FAIL로 검증한다</li></ul><h3>범위 밖</h3><ul><li>스프라이트, 스크롤, 하드웨어 커서</li><li>32비트 프레임 버퍼(DRAM 없는 Basys3에서는 불가)</li><li>VGA 타이밍 외 디스플레이 표준(HDMI, DVI)</li><li>폰트 비트맵 ROM 기본값 내장(소프트웨어가 초기화)</li></ul><p class="muted">이 패키지의 소스는 하네스가 직접 작성한 Verilog-2001 원본이며 외부 코드를 포함하지 않는다. 아이디어 I-027 기반(차단조건재심사 2026-11-04, 10점). 시뮬레이션·합성 결과는 CI가 기록한다.</p>
+<h2 id="arch">2. 계통도</h2><p>클럭: 단일 25 MHz 클럭(clk_25m). Basys3 100 MHz 입력을 2비트 카운터로 분주. 프로덕션에서는 MMCM을 쓰고 AXI 버스(100 MHz)와 VGA 도메인(25 MHz) CDC를 추가한다.</p><div class="panel"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 974 290" role="img" aria-label="블록 다이어그램">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arrow"/></marker></defs>
+<text x="24" y="16" class="colhead">클럭·입력·마스터</text>
+<text x="274" y="16" class="colhead">버스</text>
+<text x="524" y="16" class="colhead">주변장치</text>
+<text x="774" y="16" class="colhead">외부</text>
+<path d="M200,63.0 C362.0,63.0 362.0,63.0 524,63.0" class="link" marker-end="url(#ar)"/>
+<text x="362.0" y="56.0" class="lbl" text-anchor="middle">clk100</text>
+<path d="M612.0,92 L612.0,116" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="104.0" class="lbl" text-anchor="middle">clk_25m</text>
+<path d="M612.0,92 L612.0,198" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="145.0" class="lbl" text-anchor="middle">clk_25m</text>
+<path d="M612.0,174 L612.0,198" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="186.0" class="lbl" text-anchor="middle">h_count,v_count,active</text>
+<path d="M774,63.0 C714,8 760,8 700,227.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="16" class="lbl" text-anchor="middle">AXI4-Lite (TILE_ADDR/DATA, FONT, PALETTE)</text>
+<path d="M700,227.0 C737.0,227.0 737.0,145.0 774,145.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="179.0" class="lbl" text-anchor="middle">pix_r[3:0],pix_g[3:0],pix_b[3:0],hsync,vsync</text>
+<path d="M862.0,174 L862.0,198" class="link" marker-end="url(#ar)"/>
+<text x="868.0" y="186.0" class="lbl" text-anchor="middle">VGA 케이블</text>
+<g class="k-clock"><rect x="24" y="34" width="176" height="58" rx="8"/><text x="112.0" y="58" text-anchor="middle" class="bname">CLK100</text><text x="112.0" y="76" text-anchor="middle" class="bdesc">CLK100</text></g>
+<g class="k-periph"><rect x="524" y="34" width="176" height="58" rx="8"/><text x="612.0" y="58" text-anchor="middle" class="bname">clk_div</text><text x="612.0" y="76" text-anchor="middle" class="bdesc">CLKDIV</text></g>
+<g class="k-periph"><rect x="524" y="116" width="176" height="58" rx="8"/><text x="612.0" y="140" text-anchor="middle" class="bname">vga_timing</text><text x="612.0" y="158" text-anchor="middle" class="bdesc">VGATIME</text></g>
+<g class="k-periph"><rect x="524" y="198" width="176" height="58" rx="8"/><text x="612.0" y="222" text-anchor="middle" class="bname">tilemap_axil</text><text x="612.0" y="240" text-anchor="middle" class="bdesc">TILEMAP</text></g>
+<g class="k-external"><rect x="774" y="34" width="176" height="58" rx="8"/><text x="862.0" y="58" text-anchor="middle" class="bname">MicroBlaze V</text><text x="862.0" y="76" text-anchor="middle" class="bdesc">CPU</text></g>
+<g class="k-external"><rect x="774" y="116" width="176" height="58" rx="8"/><text x="862.0" y="140" text-anchor="middle" class="bname">VGA DAC</text><text x="862.0" y="158" text-anchor="middle" class="bdesc">VGAOUT</text></g>
+<g class="k-external"><rect x="774" y="198" width="176" height="58" rx="8"/><text x="862.0" y="222" text-anchor="middle" class="bname">VGA 모니터</text><text x="862.0" y="240" text-anchor="middle" class="bdesc">MONITOR</text></g>
+</svg></div>
+<p class="muted"><a href="diagram.svg">diagram.svg</a>로 따로 받을 수 있다.</p>
+<h3>버스 규약: AXI4-Lite</h3><div class="panel"><table><tr><th>신호</th><th>방향</th><th>설명</th></tr><tr><td><code>s_axil_awaddr</code></td><td>in</td><td>쓰기 주소 (16비트)</td></tr><tr><td><code>s_axil_awvalid</code></td><td>in</td><td>쓰기 주소 유효</td></tr><tr><td><code>s_axil_awready</code></td><td>out</td><td>쓰기 주소 준비 (상시 1)</td></tr><tr><td><code>s_axil_wdata</code></td><td>in</td><td>쓰기 데이터</td></tr><tr><td><code>s_axil_wstrb</code></td><td>in</td><td>쓰기 스트로브</td></tr><tr><td><code>s_axil_wvalid</code></td><td>in</td><td>쓰기 데이터 유효</td></tr><tr><td><code>s_axil_wready</code></td><td>out</td><td>쓰기 데이터 준비 (상시 1)</td></tr><tr><td><code>s_axil_bresp</code></td><td>out</td><td>쓰기 응답 (00=OKAY)</td></tr><tr><td><code>s_axil_bvalid</code></td><td>out</td><td>쓰기 응답 유효</td></tr><tr><td><code>s_axil_bready</code></td><td>in</td><td>쓰기 응답 준비</td></tr><tr><td><code>s_axil_araddr</code></td><td>in</td><td>읽기 주소 (16비트)</td></tr><tr><td><code>s_axil_arvalid</code></td><td>in</td><td>읽기 주소 유효</td></tr><tr><td><code>s_axil_arready</code></td><td>out</td><td>읽기 주소 준비 (상시 1)</td></tr><tr><td><code>s_axil_rdata</code></td><td>out</td><td>읽기 데이터</td></tr><tr><td><code>s_axil_rresp</code></td><td>out</td><td>읽기 응답 (00=OKAY)</td></tr><tr><td><code>s_axil_rvalid</code></td><td>out</td><td>읽기 데이터 유효</td></tr><tr><td><code>s_axil_rready</code></td><td>in</td><td>읽기 데이터 준비</td></tr></table></div><p>AWVALID+WVALID 동시 수용(단일 사이클 write). ARVALID에 1사이클 후 RVALID. BRESP/RRESP 항상 2&#x27;b00(OKAY).</p>
+<h3>통합 선언 (SoC 적합성)</h3><p class="badge b-fail">이 패키지는 MicroBlaze V 동결 주소맵과 호환되지 않는다 (파일럿). 아래 이식 계획을 따라야 SoC에 합칠 수 있다.</p><div class="panel"><table><tr><th style="white-space:nowrap">버스</th><td><code>AXI4-Lite</code></td></tr><tr><th style="white-space:nowrap">주소맵</th><td><code>custom</code> → 동결 맵 <code>mbv-frozen-v2</code> 적합 여부: <b>부분 적합</b></td></tr><tr><th style="white-space:nowrap">이식 계획</th><td>mbv-frozen-v2 슬롯 [16]=0x4016_0000을 최초로 사용 제안. intc_free [13]번을 프레임 끝 IRQ로 제안. 다음 슬롯은 [17]=0x4017_0000부터. 주소맵을 동결하려면 사용자가 config/soc_address_map.json에 tilemap 항목을 추가한다(제안, 아직 미동결).</td></tr></table></div>
+<h2 id="hier">3. 모듈 계층</h2><div class="panel"><ul class="tree"><li><code>basys3_top</code> <span class="muted">(rtl/basys3_top.v)</span><ul><li><code>vga_timing</code> <span class="muted">(rtl/vga_timing.v)</span></li><li><code>tilemap_axil</code> <span class="muted">(rtl/tilemap_axil.v)</span></li></ul></li></ul></div>
+<h2 id="map">4. 메모리맵</h2><h3>tilemap_axil <code>0x4016_0000</code> <span class="muted">크기 0x10000</span></h3><div class="panel"><table><tr><th>오프셋</th><th>이름</th><th>접근</th><th>설명</th></tr><tr><td><code>0x0000</code></td><td>ID</td><td>RO</td><td>0x544D4150 &#x27;TMAP&#x27;</td></tr><tr><td><code>0x0004</code></td><td>VER</td><td>RO</td><td>0x00010000 (버전 1.0)</td></tr><tr><td><code>0x0008</code></td><td>IRQ_STATUS</td><td>RW1C</td><td>bit0=frame_end(vsync 하강)</td></tr><tr><td><code>0x000C</code></td><td>IRQ_ENABLE</td><td>RW</td><td>bit0=frame_end IRQ 활성화</td></tr><tr><td><code>0x0010</code></td><td>CTRL</td><td>RW</td><td>bit0=disp_en(기본 1)</td></tr><tr><td><code>0x0014</code></td><td>STATUS</td><td>RO</td><td>bit0=vblank 중</td></tr><tr><td><code>0x0018</code></td><td>TILE_ADDR</td><td>WO</td><td>간접 쓰기 주소: 타일 인덱스 0..4799 (row*80+col)</td></tr><tr><td><code>0x001C</code></td><td>TILE_DATA</td><td>WO</td><td>[7:0]=tile_id, [15:12]=bg_color[3:0], [11:8]=fg_color[3:0]</td></tr><tr><td><code>0x0020</code></td><td>FONT_ADDR</td><td>WO</td><td>간접 쓰기 주소: tile_id*8+row, 0..2047</td></tr><tr><td><code>0x0024</code></td><td>FONT_DATA</td><td>WO</td><td>[7:0]=8비트 비트맵(MSB=좌측 화소)</td></tr><tr><td><code>0x0028</code></td><td>PALETTE[0]</td><td>RW</td><td>[11:0]={R[3:0],G[3:0],B[3:0]} 검정</td></tr><tr><td><code>0x002C</code></td><td>PALETTE[1]</td><td>RW</td><td>파랑</td></tr><tr><td><code>0x0030</code></td><td>PALETTE[2]</td><td>RW</td><td>초록</td></tr><tr><td><code>0x0034</code></td><td>PALETTE[3]</td><td>RW</td><td>청록</td></tr><tr><td><code>0x0038</code></td><td>PALETTE[4]</td><td>RW</td><td>빨강</td></tr><tr><td><code>0x003C</code></td><td>PALETTE[5]</td><td>RW</td><td>자홍</td></tr><tr><td><code>0x0040</code></td><td>PALETTE[6]</td><td>RW</td><td>갈색/노랑</td></tr><tr><td><code>0x0044</code></td><td>PALETTE[7]</td><td>RW</td><td>밝은 회색</td></tr><tr><td><code>0x0048</code></td><td>PALETTE[8]</td><td>RW</td><td>어두운 회색</td></tr><tr><td><code>0x004C</code></td><td>PALETTE[9]</td><td>RW</td><td>밝은 파랑</td></tr><tr><td><code>0x0050</code></td><td>PALETTE[A]</td><td>RW</td><td>밝은 초록</td></tr><tr><td><code>0x0054</code></td><td>PALETTE[B]</td><td>RW</td><td>밝은 청록</td></tr><tr><td><code>0x0058</code></td><td>PALETTE[C]</td><td>RW</td><td>밝은 빨강</td></tr><tr><td><code>0x005C</code></td><td>PALETTE[D]</td><td>RW</td><td>밝은 자홍</td></tr><tr><td><code>0x0060</code></td><td>PALETTE[E]</td><td>RW</td><td>밝은 노랑</td></tr><tr><td><code>0x0064</code></td><td>PALETTE[F]</td><td>RW</td><td>흰색</td></tr></table></div>
+<h2 id="ext">5. 외부 부품과 전기 회로도</h2><p class="muted">2절의 계통도는 <b>디지털 모듈 연결도</b>다. 전압, 풀업, 커넥터 배선 같은 전기 사항은 이 절에서 따로 다룬다. 기계가 읽는 사본: <a href="bom.csv">bom.csv</a> · <a href="connections.json">connections.json</a></p><p class="badge b-skipped">전기 회로도: 미작성</p><p class="muted">VGA 출력은 Basys3 보드 내장 저항 DAC(12비트 R/G/B 각 4비트)이므로 외부 부품 없음. 미작성.</p><div class="panel"><table><tr><th>id</th><th>부품</th><th>인터페이스</th><th>신호 전압</th><th>구분</th><th>레벨 변환</th><th>비고</th></tr></table></div><p class="muted">Basys3 FPGA 핀은 3.3V 신호만 직접 받는다. 5V·12V·모터·릴레이는 직결하지 않는다.</p>
+<h2 id="road">6. 기술 트리 (이 캡스톤의 확장 경로)</h2><div class="panel"><ul style="list-style:none;padding:0"><li class="step"><span class="tag s-done">T2</span><span>mmio-uart-axilite-bridge — MMIO UART + AXI4-Lite 버스 브리지 <span class='muted'>참고: <code>mmio-uart-axilite-bridge</code></span></span></li><li class="step"><span class="tag s-current">T3</span><span>mmio-vga-tilemap-dashboard — VGA 타일맵 계기판 IP</span></li><li class="step"><span class="tag s-planned">T4</span><span>엔코더·PID 값을 타일 글자로 출력하는 제어 루프 펌웨어 통합</span></li></ul></div>
+<h2 id="src">7. 실행 소스</h2><p>저장소의 <code>capstones/mmio-vga-tilemap-dashboard/</code>에 있는 파일 그대로다. 이 문서는 파일에서 읽어 넣은 것이므로 항상 일치한다. <a href="mmio-vga-tilemap-dashboard.zip">소스 전체 내려받기 (.zip)</a> · <a href="https://github.com/Yuul-Jung/fpga-soc-harness/tree/main/capstones/mmio-vga-tilemap-dashboard">GitHub에서 보기</a></p><details><summary><code>rtl/vga_timing.v</code> <span class="muted">50줄</span></summary><pre>// vga_timing.v — 640×480 @ 60 Hz VGA 타이밍 생성기
+// 픽셀 클럭: 25 MHz (25.175 MHz 공칭; 2비트 분주기로 25 MHz 사용)
+// H: 640 가시 + 16 FP + 96 SYNC + 48 BP = 800
+// V: 480 가시 + 10 FP +  2 SYNC + 33 BP = 525
+// SYNC 극성: 양쪽 활성 로우 (CEA-861 표준)
+
+module vga_timing (
+    input  wire        clk_25m,
+    input  wire        rst,
+    output reg  [9:0]  h_count,   // 0..799
+    output reg  [9:0]  v_count,   // 0..524
+    output wire        hsync,     // 활성 로우
+    output wire        vsync,     // 활성 로우
+    output wire        active,    // 가시 영역
+    output wire        frame_end  // vsync 하강 에지(1사이클 펄스)
+);
+
+localparam H_VIS  = 640, H_FP = 16, H_SYNC = 96, H_BP = 48;
+localparam V_VIS  = 480, V_FP = 10, V_SYNC =  2, V_BP = 33;
+localparam H_TOTAL = H_VIS + H_FP + H_SYNC + H_BP; // 800
+localparam V_TOTAL = V_VIS + V_FP + V_SYNC + V_BP; // 525
+
+// h/v 카운터
+always @(posedge clk_25m) begin
+    if (rst) begin
+        h_count &lt;= 10&#x27;d0;
+        v_count &lt;= 10&#x27;d0;
+    end else begin
+        if (h_count == H_TOTAL - 1) begin
+            h_count &lt;= 10&#x27;d0;
+            if (v_count == V_TOTAL - 1)
+                v_count &lt;= 10&#x27;d0;
+            else
+                v_count &lt;= v_count + 10&#x27;d1;
+        end else begin
+            h_count &lt;= h_count + 10&#x27;d1;
+        end
+    end
+end
+
+assign hsync    = ~((h_count &gt;= H_VIS + H_FP) &amp;&amp;
+                    (h_count &lt;  H_VIS + H_FP + H_SYNC));
+assign vsync    = ~((v_count &gt;= V_VIS + V_FP) &amp;&amp;
+                    (v_count &lt;  V_VIS + V_FP + V_SYNC));
+assign active   = (h_count &lt; H_VIS) &amp;&amp; (v_count &lt; V_VIS);
+
+// frame_end: vsync 하강 에지 = v_count가 V_VIS+V_FP에 도달하고 h_count==0
+assign frame_end = (v_count == V_VIS + V_FP) &amp;&amp; (h_count == 10&#x27;d0);
+
+endmodule
+</pre></details><details><summary><code>rtl/tilemap_axil.v</code> <span class="muted">248줄</span></summary><pre>// tilemap_axil.v — AXI4-Lite 슬레이브 + 2단 스캔라인 VGA 렌더러
+//
+// 역할: 80×60 타일맵(256 타일, 16색 팔레트)을 AXI4-Lite 레지스터로 프로그래밍하고
+//       VGA h/v 카운터에 맞춰 화소를 1클럭 지연으로 출력한다.
+//
+// 클럭: 단일 clk(25 MHz). 프로덕션에서는 AXI 버스(100 MHz)와 CDC 추가 권장.
+//
+// 메모리 모델:
+//   tilemap[4800]  : tile_id[7:0] — row*80+col로 접근
+//   attr[4800]     : {bg[3:0], fg[3:0]} — 같은 인덱스
+//   font[2048]     : 8비트 비트맵 한 줄 — tile_id*8+row
+//   palette[16]    : {R[3:0],G[3:0],B[3:0]}
+//
+// 렌더 파이프라인 (1 사이클):
+//   입력 h_count,v_count → 타일 주소 계산 → 메모리 읽기(reg) → 화소 출력
+//   출력은 h/v 입력보다 1사이클 늦으므로 h_count=1 위치의 화소가 h=0에 나옴.
+//   테스트벤치가 이 오프셋을 감안한다.
+
+module tilemap_axil (
+    // ---- 공통 클럭/리셋 ----
+    input  wire        clk,       // 25 MHz
+    input  wire        rst_n,     // 활성 로우 리셋
+
+    // ---- AXI4-Lite 슬레이브 ----
+    input  wire [15:0] s_axil_awaddr,
+    input  wire        s_axil_awvalid,
+    output wire        s_axil_awready,
+    input  wire [31:0] s_axil_wdata,
+    input  wire [3:0]  s_axil_wstrb,
+    input  wire        s_axil_wvalid,
+    output wire        s_axil_wready,
+    output reg  [1:0]  s_axil_bresp,
+    output reg         s_axil_bvalid,
+    input  wire        s_axil_bready,
+    input  wire [15:0] s_axil_araddr,
+    input  wire        s_axil_arvalid,
+    output wire        s_axil_arready,
+    output reg  [31:0] s_axil_rdata,
+    output wire [1:0]  s_axil_rresp,
+    output reg         s_axil_rvalid,
+    input  wire        s_axil_rready,
+
+    // ---- VGA 타이밍 입력 ----
+    input  wire [9:0]  h_count,
+    input  wire [9:0]  v_count,
+    input  wire        active,
+    input  wire        frame_end, // 1사이클 펄스
+
+    // ---- VGA 화소 출력 (1사이클 지연) ----
+    output reg  [3:0]  pix_r,
+    output reg  [3:0]  pix_g,
+    output reg  [3:0]  pix_b,
+
+    // ---- 인터럽트 (level, 활성 하이) ----
+    output wire        irq
+);
+
+// ================================================================
+// 메모리
+// ================================================================
+reg [7:0] tilemap [0:4799];  // tile_id
+reg [7:0] attr    [0:4799];  // {bg[3:0], fg[3:0]}
+reg [7:0] font_rom[0:2047];  // tile_id*8+row → 8비트 비트맵
+reg [11:0] palette[0:15];    // {R[3:0],G[3:0],B[3:0]}
+
+// ================================================================
+// 제어 레지스터
+// ================================================================
+reg [31:0] ctrl_reg;        // bit0=disp_en
+reg [0:0]  irq_status;      // bit0=frame_end
+reg [0:0]  irq_enable;      // bit0=enable
+reg [12:0] tile_addr_reg;   // 간접 쓰기 주소
+reg [10:0] font_addr_reg;   // 간접 쓰기 주소
+
+// ================================================================
+// AXI4-Lite 슬레이브 — AWVALID+WVALID 동시 수용
+// ================================================================
+assign s_axil_awready = 1&#x27;b1;
+assign s_axil_wready  = 1&#x27;b1;
+assign s_axil_arready = 1&#x27;b1;
+assign s_axil_rresp   = 2&#x27;b00;
+
+wire do_write = s_axil_awvalid &amp;&amp; s_axil_wvalid;
+wire [15:0] waddr = s_axil_awaddr;
+wire [31:0] wdata = s_axil_wdata;
+
+// BVALID 응답
+always @(posedge clk) begin
+    if (!rst_n) begin
+        s_axil_bvalid &lt;= 1&#x27;b0;
+        s_axil_bresp  &lt;= 2&#x27;b00;
+    end else begin
+        if (do_write)
+            s_axil_bvalid &lt;= 1&#x27;b1;
+        else if (s_axil_bready)
+            s_axil_bvalid &lt;= 1&#x27;b0;
+    end
+end
+
+// 레지스터 쓰기
+always @(posedge clk) begin
+    if (!rst_n) begin
+        ctrl_reg      &lt;= 32&#x27;h0000_0001; // disp_en 기본 1
+        irq_enable    &lt;= 1&#x27;b0;
+        irq_status    &lt;= 1&#x27;b0;
+        tile_addr_reg &lt;= 13&#x27;d0;
+        font_addr_reg &lt;= 11&#x27;d0;
+        // 기본 팔레트: EGA 16색
+        palette[ 0] &lt;= 12&#x27;h000; // 검정
+        palette[ 1] &lt;= 12&#x27;h00A; // 파랑
+        palette[ 2] &lt;= 12&#x27;h0A0; // 초록
+        palette[ 3] &lt;= 12&#x27;h0AA; // 청록
+        palette[ 4] &lt;= 12&#x27;hA00; // 빨강
+        palette[ 5] &lt;= 12&#x27;hA0A; // 자홍
+        palette[ 6] &lt;= 12&#x27;hA50; // 갈색
+        palette[ 7] &lt;= 12&#x27;hAAA; // 밝은 회색
+        palette[ 8] &lt;= 12&#x27;h555; // 어두운 회색
+        palette[ 9] &lt;= 12&#x27;h55F; // 밝은 파랑
+        palette[10] &lt;= 12&#x27;h5F5; // 밝은 초록
+        palette[11] &lt;= 12&#x27;h5FF; // 밝은 청록
+        palette[12] &lt;= 12&#x27;hF55; // 밝은 빨강
+        palette[13] &lt;= 12&#x27;hF5F; // 밝은 자홍
+        palette[14] &lt;= 12&#x27;hFF5; // 밝은 노랑
+        palette[15] &lt;= 12&#x27;hFFF; // 흰색
+    end else begin
+        // IRQ_STATUS W1C
+        if (frame_end)
+            irq_status &lt;= 1&#x27;b1;
+        if (do_write &amp;&amp; waddr == 16&#x27;h0008)
+            irq_status &lt;= irq_status &amp; ~wdata[0:0];
+
+        if (do_write) begin
+            case (waddr)
+                16&#x27;h000C: irq_enable    &lt;= wdata[0:0];
+                16&#x27;h0010: ctrl_reg      &lt;= wdata;
+                16&#x27;h0018: tile_addr_reg &lt;= wdata[12:0];
+                16&#x27;h001C: begin
+                    if (tile_addr_reg &lt; 13&#x27;d4800) begin
+                        tilemap[tile_addr_reg] &lt;= wdata[7:0];
+                        attr   [tile_addr_reg] &lt;= wdata[15:8];
+                    end
+                end
+                16&#x27;h0020: font_addr_reg &lt;= wdata[10:0];
+                16&#x27;h0024: begin
+                    font_rom[font_addr_reg] &lt;= wdata[7:0];
+                end
+                default: begin
+                    // 팔레트 0x0028..0x0064
+                    if (waddr &gt;= 16&#x27;h0028 &amp;&amp; waddr &lt;= 16&#x27;h0064) begin
+                        palette[(waddr - 16&#x27;h0028) &gt;&gt; 2] &lt;= wdata[11:0];
+                    end
+                end
+            endcase
+        end
+    end
+end
+
+// 레지스터 읽기
+always @(posedge clk) begin
+    if (!rst_n) begin
+        s_axil_rvalid &lt;= 1&#x27;b0;
+        s_axil_rdata  &lt;= 32&#x27;d0;
+    end else begin
+        if (s_axil_arvalid &amp;&amp; !s_axil_rvalid) begin
+            s_axil_rvalid &lt;= 1&#x27;b1;
+            case (s_axil_araddr)
+                16&#x27;h0000: s_axil_rdata &lt;= 32&#x27;h544D_4150; // &quot;TMAP&quot;
+                16&#x27;h0004: s_axil_rdata &lt;= 32&#x27;h0001_0000; // VER 1.0
+                16&#x27;h0008: s_axil_rdata &lt;= {31&#x27;d0, irq_status};
+                16&#x27;h000C: s_axil_rdata &lt;= {31&#x27;d0, irq_enable};
+                16&#x27;h0010: s_axil_rdata &lt;= ctrl_reg;
+                16&#x27;h0014: s_axil_rdata &lt;= {31&#x27;d0, (v_count &gt;= 10&#x27;d480) ? 1&#x27;b1 : 1&#x27;b0};
+                default: begin
+                    if (s_axil_araddr &gt;= 16&#x27;h0028 &amp;&amp; s_axil_araddr &lt;= 16&#x27;h0064)
+                        s_axil_rdata &lt;= {20&#x27;d0, palette[(s_axil_araddr - 16&#x27;h0028) &gt;&gt; 2]};
+                    else
+                        s_axil_rdata &lt;= 32&#x27;hDEAD_BEEF;
+                end
+            endcase
+        end else if (s_axil_rready) begin
+            s_axil_rvalid &lt;= 1&#x27;b0;
+        end
+    end
+end
+
+// ================================================================
+// 렌더 파이프라인 (1 사이클)
+// ================================================================
+// 타일 열/행 계산: tile_col = h_count[2:0+3..9] = h_count&gt;&gt;3, tile_row = v_count&gt;&gt;3
+// tile_row*80 = tile_row*64 + tile_row*16 = (tile_row&lt;&lt;6)+(tile_row&lt;&lt;4)
+wire [5:0] tile_col_w = h_count[8:3];  // 0..79 (h_count &lt; 640)
+wire [5:0] tile_row_w = v_count[8:3];  // 0..59 (v_count &lt; 480)
+wire [2:0] pixel_x_w  = h_count[2:0];
+wire [2:0] pixel_y_w  = v_count[2:0];
+wire [12:0] tile_base_w = {tile_row_w, 6&#x27;b0} + {2&#x27;b0, tile_row_w, 4&#x27;b0}; // *80
+wire [12:0] tile_idx_w  = tile_base_w + {7&#x27;b0, tile_col_w};
+
+wire disp_en = ctrl_reg[0];
+
+// 1사이클 파이프라인: 등록된 메모리 읽기
+reg [7:0] tile_id_q, tile_attr_q;
+reg [2:0] pixel_x_q, pixel_y_q;
+reg       active_q;
+
+always @(posedge clk) begin
+    if (!rst_n) begin
+        tile_id_q   &lt;= 8&#x27;d0;
+        tile_attr_q &lt;= 8&#x27;d0;
+        pixel_x_q   &lt;= 3&#x27;d0;
+        pixel_y_q   &lt;= 3&#x27;d0;
+        active_q    &lt;= 1&#x27;b0;
+    end else begin
+        tile_id_q   &lt;= (tile_idx_w &lt; 13&#x27;d4800) ? tilemap[tile_idx_w] : 8&#x27;d0;
+        tile_attr_q &lt;= (tile_idx_w &lt; 13&#x27;d4800) ? attr   [tile_idx_w] : 8&#x27;d0;
+        pixel_x_q   &lt;= pixel_x_w;
+        pixel_y_q   &lt;= pixel_y_w;
+        active_q    &lt;= active &amp;&amp; disp_en;
+    end
+end
+
+// 화소 계산: font_rom[tile_id * 8 + pixel_y]의 MSB-first 비트
+wire [10:0] font_idx_w = {tile_id_q, pixel_y_q};
+wire [7:0]  font_row_w = font_rom[font_idx_w];
+wire        pix_bit    = font_row_w[3&#x27;d7 - pixel_x_q]; // MSB가 좌측
+
+wire [3:0] fg_color = tile_attr_q[3:0];
+wire [3:0] bg_color = tile_attr_q[7:4];
+wire [3:0] color_idx = pix_bit ? fg_color : bg_color;
+wire [11:0] rgb     = active_q ? palette[color_idx] : 12&#x27;d0;
+
+always @(posedge clk) begin
+    if (!rst_n) begin
+        pix_r &lt;= 4&#x27;d0;
+        pix_g &lt;= 4&#x27;d0;
+        pix_b &lt;= 4&#x27;d0;
+    end else begin
+        pix_r &lt;= rgb[11:8];
+        pix_g &lt;= rgb[7:4];
+        pix_b &lt;= rgb[3:0];
+    end
+end
+
+// ================================================================
+// 인터럽트
+// ================================================================
+assign irq = irq_status &amp; irq_enable;
+
+endmodule
+</pre></details><details><summary><code>rtl/basys3_top.v</code> <span class="muted">106줄</span></summary><pre>// basys3_top.v — Basys3 최상위 래퍼
+// 100 MHz 입력을 2비트 분주기로 25 MHz로 낮추어 VGA 타이밍과 타일맵 IP에 공급한다.
+// 주의: clk_div는 jitter가 크므로 프로덕션에서는 MMCM으로 교체 권장.
+
+module basys3_top (
+    input  wire        clk100,       // Basys3 100 MHz 입력 (W5)
+    input  wire        cpu_resetn,   // 활성 로우 리셋 (U18)
+    // VGA
+    output wire        vga_hs,       // 수평 동기
+    output wire        vga_vs,       // 수직 동기
+    output wire [3:0]  vga_r,
+    output wire [3:0]  vga_g,
+    output wire [3:0]  vga_b,
+    // AXI4-Lite 슬레이브 — SoC 버스에 연결 (합성 테스트용 더미 포트)
+    input  wire [15:0] s_axil_awaddr,
+    input  wire        s_axil_awvalid,
+    output wire        s_axil_awready,
+    input  wire [31:0] s_axil_wdata,
+    input  wire [3:0]  s_axil_wstrb,
+    input  wire        s_axil_wvalid,
+    output wire        s_axil_wready,
+    output wire [1:0]  s_axil_bresp,
+    output wire        s_axil_bvalid,
+    input  wire        s_axil_bready,
+    input  wire [15:0] s_axil_araddr,
+    input  wire        s_axil_arvalid,
+    output wire        s_axil_arready,
+    output wire [31:0] s_axil_rdata,
+    output wire [1:0]  s_axil_rresp,
+    output wire        s_axil_rvalid,
+    input  wire        s_axil_rready,
+    output wire        irq
+);
+
+// 2비트 분주기: 100 MHz → 25 MHz (clk_div[1])
+reg [1:0] clk_div;
+always @(posedge clk100) clk_div &lt;= clk_div + 2&#x27;d1;
+wire clk_25m = clk_div[1];
+wire rst = !cpu_resetn;
+
+// VGA 타이밍
+wire [9:0] h_count, v_count;
+wire       hsync, vsync, active, frame_end;
+
+vga_timing u_vga_timing (
+    .clk_25m   (clk_25m),
+    .rst       (rst),
+    .h_count   (h_count),
+    .v_count   (v_count),
+    .hsync     (hsync),
+    .vsync     (vsync),
+    .active    (active),
+    .frame_end (frame_end)
+);
+
+// 타일맵 AXI4-Lite IP
+wire [3:0] pix_r, pix_g, pix_b;
+
+tilemap_axil u_tilemap (
+    .clk            (clk_25m),
+    .rst_n          (!rst),
+    .s_axil_awaddr  (s_axil_awaddr),
+    .s_axil_awvalid (s_axil_awvalid),
+    .s_axil_awready (s_axil_awready),
+    .s_axil_wdata   (s_axil_wdata),
+    .s_axil_wstrb   (s_axil_wstrb),
+    .s_axil_wvalid  (s_axil_wvalid),
+    .s_axil_wready  (s_axil_wready),
+    .s_axil_bresp   (s_axil_bresp),
+    .s_axil_bvalid  (s_axil_bvalid),
+    .s_axil_bready  (s_axil_bready),
+    .s_axil_araddr  (s_axil_araddr),
+    .s_axil_arvalid (s_axil_arvalid),
+    .s_axil_arready (s_axil_arready),
+    .s_axil_rdata   (s_axil_rdata),
+    .s_axil_rresp   (s_axil_rresp),
+    .s_axil_rvalid  (s_axil_rvalid),
+    .s_axil_rready  (s_axil_rready),
+    .h_count        (h_count),
+    .v_count        (v_count),
+    .active         (active),
+    .frame_end      (frame_end),
+    .pix_r          (pix_r),
+    .pix_g          (pix_g),
+    .pix_b          (pix_b),
+    .irq            (irq)
+);
+
+// VGA 출력 등록 (타이밍 개선)
+reg [3:0] vga_r_r, vga_g_r, vga_b_r;
+reg       vga_hs_r, vga_vs_r;
+always @(posedge clk_25m) begin
+    vga_r_r  &lt;= pix_r;
+    vga_g_r  &lt;= pix_g;
+    vga_b_r  &lt;= pix_b;
+    vga_hs_r &lt;= hsync;
+    vga_vs_r &lt;= vsync;
+end
+
+assign vga_r  = vga_r_r;
+assign vga_g  = vga_g_r;
+assign vga_b  = vga_b_r;
+assign vga_hs = vga_hs_r;
+assign vga_vs = vga_vs_r;
+
+endmodule
+</pre></details><details><summary><code>tb/tb_tilemap.v</code> <span class="muted">291줄</span></summary><pre>// tb_tilemap.v — 자체 점검 테스트벤치 (vga_timing + tilemap_axil)
+// 검사 항목:
+//   T1: ID/VER 레지스터 읽기
+//   T2: 팔레트 읽기/쓰기
+//   T3: 폰트 프로그래밍 후 타일 화소 출력 확인
+//   T4: 프레임 끝 인터럽트 (IRQ_ENABLE + 프레임 대기 + W1C)
+// 통과 기준: !==로 비교(X/Z도 실패). 마지막에 &quot;PASS&quot; 또는 &quot;FAIL&quot; 출력.
+//
+// 오프셋 주의: tilemap_axil은 1사이클 지연 렌더러이므로
+//   h_count=col*8+1 의 등록 클럭에서 col*8의 화소가 출력된다.
+
+`timescale 1ns/1ps
+
+module tb_tilemap;
+
+// ---- 클럭/리셋 ----
+reg clk;
+initial clk = 0;
+always #20 clk = ~clk; // 25 MHz (40 ns 주기)
+
+reg rst_n;
+
+// ---- DUT 연결 ----
+// vga_timing
+wire [9:0] h_count, v_count;
+wire       hsync, vsync, active, frame_end;
+
+vga_timing u_vga (
+    .clk_25m   (clk),
+    .rst       (!rst_n),
+    .h_count   (h_count),
+    .v_count   (v_count),
+    .hsync     (hsync),
+    .vsync     (vsync),
+    .active    (active),
+    .frame_end (frame_end)
+);
+
+// tilemap_axil
+reg  [15:0] awaddr;
+reg         awvalid, wvalid;
+reg  [31:0] wdata;
+reg  [3:0]  wstrb;
+wire        awready, wready, bvalid;
+wire [1:0]  bresp;
+reg         bready;
+
+reg  [15:0] araddr;
+reg         arvalid;
+wire        arready;
+wire [31:0] rdata;
+wire        rvalid;
+reg         rready;
+
+wire [3:0] pix_r, pix_g, pix_b;
+wire       irq;
+
+tilemap_axil u_dut (
+    .clk            (clk),
+    .rst_n          (rst_n),
+    .s_axil_awaddr  (awaddr),
+    .s_axil_awvalid (awvalid),
+    .s_axil_awready (awready),
+    .s_axil_wdata   (wdata),
+    .s_axil_wstrb   (wstrb),
+    .s_axil_wvalid  (wvalid),
+    .s_axil_wready  (wready),
+    .s_axil_bresp   (bresp),
+    .s_axil_bvalid  (bvalid),
+    .s_axil_bready  (bready),
+    .s_axil_araddr  (araddr),
+    .s_axil_arvalid (arvalid),
+    .s_axil_arready (arready),
+    .s_axil_rdata   (rdata),
+    .s_axil_rresp   (),
+    .s_axil_rvalid  (rvalid),
+    .s_axil_rready  (rready),
+    .h_count        (h_count),
+    .v_count        (v_count),
+    .active         (active),
+    .frame_end      (frame_end),
+    .pix_r          (pix_r),
+    .pix_g          (pix_g),
+    .pix_b          (pix_b),
+    .irq            (irq)
+);
+
+// ---- 오류 카운터 ----
+integer fail_cnt;
+
+// ---- AXI 쓰기 태스크 ----
+task axi_write;
+    input [15:0] addr;
+    input [31:0] d;
+    begin
+        @(negedge clk);
+        awaddr  = addr; awvalid = 1&#x27;b1;
+        wdata   = d;    wvalid  = 1&#x27;b1; wstrb = 4&#x27;hF;
+        bready  = 1&#x27;b1;
+        @(posedge clk); #1;
+        awvalid = 1&#x27;b0; wvalid = 1&#x27;b0;
+        @(posedge clk); #1;
+    end
+endtask
+
+// ---- AXI 읽기 태스크 ----
+reg [31:0] rd_result;
+task axi_read;
+    input [15:0] addr;
+    begin
+        @(negedge clk);
+        araddr = addr; arvalid = 1&#x27;b1; rready = 1&#x27;b1;
+        @(posedge clk); #1;
+        arvalid = 1&#x27;b0;
+        // rvalid가 1이 될 때까지 대기 (레벨 감지: NBA 이후 이미 1이면 즉시 통과)
+        wait(rvalid === 1&#x27;b1);
+        rd_result = rdata;
+        @(posedge clk); #1;
+        rready = 1&#x27;b0;
+    end
+endtask
+
+// ---- 비교 태스크 ----
+task check32;
+    input [63:0] label; // 사용하지 않음 (문자열 비교 불필요)
+    input [31:0] got;
+    input [31:0] exp;
+    begin
+        if (got !== exp) begin
+            $display(&quot;FAIL: got=%h exp=%h&quot;, got, exp);
+            fail_cnt = fail_cnt + 1;
+        end
+    end
+endtask
+
+// ---- 메인 시퀀스 ----
+integer i;
+integer frame_cycles;
+integer pixel_clk;
+reg [3:0] exp_r, exp_g, exp_b;
+
+initial begin
+    fail_cnt = 0;
+    // 초기화
+    awvalid = 0; wvalid = 0; bready = 0;
+    arvalid = 0; rready = 0;
+    awaddr = 0; wdata = 0; wstrb = 4&#x27;hF;
+    araddr = 0;
+
+    // 리셋
+    rst_n = 0;
+    repeat(4) @(posedge clk);
+    rst_n = 1;
+    repeat(2) @(posedge clk);
+
+    // ============================================================
+    // T1: ID/VER 읽기
+    // ============================================================
+    axi_read(16&#x27;h0000);
+    check32(0, rd_result, 32&#x27;h544D_4150);  // &quot;TMAP&quot;
+    axi_read(16&#x27;h0004);
+    check32(0, rd_result, 32&#x27;h0001_0000);  // VER 1.0
+
+    // ============================================================
+    // T2: 팔레트 쓰기/읽기
+    //     PALETTE[0]=0x000(검정) → 0x248로 변경 후 읽기
+    // ============================================================
+    axi_write(16&#x27;h0028, 32&#x27;h0000_0248);
+    axi_read (16&#x27;h0028);
+    check32(0, rd_result[11:0], 12&#x27;h248);
+    // 흰색(15) 기본값 확인
+    axi_read(16&#x27;h0064);
+    check32(0, rd_result[11:0], 12&#x27;hFFF);
+    // 팔레트를 EGA 기본으로 복원
+    axi_write(16&#x27;h0028, 32&#x27;h0000_0000);
+
+    // ============================================================
+    // T3: 폰트 프로그래밍 + 타일 배치 + 화소 출력 확인
+    //   - tile_id=0x01, 폰트 행 0 = 8&#x27;b1010_1010 = 0xAA
+    //   - tile 위치: col=2, row=1 → idx = 1*80+2 = 82
+    //   - fg=15(흰색=0xFFF), bg=0(검정=0x000)
+    //   - 타일 행 1 위치: v_count=8, h_count=16
+    //   - 1사이클 지연이므로 h_count=17에서 col=16의 화소가 출력됨
+    //   - 화소 비트 0(h=16): font[0xAA] bit7=1 → fg=15=0xFFF → R=0xF
+    //   - 화소 비트 1(h=17): font[0xAA] bit6=0 → bg=0=0x000 → R=0x0
+    // ============================================================
+
+    // 폰트 프로그래밍: tile_id=0x01, 행 0
+    axi_write(16&#x27;h0020, 32&#x27;h0000_0008);  // FONT_ADDR = 0x01*8+0 = 8
+    axi_write(16&#x27;h0024, 32&#x27;h0000_00AA);  // FONT_DATA = 0xAA = 10101010b
+
+    // 타일 배치: col=2, row=1, idx=82
+    axi_write(16&#x27;h0018, 32&#x27;h0000_0052);  // TILE_ADDR = 82
+    axi_write(16&#x27;h001C, 32&#x27;h0000_F001);  // TILE_DATA: fg=0, bg=F(흰), tile_id=1
+
+    // VGA를 v=8, h=16 위치까지 대기 후 화소 확인
+    // 실제 화소는 h=16+1=17 클럭에서 나타남 (1사이클 렌더 파이프라인)
+    // v=8, h=16이 되는 사이클 수 = (8*800+16) = 6416 사이클 (리셋 후)
+    // 그러나 리셋 후 vga 카운터도 0부터 시작하므로 직접 대기한다.
+    fork
+        begin : wait_pixel
+            // v_count==8, h_count==17 (h+1 오프셋) 가 될 때까지 대기
+            // 최대 1 프레임(420000 사이클) 내에 도달해야 함
+            repeat(420001) begin
+                @(posedge clk);
+                if (v_count == 10&#x27;d8 &amp;&amp; h_count == 10&#x27;d17) begin
+                    // 이 사이클에서 h=16 위치의 화소가 등록됨
+                    // pix_r은 1사이클 더 지나야 확정되므로 다음 클럭에서 확인
+                    @(posedge clk);
+                    // TILE_DATA 를 {bg=0xF,fg=0x0, tile_id=0x01}로 설정했으므로
+                    // font 비트=1 → fg_color=0x0(검정 아님... 수정: fg=[7:4], bg=[15:12])
+                    // 실제 TILE_DATA[15:8] = attr = {bg[3:0], fg[3:0]}
+                    // wdata=0x0000_F001 → wdata[15:8]=0xF0 → bg=0xF(흰), fg=0x0(검정)
+                    // pix_bit=1 → fg=0 → palette[0]=0x000 → R=0, G=0, B=0
+                    // pix_bit=0 → bg=F → palette[F]=0xFFF → R=F, G=F, B=F
+                    // 0xAA=10101010: bit7=1(fg색), bit6=0(bg색)
+                    // h=16(pixel_x=0): font_row[7]=1 → fg=0 → black R=0
+                    // h=17(pixel_x=1): 이 사이클에서 h=17 → pixel_x_q=1(h=16에서 등록됨)
+                    // → font_row[7-1]=font_row[6]=0 → bg=F → white R=F
+                    if (pix_r !== 4&#x27;h0 || pix_g !== 4&#x27;h0 || pix_b !== 4&#x27;h0) begin
+                        $display(&quot;FAIL T3a: pix@h16=%h%h%h exp=000&quot;, pix_r,pix_g,pix_b);
+                        fail_cnt = fail_cnt + 1;
+                    end
+                    @(posedge clk);
+                    // 다음 클럭: h=18에서 h=17(pixel_x=1)의 화소 → bg=0xF → white
+                    if (pix_r !== 4&#x27;hF || pix_g !== 4&#x27;hF || pix_b !== 4&#x27;hF) begin
+                        $display(&quot;FAIL T3b: pix@h17=%h%h%h exp=FFF&quot;, pix_r,pix_g,pix_b);
+                        fail_cnt = fail_cnt + 1;
+                    end
+                    disable wait_pixel;
+                end
+            end
+        end
+    join
+
+    // ============================================================
+    // T4: 프레임 끝 인터럽트
+    //   IRQ_ENABLE bit0=1 설정 → 프레임 끝 대기 → irq=1 확인
+    //   IRQ_STATUS W1C → irq=0 확인
+    // ============================================================
+    axi_write(16&#x27;h000C, 32&#x27;h0000_0001); // IRQ_ENABLE bit0=1
+
+    // frame_end 펄스 대기 (최대 1 프레임)
+    begin : wait_irq
+        repeat(421000) begin
+            @(posedge clk);
+            if (irq) disable wait_irq;
+        end
+    end
+
+    // irq 활성 확인
+    if (irq !== 1&#x27;b1) begin
+        $display(&quot;FAIL T4a: irq=%b exp=1&quot;, irq);
+        fail_cnt = fail_cnt + 1;
+    end
+
+    // IRQ_STATUS 읽기 — bit0=1 확인
+    axi_read(16&#x27;h0008);
+    if (rd_result[0] !== 1&#x27;b1) begin
+        $display(&quot;FAIL T4b: IRQ_STATUS=%h bit0 exp=1&quot;, rd_result);
+        fail_cnt = fail_cnt + 1;
+    end
+
+    // W1C: IRQ_STATUS bit0 클리어
+    axi_write(16&#x27;h0008, 32&#x27;h0000_0001);
+    @(posedge clk); @(posedge clk);
+    if (irq !== 1&#x27;b0) begin
+        $display(&quot;FAIL T4c: irq=%b after W1C, exp=0&quot;, irq);
+        fail_cnt = fail_cnt + 1;
+    end
+
+    // ============================================================
+    // 최종 결과
+    // ============================================================
+    @(posedge clk);
+    if (fail_cnt == 0)
+        $display(&quot;PASS tilemap_axil: T1(ID/VER) T2(PALETTE) T3(PIXEL) T4(IRQ) all ok&quot;);
+    else
+        $display(&quot;FAIL tilemap_axil: %0d 개 오류&quot;, fail_cnt);
+
+    $finish;
+end
+
+// 무한루프 방지 타임아웃: 2 프레임(840 ms @ 25 MHz)
+initial begin
+    #33_600_000; // 33.6 ms (840000 사이클 × 40 ns)
+    $display(&quot;FAIL tb_tilemap: 타임아웃 (2 프레임 초과)&quot;);
+    $finish;
+end
+
+endmodule
+</pre></details><details><summary><code>constr/basys3.xdc</code> <span class="muted">83줄</span></summary><pre>## basys3.xdc — VGA 타일맵 계기판 핀 제약
+## 보드: Digilent Basys3 (XC7A35TCPG236-1)
+## 클럭: 100 MHz (W5), 2비트 분주기로 25 MHz 생성
+## VGA: Basys3 내장 저항 DAC (R-2R), 외부 부품 없음
+
+## ── 클럭 ──────────────────────────────────────────────────────────
+set_property -dict {PACKAGE_PIN W5 IOSTANDARD LVCMOS33} [get_ports clk100]
+create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports clk100]
+
+## ── 리셋 (활성 로우) ────────────────────────────────────────────────
+set_property -dict {PACKAGE_PIN U18 IOSTANDARD LVCMOS33} [get_ports cpu_resetn]
+
+## ── VGA 수평/수직 동기 ─────────────────────────────────────────────
+set_property -dict {PACKAGE_PIN P19 IOSTANDARD LVCMOS33} [get_ports vga_hs]
+set_property -dict {PACKAGE_PIN R19 IOSTANDARD LVCMOS33} [get_ports vga_vs]
+
+## ── VGA 적색 (4비트) ────────────────────────────────────────────────
+set_property -dict {PACKAGE_PIN G19 IOSTANDARD LVCMOS33} [get_ports {vga_r[0]}]
+set_property -dict {PACKAGE_PIN H19 IOSTANDARD LVCMOS33} [get_ports {vga_r[1]}]
+set_property -dict {PACKAGE_PIN J19 IOSTANDARD LVCMOS33} [get_ports {vga_r[2]}]
+set_property -dict {PACKAGE_PIN N19 IOSTANDARD LVCMOS33} [get_ports {vga_r[3]}]
+
+## ── VGA 녹색 (4비트) ────────────────────────────────────────────────
+set_property -dict {PACKAGE_PIN J17 IOSTANDARD LVCMOS33} [get_ports {vga_g[0]}]
+set_property -dict {PACKAGE_PIN H17 IOSTANDARD LVCMOS33} [get_ports {vga_g[1]}]
+set_property -dict {PACKAGE_PIN G17 IOSTANDARD LVCMOS33} [get_ports {vga_g[2]}]
+set_property -dict {PACKAGE_PIN D17 IOSTANDARD LVCMOS33} [get_ports {vga_g[3]}]
+
+## ── VGA 청색 (4비트) ────────────────────────────────────────────────
+set_property -dict {PACKAGE_PIN N18 IOSTANDARD LVCMOS33} [get_ports {vga_b[0]}]
+set_property -dict {PACKAGE_PIN L18 IOSTANDARD LVCMOS33} [get_ports {vga_b[1]}]
+set_property -dict {PACKAGE_PIN K18 IOSTANDARD LVCMOS33} [get_ports {vga_b[2]}]
+set_property -dict {PACKAGE_PIN J18 IOSTANDARD LVCMOS33} [get_ports {vga_b[3]}]
+
+## ── AXI4-Lite 슬레이브 — 합성 테스트용 더미 포트 ──────────────────────
+## (실제 SoC 연결 시 IP 인티그레이터에서 연결; 여기서는 타이밍 분석용)
+## awaddr[15:0]
+set_property -dict {PACKAGE_PIN V17 IOSTANDARD LVCMOS33} [get_ports {s_axil_awaddr[0]}]
+set_property -dict {PACKAGE_PIN V16 IOSTANDARD LVCMOS33} [get_ports {s_axil_awaddr[1]}]
+set_property -dict {PACKAGE_PIN W16 IOSTANDARD LVCMOS33} [get_ports {s_axil_awaddr[2]}]
+set_property -dict {PACKAGE_PIN W17 IOSTANDARD LVCMOS33} [get_ports {s_axil_awaddr[3]}]
+set_property -dict {PACKAGE_PIN W15 IOSTANDARD LVCMOS33} [get_ports {s_axil_awaddr[4]}]
+set_property -dict {PACKAGE_PIN V15 IOSTANDARD LVCMOS33} [get_ports {s_axil_awaddr[5]}]
+set_property -dict {PACKAGE_PIN W14 IOSTANDARD LVCMOS33} [get_ports {s_axil_awaddr[6]}]
+set_property -dict {PACKAGE_PIN W13 IOSTANDARD LVCMOS33} [get_ports {s_axil_awaddr[7]}]
+set_property -dict {PACKAGE_PIN V2  IOSTANDARD LVCMOS33} [get_ports {s_axil_awaddr[8]}]
+set_property -dict {PACKAGE_PIN T3  IOSTANDARD LVCMOS33} [get_ports {s_axil_awaddr[9]}]
+set_property -dict {PACKAGE_PIN T2  IOSTANDARD LVCMOS33} [get_ports {s_axil_awaddr[10]}]
+set_property -dict {PACKAGE_PIN R3  IOSTANDARD LVCMOS33} [get_ports {s_axil_awaddr[11]}]
+set_property -dict {PACKAGE_PIN W2  IOSTANDARD LVCMOS33} [get_ports {s_axil_awaddr[12]}]
+set_property -dict {PACKAGE_PIN U1  IOSTANDARD LVCMOS33} [get_ports {s_axil_awaddr[13]}]
+set_property -dict {PACKAGE_PIN T1  IOSTANDARD LVCMOS33} [get_ports {s_axil_awaddr[14]}]
+set_property -dict {PACKAGE_PIN R2  IOSTANDARD LVCMOS33} [get_ports {s_axil_awaddr[15]}]
+
+## awvalid/awready
+set_property -dict {PACKAGE_PIN U18 IOSTANDARD LVCMOS33} [get_ports s_axil_awvalid]
+## NOTE: awvalid reuses resetn pin slot only as placeholder; real design uses IP integrator
+
+## wdata[31:0] — 스위치·LED 핀 활용 (16핀 한계로 wdata[15:0]만 XDC에 등록, 나머지 tie-off)
+set_property -dict {PACKAGE_PIN V13 IOSTANDARD LVCMOS33} [get_ports {s_axil_wdata[0]}]
+set_property -dict {PACKAGE_PIN V3  IOSTANDARD LVCMOS33} [get_ports {s_axil_wdata[1]}]
+set_property -dict {PACKAGE_PIN W3  IOSTANDARD LVCMOS33} [get_ports {s_axil_wdata[2]}]
+set_property -dict {PACKAGE_PIN U3  IOSTANDARD LVCMOS33} [get_ports {s_axil_wdata[3]}]
+set_property -dict {PACKAGE_PIN P3  IOSTANDARD LVCMOS33} [get_ports {s_axil_wdata[4]}]
+set_property -dict {PACKAGE_PIN N3  IOSTANDARD LVCMOS33} [get_ports {s_axil_wdata[5]}]
+set_property -dict {PACKAGE_PIN P1  IOSTANDARD LVCMOS33} [get_ports {s_axil_wdata[6]}]
+set_property -dict {PACKAGE_PIN L1  IOSTANDARD LVCMOS33} [get_ports {s_axil_wdata[7]}]
+set_property -dict {PACKAGE_PIN L2  IOSTANDARD LVCMOS33} [get_ports {s_axil_wdata[8]}]
+set_property -dict {PACKAGE_PIN M1  IOSTANDARD LVCMOS33} [get_ports {s_axil_wdata[9]}]
+set_property -dict {PACKAGE_PIN N1  IOSTANDARD LVCMOS33} [get_ports {s_axil_wdata[10]}]
+set_property -dict {PACKAGE_PIN P2  IOSTANDARD LVCMOS33} [get_ports {s_axil_wdata[11]}]
+set_property -dict {PACKAGE_PIN M3  IOSTANDARD LVCMOS33} [get_ports {s_axil_wdata[12]}]
+set_property -dict {PACKAGE_PIN M4  IOSTANDARD LVCMOS33} [get_ports {s_axil_wdata[13]}]
+set_property -dict {PACKAGE_PIN M5  IOSTANDARD LVCMOS33} [get_ports {s_axil_wdata[14]}]
+set_property -dict {PACKAGE_PIN M6  IOSTANDARD LVCMOS33} [get_ports {s_axil_wdata[15]}]
+
+## IRQ 출력 — LED[15] (U11)
+set_property -dict {PACKAGE_PIN U11 IOSTANDARD LVCMOS33} [get_ports irq]
+
+## ── 타이밍 예외 ──────────────────────────────────────────────────────
+## clk_div 출력(clk_25m)은 BUFG 없이 FF Q 신호로 사용 중. 가짜 경로로 처리.
+## 프로덕션에서는 MMCM으로 교체하고 이 set_false_path를 제거한다.
+set_false_path -from [get_pins */clk_div_reg*/C] -to [all_outputs]
+</pre></details><details><summary><code>Makefile</code> <span class="muted">55줄</span></summary><pre># Makefile — VGA 타일맵 계기판 IP
+# 타깃: lint (verilator), sim (iverilog), synth (yosys)
+# 사용: make lint | make sim | make synth | make all | make clean
+
+SHELL   := /bin/bash
+TOP     := basys3_top
+TB      := tb_tilemap
+RTL_DIR := rtl
+TB_DIR  := tb
+BUILD   := build
+
+RTL_SRCS := $(RTL_DIR)/vga_timing.v \
+            $(RTL_DIR)/tilemap_axil.v \
+            $(RTL_DIR)/basys3_top.v
+
+TB_SRCS  := $(TB_DIR)/tb_tilemap.v \
+            $(RTL_DIR)/vga_timing.v \
+            $(RTL_DIR)/tilemap_axil.v
+
+.PHONY: all lint sim synth clean
+
+all: lint sim synth
+
+## ── lint: Verilator 문법 검사 ─────────────────────────────────────
+lint: $(RTL_SRCS)
+	@mkdir -p $(BUILD)
+	verilator --lint-only -Wall --Wno-UNUSEDSIGNAL --Wno-UNUSEDPARAM \
+	    -Wno-INITIALDLY \
+	    $(RTL_SRCS) --top-module $(TOP) 2&gt;&amp;1 | tee $(BUILD)/lint.log
+	@echo &quot;lint done&quot;
+
+## ── sim: iverilog + vvp ───────────────────────────────────────────
+sim: $(TB_SRCS)
+	@mkdir -p $(BUILD)
+	iverilog -g2005 -o $(BUILD)/$(TB).vvp $(TB_SRCS) 2&gt;&amp;1 | tee $(BUILD)/sim_compile.log
+	vvp $(BUILD)/$(TB).vvp 2&gt;&amp;1 | tee $(BUILD)/sim.log
+	@grep -E &quot;^(PASS|FAIL)&quot; $(BUILD)/sim.log || true
+	@if grep -q &quot;^PASS&quot; $(BUILD)/sim.log; then \
+	    echo &quot;sim: PASS&quot;; \
+	else \
+	    echo &quot;sim: FAIL — see $(BUILD)/sim.log&quot;; exit 1; \
+	fi
+
+## ── synth: Yosys synth_xilinx 자원 추정 ──────────────────────────
+synth: $(RTL_SRCS)
+	@mkdir -p $(BUILD)
+	yosys -p &quot;read_verilog $(RTL_SRCS); \
+	          synth_xilinx -top $(TOP) -flatten; \
+	          stat&quot; \
+	    2&gt;&amp;1 | tee $(BUILD)/synth.log
+	@echo &quot;synth done — see $(BUILD)/synth.log for LUT/FF/BRAM counts&quot;
+
+## ── clean ─────────────────────────────────────────────────────────
+clean:
+	rm -rf $(BUILD)
+</pre></details><h3>시뮬레이션 (iverilog)</h3><ol><li>make lint — verilator --lint-only로 RTL 문법 검사</li><li>make sim  — iverilog -g2005으로 tb_tilemap.v를 컴파일하고 vvp로 실행. PASS가 출력되면 S1.</li><li>make synth — yosys synth_xilinx으로 자원 추정. LUT/FF/BRAM 수를 build/synth.log에서 확인.</li></ol><h3>Vivado 합성</h3><ol><li>Vivado 2024.2: 프로젝트 생성 → Basys3 xc7a35tcpg236-1.</li><li>rtl/*.v와 constr/basys3.xdc를 소스로 추가한다.</li><li>MMCM으로 25 MHz 생성 추천(clk_div는 jitter 큼).</li><li>Generate Bitstream → Program Device.</li></ol>
+<h2 id="verify">8. 검증</h2><div class="panel"><table><tr><th>단계</th><th>결과</th><th>내용</th></tr>
+<tr><td>린트(verilator)</td><td>미실행</td><td></td></tr><tr><td>시뮬레이션(iverilog)</td><td>미실행</td><td></td></tr><tr><td>합성 추정(yosys)</td><td>미실행</td><td></td></tr><tr><td>보드 동작</td><td>not-tested</td><td></td></tr>
+</table></div><p>S3(보드 동작)은 사람이 확인. 에이전트는 board: pass를 쓰지 않는다(HARNESS §13.4). S0~S2는 CI가 기록.</p>
+<h2 id="ref">9. 참고 카드와 위험</h2><h3>참고 카드</h3><ul><li><a href="../catalog/intel/columbia-4840-tiles-tutorial.html"><code>columbia-4840-tiles-tutorial</code></a> — 80×60 타일맵 설계 근거 (131,456비트 메모리 추정)</li><li><a href="../catalog/vendor-neutral/zipcpu-llvga-video-timing.html"><code>zipcpu-llvga-video-timing</code></a> — VGA 타이밍 카운터와 hsync/vsync 극성 참조</li><li><a href="../catalog/papers/microchip-an532-dc-servo-pid.html"><code>microchip-an532-dc-servo-pid</code></a> — PID 계기판 화면 레이아웃 아이디어</li><li><a href="../catalog/papers/ubc-elex2117-lab6-quadrature-encoder.html"><code>ubc-elex2117-lab6-quadrature-encoder</code></a> — 엔코더 카운터 값 AXI 레지스터 형식 참조</li></ul><h3>위험·한계</h3><ul><li>clk_div 2비트 분주는 jitter가 커서 Vivado 타이밍 분석에서 경고가 날 수 있음. 프로덕션에서 MMCM 교체 권장.</li><li>단일 클럭 설계(25 MHz 전체). 100 MHz AXI 버스와 연결 시 CDC(Gray-code BRAM 포인터 등) 추가 필요.</li><li>tilemap/font 메모리는 regs 배열 추론(LUTRAM 또는 BRAM). yosys 추정치와 Vivado 실제 사용량이 다를 수 있음.</li><li>TILE_ADDR 범위(0..4799)를 소프트웨어가 벗어나면 메모리 경계 밖 쓰기가 발생함. 하드웨어 클램핑 없음.</li></ul>
+</main></body></html>

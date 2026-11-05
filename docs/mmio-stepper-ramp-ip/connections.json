@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-stepper-ramp-ip",
+  "kind": "digital-block-diagram",
+  "note": "디지털 모듈 연결도다. 외부 부품의 전기 배선(전압, 저항, 커넥터)은 포함하지 않는다.",
+  "bus": "AXI4-Lite",
+  "blocks": [
+    {
+      "id": "cpu",
+      "name": "MicroBlaze V",
+      "kind": "cpu",
+      "module": "-",
+      "file": null
+    },
+    {
+      "id": "axil_stepper",
+      "name": "axil_stepper",
+      "kind": "ip",
+      "module": "axil_stepper",
+      "file": "rtl/axil_stepper.v"
+    },
+    {
+      "id": "step_ramp_core",
+      "name": "step_ramp_core",
+      "kind": "submodule",
+      "module": "step_ramp_core",
+      "file": "rtl/step_ramp_core.v"
+    },
+    {
+      "id": "seq_4wire",
+      "name": "seq_4wire",
+      "kind": "submodule",
+      "module": "seq_4wire",
+      "file": "rtl/seq_4wire.v"
+    },
+    {
+      "id": "basys3_top",
+      "name": "basys3_top",
+      "kind": "wrapper",
+      "module": "basys3_top",
+      "file": "rtl/basys3_top.v"
+    },
+    {
+      "id": "motor_28byj48",
+      "name": "28BYJ-48 + ULN2003",
+      "kind": "external",
+      "module": "-",
+      "file": null
+    }
+  ],
+  "links": [
+    {
+      "from": "cpu",
+      "to": "axil_stepper",
+      "label": "AXI4-Lite (0x4016_0000)"
+    },
+    {
+      "from": "axil_stepper",
+      "to": "step_ramp_core",
+      "label": "start/stop/params"
+    },
+    {
+      "from": "step_ramp_core",
+      "to": "seq_4wire",
+      "label": "step_pulse, dir"
+    },
+    {
+      "from": "step_ramp_core",
+      "to": "axil_stepper",
+      "label": "busy, done, state[1:0]"
+    },
+    {
+      "from": "seq_4wire",
+      "to": "motor_28byj48",
+      "label": "coil[3:0]"
+    },
+    {
+      "from": "axil_stepper",
+      "to": "cpu",
+      "label": "irq (INTC 13)"
+    }
+  ]
+}

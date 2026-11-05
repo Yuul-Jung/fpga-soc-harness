@@ -1,0 +1,46 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>industrialmonitordirect-irs2110-half-bridge</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../../hub.html">FPGA SoC 하네스</a><a href="../../hub.html">메인</a><a href="../../hub.html#capstones">캡스톤</a><a href="../../soc-map/tech-tree.html">기술 트리</a><a href="../../catalog/index.html">카탈로그</a><a href="../../inbox/ideas.html">아이디어</a><a href="../../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/catalog/electronics/industrialmonitordirect-irs2110-half-bridge.md">GitHub 원본: catalog/electronics/industrialmonitordirect-irs2110-half-bridge.md</a></p><h1>industrialmonitordirect-irs2110-half-bridge</h1><div class="panel fm"><table><tr><td>name</td><td><a href="industrialmonitordirect-irs2110-half-bridge.html">industrialmonitordirect-irs2110-half-bridge</a></td></tr><tr><td>url</td><td>https://industrialmonitordirect.com/blogs/knowledgebase/irs2110-half-bridge-gate-driver-design-deadtime-and</td></tr><tr><td>source_type</td><td>article</td></tr><tr><td>vendor</td><td>neutral</td></tr><tr><td>board</td><td>[]</td></tr><tr><td>fit_basys3</td><td>needs-port</td></tr><tr><td>cpu</td><td>none(전자회로)</td></tr><tr><td>language</td><td>[]</td></tr><tr><td>tools</td><td>[]</td></tr><tr><td>bus</td><td>none</td></tr><tr><td>peripherals</td><td>[gate-driver, h-bridge, deadtime]</td></tr><tr><td>stage</td><td>T2</td></tr><tr><td>license</td><td>unknown</td></tr><tr><td>stats</td><td>{}</td></tr><tr><td>doc_language</td><td>en</td></tr><tr><td>verification</td><td>L3</td></tr><tr><td>checked_at</td><td>2026-11-04</td></tr><tr><td>sources</td><td>[https://industrialmonitordirect.com/blogs/knowledgebase/irs2110-half-bridge-gate-driver-design-deadtime-and]</td></tr></table></div><h2>요약</h2>
+<p>IRS2110 하프브리지 게이트 드라이버의 설계 가이드. 데드타임 외부 생성 필요성, 부트스트랩 커패시터 계산, 게이트 저항 선택, 600V급 MOSFET 후보를 다룬다.</p>
+<h2>구조</h2>
+<ul><li style="margin-left:0.0em">IRS2110: 500V 오프셋, 2A 소스/싱크, 120 ns 전파 지연; UVLO 8V</li><li style="margin-left:0.0em">내부 데드타임 없음 — 외부 로직(MCU/FPGA)이 반드시 200–500 ns 데드타임을 보장해야 함</li><li style="margin-left:0.0em">부트스트랩 회로: 고측 드라이버 전원. 커패시터 용량 Cbst &gt; (Qg + I_QBS × t_on) / dV_BS. 가이드 예시(37.5W 부하, t_on=4µs): 최소 ~33 nF → 권장 100–220 nF X7R 세라믹</li><li style="margin-left:0.0em">부트스트랩 다이오드: fast-recovery, trr &lt; 100 ns (예: UF4007)</li><li style="margin-left:0.0em">100% 하이사이드 듀티 사이클 불가 (부트스트랩 방식 한계)</li><li style="margin-left:0.0em">게이트 저항: 4.7–10 Ω 직렬; GS 사이 풀다운 10 kΩ 권장</li><li style="margin-left:0.0em">MOSFET 후보(600V급): IPA60R190C6, IPP60R099C6, STF13N60M2, FCPF11N60NT, SIHA21N60E</li></ul>
+<h2>검증·재현성</h2>
+<ul><li style="margin-left:0.0em">가이드 본문 직접 열람(L3). 계산 예시와 회로 설명 포함</li><li style="margin-left:0.0em">보드 시험 기록 없음; 가이드 성격의 블로그 글</li></ul>
+<h2>한계·위험</h2>
+<ul><li style="margin-left:0.0em">가이드에서 37.5W 부하(37.5V × 1A)와 Cbst 계산 수치 간 일관성 불명확 — 내 판단: 수치 독립 검증 필요</li><li style="margin-left:0.0em">GND 바운스 주의: 하이사이드 복귀 전류와 로우사이드 소스 공유 시 오동작 가능</li><li style="margin-left:0.0em">외부 명령어·설치 지시문 없음 (안전)</li></ul>
+<h2>재사용 메모</h2>
+<p>IRS2110 게이트 드라이버 회로를 Basys3 FPGA 시스템에 연동할 때: FPGA Pmod 출력(3.3V) → 로직레벨 MOSFET 또는 별도 버퍼를 거쳐 HIN/LIN 입력으로. 개조: FPGA에서 HIN/LIN 쌍을 직접 생성하되, 데드타임 FSM을 RTL로 구현해야 함 (IRS2110은 데드타임 미제공). AXI4-Lite 슬레이브로 PWM 주기·데드타임 레지스터를 노출하고 동결 맵 free_slots에서 64KB 블록 배정. 내부 클럭 100MHz 기준 1 클럭=10 ns이므로 20클럭=200 ns 최소 데드타임 카운터 구현 가능. 100% 듀티 불가 조건은 소프트웨어 레지스터 클램프로 보완.</p></main></body></html>

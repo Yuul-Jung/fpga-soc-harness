@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-imu-cf-ip",
+  "kind": "digital-block-diagram",
+  "note": "디지털 모듈 연결도다. 외부 부품의 전기 배선(전압, 저항, 커넥터)은 포함하지 않는다.",
+  "bus": "AXI4-Lite",
+  "blocks": [
+    {
+      "id": "basys3_top",
+      "name": "basys3_imu_cf_top",
+      "kind": "top",
+      "module": "basys3_imu_cf_top",
+      "file": "rtl/basys3_imu_cf_top.v"
+    },
+    {
+      "id": "axil_wrap",
+      "name": "axil_imu_cf",
+      "kind": "peripheral",
+      "module": "axil_imu_cf",
+      "file": "rtl/axil_imu_cf.v"
+    },
+    {
+      "id": "imu_cf_ip",
+      "name": "imu_cf_ip",
+      "kind": "ip",
+      "module": "imu_cf_ip",
+      "file": "rtl/imu_cf_ip.v"
+    },
+    {
+      "id": "cordic",
+      "name": "cordic_atan2",
+      "kind": "ip",
+      "module": "cordic_atan2",
+      "file": "rtl/cordic_atan2.v"
+    },
+    {
+      "id": "gpio",
+      "name": "gpio",
+      "kind": "peripheral",
+      "module": "gpio",
+      "file": "rtl/gpio_stub.v"
+    },
+    {
+      "id": "uart_tx",
+      "name": "uart_tx",
+      "kind": "peripheral",
+      "module": "uart_tx",
+      "file": "rtl/uart_tx.v"
+    },
+    {
+      "id": "mpu6050_sensor",
+      "name": "MPU-6050",
+      "kind": "external",
+      "module": "-",
+      "file": ""
+    }
+  ],
+  "links": [
+    {
+      "from": "basys3_top",
+      "to": "axil_wrap",
+      "label": "AXI4-Lite"
+    },
+    {
+      "from": "axil_wrap",
+      "to": "imu_cf_ip",
+      "label": "reg I/F"
+    },
+    {
+      "from": "imu_cf_ip",
+      "to": "cordic",
+      "label": "xi/yi/start"
+    },
+    {
+      "from": "basys3_top",
+      "to": "gpio",
+      "label": "LED[15:0]"
+    },
+    {
+      "from": "basys3_top",
+      "to": "uart_tx",
+      "label": "TX debug"
+    }
+  ]
+}

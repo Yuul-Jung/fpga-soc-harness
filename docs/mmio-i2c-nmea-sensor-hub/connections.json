@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-i2c-nmea-sensor-hub",
+  "kind": "digital-block-diagram",
+  "note": "디지털 모듈 연결도다. 외부 부품의 전기 배선(전압, 저항, 커넥터)은 포함하지 않는다.",
+  "bus": "AXI4-Lite",
+  "blocks": [
+    {
+      "id": "top",
+      "name": "axil_i2c_nmea_hub",
+      "kind": "top",
+      "module": "axil_i2c_nmea_hub",
+      "file": "rtl/axil_i2c_nmea_hub.v"
+    },
+    {
+      "id": "i2c_fsm",
+      "name": "i2c_cycle_fsm",
+      "kind": "rtl",
+      "module": "i2c_cycle_fsm",
+      "file": "rtl/i2c_cycle_fsm.v"
+    },
+    {
+      "id": "uart_rx",
+      "name": "nmea_uart_rx",
+      "kind": "rtl",
+      "module": "nmea_uart_rx",
+      "file": "rtl/nmea_uart_rx.v"
+    },
+    {
+      "id": "ts_fifo",
+      "name": "ts_fifo",
+      "kind": "rtl",
+      "module": "ts_fifo",
+      "file": "rtl/ts_fifo.v"
+    },
+    {
+      "id": "pmod_i2c",
+      "name": "Pmod I2C 버스",
+      "kind": "external",
+      "module": null,
+      "file": null
+    },
+    {
+      "id": "pmod_uart",
+      "name": "Pmod UART RX",
+      "kind": "external",
+      "module": null,
+      "file": null
+    }
+  ],
+  "links": [
+    {
+      "from": "top",
+      "to": "i2c_fsm",
+      "label": "ctrl/data"
+    },
+    {
+      "from": "top",
+      "to": "uart_rx",
+      "label": "ctrl/data"
+    },
+    {
+      "from": "top",
+      "to": "ts_fifo",
+      "label": "pop/status"
+    },
+    {
+      "from": "i2c_fsm",
+      "to": "ts_fifo",
+      "label": "push sample"
+    },
+    {
+      "from": "uart_rx",
+      "to": "ts_fifo",
+      "label": "push line_done"
+    },
+    {
+      "from": "i2c_fsm",
+      "to": "pmod_i2c",
+      "label": "SCL/SDA"
+    },
+    {
+      "from": "uart_rx",
+      "to": "pmod_uart",
+      "label": "RX"
+    }
+  ]
+}

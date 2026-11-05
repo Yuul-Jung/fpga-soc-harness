@@ -1,0 +1,46 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>altium-ldo-vs-switching-regulator</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../../hub.html">FPGA SoC 하네스</a><a href="../../hub.html">메인</a><a href="../../hub.html#capstones">캡스톤</a><a href="../../soc-map/tech-tree.html">기술 트리</a><a href="../../catalog/index.html">카탈로그</a><a href="../../inbox/ideas.html">아이디어</a><a href="../../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/catalog/electronics/altium-ldo-vs-switching-regulator.md">GitHub 원본: catalog/electronics/altium-ldo-vs-switching-regulator.md</a></p><h1>altium-ldo-vs-switching-regulator</h1><div class="panel fm"><table><tr><td>name</td><td><a href="altium-ldo-vs-switching-regulator.html">altium-ldo-vs-switching-regulator</a></td></tr><tr><td>url</td><td>https://resources.altium.com/p/using-ldo-vs-switching-regulator-your-pcb</td></tr><tr><td>source_type</td><td>article</td></tr><tr><td>vendor</td><td>neutral</td></tr><tr><td>board</td><td>[]</td></tr><tr><td>fit_basys3</td><td>needs-port</td></tr><tr><td>cpu</td><td>none</td></tr><tr><td>language</td><td>none</td></tr><tr><td>tools</td><td>[]</td></tr><tr><td>bus</td><td>none</td></tr><tr><td>peripherals</td><td>[]</td></tr><tr><td>stage</td><td>T0</td></tr><tr><td>license</td><td>unknown</td></tr><tr><td>stats</td><td>{stars: 0, commits: 0, last_update: 2026-01-01}</td></tr><tr><td>doc_language</td><td>en</td></tr><tr><td>verification</td><td>L3</td></tr><tr><td>checked_at</td><td>2026-11-04</td></tr><tr><td>sources</td><td>[https://resources.altium.com/p/using-ldo-vs-switching-regulator-your-pcb]</td></tr></table></div><h2>요약</h2>
+<p>Altium Resources의 LDO vs 스위칭 레귤레이터 비교 기술 기고문(Zachariah Peterson, 2021-05 작성, 2026-01 갱신). 열 손실 계산, PSRR 특성, FPGA 복합 전원 설계 전략을 다룬다.</p>
+<h2>구조</h2>
+<ul><li style="margin-left:0.0em"><strong>LDO 열 손실 공식</strong>: P_heat = (Vin - Vout) × Iout. 예: 12V→3.3V, 3A → LDO 손실 26.1W, 방열 필요.</li><li style="margin-left:0.0em"><strong>스위칭 레귤레이터(벅) 손실</strong>: 동일 조건에서 약 1W (효율 ~97% 가정).</li><li style="margin-left:0.0em"><strong>PSRR(Power Supply Rejection Ratio)</strong>: LDO의 주요 장점 중 하나. 일반 LDO는 ~-60dB @ 1kHz, 고주파에서 감소. 스위칭 레귤레이터는 스위칭 주파수 고조파가 출력 리플에 나타남.</li><li style="margin-left:0.0em"><strong>복합 전원 설계 (FPGA 추천)</strong>: DC-DC 1단(12V→중간 전압)으로 대전류 변환 → LDO 2단(중간→3.3V/1.8V 등)으로 노이즈 억제. 중간 전압을 최종 전압보다 약간 높게 설정해 LDO 압차(dropout)를 최소화.</li><li style="margin-left:0.0em"><strong>LDO 선택 기준</strong>: 저압차 필요 시, 저전류 보조 레일, 아날로그/RF/클럭 노이즈 민감 회로 근처.</li><li style="margin-left:0.0em"><strong>스위칭 선택 기준</strong>: 대전류(수백 mA 이상), Vin/Vout 비 큰 경우, 열 여유 없을 때.</li></ul>
+<h2>검증·재현성</h2>
+<ul><li style="margin-left:0.0em">웹 기고문이므로 CI/테스트벤치 없음.</li><li style="margin-left:0.0em">공식과 수치는 열람한 본문에서 직접 확인(L3).</li><li style="margin-left:0.0em">2026-01 갱신으로 최신 정보 반영.</li></ul>
+<h2>한계·위험</h2>
+<ul><li style="margin-left:0.0em">특정 IC나 보드 미지정 — 설계 원칙 수준의 가이드.</li><li style="margin-left:0.0em">계산 예시는 12V→3.3V를 기준으로 하여 Basys3 USB 5V 환경과 다름.</li><li style="margin-left:0.0em">스위칭 주파수 선택, EMI 필터 설계는 다루지 않음.</li></ul>
+<h2>재사용 메모</h2>
+<p>Basys3의 USB 5V 입력(또는 외부 5V 어댑터) 환경에서 모터 드라이버, 센서 허브, 외부 모듈을 추가할 때 LDO와 DC-DC를 혼합하는 의사결정 근거로 활용 가능. SoC 주변장치 주도부 3.3V 레일은 LDO, 모터 전원(5~12V)은 별도 DC-DC로 분리하는 패턴을 뒷받침한다. 개조: Basys3 I/O는 3.3V이므로 열 손실 계산 시 Vin=5V, Vout=3.3V, Iout=1A(보드 전류 여유) 기준으로 LDO 손실 1.7W → 소형 SOT-223 패키지로 충분. 모터 전원이 12V일 경우 반드시 DC-DC 먼저 사용.</p></main></body></html>

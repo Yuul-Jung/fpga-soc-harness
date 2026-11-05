@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-bldc-hall-sixstep-ip",
+  "kind": "digital-block-diagram",
+  "note": "디지털 모듈 연결도다. 외부 부품의 전기 배선(전압, 저항, 커넥터)은 포함하지 않는다.",
+  "bus": "AXI4-Lite",
+  "blocks": [
+    {
+      "id": "cpu",
+      "name": "MicroBlaze V CPU",
+      "kind": "cpu",
+      "module": null,
+      "file": null
+    },
+    {
+      "id": "bldc_ip",
+      "name": "bldc_hall_sixstep_ip",
+      "kind": "ip",
+      "module": "bldc_hall_sixstep_ip",
+      "file": "rtl/bldc_hall_sixstep_ip.v"
+    },
+    {
+      "id": "hall_sensor",
+      "name": "홀 센서 (3상)",
+      "kind": "external",
+      "module": null,
+      "file": null
+    },
+    {
+      "id": "gate_drv",
+      "name": "게이트 드라이버 모듈",
+      "kind": "external",
+      "module": null,
+      "file": null
+    },
+    {
+      "id": "adc",
+      "name": "ADC (외부)",
+      "kind": "external",
+      "module": null,
+      "file": null
+    }
+  ],
+  "links": [
+    {
+      "from": "cpu",
+      "to": "bldc_ip",
+      "label": "AXI4-Lite"
+    },
+    {
+      "from": "hall_sensor",
+      "to": "bldc_ip",
+      "label": "hall_in[2:0]"
+    },
+    {
+      "from": "bldc_ip",
+      "to": "gate_drv",
+      "label": "hin[2:0]/lin[2:0]"
+    },
+    {
+      "from": "bldc_ip",
+      "to": "adc",
+      "label": "sample_trig"
+    },
+    {
+      "from": "bldc_ip",
+      "to": "cpu",
+      "label": "irq→INTC14"
+    }
+  ]
+}

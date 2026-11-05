@@ -1,0 +1,1004 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>조이스틱 서보 로봇팔 IP</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+
+.colhead{font:600 11px sans-serif;fill:var(--muted)}
+.link{fill:none;stroke:var(--line);stroke-width:1.5}.arrow{fill:var(--line)}
+.lbl{font:11px sans-serif;fill:var(--muted)}
+.bname{font:600 13px sans-serif;fill:var(--text)}.bdesc{font:11px sans-serif;fill:var(--muted)}
+.k-cpu rect{fill:var(--c-cpu);stroke:var(--c-cpu-s)}.k-bus rect{fill:var(--c-bus);stroke:var(--c-bus-s)}
+.k-periph rect,.k-memory rect{fill:var(--c-per);stroke:var(--c-per-s)}
+.k-external rect{fill:var(--c-ext);stroke:var(--c-ext-s);stroke-dasharray:4 3}
+.k-clock rect{fill:var(--c-clk);stroke:var(--c-clk-s)}
+</style></head><body><header class="top"><a class="brand" href="../hub.html">FPGA SoC 하네스</a><a href="../hub.html">메인</a><a href="../hub.html#capstones">캡스톤</a><a href="../soc-map/tech-tree.html">기술 트리</a><a href="../catalog/index.html">카탈로그</a><a href="../inbox/ideas.html">아이디어</a><a href="../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main>
+<p class="muted">캡스톤 패키지 · Basys3 · 단계 T2</p>
+<h1>조이스틱 서보 로봇팔 IP</h1><p>PmodJSTK2 SPI 판독 IP(X/Y 10비트, 버튼 2개)와 2채널 서보 PWM IP를 단일 AXI4-Lite 슬레이브로 묶는다. 소프트웨어가 조이스틱 값을 서보 위치로 선형 매핑하고, 기울기 제한 레지스터로 급가속을 막는다. 테스트벤치는 JSTK2 SPI 응답 모델과 서보 펄스 폭 측정기로 자체 점검한다.</p>
+<div class="badges"><span class="badge b-not-run">린트: 미실행</span><span class="badge b-not-run">시뮬레이션: 미실행</span><span class="badge b-not-run">합성: 미실행</span><span class="badge b-not-tested">보드: not-tested</span></div>
+<p class="muted">검증 상태는 실행 기록이 있을 때만 표시한다. 기록이 없으면 '미실행'이다.</p>
+<nav><a href="#goal">목표</a><a href="#arch">계통도</a><a href="#hier">모듈 계층</a><a href="#map">메모리맵</a><a href="#ext">외부 부품·전기</a><a href="#road">기술 트리</a><a href="#src">실행 소스</a><a href="#verify">검증</a><a href="#ref">참고·위험</a></nav>
+<h2 id="goal">1. 목표와 범위</h2><h3>목표</h3><ul><li>JSTK2 SPI 마스터: 1 MHz, 5바이트 전이중 교환, 100 ms마다 자동 샘플링, X/Y/BTN 레지스터 갱신</li><li>서보 PWM 2채널: 50 Hz 주기(2,000,000 클럭 @ 100 MHz), 펄스 폭 1,000,000~2,000,000 클럭(1~2 ms)</li><li>AXI4-Lite 슬레이브: BASE=0x401F_0000, IP 표준 rev1 준수(관리 오프셋 FFF0~FFFC 포함)</li><li>레지스터: JSTK2_X, JSTK2_Y, JSTK2_BTN(읽기), SERVO_A_POS, SERVO_B_POS, CTRL, 기울기 제한 SLEW</li><li>자체 점검 테스트벤치: JSTK2 SPI 응답 모델 + 서보 펄스 폭 !==비교로 PASS/FAIL 출력</li></ul><h3>범위 밖</h3><ul><li>JSTK2 가속도계(오프셋 보정 없음)</li><li>서보 보드 동작 확인(S3)</li><li>소프트웨어 선형 매핑 로직(MicroBlaze V 담당)</li><li>3개 이상 서보 채널</li></ul><p class="muted">이 패키지의 소스는 하네스가 직접 작성한 원본이며 외부 코드를 포함하지 않는다. PmodJSTK2 SPI 프로토콜(5바이트 교환)과 서보 PWM(50 Hz, 1~2 ms 펄스) 원리는 참고 카드(digikey-forum-jstk2-pmod-controller-vhdl, vhdlwhiz-rc-servo-controller, shashankr-basys3-fpga-robotic-arm)를 아이디어 근거로만 사용했으며 코드는 복사하지 않았다. 시뮬레이션·합성 결과는 CI가 기록한다.</p>
+<h2 id="arch">2. 계통도</h2><p>클럭: 100 MHz (s_axi_aclk), 액티브-로우 리셋 (s_axi_aresetn)</p><div class="panel"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 974 290" role="img" aria-label="블록 다이어그램">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arrow"/></marker></defs>
+<text x="24" y="16" class="colhead">클럭·입력·마스터</text>
+<text x="274" y="16" class="colhead">버스</text>
+<text x="524" y="16" class="colhead">주변장치</text>
+<text x="774" y="16" class="colhead">외부</text>
+<path d="M200,63.0 C362.0,63.0 362.0,63.0 524,63.0" class="link" marker-end="url(#ar)"/>
+<text x="362.0" y="56.0" class="lbl" text-anchor="middle">AXI4-Lite RW</text>
+<path d="M524,63.0 C464,8 260,8 200,63.0" class="link" marker-end="url(#ar)"/>
+<text x="362.0" y="16" class="lbl" text-anchor="middle">IRQ (샘플 완료)</text>
+<path d="M612.0,92 L612.0,116" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="104.0" class="lbl" text-anchor="middle">내부 연결</text>
+<path d="M612.0,92 L612.0,198" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="145.0" class="lbl" text-anchor="middle">내부 연결</text>
+<path d="M700,145.0 C737.0,145.0 737.0,63.0 774,63.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="97.0" class="lbl" text-anchor="middle">SPI (CS, SCLK, MOSI, MISO)</text>
+<path d="M700,227.0 C737.0,227.0 737.0,145.0 774,145.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="179.0" class="lbl" text-anchor="middle">PWM 신호 3.3 V</text>
+<path d="M700,227.0 C737.0,227.0 737.0,227.0 774,227.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="220.0" class="lbl" text-anchor="middle">PWM 신호 3.3 V</text>
+<g class="k-cpu"><rect x="24" y="34" width="176" height="58" rx="8"/><text x="112.0" y="58" text-anchor="middle" class="bname">MicroBlaze V (외부)</text><text x="112.0" y="76" text-anchor="middle" class="bdesc">CPU</text></g>
+<g class="k-ip"><rect x="524" y="34" width="176" height="58" rx="8"/><text x="612.0" y="58" text-anchor="middle" class="bname">jstk2_servo_ip</text><text x="612.0" y="76" text-anchor="middle" class="bdesc">JSTK2 IP</text></g>
+<g class="k-submodule"><rect x="524" y="116" width="176" height="58" rx="8"/><text x="612.0" y="140" text-anchor="middle" class="bname">JSTK2 SPI 마스터</text><text x="612.0" y="158" text-anchor="middle" class="bdesc">SPI</text></g>
+<g class="k-submodule"><rect x="524" y="198" width="176" height="58" rx="8"/><text x="612.0" y="222" text-anchor="middle" class="bname">서보 PWM 2채널</text><text x="612.0" y="240" text-anchor="middle" class="bdesc">PWM</text></g>
+<g class="k-external"><rect x="774" y="34" width="176" height="58" rx="8"/><text x="862.0" y="58" text-anchor="middle" class="bname">PmodJSTK2 (외부)</text><text x="862.0" y="76" text-anchor="middle" class="bdesc">JSTK2</text></g>
+<g class="k-external"><rect x="774" y="116" width="176" height="58" rx="8"/><text x="862.0" y="140" text-anchor="middle" class="bname">서보 A (외부, 5 V 분리)</text><text x="862.0" y="158" text-anchor="middle" class="bdesc">SRV-A</text></g>
+<g class="k-external"><rect x="774" y="198" width="176" height="58" rx="8"/><text x="862.0" y="222" text-anchor="middle" class="bname">서보 B (외부, 5 V 분리)</text><text x="862.0" y="240" text-anchor="middle" class="bdesc">SRV-B</text></g>
+</svg></div>
+<p class="muted"><a href="diagram.svg">diagram.svg</a>로 따로 받을 수 있다.</p>
+<h3>버스 규약: AXI4-Lite</h3><div class="panel"><table><tr><th>신호</th><th>방향</th><th>설명</th></tr><tr><td><code>s_axi_aclk</code></td><td>in</td><td>100 MHz 클럭</td></tr><tr><td><code>s_axi_aresetn</code></td><td>in</td><td>액티브-로우 리셋</td></tr><tr><td><code>s_axi_awaddr[31:0]</code></td><td>in</td><td>쓰기 주소</td></tr><tr><td><code>s_axi_awvalid</code></td><td>in</td><td>쓰기 주소 유효</td></tr><tr><td><code>s_axi_awready</code></td><td>out</td><td>쓰기 주소 수락</td></tr><tr><td><code>s_axi_wdata[31:0]</code></td><td>in</td><td>쓰기 데이터</td></tr><tr><td><code>s_axi_wstrb[3:0]</code></td><td>in</td><td>바이트 스트로브</td></tr><tr><td><code>s_axi_wvalid</code></td><td>in</td><td>쓰기 데이터 유효</td></tr><tr><td><code>s_axi_wready</code></td><td>out</td><td>쓰기 데이터 수락</td></tr><tr><td><code>s_axi_bresp[1:0]</code></td><td>out</td><td>쓰기 응답 (00=OKAY)</td></tr><tr><td><code>s_axi_bvalid</code></td><td>out</td><td>쓰기 응답 유효</td></tr><tr><td><code>s_axi_bready</code></td><td>in</td><td>쓰기 응답 수락</td></tr><tr><td><code>s_axi_araddr[31:0]</code></td><td>in</td><td>읽기 주소</td></tr><tr><td><code>s_axi_arvalid</code></td><td>in</td><td>읽기 주소 유효</td></tr><tr><td><code>s_axi_arready</code></td><td>out</td><td>읽기 주소 수락</td></tr><tr><td><code>s_axi_rdata[31:0]</code></td><td>out</td><td>읽기 데이터</td></tr><tr><td><code>s_axi_rresp[1:0]</code></td><td>out</td><td>읽기 응답 (00=OKAY)</td></tr><tr><td><code>s_axi_rvalid</code></td><td>out</td><td>읽기 데이터 유효</td></tr><tr><td><code>s_axi_rready</code></td><td>in</td><td>읽기 데이터 수락</td></tr></table></div><p>IP 표준 rev1 준수. 없는 주소 읽기=0, 읽기전용에 쓰기=무시.</p>
+<h3>통합 선언 (SoC 적합성)</h3><p class="badge b-fail">이 패키지는 MicroBlaze V 동결 주소맵과 호환되지 않는다 (파일럿). 아래 이식 계획을 따라야 SoC에 합칠 수 있다.</p><div class="panel"><table><tr><th style="white-space:nowrap">버스</th><td><code>AXI4-Lite</code></td></tr><tr><th style="white-space:nowrap">주소맵</th><td><code>custom</code> → 동결 맵 <code>mbv-frozen-v2</code> 적합 여부: <b>부분 적합</b></td></tr><tr><th style="white-space:nowrap">이식 계획</th><td>free_slots[1F]=0x401F_0000에 배정 제안. INTC 슬롯 13번 사용(irq=13) 제안. 프로젝트 인덱스 표가 동결되면 mbv-frozen-v2에 편입 가능.</td></tr></table></div>
+<h2 id="hier">3. 모듈 계층</h2><div class="panel"><ul class="tree"><li><code>basys3_jstk2_servo_top</code> <span class="muted">(rtl/basys3_top.v)</span><ul><li><code>jstk2_servo_ip</code> <span class="muted">(rtl/jstk2_servo_ip.v)</span><ul><li><code>jstk2_spi</code> <span class="muted">(rtl/jstk2_spi.v)</span></li><li><code>servo_pwm</code> <span class="muted">(rtl/servo_pwm.v)</span></li></ul></li></ul></li></ul></div>
+<h2 id="map">4. 메모리맵</h2><h3>jstk2_servo_ip <code>0x401F_0000</code> <span class="muted">크기 0x10000</span></h3><div class="panel"><table><tr><th>오프셋</th><th>이름</th><th>접근</th><th>설명</th></tr><tr><td><code>0x0000</code></td><td>JSTK2_X</td><td>RO</td><td>조이스틱 X축 10비트 [9:0]</td></tr><tr><td><code>0x0004</code></td><td>JSTK2_Y</td><td>RO</td><td>조이스틱 Y축 10비트 [9:0]</td></tr><tr><td><code>0x0008</code></td><td>JSTK2_BTN</td><td>RO</td><td>버튼 상태 [1:0] (BTN1=bit0, BTN2=bit1, 1=누름)</td></tr><tr><td><code>0x000C</code></td><td>SERVO_A_POS</td><td>RW</td><td>서보 A 펄스 폭(클럭 수). 범위 1,000,000~2,000,000. 클램프 적용.</td></tr><tr><td><code>0x0010</code></td><td>SERVO_B_POS</td><td>RW</td><td>서보 B 펄스 폭(클럭 수). 범위 1,000,000~2,000,000. 클램프 적용.</td></tr><tr><td><code>0x0014</code></td><td>CTRL</td><td>RW</td><td>[0] JSTK2 샘플링 활성(1=활성), [1] 서보 출력 활성(1=활성)</td></tr><tr><td><code>0x0018</code></td><td>SLEW</td><td>RW</td><td>서보 위치 기울기 제한(클럭/샘플). 0=제한 없음.</td></tr><tr><td><code>0xFFF0</code></td><td>ID</td><td>RO</td><td>IP ID: 0x4A535356 (&#x27;JSSV&#x27;)</td></tr><tr><td><code>0xFFF4</code></td><td>VER</td><td>RO</td><td>버전: [31:24]=1(표준rev), [15:8]=1(주), [7:0]=0(부)</td></tr><tr><td><code>0xFFF8</code></td><td>IRQ_STATUS</td><td>W1C</td><td>[0] 샘플 완료 인터럽트. 소프트웨어가 1 쓰면 소거.</td></tr><tr><td><code>0xFFFC</code></td><td>IRQ_ENABLE</td><td>RW</td><td>[0] 샘플 완료 IRQ 마스크(1=활성)</td></tr></table></div>
+<h2 id="ext">5. 외부 부품과 전기 회로도</h2><p class="muted">2절의 계통도는 <b>디지털 모듈 연결도</b>다. 전압, 풀업, 커넥터 배선 같은 전기 사항은 이 절에서 따로 다룬다. 기계가 읽는 사본: <a href="bom.csv">bom.csv</a> · <a href="connections.json">connections.json</a></p><p class="badge b-skipped">전기 회로도: 미작성</p><p class="muted">전기 회로도 미작성. 외부 부품 항목에 배선 개요 기재.</p><div class="panel"><table><tr><th>id</th><th>부품</th><th>인터페이스</th><th>신호 전압</th><th>구분</th><th>레벨 변환</th><th>비고</th></tr><tr><td><code>jstk2</code></td><td>Digilent PmodJSTK2</td><td>SPI (Mode 0, 1 MHz)</td><td style="white-space:nowrap">3.3 V</td><td style="white-space:nowrap">외부 모듈</td><td>불필요 (3.3V)</td><td>Basys3 Pmod JA (JA1~JA4: CS, MOSI, MISO, SCLK). 커넥터 핀 6=GND, 12=3.3V.</td></tr><tr><td><code>servo_a</code></td><td>RC 서보 A (SG90 계열)</td><td>PWM 50 Hz</td><td style="white-space:nowrap">3.3 V</td><td style="white-space:nowrap">외부 모듈</td><td>optional</td><td>Pmod JB1에 신호(서보 A). 서보 적색=외부5V, 갈색=GND, 주황=신호.</td></tr><tr><td><code>servo_b</code></td><td>RC 서보 B (SG90 계열)</td><td>PWM 50 Hz</td><td style="white-space:nowrap">3.3 V</td><td style="white-space:nowrap">외부 모듈</td><td>optional</td><td>Pmod JB2에 신호(서보 B).</td></tr></table></div><p class="muted">Basys3 FPGA 핀은 3.3V 신호만 직접 받는다. 5V·12V·모터·릴레이는 직결하지 않는다.</p>
+<h2 id="road">6. 기술 트리 (이 캡스톤의 확장 경로)</h2><div class="panel"><ul style="list-style:none;padding:0"><li class="step"><span class="tag s-done">T1</span><span>UART MMIO 스켈레톤 <span class='muted'>참고: <code>mmio-uart-gpio-skeleton</code></span></span></li><li class="step"><span class="tag s-current">T2</span><span>JSTK2 서보 로봇팔 IP <span class='muted'>참고: <code>mmio-jstk2-servo-ip</code></span></span></li><li class="step"><span class="tag s-planned">T3</span><span>PID 위치 제어 + 서보</span></li></ul></div>
+<h2 id="src">7. 실행 소스</h2><p>저장소의 <code>capstones/mmio-jstk2-servo-ip/</code>에 있는 파일 그대로다. 이 문서는 파일에서 읽어 넣은 것이므로 항상 일치한다. <a href="mmio-jstk2-servo-ip.zip">소스 전체 내려받기 (.zip)</a> · <a href="https://github.com/Yuul-Jung/fpga-soc-harness/tree/main/capstones/mmio-jstk2-servo-ip">GitHub에서 보기</a></p><details><summary><code>rtl/jstk2_servo_ip.v</code> <span class="muted">206줄</span></summary><pre>// jstk2_servo_ip.v — AXI4-Lite 슬레이브: JSTK2 SPI + 2채널 서보 PWM
+// 하네스 원본 (외부 코드 포함 없음)
+// IP 표준 rev1 준수: 관리 오프셋 FFF0~FFFC, ID=0x4A535356, VER=0x01010000
+// BASE = 0x401F_0000, 창 크기 0x10000
+`timescale 1ns/1ps
+`default_nettype none
+
+module jstk2_servo_ip #(
+    parameter CLK_FREQ_HZ    = 100_000_000,
+    parameter SPI_CLK_HZ     =   1_000_000,
+    parameter SAMPLE_PERIOD_MS = 100
+) (
+    input  wire        s_axi_aclk,
+    input  wire        s_axi_aresetn,
+    // AXI4-Lite 슬레이브 채널
+    input  wire [31:0] s_axi_awaddr,
+    input  wire        s_axi_awvalid,
+    output reg         s_axi_awready,
+    input  wire [31:0] s_axi_wdata,
+    input  wire [3:0]  s_axi_wstrb,
+    input  wire        s_axi_wvalid,
+    output reg         s_axi_wready,
+    output reg  [1:0]  s_axi_bresp,
+    output reg         s_axi_bvalid,
+    input  wire        s_axi_bready,
+    input  wire [31:0] s_axi_araddr,
+    input  wire        s_axi_arvalid,
+    output reg         s_axi_arready,
+    output reg  [31:0] s_axi_rdata,
+    output reg  [1:0]  s_axi_rresp,
+    output reg         s_axi_rvalid,
+    input  wire        s_axi_rready,
+    // IRQ
+    output wire        irq,
+    // SPI 포트 (JSTK2)
+    output wire        spi_cs_n,
+    output wire        spi_sclk,
+    output wire        spi_mosi,
+    input  wire        spi_miso,
+    // 서보 PWM 출력
+    output wire        pwm_a,
+    output wire        pwm_b
+);
+
+// ─── 레지스터 맵 오프셋 ───────────────────────────────────────────
+localparam ADDR_JSTK_X     = 16&#x27;h0000;
+localparam ADDR_JSTK_Y     = 16&#x27;h0004;
+localparam ADDR_JSTK_BTN   = 16&#x27;h0008;
+localparam ADDR_SERVO_A    = 16&#x27;h000C;
+localparam ADDR_SERVO_B    = 16&#x27;h0010;
+localparam ADDR_CTRL       = 16&#x27;h0014;
+localparam ADDR_SLEW       = 16&#x27;h0018;
+localparam ADDR_ID         = 16&#x27;hFFF0;
+localparam ADDR_VER        = 16&#x27;hFFF4;
+localparam ADDR_IRQ_STATUS = 16&#x27;hFFF8;
+localparam ADDR_IRQ_ENABLE = 16&#x27;hFFFC;
+
+// IP 고정 상수
+localparam IP_ID  = 32&#x27;h4A535356; // &#x27;JSSV&#x27;
+localparam IP_VER = 32&#x27;h01010000; // std_rev=1, major=1, minor=0
+
+// ─── 내부 레지스터 ────────────────────────────────────────────────
+reg [31:0] reg_servo_a;   // 서보 A 위치
+reg [31:0] reg_servo_b;   // 서보 B 위치
+reg [31:0] reg_ctrl;      // [0]=JSTK en, [1]=PWM en
+reg [31:0] reg_slew;      // 기울기 제한
+reg        reg_irq_status; // W1C
+reg        reg_irq_enable;
+
+// JSTK2 SPI 서브모듈 출력
+wire [9:0]  jstk_x;
+wire [9:0]  jstk_y;
+wire [1:0]  jstk_btn;
+wire        sample_done;
+
+// ─── 서브모듈 인스턴스 ────────────────────────────────────────────
+jstk2_spi #(
+    .CLK_FREQ_HZ    (CLK_FREQ_HZ),
+    .SPI_CLK_HZ     (SPI_CLK_HZ),
+    .SAMPLE_PERIOD_MS(SAMPLE_PERIOD_MS)
+) u_jstk2_spi (
+    .clk        (s_axi_aclk),
+    .rst_n      (s_axi_aresetn),
+    .en         (reg_ctrl[0]),
+    .jstk_x     (jstk_x),
+    .jstk_y     (jstk_y),
+    .jstk_btn   (jstk_btn),
+    .sample_done(sample_done),
+    .spi_cs_n   (spi_cs_n),
+    .spi_sclk   (spi_sclk),
+    .spi_mosi   (spi_mosi),
+    .spi_miso   (spi_miso)
+);
+
+servo_pwm #(
+    .CLK_FREQ_HZ (CLK_FREQ_HZ),
+    .SERVO_PERIOD(2_000_000),
+    .PULSE_MIN   (1_000_000),
+    .PULSE_MAX   (2_000_000)
+) u_servo_pwm (
+    .clk   (s_axi_aclk),
+    .rst_n (s_axi_aresetn),
+    .en    (reg_ctrl[1]),
+    .pos_a (reg_servo_a),
+    .pos_b (reg_servo_b),
+    .slew  (reg_slew),
+    .pwm_a (pwm_a),
+    .pwm_b (pwm_b)
+);
+
+assign irq = reg_irq_status &amp; reg_irq_enable;
+
+// ─── AXI4-Lite 쓰기 채널 ─────────────────────────────────────────
+// IRQ status는 여기에서만 구동 (single driver): sample_done에서 set, W1C에서 clear
+reg [15:0] aw_addr_lat;
+
+always @(posedge s_axi_aclk or negedge s_axi_aresetn) begin
+    if (!s_axi_aresetn) begin
+        s_axi_awready  &lt;= 1&#x27;b0;
+        s_axi_wready   &lt;= 1&#x27;b0;
+        s_axi_bvalid   &lt;= 1&#x27;b0;
+        s_axi_bresp    &lt;= 2&#x27;b00;
+        aw_addr_lat    &lt;= 16&#x27;d0;
+        reg_servo_a    &lt;= 32&#x27;d1_500_000; // 중앙 1.5 ms
+        reg_servo_b    &lt;= 32&#x27;d1_500_000;
+        reg_ctrl       &lt;= 32&#x27;d0;
+        reg_slew       &lt;= 32&#x27;d0;
+        reg_irq_enable &lt;= 1&#x27;b0;
+        reg_irq_status &lt;= 1&#x27;b0;
+    end else begin
+        s_axi_awready &lt;= 1&#x27;b0;
+        s_axi_wready  &lt;= 1&#x27;b0;
+
+        // IRQ status: sample_done에서 set (single driver)
+        if (sample_done) reg_irq_status &lt;= 1&#x27;b1;
+
+        // AW 핸드셰이크
+        if (s_axi_awvalid &amp;&amp; !s_axi_awready) begin
+            s_axi_awready &lt;= 1&#x27;b1;
+            aw_addr_lat   &lt;= s_axi_awaddr[15:0];
+        end
+
+        // W 핸드셰이크 + 레지스터 쓰기 + B 응답 세트
+        if (s_axi_wvalid &amp;&amp; !s_axi_wready) begin
+            s_axi_wready &lt;= 1&#x27;b1;
+            s_axi_bvalid &lt;= 1&#x27;b1;
+            s_axi_bresp  &lt;= 2&#x27;b00;
+            // awvalid와 wvalid가 같은 클럭에 도착하면 NBA로 aw_addr_lat이 아직 갱신되지 않으므로
+            // awvalid가 살아있는 동안은 awaddr를 직접 사용한다
+            case (s_axi_awvalid ? s_axi_awaddr[15:0] : aw_addr_lat)
+                ADDR_SERVO_A: reg_servo_a   &lt;= s_axi_wdata;
+                ADDR_SERVO_B: reg_servo_b   &lt;= s_axi_wdata;
+                ADDR_CTRL:    reg_ctrl      &lt;= s_axi_wdata;
+                ADDR_SLEW:    reg_slew      &lt;= s_axi_wdata;
+                ADDR_IRQ_STATUS: begin
+                    // W1C: 1이 쓰인 비트를 소거
+                    if (s_axi_wdata[0]) reg_irq_status &lt;= 1&#x27;b0;
+                end
+                ADDR_IRQ_ENABLE: reg_irq_enable &lt;= s_axi_wdata[0];
+                default: ; // 없는 주소: 무시
+            endcase
+        end
+
+        // B 채널 소거
+        if (s_axi_bready &amp;&amp; s_axi_bvalid)
+            s_axi_bvalid &lt;= 1&#x27;b0;
+    end
+end
+
+// ─── AXI4-Lite 읽기 채널 ─────────────────────────────────────────
+always @(posedge s_axi_aclk or negedge s_axi_aresetn) begin
+    if (!s_axi_aresetn) begin
+        s_axi_arready &lt;= 1&#x27;b0;
+        s_axi_rvalid  &lt;= 1&#x27;b0;
+        s_axi_rdata   &lt;= 32&#x27;d0;
+        s_axi_rresp   &lt;= 2&#x27;b00;
+    end else begin
+        if (s_axi_arvalid &amp;&amp; !s_axi_arready) begin
+            s_axi_arready &lt;= 1&#x27;b1;
+            s_axi_rvalid  &lt;= 1&#x27;b1;
+            s_axi_rresp   &lt;= 2&#x27;b00;
+            case (s_axi_araddr[15:0])
+                ADDR_JSTK_X:     s_axi_rdata &lt;= {22&#x27;d0, jstk_x};
+                ADDR_JSTK_Y:     s_axi_rdata &lt;= {22&#x27;d0, jstk_y};
+                ADDR_JSTK_BTN:   s_axi_rdata &lt;= {30&#x27;d0, jstk_btn};
+                ADDR_SERVO_A:    s_axi_rdata &lt;= reg_servo_a;
+                ADDR_SERVO_B:    s_axi_rdata &lt;= reg_servo_b;
+                ADDR_CTRL:       s_axi_rdata &lt;= reg_ctrl;
+                ADDR_SLEW:       s_axi_rdata &lt;= reg_slew;
+                ADDR_ID:         s_axi_rdata &lt;= IP_ID;
+                ADDR_VER:        s_axi_rdata &lt;= IP_VER;
+                ADDR_IRQ_STATUS: s_axi_rdata &lt;= {31&#x27;d0, reg_irq_status};
+                ADDR_IRQ_ENABLE: s_axi_rdata &lt;= {31&#x27;d0, reg_irq_enable};
+                default:         s_axi_rdata &lt;= 32&#x27;d0;
+            endcase
+        end else begin
+            s_axi_arready &lt;= 1&#x27;b0;
+        end
+
+        if (s_axi_rready &amp;&amp; s_axi_rvalid)
+            s_axi_rvalid &lt;= 1&#x27;b0;
+    end
+end
+
+endmodule
+`default_nettype wire
+</pre></details><details><summary><code>rtl/jstk2_spi.v</code> <span class="muted">143줄</span></summary><pre>// jstk2_spi.v — PmodJSTK2 SPI 마스터 (5바이트 전이중 교환)
+// 하네스 원본 (외부 코드 포함 없음)
+// SPI Mode 0 (CPOL=0, CPHA=0), 클럭 100 MHz → 50 클럭 토글 → 1 MHz SCLK
+// 5바이트 TX: {0x01, 0x00, 0x00, 0x00, 0x00}  RX: {X_L, X_H, Y_L, Y_H, BTN}
+// sample_period: 100 ms 샘플링 주기 (파라미터)
+`timescale 1ns/1ps
+`default_nettype none
+
+module jstk2_spi #(
+    parameter CLK_FREQ_HZ    = 100_000_000,
+    parameter SPI_CLK_HZ     =   1_000_000,
+    parameter SAMPLE_PERIOD_MS = 100       // 샘플링 주기 (ms)
+) (
+    input  wire       clk,
+    input  wire       rst_n,
+    // 활성화
+    input  wire       en,          // 1=샘플링 활성
+    // 결과 레지스터
+    output reg [9:0]  jstk_x,
+    output reg [9:0]  jstk_y,
+    output reg [1:0]  jstk_btn,
+    output reg        sample_done, // 1클럭 펄스, 새 샘플 도착
+    // SPI 포트
+    output reg        spi_cs_n,
+    output reg        spi_sclk,
+    output reg        spi_mosi,
+    input  wire       spi_miso
+);
+
+localparam SCLK_DIV    = CLK_FREQ_HZ / SPI_CLK_HZ / 2; // 50 클럭 per 반주기
+localparam SAMPLE_CNT  = CLK_FREQ_HZ / 1000 * SAMPLE_PERIOD_MS; // 샘플 주기 클럭 수
+localparam N_BYTES     = 5;
+localparam N_BITS      = N_BYTES * 8; // 40
+
+// 상태 머신
+localparam S_IDLE    = 2&#x27;d0;
+localparam S_ASSERT  = 2&#x27;d1; // CS# 하강 후 1 클럭 대기
+localparam S_XFER    = 2&#x27;d2; // 비트 전송
+localparam S_DONE    = 2&#x27;d3; // CS# 해제
+
+reg [1:0]  state;
+reg [26:0] period_cnt;    // 샘플 주기 카운터
+reg [5:0]  div_cnt;       // SCLK 분주 카운터 (0~49)
+reg [5:0]  bit_cnt;       // 전송 비트 카운터 (0~39)
+reg        sclk_phase;    // 0=low, 1=high
+reg [39:0] tx_shift;      // TX 쉬프트 레지스터
+reg [39:0] rx_shift;      // RX 쉬프트 레지스터
+
+// TX 데이터 고정: {0x01, 0x00, 0x00, 0x00, 0x00}
+localparam [39:0] TX_DATA = 40&#x27;h01_00_00_00_00;
+
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        state       &lt;= S_IDLE;
+        period_cnt  &lt;= 27&#x27;d0;
+        div_cnt     &lt;= 6&#x27;d0;
+        bit_cnt     &lt;= 6&#x27;d0;
+        sclk_phase  &lt;= 1&#x27;b0;
+        tx_shift    &lt;= 40&#x27;d0;
+        rx_shift    &lt;= 40&#x27;d0;
+        spi_cs_n    &lt;= 1&#x27;b1;
+        spi_sclk    &lt;= 1&#x27;b0;
+        spi_mosi    &lt;= 1&#x27;b0;
+        jstk_x      &lt;= 10&#x27;d512;
+        jstk_y      &lt;= 10&#x27;d512;
+        jstk_btn    &lt;= 2&#x27;b00;
+        sample_done &lt;= 1&#x27;b0;
+    end else begin
+        sample_done &lt;= 1&#x27;b0; // 기본 소거
+
+        case (state)
+            S_IDLE: begin
+                spi_cs_n   &lt;= 1&#x27;b1;
+                spi_sclk   &lt;= 1&#x27;b0;
+                if (!en) begin
+                    period_cnt &lt;= 27&#x27;d0;
+                end else if (period_cnt &gt;= SAMPLE_CNT - 1) begin
+                    period_cnt &lt;= 27&#x27;d0;
+                    state      &lt;= S_ASSERT;
+                    tx_shift   &lt;= TX_DATA;
+                    rx_shift   &lt;= 40&#x27;d0;
+                    bit_cnt    &lt;= 6&#x27;d0;
+                    div_cnt    &lt;= 6&#x27;d0;
+                    sclk_phase &lt;= 1&#x27;b0;
+                end else begin
+                    period_cnt &lt;= period_cnt + 1&#x27;b1;
+                end
+            end
+
+            S_ASSERT: begin
+                // CS# 활성(LOW), 최소 1 클럭 대기
+                spi_cs_n &lt;= 1&#x27;b0;
+                spi_mosi &lt;= tx_shift[39]; // MSB first
+                state    &lt;= S_XFER;
+                div_cnt  &lt;= 6&#x27;d0;
+            end
+
+            S_XFER: begin
+                if (div_cnt &lt; SCLK_DIV - 1) begin
+                    div_cnt &lt;= div_cnt + 1&#x27;b1;
+                end else begin
+                    div_cnt    &lt;= 6&#x27;d0;
+                    sclk_phase &lt;= ~sclk_phase;
+                    spi_sclk   &lt;= ~sclk_phase; // 현재 반주기 반전
+
+                    if (!sclk_phase) begin
+                        // 하강에지(SCLK 1→0): 다음 MOSI 준비
+                        if (bit_cnt &lt; N_BITS - 1) begin
+                            bit_cnt  &lt;= bit_cnt + 1&#x27;b1;
+                            tx_shift &lt;= {tx_shift[38:0], 1&#x27;b0};
+                            spi_mosi &lt;= tx_shift[38];
+                        end
+                    end else begin
+                        // 상승에지(SCLK 0→1): MISO 샘플
+                        rx_shift &lt;= {rx_shift[38:0], spi_miso};
+                        if (bit_cnt == N_BITS - 1) begin
+                            state &lt;= S_DONE;
+                        end
+                    end
+                end
+            end
+
+            S_DONE: begin
+                spi_cs_n &lt;= 1&#x27;b1;
+                spi_sclk &lt;= 1&#x27;b0;
+                // 수신 데이터 파싱: RX = {X_L, X_H, Y_L, Y_H, BTN}
+                // X = {X_H[1:0], X_L[7:0]} (10비트)
+                // Y = {Y_H[1:0], Y_L[7:0]} (10비트)
+                // BTN = BTN_BYTE[1:0]
+                jstk_x   &lt;= {rx_shift[25:24], rx_shift[39:32]}; // {X_H[1:0], X_L}
+                jstk_y   &lt;= {rx_shift[9:8],   rx_shift[23:16]}; // {Y_H[1:0], Y_L}
+                jstk_btn &lt;= rx_shift[1:0];                       // BTN 바이트 [1:0]
+                sample_done &lt;= 1&#x27;b1;
+                state    &lt;= S_IDLE;
+            end
+
+            default: state &lt;= S_IDLE;
+        endcase
+    end
+end
+
+endmodule
+`default_nettype wire
+</pre></details><details><summary><code>rtl/servo_pwm.v</code> <span class="muted">99줄</span></summary><pre>// servo_pwm.v — 2채널 RC 서보 PWM 생성기
+// 하네스 원본 (외부 코드 포함 없음)
+// 50 Hz 주기: 2,000,000 클럭 @ 100 MHz
+// 펄스 폭: 1,000,000~2,000,000 클럭 (1 ms~2 ms), 클램프 적용
+`timescale 1ns/1ps
+`default_nettype none
+
+module servo_pwm #(
+    parameter CLK_FREQ_HZ  = 100_000_000,
+    parameter SERVO_PERIOD  = 2_000_000, // 20 ms @ 100 MHz
+    parameter PULSE_MIN     = 1_000_000, // 1 ms @ 100 MHz
+    parameter PULSE_MAX     = 2_000_000  // 2 ms @ 100 MHz
+) (
+    input  wire        clk,
+    input  wire        rst_n,
+    input  wire        en,            // 1=PWM 출력 활성
+    input  wire [31:0] pos_a,         // 채널 A 펄스 폭 (클럭 수)
+    input  wire [31:0] pos_b,         // 채널 B 펄스 폭 (클럭 수)
+    input  wire [31:0] slew,          // 기울기 제한 (0=제한 없음)
+    output reg         pwm_a,         // 서보 A 신호
+    output reg         pwm_b          // 서보 B 신호
+);
+
+// 현재 출력 위치 (기울기 제한 적용)
+reg [31:0] cur_a;
+reg [31:0] cur_b;
+
+// 주기 카운터
+reg [20:0] period_cnt;
+
+// 목표 위치 클램프 함수 (combinational)
+function [31:0] clamp;
+    input [31:0] val;
+    begin
+        if (val &lt; PULSE_MIN) clamp = PULSE_MIN;
+        else if (val &gt; PULSE_MAX) clamp = PULSE_MAX;
+        else clamp = val;
+    end
+endfunction
+
+// 기울기 제한 적용 (슬루율 제어)
+// slew != 0일 때 주기마다 최대 slew 클럭만큼 이동
+// 주기 경계에서 목표 갱신
+wire [31:0] target_a = clamp(pos_a);
+wire [31:0] target_b = clamp(pos_b);
+
+reg period_tick; // 주기 경계 1클럭 펄스
+
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        period_cnt &lt;= 21&#x27;d0;
+        period_tick &lt;= 1&#x27;b0;
+        cur_a &lt;= PULSE_MIN + (PULSE_MAX - PULSE_MIN) / 2; // 중앙
+        cur_b &lt;= PULSE_MIN + (PULSE_MAX - PULSE_MIN) / 2;
+        pwm_a &lt;= 1&#x27;b0;
+        pwm_b &lt;= 1&#x27;b0;
+    end else begin
+        period_tick &lt;= 1&#x27;b0;
+
+        if (period_cnt &gt;= SERVO_PERIOD - 1) begin
+            period_cnt  &lt;= 21&#x27;d0;
+            period_tick &lt;= 1&#x27;b1;
+        end else begin
+            period_cnt &lt;= period_cnt + 1&#x27;b1;
+        end
+
+        // 주기 경계에서 목표 위치 갱신 (기울기 제한)
+        if (period_tick) begin
+            // 채널 A 기울기 제한
+            if (slew == 32&#x27;d0) begin
+                cur_a &lt;= target_a;
+            end else if (target_a &gt; cur_a) begin
+                cur_a &lt;= (target_a - cur_a &gt; slew) ? cur_a + slew : target_a;
+            end else begin
+                cur_a &lt;= (cur_a - target_a &gt; slew) ? cur_a - slew : target_a;
+            end
+            // 채널 B 기울기 제한
+            if (slew == 32&#x27;d0) begin
+                cur_b &lt;= target_b;
+            end else if (target_b &gt; cur_b) begin
+                cur_b &lt;= (target_b - cur_b &gt; slew) ? cur_b + slew : target_b;
+            end else begin
+                cur_b &lt;= (cur_b - target_b &gt; slew) ? cur_b - slew : target_b;
+            end
+        end
+
+        // PWM 출력: period_cnt &lt; cur_x 동안 HIGH
+        if (!en) begin
+            pwm_a &lt;= 1&#x27;b0;
+            pwm_b &lt;= 1&#x27;b0;
+        end else begin
+            pwm_a &lt;= (period_cnt &lt; cur_a) ? 1&#x27;b1 : 1&#x27;b0;
+            pwm_b &lt;= (period_cnt &lt; cur_b) ? 1&#x27;b1 : 1&#x27;b0;
+        end
+    end
+end
+
+endmodule
+`default_nettype wire
+</pre></details><details><summary><code>rtl/basys3_top.v</code> <span class="muted">81줄</span></summary><pre>// basys3_top.v — Basys3 보드 래퍼 (mmio-jstk2-servo-ip)
+// 하네스 원본 (외부 코드 포함 없음)
+// Basys3 XC7A35T, 100 MHz 온보드 클럭
+// Pmod JA: JSTK2 SPI (JA1=CS#, JA2=MOSI, JA3=MISO, JA4=SCLK)
+// Pmod JB: 서보 (JB1=SERVO_A, JB2=SERVO_B)
+`timescale 1ns/1ps
+`default_nettype none
+
+module basys3_jstk2_servo_top (
+    input  wire        clk100mhz,  // 100 MHz 온보드 클럭
+    input  wire        btnC,       // 중앙 버튼: 리셋
+    // Pmod JA — JSTK2 SPI
+    output wire        ja1,        // SPI CS#
+    output wire        ja2,        // SPI MOSI
+    input  wire        ja3,        // SPI MISO
+    output wire        ja4,        // SPI SCLK
+    // Pmod JB — 서보 출력
+    output wire        jb1,        // 서보 A PWM
+    output wire        jb2,        // 서보 B PWM
+    // LED 디버그
+    output wire [2:0]  led         // led[0]=IRQ, led[1]=BTN1, led[2]=BTN2
+);
+
+wire rst_n = ~btnC; // 액티브-로우 리셋
+
+wire irq;
+wire [1:0] jstk_btn_dbg; // 디버그용
+
+// AXI4-Lite 버스 (외부 MicroBlaze V에서 들어올 버스, 여기서는 테스트용 연결 없음)
+// 실제 SoC 통합 시 MicroBlaze V의 M_AXI_DP에 연결한다
+// 이 래퍼는 합성용 최상위이며 AXI 마스터 연결은 블록 디자인에서 수행
+wire [31:0] axi_awaddr  = 32&#x27;d0;
+wire        axi_awvalid = 1&#x27;b0;
+wire [31:0] axi_wdata   = 32&#x27;d0;
+wire [3:0]  axi_wstrb   = 4&#x27;d0;
+wire        axi_wvalid  = 1&#x27;b0;
+wire        axi_bready  = 1&#x27;b1;
+wire [31:0] axi_araddr  = 32&#x27;d0;
+wire        axi_arvalid = 1&#x27;b0;
+wire        axi_rready  = 1&#x27;b1;
+
+jstk2_servo_ip #(
+    .CLK_FREQ_HZ      (100_000_000),
+    .SPI_CLK_HZ       (  1_000_000),
+    .SAMPLE_PERIOD_MS (100)
+) u_ip (
+    .s_axi_aclk    (clk100mhz),
+    .s_axi_aresetn (rst_n),
+    .s_axi_awaddr  (axi_awaddr),
+    .s_axi_awvalid (axi_awvalid),
+    .s_axi_awready (),
+    .s_axi_wdata   (axi_wdata),
+    .s_axi_wstrb   (axi_wstrb),
+    .s_axi_wvalid  (axi_wvalid),
+    .s_axi_wready  (),
+    .s_axi_bresp   (),
+    .s_axi_bvalid  (),
+    .s_axi_bready  (axi_bready),
+    .s_axi_araddr  (axi_araddr),
+    .s_axi_arvalid (axi_arvalid),
+    .s_axi_arready (),
+    .s_axi_rdata   (),
+    .s_axi_rresp   (),
+    .s_axi_rvalid  (),
+    .s_axi_rready  (axi_rready),
+    .irq           (irq),
+    .spi_cs_n      (ja1),
+    .spi_sclk      (ja4),
+    .spi_mosi      (ja2),
+    .spi_miso      (ja3),
+    .pwm_a         (jb1),
+    .pwm_b         (jb2)
+);
+
+// LED 디버그 출력
+assign led[0] = irq;
+assign led[1] = 1&#x27;b0; // 버튼 디버그는 IP 내부에서만 접근 가능; 단순화
+assign led[2] = 1&#x27;b0;
+
+endmodule
+`default_nettype wire
+</pre></details><details><summary><code>tb/tb_jstk2_servo.v</code> <span class="muted">294줄</span></summary><pre>// tb_jstk2_servo.v — 자체 점검 테스트벤치 (PASS/FAIL 출력)
+// jstk2_servo_ip 검증:
+//   1. JSTK2 SPI 응답 모델: 5바이트 반환 (X=0x200, Y=0x1FF, BTN=0x01)
+//   2. 샘플 완료 IRQ 확인
+//   3. 서보 A PWM 펄스 폭 측정 (기대값: 1,500,000 클럭)
+//   4. 레지스터 읽기 검증 (JSTK2_X, JSTK2_Y, JSTK2_BTN, ID, VER)
+// !==을 사용해 X/Z도 실패로 처리
+`timescale 1ns/1ps
+
+module tb_jstk2_servo;
+
+// ─── DUT 포트 ─────────────────────────────────────────────────────
+reg         clk;
+reg         rst_n;
+reg  [31:0] s_awaddr;
+reg         s_awvalid;
+wire        s_awready;
+reg  [31:0] s_wdata;
+reg  [3:0]  s_wstrb;
+reg         s_wvalid;
+wire        s_wready;
+wire [1:0]  s_bresp;
+wire        s_bvalid;
+reg         s_bready;
+reg  [31:0] s_araddr;
+reg         s_arvalid;
+wire        s_arready;
+wire [31:0] s_rdata;
+wire [1:0]  s_rresp;
+wire        s_rvalid;
+reg         s_rready;
+wire        irq;
+wire        spi_cs_n;
+wire        spi_sclk;
+wire        spi_mosi;
+reg         spi_miso;
+wire        pwm_a;
+wire        pwm_b;
+
+// ─── DUT 인스턴스 (가속: SAMPLE_PERIOD_MS=1로 단축) ──────────────
+jstk2_servo_ip #(
+    .CLK_FREQ_HZ      (100_000_000),
+    .SPI_CLK_HZ       (  1_000_000),
+    .SAMPLE_PERIOD_MS (1)           // 테스트 가속: 1 ms 샘플
+) dut (
+    .s_axi_aclk    (clk),
+    .s_axi_aresetn (rst_n),
+    .s_axi_awaddr  (s_awaddr),
+    .s_axi_awvalid (s_awvalid),
+    .s_axi_awready (s_awready),
+    .s_axi_wdata   (s_wdata),
+    .s_axi_wstrb   (s_wstrb),
+    .s_axi_wvalid  (s_wvalid),
+    .s_axi_wready  (s_wready),
+    .s_axi_bresp   (s_bresp),
+    .s_axi_bvalid  (s_bvalid),
+    .s_axi_bready  (s_bready),
+    .s_axi_araddr  (s_araddr),
+    .s_axi_arvalid (s_arvalid),
+    .s_axi_arready (s_arready),
+    .s_axi_rdata   (s_rdata),
+    .s_axi_rresp   (s_rresp),
+    .s_axi_rvalid  (s_rvalid),
+    .s_axi_rready  (s_rready),
+    .irq           (irq),
+    .spi_cs_n      (spi_cs_n),
+    .spi_sclk      (spi_sclk),
+    .spi_mosi      (spi_mosi),
+    .spi_miso      (spi_miso),
+    .pwm_a         (pwm_a),
+    .pwm_b         (pwm_b)
+);
+
+// ─── 클럭 ─────────────────────────────────────────────────────────
+initial clk = 0;
+always #5 clk = ~clk; // 100 MHz
+
+// ─── JSTK2 SPI 슬레이브 모델 ─────────────────────────────────────
+// MISO에 고정 패킷 반환: X_L=0x00, X_H=0x08(=512&gt;&gt;2?→10bit 표현),
+// 실제 PmodJSTK2 형식: byte0=JSTK_X[7:0], byte1={6&#x27;b0, JSTK_X[9:8]}
+//                       byte2=JSTK_Y[7:0], byte3={6&#x27;b0, JSTK_Y[9:8]}
+//                       byte4={6&#x27;b0, BTN2, BTN1}
+// 테스트 값: X=512(0x200), Y=511(0x1FF), BTN=0x01(BTN1 눌림)
+// 5바이트 = 40비트: 0x00_02_FF_01_01
+// byte0(X_L)=0x00, byte1(X_H)=0x02, byte2(Y_L)=0xFF, byte3(Y_H)=0x01, byte4(BTN)=0x01
+localparam [39:0] SPI_MISO_DATA = 40&#x27;h00_02_FF_01_01;
+// 예상 파싱: X = {X_H[1:0], X_L} = {2&#x27;b10, 8&#x27;h00} = 10&#x27;b10_0000_0000 = 512
+//            Y = {Y_H[1:0], Y_L} = {2&#x27;b01, 8&#x27;hFF} = 10&#x27;b01_1111_1111 = 511
+//            BTN = 0x01[1:0] = 2&#x27;b01 (BTN1=1, BTN2=0)
+
+reg [5:0]  miso_bit_cnt;
+reg [39:0] miso_shift;
+reg        spi_cs_n_prev;
+reg        spi_sclk_prev;   // 하강에지 검출용
+
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        spi_miso      &lt;= 1&#x27;b0;
+        miso_bit_cnt  &lt;= 6&#x27;d0;
+        miso_shift    &lt;= SPI_MISO_DATA;
+        spi_cs_n_prev &lt;= 1&#x27;b1;
+        spi_sclk_prev &lt;= 1&#x27;b0;
+    end else begin
+        spi_cs_n_prev &lt;= spi_cs_n;
+        spi_sclk_prev &lt;= spi_sclk;
+        // CS# 하강: 새 전송 시작, 첫 번째 비트 즉시 출력 (Mode 0: CPHA=0)
+        if (spi_cs_n_prev &amp;&amp; !spi_cs_n) begin
+            miso_shift   &lt;= SPI_MISO_DATA;
+            miso_bit_cnt &lt;= 6&#x27;d0;
+            spi_miso     &lt;= SPI_MISO_DATA[39]; // MSB 먼저
+        end
+        // SCLK 하강에지: 다음 MISO 비트 출력 (DUT는 상승에지에서 샘플)
+        if (!spi_cs_n &amp;&amp; spi_sclk_prev &amp;&amp; !spi_sclk) begin
+            spi_miso     &lt;= miso_shift[38];
+            miso_shift   &lt;= {miso_shift[38:0], 1&#x27;b0};
+            miso_bit_cnt &lt;= miso_bit_cnt + 1&#x27;b1;
+        end
+    end
+end
+
+// ─── AXI 태스크 ───────────────────────────────────────────────────
+integer fail_count;
+
+task axi_write;
+    input [31:0] addr;
+    input [31:0] data;
+    begin
+        @(posedge clk); #1;
+        s_awaddr  &lt;= addr;
+        s_awvalid &lt;= 1&#x27;b1;
+        s_wdata   &lt;= data;
+        s_wstrb   &lt;= 4&#x27;hF;
+        s_wvalid  &lt;= 1&#x27;b1;
+        @(posedge clk); #1;
+        while (!(s_awready &amp;&amp; s_wready)) @(posedge clk); #1;
+        // while exits at posedge+1ns 시점: wready=1 &amp;&amp; awready=1 &amp;&amp; bvalid=1 (동일 클럭에 세트됨)
+        s_awvalid &lt;= 1&#x27;b0;
+        s_wvalid  &lt;= 1&#x27;b0;
+        s_bready  &lt;= 1&#x27;b1;
+        @(posedge clk); #1;  // DUT가 bready&amp;&amp;bvalid를 보고 bvalid=0으로 소거
+        s_bready  &lt;= 1&#x27;b0;
+        // while (!s_bvalid) 는 제거: bvalid는 bready 첫 클럭에서 소거되어 바로 0이 됨
+    end
+endtask
+
+task axi_read;
+    input  [31:0] addr;
+    output [31:0] data;
+    begin
+        @(posedge clk); #1;
+        s_araddr  &lt;= addr;
+        s_arvalid &lt;= 1&#x27;b1;
+        s_rready  &lt;= 1&#x27;b1;
+        @(posedge clk); #1;
+        while (!s_rvalid) @(posedge clk); #1;
+        data      = s_rdata;   // blocking: 같은 timestep에 호출자가 읽어야 하므로
+        s_arvalid &lt;= 1&#x27;b0;
+        s_rready  &lt;= 1&#x27;b0;
+    end
+endtask
+
+task check_eq;
+    input [31:0] got;
+    input [31:0] exp;
+    input [255:0] msg;
+    begin
+        if (got !== exp) begin
+            $display(&quot;FAIL: %s got=0x%08X exp=0x%08X&quot;, msg, got, exp);
+            fail_count = fail_count + 1;
+        end
+    end
+endtask
+
+// ─── 메인 테스트 ──────────────────────────────────────────────────
+reg [31:0] rd_data;
+integer    timeout;
+integer    irq_got;
+
+// 서보 A PWM 펄스 폭 측정 변수
+real      pwm_rise_time;
+real      pwm_fall_time;
+real      pulse_width_clk;
+integer   pulse_meas_done;
+
+// PWM 측정 프로세스
+real clk_period = 10.0; // ns
+real pwm_a_prev;
+
+initial begin
+    // 초기화
+    fail_count   = 0;
+    irq_got      = 0;
+    pulse_meas_done = 0;
+    s_awaddr     = 0; s_awvalid = 0;
+    s_wdata      = 0; s_wstrb   = 0; s_wvalid = 0;
+    s_bready     = 0;
+    s_araddr     = 0; s_arvalid = 0; s_rready = 0;
+    spi_miso     = 0;
+    rst_n        = 0;
+    repeat(5) @(posedge clk);
+    rst_n = 1;
+    repeat(5) @(posedge clk);
+
+    // ── 테스트 1: ID/VER 레지스터 확인 ──────────────────────────
+    axi_read(32&#x27;h401F_FFF0, rd_data);
+    check_eq(rd_data, 32&#x27;h4A535356, &quot;ID reg&quot;);
+    axi_read(32&#x27;h401F_FFF4, rd_data);
+    check_eq(rd_data, 32&#x27;h01010000, &quot;VER reg&quot;);
+    $display(&quot;T1 ID/VER OK&quot;);
+
+    // ── 테스트 2: CTRL 쓰기 → JSTK2+PWM 활성 ───────────────────
+    axi_write(32&#x27;h401F_0014, 32&#x27;h3); // CTRL[0]=1, CTRL[1]=1
+    axi_write(32&#x27;h401F_000C, 32&#x27;d1_500_000); // SERVO_A = 1.5 ms 중앙
+    axi_write(32&#x27;h401F_0010, 32&#x27;d1_500_000); // SERVO_B = 1.5 ms 중앙
+    axi_write(32&#x27;h401F_FFFC, 32&#x27;h1);         // IRQ_ENABLE[0]=1
+    $display(&quot;T2 CTRL/SERVO write done&quot;);
+
+    // ── 테스트 3: IRQ 발생 대기 (JSTK2 샘플 완료) ───────────────
+    // SAMPLE_PERIOD_MS=1 → 100,000클럭 주기 + SPI 전송시간
+    // 최대 대기: 500,000 클럭 (5 ms)
+    timeout = 500000;
+    irq_got = 0;
+    while (timeout &gt; 0 &amp;&amp; !irq) begin
+        @(posedge clk);
+        timeout = timeout - 1;
+    end
+    if (!irq) begin
+        $display(&quot;FAIL: IRQ timeout after JSTK2 sample&quot;);
+        fail_count = fail_count + 1;
+    end else begin
+        $display(&quot;T3 IRQ received OK (timeout_left=%0d)&quot;, timeout);
+        irq_got = 1;
+    end
+
+    // ── 테스트 4: IRQ 소거 (W1C) ─────────────────────────────────
+    axi_write(32&#x27;h401F_FFF8, 32&#x27;h1); // IRQ_STATUS W1C
+    @(posedge clk); @(posedge clk);
+    axi_read(32&#x27;h401F_FFF8, rd_data);
+    check_eq(rd_data[0], 1&#x27;b0, &quot;IRQ_STATUS cleared&quot;);
+    $display(&quot;T4 IRQ W1C OK&quot;);
+
+    // ── 테스트 5: JSTK2 레지스터 값 확인 ────────────────────────
+    // SPI 모델: X=512=0x200, Y=511=0x1FF, BTN=0x01
+    axi_read(32&#x27;h401F_0000, rd_data);
+    check_eq(rd_data[9:0], 10&#x27;d512, &quot;JSTK2_X=512&quot;);
+    axi_read(32&#x27;h401F_0004, rd_data);
+    check_eq(rd_data[9:0], 10&#x27;d511, &quot;JSTK2_Y=511&quot;);
+    axi_read(32&#x27;h401F_0008, rd_data);
+    check_eq(rd_data[1:0], 2&#x27;b01, &quot;JSTK2_BTN=0x01&quot;);
+    $display(&quot;T5 JSTK2 regs OK&quot;);
+
+    // ── 테스트 6: 서보 A PWM 펄스 폭 측정 ───────────────────────
+    // 현재 SERVO_A=1,500,000. 이를 1,200,000(1.2ms)로 변경해 펄스 폭 측정
+    axi_write(32&#x27;h401F_000C, 32&#x27;d1_200_000); // 1.2 ms
+    // 서보 PWM은 20ms 주기. 한 주기 내 펄스 측정
+    // 최대 대기: 6,000,000 클럭 (약 60ms, 3주기 여유)
+    // 하강(현재 HIGH일 수 있음)→상승→하강 순서로 측정
+    timeout = 6_000_000;
+    while (pwm_a &amp;&amp; timeout &gt; 0) begin @(posedge clk); timeout = timeout - 1; end // 하강 대기
+    while (!pwm_a &amp;&amp; timeout &gt; 0) begin @(posedge clk); timeout = timeout - 1; end // 상승 대기
+    if (timeout &lt;= 0) begin
+        $display(&quot;FAIL: PWM_A no rising edge&quot;);
+        fail_count = fail_count + 1;
+    end else begin
+        pwm_rise_time = $realtime;
+        while (pwm_a &amp;&amp; timeout &gt; 0) begin @(posedge clk); timeout = timeout - 1; end
+        pwm_fall_time = $realtime;
+        pulse_width_clk = (pwm_fall_time - pwm_rise_time) / 10.0; // ns → 클럭
+        $display(&quot;T6 PWM_A pulse_width=%.0f clk (exp=1200000, tol±5)&quot;, pulse_width_clk);
+        if (pulse_width_clk &lt; 1_199_995 || pulse_width_clk &gt; 1_200_005) begin
+            $display(&quot;FAIL: PWM_A pulse width out of tolerance&quot;);
+            fail_count = fail_count + 1;
+        end else begin
+            $display(&quot;T6 PWM_A pulse width OK&quot;);
+        end
+    end
+
+    // ── 최종 판정 ────────────────────────────────────────────────
+    if (fail_count === 0)
+        $display(&quot;PASS: all tests passed&quot;);
+    else
+        $display(&quot;FAIL: %0d test(s) failed&quot;, fail_count);
+
+    $finish;
+end
+
+// 타임아웃 가드
+initial begin
+    #60_000_000; // 60 ms (시뮬레이션 단위 ns) = 6,000,000 클럭
+    $display(&quot;FAIL: global simulation timeout&quot;);
+    $finish;
+end
+
+endmodule
+</pre></details><details><summary><code>constr/basys3_jstk2_servo.xdc</code> <span class="muted">42줄</span></summary><pre>## basys3_jstk2_servo.xdc — Basys3 XC7A35T 핀 제약
+## Pmod JA: JSTK2 SPI (JA1=CS#, JA2=MOSI, JA3=MISO, JA4=SCLK)
+## Pmod JB: 서보 (JB1=SERVO_A, JB2=SERVO_B)
+
+## 클럭 100 MHz
+set_property PACKAGE_PIN W5  [get_ports clk100mhz]
+set_property IOSTANDARD LVCMOS33 [get_ports clk100mhz]
+create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports clk100mhz]
+
+## 리셋 버튼 (중앙)
+set_property PACKAGE_PIN U18 [get_ports btnC]
+set_property IOSTANDARD LVCMOS33 [get_ports btnC]
+
+## Pmod JA — JSTK2 SPI
+## JA1 = U1 (CS#)
+set_property PACKAGE_PIN J1  [get_ports ja1]
+set_property IOSTANDARD LVCMOS33 [get_ports ja1]
+## JA2 = L2 (MOSI)
+set_property PACKAGE_PIN L2  [get_ports ja2]
+set_property IOSTANDARD LVCMOS33 [get_ports ja2]
+## JA3 = J2 (MISO)
+set_property PACKAGE_PIN J2  [get_ports ja3]
+set_property IOSTANDARD LVCMOS33 [get_ports ja3]
+## JA4 = G2 (SCLK)
+set_property PACKAGE_PIN G2  [get_ports ja4]
+set_property IOSTANDARD LVCMOS33 [get_ports ja4]
+
+## Pmod JB — 서보 출력
+## JB1 = G14 (서보 A)
+set_property PACKAGE_PIN G14 [get_ports jb1]
+set_property IOSTANDARD LVCMOS33 [get_ports jb1]
+## JB2 = F14 (서보 B)
+set_property PACKAGE_PIN F14 [get_ports jb2]
+set_property IOSTANDARD LVCMOS33 [get_ports jb2]
+
+## LED (디버그)
+set_property PACKAGE_PIN U16 [get_ports {led[0]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {led[0]}]
+set_property PACKAGE_PIN E19 [get_ports {led[1]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {led[1]}]
+set_property PACKAGE_PIN U19 [get_ports {led[2]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {led[2]}]
+</pre></details><details><summary><code>Makefile</code> <span class="muted">44줄</span></summary><pre>## Makefile — mmio-jstk2-servo-ip
+## 타깃: lint, sim, synth
+
+IVERILOG  ?= iverilog
+VVP       ?= vvp
+VERILATOR ?= verilator
+YOSYS     ?= yosys
+
+RTL  = rtl/jstk2_spi.v rtl/servo_pwm.v rtl/jstk2_servo_ip.v rtl/basys3_top.v
+TB   = tb/tb_jstk2_servo.v
+SIM_TOP = tb_jstk2_servo
+
+.PHONY: all lint sim synth clean
+
+all: lint sim
+
+## ── 린트 (verilator) ─────────────────────────────────────────────
+lint:
+	$(VERILATOR) --lint-only -Wall --top-module basys3_jstk2_servo_top \
+	    $(RTL) 2&gt;&amp;1 | tee build/lint.log
+	@echo &quot;lint done&quot;
+
+## ── 시뮬레이션 (iverilog + vvp) ─────────────────────────────────
+sim: build/sim.vvp
+	$(VVP) build/sim.vvp | tee build/sim.log
+	@grep -q &quot;^PASS&quot; build/sim.log &amp;&amp; echo &quot;sim: PASS&quot; || (echo &quot;sim: FAIL&quot;; exit 1)
+
+build/sim.vvp: $(RTL) $(TB)
+	@mkdir -p build
+	$(IVERILOG) -g2001 -Wall -o $@ $(RTL) $(TB) -s $(SIM_TOP)
+
+## ── 합성 (yosys) ─────────────────────────────────────────────────
+synth: build/synth.json
+
+build/synth.json: $(RTL)
+	@mkdir -p build
+	$(YOSYS) -p &quot;read_verilog -sv $(RTL); \
+	    synth -top basys3_jstk2_servo_top; \
+	    stat; \
+	    write_json $@&quot; 2&gt;&amp;1 | tee build/synth.log
+	@echo &quot;synth done&quot;
+
+clean:
+	rm -rf build/
+</pre></details><h3>시뮬레이션 (iverilog + vvp)</h3><ol><li>make sim</li><li>빌드 디렉터리 build/sim.log에서 &#x27;PASS&#x27; 확인</li></ol><h3>린트 (verilator)</h3><ol><li>make lint</li><li>build/lint.log에서 경고 없음 확인</li></ol><h3>합성 추정 (yosys)</h3><ol><li>make synth</li><li>build/synth.json, build/synth.log에서 자원 확인</li></ol><h3>Vivado 비트스트림 (Basys3, S3 사람이 직접 수행)</h3><ol><li>Vivado 2024.2에서 새 프로젝트 생성 (Basys3, XC7A35TCPG236-1)</li><li>rtl/*.v와 constr/basys3_jstk2_servo.xdc를 Add Sources로 추가</li><li>Run Synthesis → Run Implementation → Generate Bitstream</li><li>Program Device로 Basys3에 올리고 Pmod JA·JB 동작 확인 (S3)</li></ol>
+<h2 id="verify">8. 검증</h2><div class="panel"><table><tr><th>단계</th><th>결과</th><th>내용</th></tr>
+<tr><td>린트(verilator)</td><td>미실행</td><td></td></tr><tr><td>시뮬레이션(iverilog)</td><td>미실행</td><td></td></tr><tr><td>합성 추정(yosys)</td><td>미실행</td><td></td></tr><tr><td>보드 동작</td><td>not-tested</td><td></td></tr>
+</table></div><p>S3(보드 동작)는 에이전트가 올리지 않는다. CI에서 S1(시뮬 PASS), S2(합성 성공) 기록 예정.</p>
+<h2 id="ref">9. 참고 카드와 위험</h2><h3>참고 카드</h3><ul><li><a href="../catalog/vendor-neutral/digikey-forum-jstk2-pmod-controller-vhdl.html"><code>digikey-forum-jstk2-pmod-controller-vhdl</code></a> — JSTK2 SPI 5바이트 프로토콜 근거</li><li><a href="../catalog/vendor-neutral/vhdlwhiz-rc-servo-controller.html"><code>vhdlwhiz-rc-servo-controller</code></a> — 50 Hz 서보 PWM 1~2 ms 펄스 폭 근거</li><li><a href="../catalog/amd/shashankr-basys3-fpga-robotic-arm.html"><code>shashankr-basys3-fpga-robotic-arm</code></a> — Basys3 서보 2채널 연결 가능성 근거</li><li><code>mmio-uart-gpio-skeleton</code> — T1 선행 패키지 (AXI4-Lite 슬레이브 패턴) <span class="muted">(카드 미작성)</span></li></ul><h3>위험·한계</h3><ul><li>서보 신호 3.3 V 직결: SG90은 보통 허용하나 서보별 확인 필요. 불확실 시 MOSFET 레벨 변환 권장(vhdlwhiz 참고).</li><li>5 V 서보 전원 분리: GND 공통화 필수, 미분리 시 Basys3 손상 위험.</li><li>JSTK2_X/Y 범위: PmodJSTK2 출력이 완전히 0~1023이 아닐 수 있음(데드존 존재). unverified.</li><li>기울기 제한(SLEW): 샘플 주기(100 ms)와 최대 이동 간격 튜닝은 소프트웨어 담당.</li></ul>
+</main></body></html>

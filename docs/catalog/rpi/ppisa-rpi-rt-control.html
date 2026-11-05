@@ -1,0 +1,46 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ppisa-rpi-rt-control</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../../hub.html">FPGA SoC 하네스</a><a href="../../hub.html">메인</a><a href="../../hub.html#capstones">캡스톤</a><a href="../../soc-map/tech-tree.html">기술 트리</a><a href="../../catalog/index.html">카탈로그</a><a href="../../inbox/ideas.html">아이디어</a><a href="../../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/catalog/rpi/ppisa-rpi-rt-control.md">GitHub 원본: catalog/rpi/ppisa-rpi-rt-control.md</a></p><h1>ppisa-rpi-rt-control</h1><div class="panel fm"><table><tr><td>name</td><td><a href="ppisa-rpi-rt-control.html">ppisa-rpi-rt-control</a></td></tr><tr><td>url</td><td>https://github.com/ppisa/rpi-rt-control</td></tr><tr><td>source_type</td><td>repo</td></tr><tr><td>vendor</td><td>neutral</td></tr><tr><td>board</td><td>[RaspberryPi]</td></tr><tr><td>fit_basys3</td><td>needs-port</td></tr><tr><td>cpu</td><td>none(Linux RT + RTEMS)</td></tr><tr><td>language</td><td>C</td></tr><tr><td>tools</td><td>[PREEMPT_RT, RTEMS, Simulink, GCC]</td></tr><tr><td>bus</td><td>SPI</td></tr><tr><td>peripherals</td><td>[actuator-servo, sensor, comm-spi, comm-can]</td></tr><tr><td>stage</td><td>T2</td></tr><tr><td>license</td><td>unknown</td></tr><tr><td>stats</td><td>{stars: 19, commits: 55, last_update: 2024-01-01}</td></tr><tr><td>doc_language</td><td>en</td></tr><tr><td>verification</td><td>L2</td></tr><tr><td>checked_at</td><td>2026-11-04</td></tr><tr><td>sources</td><td>[https://github.com/ppisa/rpi-rt-control]</td></tr><tr><td>unverified</td><td>README 본문 열람 불가 (PROVENANCE_REQUIRED). 커널 버전·PREEMPT_RT 버전·라이선스·GPIO 핀 번호·cyclictest 결과 미확인.</td></tr></table></div><h2>요약 (검색 요약 기준)</h2>
+<p>체코 공과대학교(CVUT) Pavel Pisa 연구팀의 RPi 실시간 제어 실험 저장소. GNU/Linux(PREEMPT_RT)에서 제어 응용을 운영하는 교육 목적 예제 묶음이다. DC 서보, PMSM/BLDC, CAN/CANopen 2관절 팔까지 세 가지 모터 제어 사례를 포함한다.</p>
+<h2>구조</h2>
+<ul><li style="margin-left:0.0em"><strong><code>kernel/modules/rpi_gpio_irc_module.c</code></strong>: 직교 엔코더(IRC) 소프트웨어 디코더 커널 드라이버. GPIO 핀에 연결된 센서 출력을 읽어 카운터 값을 반환.</li><li style="margin-left:0.0em"><strong><code>appl/rpi_simple_dc_servo</code></strong>: 사용자 공간 DC 모터 제어 애플리케이션. IRC 드라이버 사용, PWM + GPIO 방향 직접 접근.</li><li style="margin-left:0.0em"><strong><code>simulink/rpi_dc_motor_control.slx</code></strong>: DC 서보를 Simulink로 모델링. PWM 출력·IRC 읽기를 C S-함수로 구현. Lintarget 프로젝트 연동.</li><li style="margin-left:0.0em"><strong><code>simulink/rpi_pmsm_motor_control.slx</code></strong>: 3상 BLDC/PMSM 제어 Simulink 모델. Microsemi AGL125V5-VQ100 FPGA 칩을 SPI로 연결해 IRC 카운터·3채널 PWM·홀센서 전류 ADC를 처리.</li><li style="margin-left:0.0em"><strong><code>rtems/rpi_simple_dc_servo</code></strong>: DC 서보를 RTEMS RTOS로 포팅. IRC 처리를 RTEMS 드라이버로 구현.</li><li style="margin-left:0.0em"><strong>관련 작업</strong>: CAN/CANopen 스텝모터 2관절 팔 (SocketCAN, Simulink 모델).</li><li style="margin-left:0.0em"><strong>언어</strong>: C (커널 모듈, 사용자 공간), Simulink (.slx)</li><li style="margin-left:0.0em"><strong>저장소 통계</strong>: 19 stars, 7 watchers, 1 fork, 55 commits, 1 issue (내 열람: GitHub main page)</li></ul>
+<h2>검증·재현성</h2>
+<ul><li style="margin-left:0.0em">테스트벤치 없음 (교육 실험 저장소)</li><li style="margin-left:0.0em">Simulink 코드 생성 경로(Lintarget)와 RTEMS 포팅 존재 → 실제 동작 확인 가능성 있음</li><li style="margin-left:0.0em">PMSM 모델의 SPI 연결 Microsemi FPGA 칩 사용은 특수 하드웨어 필요</li><li style="margin-left:0.0em">unverified: 커널 버전, PREEMPT_RT 패치 버전, 라이선스, 빌드 절차 (README 열람 불가)</li></ul>
+<h2>한계·위험</h2>
+<ul><li style="margin-left:0.0em">라이선스 미확인: GitHub 메인 페이지에 라이선스 표시 없음 → 코드 재사용 전 확인 필요</li><li style="margin-left:0.0em">PMSM 경로는 Microsemi FPGA (AGL125V5-VQ100) 전용 하드웨어 의존</li><li style="margin-left:0.0em">최신 갱신일 불명확 (GitHub stars 19개, 활동 낮음)</li><li style="margin-left:0.0em">README 직접 열람 미완료 (열람 권한 오류)</li></ul>
+<h2>재사용 메모</h2>
+<ul><li style="margin-left:0.0em"><strong>S7 사다리 위치</strong>: &quot;전문&quot; 단계 — 실제 직교 엔코더 커널 드라이버 + DC 서보 사용자 공간 애플리케이션 + PMSM Simulink 모델까지 다루는 완성형 사례.</li><li style="margin-left:0.0em">개조:</li><li style="margin-left:1.2em"><code>rpi_gpio_irc_module.c</code>의 직교 엔코더 디코더 FSM 구조 → Basys3 Verilog 직교 엔코더 카운터(mmio-pwm-qenc-checker 패키지의 <code>qenc_decoder.v</code>)와 동등한 역할. GPIO 인터럽트 방식을 AXI-Lite 레지스터 폴링/인터럽트 방식으로 변환 가능.</li><li style="margin-left:1.2em"><code>rpi_simple_dc_servo</code>의 PWM 주기·방향 GPIO 패턴 → Basys3 AXI-PWM IP(<code>pwm_core.v</code>)의 duty cycle 레지스터 쓰기·방향 비트로 1:1 대응.</li><li style="margin-left:1.2em">PMSM Simulink 경로의 SPI 연결 Microsemi FPGA → Basys3 Pmod SPI로 교체 불가(하드웨어 전용 IP). 단, &quot;SPI로 외부 FPGA에 명령 전달&quot; 아키텍처 패턴은 RPi4 PREEMPT_RT → Basys3 AXI-SPI Lite 연결로 옮길 수 있음(내 판단).</li><li style="margin-left:1.2em">옮길 수 없는 부분: RTEMS RTOS 경로 (Basys3는 Linux 없음), Microsemi FPGA 전용 IP.</li></ul></main></body></html>

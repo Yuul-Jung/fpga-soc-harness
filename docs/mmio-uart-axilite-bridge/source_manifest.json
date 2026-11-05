@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-uart-axilite-bridge",
+  "files": [
+    {
+      "group": "rtl",
+      "path": "rtl/uart_rx.v",
+      "sha256": "71bd50c461be535936357dca8b09ca588d0ef64166ffa2ae18e2cb27e8667dd8",
+      "lines": 65,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/uart_tx.v",
+      "sha256": "f7a72473cc31cb3667ab03929496ff04dacd250c49bd098b561b835172052675",
+      "lines": 53,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/uart_axilite_bridge.v",
+      "sha256": "d5dbc736ebd2c690002b03914d63462c89eb2a6918dc791aae1e15a720bd3e05",
+      "lines": 237,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/basys3_top.v",
+      "sha256": "2eac22ec3da4c1bc4ee9b03c88ca60b831814d0d7c553e284fa3a2d4a3aee619",
+      "lines": 190,
+      "origin": "first_party"
+    },
+    {
+      "group": "tb",
+      "path": "tb/tb_uart_axilite_bridge.v",
+      "sha256": "414ec2f575da4f40dd4e2edc7a77397483b6dedbd964f3e09c413bfe497b9e36",
+      "lines": 300,
+      "origin": "first_party"
+    },
+    {
+      "group": "constraints",
+      "path": "constr/basys3_top.xdc",
+      "sha256": "7375281bbd8f700d9837f81b0346b3d7fb872abfa6e53932a024192543372caa",
+      "lines": 57,
+      "origin": "first_party"
+    },
+    {
+      "group": "build",
+      "path": "Makefile",
+      "sha256": "c9cde3ae8450b8f2764f26fe5921109981c6ca6c91024009c8e5ade12ba49689",
+      "lines": 42,
+      "origin": "first_party"
+    }
+  ],
+  "note": "소스는 하네스가 직접 쓴 원본이다. 외부 저장소 코드는 포함하지 않는다(HARNESS §13.3)."
+}

@@ -1,0 +1,57 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ezurio-freertos-vs-zephyr-benchmark</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../../hub.html">FPGA SoC 하네스</a><a href="../../hub.html">메인</a><a href="../../hub.html#capstones">캡스톤</a><a href="../../soc-map/tech-tree.html">기술 트리</a><a href="../../catalog/index.html">카탈로그</a><a href="../../inbox/ideas.html">아이디어</a><a href="../../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/catalog/embedded/ezurio-freertos-vs-zephyr-benchmark.md">GitHub 원본: catalog/embedded/ezurio-freertos-vs-zephyr-benchmark.md</a></p><h1>ezurio-freertos-vs-zephyr-benchmark</h1><div class="panel fm"><table><tr><td>name</td><td><a href="ezurio-freertos-vs-zephyr-benchmark.html">ezurio-freertos-vs-zephyr-benchmark</a></td></tr><tr><td>url</td><td>https://www.ezurio.com/resources/blog/freertos-vs-zephyr</td></tr><tr><td>source_type</td><td>article</td></tr><tr><td>vendor</td><td>neutral</td></tr><tr><td>board</td><td>[]</td></tr><tr><td>fit_basys3</td><td>needs-port</td></tr><tr><td>cpu</td><td>none(MCU 펌웨어)</td></tr><tr><td>language</td><td>C</td></tr><tr><td>tools</td><td>[]</td></tr><tr><td>bus</td><td>none</td></tr><tr><td>peripherals</td><td>[]</td></tr><tr><td>stage</td><td>T2</td></tr><tr><td>license</td><td>unknown</td></tr><tr><td>stats</td><td>{stars: 0, commits: 0, last_update: 2024-01-01}</td></tr><tr><td>doc_language</td><td>en</td></tr><tr><td>verification</td><td>L3</td></tr><tr><td>checked_at</td><td>2026-11-04</td></tr><tr><td>sources</td><td>[https://www.ezurio.com/resources/blog/freertos-vs-zephyr]</td></tr></table></div><h2>요약</h2>
+<p>FreeRTOS와 Zephyr RTOS를 메모리 풋프린트·성능·생태계 관점에서 비교한 Ezurio(제조사) 블로그 글. STM32F4 168 MHz 기준 벤치마크 수치가 포함되어 있어 두 RTOS의 정량 비교 근거로 쓸 수 있다.</p>
+<h2>구조</h2>
+<p><strong>FreeRTOS 메모리 (IAR STR71x ARM7, 4우선순위 기준):</strong></p>
+<ul><li style="margin-left:0.0em">스케줄러 RAM: 236 B</li><li style="margin-left:0.0em">태스크당 추가: 64 B (TCB) + 스택</li><li style="margin-left:0.0em">ROM: 5~10 KB (기능에 따라 다름)</li><li style="margin-left:0.0em">큐 1개: 76 B + 저장 영역</li></ul>
+<p><strong>Zephyr 메모리 최소값:</strong></p>
+<ul><li style="margin-left:0.0em">RAM: 8 KB</li><li style="margin-left:0.0em">커널 이미지: 2 KB</li></ul>
+<p><strong>벤치마크 — STM32F4 168 MHz (UL Solutions 2022 기준, 사이클 단위):</strong></p>
+<div class="panel"><table><tr><th>항목</th><th>FreeRTOS</th><th>Zephyr</th></tr><tr><td>협력형 컨텍스트 전환</td><td>223</td><td>524</td></tr><tr><td>인터럽트 지연</td><td>101</td><td>143</td></tr><tr><td>뮤텍스 (태스크 블록)</td><td>1,964</td><td>969</td></tr><tr><td>큐 수신 (블록)</td><td>1,660</td><td>710</td></tr></table></div>
+<p><strong>라이선스:</strong></p>
+<ul><li style="margin-left:0.0em">FreeRTOS: MIT (AWS FreeRTOS) — 최신 버전 완전 MIT</li><li style="margin-left:0.0em">Zephyr: Apache 2.0 (Linux Foundation 프로젝트)</li></ul>
+<p><strong>생태계:</strong></p>
+<ul><li style="margin-left:0.0em">FreeRTOS: 단순 커널, MCU 벤더(ST·NXP·Espressif 등)가 SDK에 포함</li><li style="margin-left:0.0em">Zephyr: 600+ 보드 지원, devicetree + Kconfig 빌드 시스템, POSIX 일부 지원</li></ul>
+<h2>검증·재현성</h2>
+<ul><li style="margin-left:0.0em">출처: Ezurio 엔지니어링 블로그 (임베디드 모듈 제조사), 2024년 경 작성</li><li style="margin-left:0.0em">벤치마크 수치는 &quot;UL Solutions, 2022&quot; 인용. 직접 측정값이 아닌 인용 수치</li><li style="margin-left:0.0em">메모리 수치는 FreeRTOS 공식 FAQ(<code>freertos.org/FAQMem.html</code>)와 교차 확인됨 → 일치</li><li style="margin-left:0.0em">직접 실행 환경 없음; 수치는 원문에서 가져온 것으로 &quot;원문 수치&quot;임을 명시</li></ul>
+<h2>한계·위험</h2>
+<ul><li style="margin-left:0.0em">벤치마크가 STM32F4(Cortex-M4, 168 MHz) 기준이므로 다른 MCU에서 그대로 적용 금지</li><li style="margin-left:0.0em">뮤텍스·큐 수치가 뒤집힘(FreeRTOS &gt; Zephyr): 작업 복잡도와 커널 최적화 차이로 항목마다 결과가 다름. 단순히 &quot;FreeRTOS가 빠르다&quot;로 단정 불가</li><li style="margin-left:0.0em">Zephyr 메모리 최소값(8 KB RAM, 2 KB 커널)은 HAL·드라이버 없는 최소 구성 기준</li><li style="margin-left:0.0em">ThreadX(Eclipse) 비교 수치는 이 출처에 없음 — 별도 출처 필요</li></ul>
+<h2>재사용 메모</h2>
+<p>FreeRTOS와 Zephyr 두 RTOS의 정량적 비교 근거로 임베디드 공통 카드로서 가치가 높다. SoC 주변장치 드라이버 계층을 설계할 때 인터럽트 지연(ISR 반응성)과 컨텍스트 전환 오버헤드가 설계 제약이 되므로, 이 수치가 타이밍 여유를 계산하는 기준이 된다.</p>
+<p>개조: Basys3·MicroBlaze V SoC 관점에서 직접 이식하는 항목은 없다(MCU 전용 RTOS). 그러나 ① AXI 슬레이브 IP의 인터럽트 서비스 루틴 지연을 얼마나 허용할지 결정할 때 Cortex-M 벤치마크가 하한 참고값이 된다. ② MicroBlaze V + FreeRTOS 조합(Vitis에서 지원)의 태스크 오버헤드를 추정할 기준으로 쓸 수 있다. ③ 사용자 MCU 보조 프로세서(STM32/ESP32)와 Basys3 FPGA 간 협력형 설계 시 MCU 쪽 RTOS 선택 근거로 직접 활용.</p>
+<ul><li style="margin-left:0.0em"><strong>라이선스 확인 필요</strong>: 출처 라이선스 unknown. 벤치마크 수치는 사실로 인용 가능하나 코드 복사 금지.</li></ul></main></body></html>

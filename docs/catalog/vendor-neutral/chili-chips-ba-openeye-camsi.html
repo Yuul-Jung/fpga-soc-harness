@@ -1,0 +1,46 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>chili-chips-ba-openeye-camsi</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../../hub.html">FPGA SoC 하네스</a><a href="../../hub.html">메인</a><a href="../../hub.html#capstones">캡스톤</a><a href="../../soc-map/tech-tree.html">기술 트리</a><a href="../../catalog/index.html">카탈로그</a><a href="../../inbox/ideas.html">아이디어</a><a href="../../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/catalog/vendor-neutral/chili-chips-ba-openeye-camsi.md">GitHub 원본: catalog/vendor-neutral/chili-chips-ba-openeye-camsi.md</a></p><h1>chili-chips-ba-openeye-camsi</h1><div class="panel fm"><table><tr><td>name</td><td><a href="chili-chips-ba-openeye-camsi.html">chili-chips-ba-openeye-camsi</a></td></tr><tr><td>url</td><td>https://github.com/chili-chips-ba/openeye-CamSI</td></tr><tr><td>source_type</td><td>repo</td></tr><tr><td>vendor</td><td>amd</td></tr><tr><td>board</td><td>[Trenz TE0711-01 SoM (Artix-7 XC7A35T)]</td></tr><tr><td>fit_basys3</td><td>needs-port</td></tr><tr><td>cpu</td><td>none(FSM)</td></tr><tr><td>language</td><td>Verilog</td></tr><tr><td>tools</td><td>[Vivado, openXC7]</td></tr><tr><td>bus</td><td>AXI4-Stream</td></tr><tr><td>peripherals</td><td>[camera, comm-eth]</td></tr><tr><td>stage</td><td>T4</td></tr><tr><td>license</td><td>BSD-3-Clause</td></tr><tr><td>stats</td><td>{stars: 미확인, commits: 미확인, last_update: 2026-10}</td></tr><tr><td>doc_language</td><td>en</td></tr><tr><td>verification</td><td>L3</td></tr><tr><td>checked_at</td><td>2026-11-04</td></tr><tr><td>source_rev</td><td></td></tr><tr><td>unverified_source_rev</td><td>루트 README 열람; 커밋 SHA 미확인</td></tr><tr><td>sources</td><td>[https://github.com/chili-chips-ba/openeye-CamSI]</td></tr></table></div><h2>요약</h2>
+<p>Artix-7 XC7A35T(Trenz TE0711-01 SoM)에서 D-PHY 칩 없이 IBUFDS/IDELAY/ISERDES 프리미티브만으로 MIPI CSI-2를 수신하는 오픈소스 카메라 파이프라인. 카메라: IMX219(RPi V2.1, 2-lane, 720p@60Hz), IMX283(4-lane, 1080p@30Hz), OV2740(2-lane). ISP: 디베이어 + 데드픽셀 보정 + 수동 노출. UDP 1GbE 스트리밍. BSD-3-Clause.</p>
+<h2>구조</h2>
+<ul><li style="margin-left:0.0em"><strong>핵심 혁신</strong>: D-PHY 외부 칩 없이 Artix-7 IBUFDS(차동 입력) + IDELAY2(지연 보정) + ISERDES2(1:4 직렬→병렬 변환)으로 CSI-2 DPHY 레인을 직접 수신. 클럭 복원도 ISERDES 기반.</li><li style="margin-left:0.0em">라인 버퍼 스트리밍: 프레임 버퍼 없이 AXI-Stream 라인 단위로 ISP까지 스트리밍(no-DRAM 제약을 역이용한 S4 설계).</li><li style="margin-left:0.0em">CDC: AsyncFIFO로 카메라 클럭 도메인 → 처리 클럭 도메인 교차.</li><li style="margin-left:0.0em">ISP 단계: Debayer(Bayer → RGB) + Dead Pixel Correction + 수동 노출 제어.</li><li style="margin-left:0.0em">출력: UDP 1GbE 스트리밍(이더넷 MAC 포함).</li><li style="margin-left:0.0em">보드: Trenz TE0711-01 SoM은 XC7A35T 기반으로 Basys3와 동일 FPGA 계열.</li></ul>
+<h2>검증·재현성</h2>
+<ul><li style="margin-left:0.0em">Vivado 프로젝트 포함(README 서술). openXC7 오픈소스 툴체인도 지원.</li><li style="margin-left:0.0em">한계: Artix-7 토글 속도로 FHD@60Hz 불안정; IMX283 4-lane은 센서 비닝(binning)이 필요(README 서술).</li><li style="margin-left:0.0em">openXC7 툴체인에서 타이밍 클로저 문제 보고(README 서술).</li><li style="margin-left:0.0em">CI 없음(자체 확인).</li></ul>
+<h2>한계·위험</h2>
+<ul><li style="margin-left:0.0em">Basys3 직접 빌드 불가: Trenz TE0711-01 SoM 전용 핀맵, 1GbE PHY 없음(Basys3는 이더넷 없음), MIPI CSI-2 카메라 커넥터 없음.</li><li style="margin-left:0.0em">Artix-7 ISERDES 최대 토글 속도 한계로 FHD@60Hz(600 Mbps/레인) 불안정(README 직접 서술).</li><li style="margin-left:0.0em">IMX283 4-lane 완전 동작 미검증(README 서술).</li><li style="margin-left:0.0em">openXC7 타이밍 클로저 미달 보고 있음.</li></ul>
+<h2>재사용 메모</h2>
+<ul><li style="margin-left:0.0em">Basys3 포팅 가능성: 같은 XC7A35T이므로 IBUFDS/IDELAY2/ISERDES2 프리미티브 코드는 직접 사용 가능. 단, Basys3에 CSI-2 카메라 커넥터가 없으므로 Pmod 핀으로 단일 레인 CSI-2 또는 병렬 카메라(OV7670 등)로 대체하거나, IMX219를 플렉스 케이블 직결 Pmod 어댑터로 연결하는 방안이 필요(내 판단, 하드웨어 미확인). 라인 버퍼 스트리밍과 AsyncFIFO 패턴, ISP 단계 분리(Debayer → Dead Pixel → AXI-Stream)는 반입 조건을 갖추면(BSD-3-Clause, 사용자 승인) 그대로 가져올 수 있다. 개조: 1GbE UDP 출력을 Basys3 VGA(25MHz 픽셀 클럭) 출력으로 대체하고, CSI-2 D-PHY 수신 레인을 OV7670 병렬 픽셀 버스(8비트 + PCLK/HSYNC/VSYNC)로 교체하면 Artix-7 ISERDES 없이도 카메라 ISP 사다리의 T2→T4 패키지로 이어진다(I-051 아이디어). 1GbE 대신 VGA 출력으로 교체할 수 없는 부분: UDP/MAC 계층은 완전 별도 설계 필요.</li></ul></main></body></html>

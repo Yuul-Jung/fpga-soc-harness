@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-color-lane-detect",
+  "files": [
+    {
+      "group": "rtl",
+      "path": "rtl/basys3_color_lane_top.v",
+      "sha256": "83dd004dbc7033a8f49a5504b92c98b1b0fbf5ec50bb300dc63f6de5b122eb21",
+      "lines": 88,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/color_lane_top.v",
+      "sha256": "483e17f9a39bdc9f91685dc35b856ffb7c0c85ce865052f870a767386ed05785",
+      "lines": 221,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/ov7670_capture_stub.v",
+      "sha256": "29de07fdef3c5ae926c4f20103da8141c8cbaa53ad38890030aca676fcfb5744",
+      "lines": 83,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/green_thresh.v",
+      "sha256": "cd9a891b1b7257c3b2de0f28509b8db27537a47d3875b1fff084c482d3dd2650",
+      "lines": 27,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/grid9_counter.v",
+      "sha256": "928d23854b9d21291c55e54a847d4633279d460795c67214dcd3a1e1684fcbd3",
+      "lines": 92,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/lane_decode.v",
+      "sha256": "01b8cea60a03704313a45f399a8d825a2ff653ca83d0bbf481e523b7572f5013",
+      "lines": 62,
+      "origin": "first_party"
+    },
+    {
+      "group": "tb",
+      "path": "tb/tb_color_lane.v",
+      "sha256": "8b40043a8bf53b79667321edb1d99b132bffc20526fce7b2309519dea0d22b40",
+      "lines": 285,
+      "origin": "first_party"
+    },
+    {
+      "group": "constraints",
+      "path": "constr/basys3_color_lane.xdc",
+      "sha256": "80b793fb1618c07c0acc9abefe4128d78ce04014938bc9236f92ec44547ad67f",
+      "lines": 59,
+      "origin": "first_party"
+    },
+    {
+      "group": "build",
+      "path": "Makefile",
+      "sha256": "65e10c4872627eed4460ed0a117e2c879be8864cce71f3f33a12c5d12ea5ce6e",
+      "lines": 51,
+      "origin": "first_party"
+    }
+  ],
+  "note": "소스는 하네스가 직접 쓴 원본이다. 외부 저장소 코드는 포함하지 않는다(HARNESS §13.3)."
+}

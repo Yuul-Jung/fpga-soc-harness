@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-relay-autotune-ip",
+  "kind": "digital-block-diagram",
+  "note": "디지털 모듈 연결도다. 외부 부품의 전기 배선(전압, 저항, 커넥터)은 포함하지 않는다.",
+  "bus": "AXI4-Lite",
+  "blocks": [
+    {
+      "id": "cpu",
+      "name": "MicroBlaze V (외부)",
+      "kind": "cpu",
+      "module": "-",
+      "file": null
+    },
+    {
+      "id": "ip",
+      "name": "relay_autotune_ip",
+      "kind": "ip",
+      "module": "relay_autotune_ip",
+      "file": "rtl/relay_autotune_ip.v"
+    },
+    {
+      "id": "encoder",
+      "name": "엔코더 속도 (외부 신호)",
+      "kind": "external",
+      "module": "-",
+      "file": null
+    },
+    {
+      "id": "pwm_out",
+      "name": "릴레이 PWM 출력 (외부 신호)",
+      "kind": "external",
+      "module": "-",
+      "file": null
+    }
+  ],
+  "links": [
+    {
+      "from": "cpu",
+      "to": "ip",
+      "label": "AXI4-Lite RW"
+    },
+    {
+      "from": "ip",
+      "to": "cpu",
+      "label": "IRQ"
+    },
+    {
+      "from": "encoder",
+      "to": "ip",
+      "label": "speed_in[15:0]"
+    },
+    {
+      "from": "ip",
+      "to": "pwm_out",
+      "label": "relay_out (부호 비트)"
+    }
+  ]
+}

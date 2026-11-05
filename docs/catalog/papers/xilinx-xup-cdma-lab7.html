@@ -1,0 +1,48 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>xilinx-xup-cdma-lab7</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../../hub.html">FPGA SoC 하네스</a><a href="../../hub.html">메인</a><a href="../../hub.html#capstones">캡스톤</a><a href="../../soc-map/tech-tree.html">기술 트리</a><a href="../../catalog/index.html">카탈로그</a><a href="../../inbox/ideas.html">아이디어</a><a href="../../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/catalog/papers/xilinx-xup-cdma-lab7.md">GitHub 원본: catalog/papers/xilinx-xup-cdma-lab7.md</a></p><h1>xilinx-xup-cdma-lab7</h1><div class="panel fm"><table><tr><td>name</td><td><a href="xilinx-xup-cdma-lab7.html">xilinx-xup-cdma-lab7</a></td></tr><tr><td>url</td><td>https://xilinx.github.io/xup_embedded_system_design_flow/lab7.html</td></tr><tr><td>source_type</td><td>course</td></tr><tr><td>vendor</td><td>amd</td></tr><tr><td>board</td><td>[ZedBoard]</td></tr><tr><td>fit_basys3</td><td>needs-port</td></tr><tr><td>cpu</td><td>MicroBlaze</td></tr><tr><td>language</td><td>C</td></tr><tr><td>tools</td><td>[Vivado, Vitis]</td></tr><tr><td>bus</td><td>AXI4</td></tr><tr><td>peripherals</td><td>[AXI-CDMA, BRAM]</td></tr><tr><td>stage</td><td>T3</td></tr><tr><td>license</td><td>unknown</td></tr><tr><td>stats</td><td>{}</td></tr><tr><td>doc_language</td><td>en</td></tr><tr><td>verification</td><td>L2</td></tr><tr><td>checked_at</td><td>2026-11-04</td></tr><tr><td>sources</td><td>[https://xilinx.github.io/xup_embedded_system_design_flow/lab7.html]</td></tr></table></div><h2>요약</h2>
+<p>AMD XUP(Xilinx University Program) 임베디드 시스템 설계 플로우 강좌의 Lab 7. AXI CDMA(Central DMA) IP를 이용한 메모리-to-메모리 DMA 전송 패턴을 다룬다. 검색 결과 제목 &quot;Direct Memory Access using CDMA&quot; 기준으로 작성 (본문 미열람, L2).</p>
+<h2>구조</h2>
+<ul><li style="margin-left:0.0em"><strong>AXI CDMA</strong>: Xilinx 제공 IP. 소스·목적 주소와 전송 바이트 수를 소프트웨어(C)로 설정하면 버스트 복사가 하드웨어에서 완료됨</li><li style="margin-left:0.0em">unverified: 사용 보드(ZedBoard 추정, Zynq PS+PL 조합일 가능성 높음). DDR과 BRAM 중 어느 것이 소스·목적인지 미확인</li><li style="margin-left:0.0em">unverified: 인터럽트 사용 여부, 폴링 대기 방식 세부 미확인</li><li style="margin-left:0.0em">Vitis(또는 Xilinx SDK) 소프트웨어 드라이버(<code>xaxicdma_v2_01_a</code>) 연동 추정</li></ul>
+<h2>검증·재현성</h2>
+<ul><li style="margin-left:0.0em">AMD XUP 공식 GitHub Pages에 게시된 강좌 자료 (xilinx.github.io/xup_embedded_system_design_flow). URL 확인 L2.</li><li style="margin-left:0.0em">검색 결과 여러 곳에서 &quot;Lab7 CDMA&quot; 참조로 등장 — 실제 강의에서 사용됨을 간접 확인</li><li style="margin-left:0.0em">unverified: 빌드 완성도, 자원 사용, WNS</li></ul>
+<h2>한계·위험</h2>
+<ul><li style="margin-left:0.0em">Zynq ZedBoard 기반 추정 — Basys3의 MicroBlaze V 환경에서는 ① Zynq PS 없음 → AXI Interconnect로 MicroBlaze 마스터 대체 ② DDR 없음 → BRAM-to-BRAM 전송으로 범위 축소 ③ 슬레이브 포트 구성 재설계 필요</li><li style="margin-left:0.0em">CDMA 버스트 길이·FIFO 깊이를 잘못 설정하면 전송 완료 플래그가 늦게 올라오는 타이밍 문제 발생 가능 (내 판단: S6 주의 항목)</li><li style="margin-left:0.0em">라이선스: 미확인. AMD XUP 교육 자료로 비상업 사용 가정</li></ul>
+<h2>재사용 메모</h2>
+<p>가져올 수 있는 부분: AXI CDMA 폴링 루프 패턴(소스 주소 → 목적 주소 → 길이 설정 → BUSY 비트 폴링 → 완료), C 소프트웨어 드라이버 인터페이스 구조.</p>
+<p>개조: Basys3 MicroBlaze V 환경에서는 DDR 대신 BRAM 2개(소스·목적 각각 <code>0x4010_0000</code> 영역 free_slots 배정)를 AXI Interconnect로 연결하고 AXI CDMA를 그 사이에 삽입하면 BRAM-to-BRAM 폴링 DMA가 가능. CPU 간섭 없는 버스트 블록 복사 → 주변장치 더블 버퍼링에 활용. 옮길 수 없는 부분: Zynq PS의 DDR 성능(1 GB/s급) — Basys3에서는 BRAM 대역폭(단일 포트 약 400 MB/s@100MHz) 한계로 목표 속도 하향 조정 필요(내 판단).</p>
+<p>내 판단: DMA 패턴을 MicroBlaze+Vivado IP 환경에서 실습하는 가장 직접적인 공식 자료. L2이므로 본문 열람 후 L3 승격 권장.</p></main></body></html>

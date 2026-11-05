@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-stepper-ramp-ip",
+  "files": [
+    {
+      "group": "rtl",
+      "path": "rtl/basys3_top.v",
+      "sha256": "dcfd7b800b3193d45ea3168b26cd6fa864488e61e5aa64feefe946048f641cae",
+      "lines": 130,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/axil_stepper.v",
+      "sha256": "417326f4f0c1ea18ead8b63faead86609013d384f427061afd1d91d4b4adfb16",
+      "lines": 225,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/step_ramp_core.v",
+      "sha256": "6758010edcbb229d373b8bb2f3e9ed9c37c9e509a247b75b8ee8e913d35fc2ee",
+      "lines": 130,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/seq_4wire.v",
+      "sha256": "f22a138b950f1d23420fd6b0d276b96982fc03b85ee99f1db535fa6c65a200e5",
+      "lines": 66,
+      "origin": "first_party"
+    },
+    {
+      "group": "tb",
+      "path": "tb/tb_axil_stepper.v",
+      "sha256": "d8b30e967ed313c2a01396bd866a4496b6ab0e989838a753cb93a3ec2538692f",
+      "lines": 212,
+      "origin": "first_party"
+    },
+    {
+      "group": "constraints",
+      "path": "constr/basys3.xdc",
+      "sha256": "71018ed7615b9a3c7bc6ac5506a9e0a4f03091bea48a346be1f65b78a0bdac15",
+      "lines": 50,
+      "origin": "first_party"
+    },
+    {
+      "group": "build",
+      "path": "Makefile",
+      "sha256": "e26b6a5284e4688a1b53abf35a600283475ff2b404f4600c2f516bd605710b68",
+      "lines": 41,
+      "origin": "first_party"
+    }
+  ],
+  "note": "소스는 하네스가 직접 쓴 원본이다. 외부 저장소 코드는 포함하지 않는다(HARNESS §13.3)."
+}

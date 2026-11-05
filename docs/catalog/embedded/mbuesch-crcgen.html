@@ -1,0 +1,47 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>mbuesch-crcgen</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../../hub.html">FPGA SoC 하네스</a><a href="../../hub.html">메인</a><a href="../../hub.html#capstones">캡스톤</a><a href="../../soc-map/tech-tree.html">기술 트리</a><a href="../../catalog/index.html">카탈로그</a><a href="../../inbox/ideas.html">아이디어</a><a href="../../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/catalog/embedded/mbuesch-crcgen.md">GitHub 원본: catalog/embedded/mbuesch-crcgen.md</a></p><h1>mbuesch-crcgen</h1><div class="panel fm"><table><tr><td>name</td><td><a href="mbuesch-crcgen.html">mbuesch-crcgen</a></td></tr><tr><td>url</td><td>https://github.com/mbuesch/crcgen</td></tr><tr><td>source_type</td><td>repo</td></tr><tr><td>vendor</td><td>neutral</td></tr><tr><td>board</td><td>[]</td></tr><tr><td>fit_basys3</td><td>needs-port</td></tr><tr><td>cpu</td><td>none(소프트웨어 도구)</td></tr><tr><td>language</td><td>Python (출력: Verilog | VHDL | MyHDL)</td></tr><tr><td>tools</td><td>[Python 3, iverilog(검증용)]</td></tr><tr><td>bus</td><td>none(조합 논리 출력, 버스 래퍼 별도)</td></tr><tr><td>peripherals</td><td>[]</td></tr><tr><td>stage</td><td>T2</td></tr><tr><td>license</td><td>MIT</td></tr><tr><td>stats</td><td>{stars: 211, commits: unknown, last_update: 2024-10-01}</td></tr><tr><td>doc_language</td><td>en</td></tr><tr><td>verification</td><td>L2</td></tr><tr><td>checked_at</td><td>2026-11-05</td></tr><tr><td>sources</td><td>[https://github.com/mbuesch/crcgen, https://bues.ch/h/crcgen, https://pypi.org/project/crcgen/]</td></tr></table></div><h2>요약</h2>
+<p>임의 CRC 다항식에 대한 합성 가능한 HDL 코드(Verilog, VHDL, MyHDL)를 자동 생성하는 Python 명령줄 도구. CRC-8/16/32는 물론 사용자 정의 다항식도 지원. 출력은 순수 조합 논리(combinational)로 레지스터 없이 한 클럭에 CRC를 계산한다(S1 인접 도메인 이식: 소프트웨어 CRC 명세를 하드웨어 Verilog로 직접 변환).</p>
+<h2>구조</h2>
+<ul><li style="margin-left:0.0em"><strong>입력 파라미터</strong>: CRC 너비(crcWidth), 다항식(polynomial), 비트 반전(reflect-in/out), 초기값(xorIn), 최종 XOR(xorOut)</li><li style="margin-left:0.0em"><strong>출력 형식</strong>: Verilog / VHDL / MyHDL (CLI 옵션 <code>--verilog</code>, <code>--vhdl</code>, <code>--myhdl</code>)</li><li style="margin-left:0.0em"><strong>생성 로직</strong>: 병렬 XOR 트리 — data_in 각 비트별로 CRC 비트에 미치는 영향을 행렬 계산으로 전개. 결과는 <code>function CRC_&lt;n&gt;(input [w-1:0] data, input [n-1:0] crc) → output [n-1:0]</code> 패턴</li><li style="margin-left:0.0em"><strong>사전 정의 프로필</strong>: <code>--crc-type</code> 옵션으로 CRC-16-CCITT, CRC-32-IEEE, CRC-32C, CRC-8-MAXIM 등 표준 명세 직접 선택 가능</li><li style="margin-left:0.0em"><strong>데이터 너비</strong>: <code>--data-width</code> 옵션으로 8/16/32비트 단위 조정 가능</li><li style="margin-left:0.0em"><strong>검증</strong>: 생성된 Verilog를 iverilog로 시뮬레이션해 소프트웨어 CRC와 비교하는 단위 테스트 포함(Python <code>unittest</code>)</li></ul>
+<h2>검증·재현성</h2>
+<ul><li style="margin-left:0.0em">MIT 라이선스. PyPI에 <code>crcgen</code> 패키지로 배포(<code>pip install crcgen</code>)</li><li style="margin-left:0.0em">생성된 Verilog는 순수 Verilog-2001 호환. iverilog, Vivado, Yosys 모두 처리 가능</li><li style="margin-left:0.0em">unverified: 별 수 (검색 요약 기준 211, 실제 확인 미완)</li><li style="margin-left:0.0em">unverified: 최신 커밋 날짜 (pypi 패키지 버전 2.3 기준 2024년으로 추정, 미열람)</li></ul>
+<h2>한계·위험</h2>
+<ul><li style="margin-left:0.0em">도구가 생성한 Verilog는 조합 논리만: AXI4-Lite 버스 인터페이스, 레지스터, 인터럽트는 별도 작성 필요</li><li style="margin-left:0.0em">스트리밍(multi-word) CRC 계산을 위한 프레이밍(reset, accumulate) 로직도 별도 필요</li><li style="margin-left:0.0em">Basys3 보드 전용 XDC 없음 (범용 도구이므로 당연)</li></ul>
+<h2>재사용 메모</h2>
+<p>가져올 수 있는 부분: 다항식 행렬 계산 로직. <code>python3 -m crcgen --verilog --crc-type CRC-32 --data-width 8</code> 실행 시 8비트 단위 CRC-32 Verilog 함수 즉시 생성. 이를 AXI4-Lite 슬레이브 래퍼로 감싸면 MicroBlaze V에서 직접 사용 가능.</p>
+<p>개조: AXI4-Lite 래퍼 작성 절차 — ① crcgen 생성 Verilog(순수 조합)를 <code>crc32_core.v</code>로 저장 ② <code>axil_crc32.v</code> 슬레이브 모듈에서 DATA_IN(0x00), CTRL(0x04, bit0=load), STATUS(0x08), RESULT(0x0C) 레지스터 4개 구현 ③ 동결 맵 <code>free_slots</code> 한 칸(64KB)에 배정 제안. 못 옮기는 부분: 도구 자체(Python)는 Verilog 소스 생성기이므로 FPGA에 올라가지 않는다. 생성된 Verilog만 IP로 활용.</p></main></body></html>

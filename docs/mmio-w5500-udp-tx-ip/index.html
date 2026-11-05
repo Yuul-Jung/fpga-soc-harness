@@ -1,0 +1,1000 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CTRL/DATA형 W5500 UDP TX IP</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+
+.colhead{font:600 11px sans-serif;fill:var(--muted)}
+.link{fill:none;stroke:var(--line);stroke-width:1.5}.arrow{fill:var(--line)}
+.lbl{font:11px sans-serif;fill:var(--muted)}
+.bname{font:600 13px sans-serif;fill:var(--text)}.bdesc{font:11px sans-serif;fill:var(--muted)}
+.k-cpu rect{fill:var(--c-cpu);stroke:var(--c-cpu-s)}.k-bus rect{fill:var(--c-bus);stroke:var(--c-bus-s)}
+.k-periph rect,.k-memory rect{fill:var(--c-per);stroke:var(--c-per-s)}
+.k-external rect{fill:var(--c-ext);stroke:var(--c-ext-s);stroke-dasharray:4 3}
+.k-clock rect{fill:var(--c-clk);stroke:var(--c-clk-s)}
+</style></head><body><header class="top"><a class="brand" href="../hub.html">FPGA SoC 하네스</a><a href="../hub.html">메인</a><a href="../hub.html#capstones">캡스톤</a><a href="../soc-map/tech-tree.html">기술 트리</a><a href="../catalog/index.html">카탈로그</a><a href="../inbox/ideas.html">아이디어</a><a href="../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main>
+<p class="muted">캡스톤 패키지 · Basys3 · 단계 T2</p>
+<h1>CTRL/DATA형 W5500 UDP TX IP</h1><p>W5500 Ethernet 모듈의 SPI를 직접 구동해 UDP 패킷을 송신하는 Basys3 mmio-lite IP. 초기화(Socket 0 설정), TX 버퍼 적재, SEND 커맨드 발행, SENDOK 폴링까지 FSM 한 개로 처리하고, IRQ로 완료를 알린다.</p>
+<div class="badges"><span class="badge b-pass (경고 0건)">린트: pass (경고 0건)</span><span class="badge b-pass (PASS: W5500 UDP TX 11단계 검증 — IP_ID, TX_LEN/DATA/PTR, init_done, go, err==0, IRQ_STATUS, irq선, W1C)">시뮬레이션: pass (PASS: W5500 UDP TX 11단계 검증 — IP_ID, TX_LEN/DATA/PTR, init_done, go, err==0, IRQ_STATUS, irq선, W1C)</span><span class="badge b-pass (합성 성공, stat 파싱 실패로 LUT/FF 미기록)">합성: pass (합성 성공, stat 파싱 실패로 LUT/FF 미기록)</span><span class="badge b-not-tested">보드: not-tested</span></div>
+<p class="muted">검증 상태는 실행 기록이 있을 때만 표시한다. 기록이 없으면 '미실행'이다.</p>
+<nav><a href="#goal">목표</a><a href="#arch">계통도</a><a href="#hier">모듈 계층</a><a href="#map">메모리맵</a><a href="#ext">외부 부품·전기</a><a href="#road">기술 트리</a><a href="#src">실행 소스</a><a href="#verify">검증</a><a href="#ref">참고·위험</a></nav>
+<h2 id="goal">1. 목표와 범위</h2><h3>목표</h3><ul><li>mmio-lite 버스 위에서 W5500 SPI 마스터를 구동해 UDP 단일 패킷 송신 제공</li><li>CTRL 레지스터(GO/INIT 비트 자기 소거, BUSY·ERR·INIT_DONE 플래그)와 TX_DATA FIFO로 간단한 인터페이스 제공</li><li>IP 표준 Rev.1 관리 레지스터(IP_ID·VER·IRQ_STATUS·IRQ_ENABLE) 준수</li><li>iverilog 시뮬레이션에서 가짜 W5500 슬레이브와 SENDOK 폴링 PASS 확인</li></ul><h3>범위 밖</h3><ul><li>멀티 소켓 (Socket 0 전용)</li><li>TCP, ICMP, ARP 등 UDP 외 프로토콜</li><li>목적지 IP/MAC/포트 런타임 변경 (init ROM에 고정)</li><li>400 kHz 이상 SPI 클럭 (CLK_DIV 파라미터로 조정 가능)</li><li>AXI4-Lite 버스 인터페이스 (mmio-lite 전용)</li><li>보드 동작 확인 (S3)</li></ul><p class="muted">이 패키지의 소스는 하네스가 직접 작성한 Verilog-2001 원본이며 외부 코드를 포함하지 않는다. mmio-lite 버스(AXI4-Lite 비호환, 시뮬 전용). 가짜 W5500 SPI 슬레이브를 포함한 자체 점검 테스트벤치로 SENDOK 폴링 및 IRQ 동작을 검증한다.</p>
+<h2 id="arch">2. 계통도</h2><p>클럭: 100 MHz 시스템 클럭(clk); SPI 클럭 = clk / (CLK_DIV * 2) → CLK_DIV=500이면 SPI 100 kHz</p><div class="panel"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 974 208" role="img" aria-label="블록 다이어그램">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arrow"/></marker></defs>
+<text x="24" y="16" class="colhead">클럭·입력·마스터</text>
+<text x="274" y="16" class="colhead">버스</text>
+<text x="524" y="16" class="colhead">주변장치</text>
+<text x="774" y="16" class="colhead">외부</text>
+<path d="M612.0,92 L612.0,116" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="104.0" class="lbl" text-anchor="middle">clk, rst_n, mmio_addr/wdata/rdata/we/cs</text>
+<path d="M700,145.0 C737.0,145.0 737.0,63.0 774,63.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="97.0" class="lbl" text-anchor="middle">spi_sck, spi_mosi, spi_csn (출력)</text>
+<path d="M774,63.0 C714,8 760,8 700,145.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="16" class="lbl" text-anchor="middle">spi_miso (입력)</text>
+<g class="k-board_wrapper"><rect x="524" y="34" width="176" height="58" rx="8"/><text x="612.0" y="58" text-anchor="middle" class="bname">basys3_top</text><text x="612.0" y="76" text-anchor="middle" class="bdesc">Board Top</text></g>
+<g class="k-peripheral"><rect x="524" y="116" width="176" height="58" rx="8"/><text x="612.0" y="140" text-anchor="middle" class="bname">w5500_udp_tx_ip</text><text x="612.0" y="158" text-anchor="middle" class="bdesc">W5500 TX IP</text></g>
+<g class="k-external"><rect x="774" y="34" width="176" height="58" rx="8"/><text x="862.0" y="58" text-anchor="middle" class="bname">pmod_w5500</text><text x="862.0" y="76" text-anchor="middle" class="bdesc">Pmod W5500</text></g>
+</svg></div>
+<p class="muted"><a href="diagram.svg">diagram.svg</a>로 따로 받을 수 있다.</p>
+<h3>버스 규약: mmio-lite</h3><div class="panel"><table><tr><th>신호</th><th>방향</th><th>설명</th></tr><tr><td><code>mmio_addr</code></td><td>in</td><td>레지스터 바이트 주소</td></tr><tr><td><code>mmio_wdata</code></td><td>in</td><td>쓰기 데이터</td></tr><tr><td><code>mmio_rdata</code></td><td>out</td><td>읽기 데이터</td></tr><tr><td><code>mmio_we</code></td><td>in</td><td>쓰기 활성</td></tr><tr><td><code>mmio_cs</code></td><td>in</td><td>칩 선택</td></tr><tr><td><code>spi_sck</code></td><td>out</td><td>SPI 클럭 (MODE=0, 아이들 로우)</td></tr><tr><td><code>spi_mosi</code></td><td>out</td><td>SPI 마스터→슬레이브 데이터</td></tr><tr><td><code>spi_csn</code></td><td>out</td><td>SPI 칩 선택 (액티브 로우)</td></tr><tr><td><code>spi_miso</code></td><td>in</td><td>SPI 슬레이브→마스터 데이터</td></tr><tr><td><code>irq</code></td><td>out</td><td>인터럽트 (tx_done_en=1 &amp;&amp; tx_done=1일 때)</td></tr></table></div><p>AXI4-Lite 비호환. ready/valid 핸드셰이크 없음. 한 사이클 응답. SPI 전송 중 BUSY=1이므로 CPU가 폴링 필요.</p>
+<h3>통합 선언 (SoC 적합성)</h3><p class="badge b-fail">이 패키지는 MicroBlaze V 동결 주소맵과 호환되지 않는다 (파일럿). 아래 이식 계획을 따라야 SoC에 합칠 수 있다.</p><div class="panel"><table><tr><th style="white-space:nowrap">버스</th><td><code>mmio-lite</code></td></tr><tr><th style="white-space:nowrap">주소맵</th><td><code>custom</code> → 동결 맵 <code>mbv-frozen-v2</code> 적합 여부: <b>부분 적합</b></td></tr><tr><th style="white-space:nowrap">이식 계획</th><td>mbv-frozen-v2 맵으로 이식 시 slot [16] = 0x4016_0000 사용 예정. IRQ는 동결 맵 slot 13번 사용 예정. integration.compat=compatible로 올리려면 AXI4-Lite 래퍼 추가 및 사용자 동결 승인 필요.</td></tr></table></div>
+<h2 id="hier">3. 모듈 계층</h2><div class="panel"><ul class="tree"><li><code>w5500_udp_tx_ip</code> <span class="muted">(rtl/w5500_udp_tx_ip.v)</span></li></ul></div>
+<h2 id="map">4. 메모리맵</h2><h3>w5500_udp_tx_ip <code>0x0000_0000</code> <span class="muted">크기 0x10000</span></h3><div class="panel"><table><tr><th>오프셋</th><th>이름</th><th>접근</th><th>설명</th></tr><tr><td><code>0x0000</code></td><td>CTRL</td><td>RW</td><td>[0]=go(W1P) [1]=init(W1P) [10]=busy(RO) [11]=err(RO) [13]=init_done(RO)</td></tr><tr><td><code>0x0004</code></td><td>TX_LEN</td><td>RW</td><td>[5:0]=송신 바이트 수 (1..64)</td></tr><tr><td><code>0x0008</code></td><td>TX_DATA</td><td>WO</td><td>[7:0]=TX 버퍼 적재 (쓰기마다 TX_PTR 증가)</td></tr><tr><td><code>0x000C</code></td><td>TX_PTR</td><td>RO</td><td>[5:0]=현재 TX 버퍼 포인터 (go 전에 읽어야 함 — go가 초기화)</td></tr><tr><td><code>0xFFF0</code></td><td>IP_ID</td><td>RO</td><td>0x5735_5544 (ASCII W5UD)</td></tr><tr><td><code>0xFFF4</code></td><td>IP_VER</td><td>RO</td><td>0x0000_0100 (Rev 1.0)</td></tr><tr><td><code>0xFFF8</code></td><td>IRQ_STATUS</td><td>RW</td><td>[0]=tx_done (W1C)</td></tr><tr><td><code>0xFFFC</code></td><td>IRQ_ENABLE</td><td>RW</td><td>[0]=tx_done_en</td></tr></table></div>
+<h2 id="ext">5. 외부 부품과 전기 회로도</h2><p class="muted">2절의 계통도는 <b>디지털 모듈 연결도</b>다. 전압, 풀업, 커넥터 배선 같은 전기 사항은 이 절에서 따로 다룬다. 기계가 읽는 사본: <a href="bom.csv">bom.csv</a> · <a href="connections.json">connections.json</a></p><p class="badge b-skipped">전기 회로도: 미작성</p><p class="muted">Pmod SPI 4선(SCK/MOSI/MISO/CSn) + VCC/GND만 연결. 별도 회로도 미작성.</p><div class="panel"><table><tr><th>id</th><th>부품</th><th>인터페이스</th><th>신호 전압</th><th>구분</th><th>레벨 변환</th><th>비고</th></tr><tr><td><code>ext_w5500_pmod</code></td><td>Pmod NIC100 (W5500 기반 Ethernet Pmod)</td><td>SPI</td><td style="white-space:nowrap">3.3 V</td><td style="white-space:nowrap">외부 모듈</td><td>불필요 (3.3V)</td><td>Digilent Pmod NIC100 또는 호환 W5500 SPI 모듈. 직결 시 Pmod JA 핀 사용.</td></tr></table></div><p class="muted">Basys3 FPGA 핀은 3.3V 신호만 직접 받는다. 5V·12V·모터·릴레이는 직결하지 않는다.</p>
+<h2 id="road">6. 기술 트리 (이 캡스톤의 확장 경로)</h2><div class="panel"><ul style="list-style:none;padding:0"><li class="step"><span class="tag s-done">T1</span><span>UART+GPIO 기초 SoC <span class='muted'>참고: <code>mmio-uart-gpio-skeleton</code></span></span></li><li class="step"><span class="tag s-current">T2</span><span>W5500 UDP TX IP (SPI 마스터, 고정 목적지)</span></li><li class="step"><span class="tag s-planned">T2</span><span>W5500 UDP RX + 양방향 소켓</span></li><li class="step"><span class="tag s-planned">T3</span><span>MicroBlaze V AXI4-Lite 래퍼</span></li></ul></div>
+<h2 id="src">7. 실행 소스</h2><p>저장소의 <code>capstones/mmio-w5500-udp-tx-ip/</code>에 있는 파일 그대로다. 이 문서는 파일에서 읽어 넣은 것이므로 항상 일치한다. <a href="mmio-w5500-udp-tx-ip.zip">소스 전체 내려받기 (.zip)</a> · <a href="https://github.com/Yuul-Jung/fpga-soc-harness/tree/main/capstones/mmio-w5500-udp-tx-ip">GitHub에서 보기</a></p><details><summary><code>rtl/w5500_udp_tx_ip.v</code> <span class="muted">521줄</span></summary><pre>/* w5500_udp_tx_ip.v — W5500 SPI UDP 텔레메트리 TX MMIO IP
+ * Origin: capstones/mmio-w5500-udp-tx-ip/rtl/w5500_udp_tx_ip.v
+ * Verilog-2001. iverilog / verilator / yosys 호환.
+ *
+ * MMIO 레지스터 맵 (32-bit 워드, 바이트 주소):
+ *   0x0000  CTRL   [0]=go(W1P) [1]=init(W1P) [10]=busy(RO)
+ *                  [11]=err(RO) [13]=init_done(RO)
+ *   0x0004  TX_LEN [5:0] = 송신 바이트 수 (1..64)
+ *   0x0008  TX_DATA [7:0] = TX 버퍼에 한 바이트씩 적재 (쓰기 전용)
+ *   0x000C  TX_PTR  [5:0] = 현재 TX 버퍼 적재 포인터 (읽기 전용)
+ *   0xFFF0  IP_ID  = 32&#x27;h5735_5544 (&quot;W5UD&quot;)
+ *   0xFFF4  IP_VER = 32&#x27;h0000_0100
+ *   0xFFF8  IRQ_STATUS [0]=tx_done (W1C)
+ *   0xFFFC  IRQ_ENABLE [0]=tx_done_en
+ *
+ * go  비트(bit0) 쓰기: UDP 송신 시작 (init_done=1, busy=0일 때만 유효)
+ * init 비트(bit1) 쓰기: W5500 초기화 시작 (busy=0일 때만 유효)
+ * 초기화: ROM 10개 SPI 단일 바이트 커맨드 순차 송신 → init_done=1
+ * 송신: TX 버퍼→W5500 TX 블록→Sn_TX_WR 갱신→SEND 커맨드→SENDOK 폴링
+ * 완료: busy=0, irq (tx_done_en=1 시)
+ *
+ * SPI: MODE=0 (CPOL=0, CPHA=0). CLK_DIV = SCK 반주기 클럭 수.
+ * W5500 프레임: [addr_hi, addr_lo, ctrl_byte, data...]
+ *   ctrl_byte = {BlockSel[4:0], W/R, LenMode[1:0]}
+ *   Common regs write: {5&#x27;h00,1,2&#x27;b00} = 8&#x27;h04
+ *   Socket 0 regs write: {5&#x27;h01,1,2&#x27;b00} = 8&#x27;h0C
+ *   Socket 0 regs read:  {5&#x27;h01,0,2&#x27;b00} = 8&#x27;h08
+ *   Socket 0 TX buf write: {5&#x27;h03,1,2&#x27;b00} = 8&#x27;h1C
+ */
+`timescale 1ns/1ps
+module w5500_udp_tx_ip #(
+    parameter CLK_DIV = 500   /* SCK 반주기 클럭 수 (100MHz→100kHz:500) */
+)(
+    input  wire        clk,
+    input  wire        rst_n,
+    /* MMIO (mmio-lite: 단일 사이클) */
+    input  wire [15:0] mmio_addr,
+    input  wire [31:0] mmio_wdata,
+    output reg  [31:0] mmio_rdata,
+    input  wire        mmio_we,
+    input  wire        mmio_cs,
+    /* SPI (W5500) — MODE=0 오픈 드레인 아님 */
+    output reg         spi_sck,
+    output reg         spi_mosi,
+    output reg         spi_csn,
+    input  wire        spi_miso,
+    /* 인터럽트 */
+    output wire        irq
+);
+
+/* ===== MMIO 레지스터 ===== */
+reg        r_busy, r_err, r_init_done;
+reg  [5:0] r_tx_len;
+reg  [7:0] r_tx_buf [0:63];   /* 64바이트 TX 버퍼 */
+reg  [5:0] r_tx_ptr;           /* TX 버퍼 적재 포인터 */
+reg        r_irq_st, r_irq_en;
+
+assign irq = r_irq_st &amp; r_irq_en;
+
+/* ===== 초기화 ROM ===== */
+/* {addr[15:0], ctrl[7:0], data[7:0]} — 32비트 엔트리 */
+localparam ROM_DEPTH = 10;
+reg [31:0] init_rom [0:ROM_DEPTH-1];
+initial begin
+    init_rom[0] = {16&#x27;h0000, 8&#x27;h04, 8&#x27;h80}; /* MR = RST */
+    init_rom[1] = {16&#x27;h000F, 8&#x27;h04, 8&#x27;hC0}; /* SIPR[0]=192 */
+    init_rom[2] = {16&#x27;h0010, 8&#x27;h04, 8&#x27;hA8}; /* SIPR[1]=168 */
+    init_rom[3] = {16&#x27;h0011, 8&#x27;h04, 8&#x27;h01}; /* SIPR[2]=1   */
+    init_rom[4] = {16&#x27;h0012, 8&#x27;h04, 8&#x27;h64}; /* SIPR[3]=100 */
+    init_rom[5] = {16&#x27;h0001, 8&#x27;h04, 8&#x27;hC0}; /* GAR[0]=192  */
+    init_rom[6] = {16&#x27;h0002, 8&#x27;h04, 8&#x27;hA8}; /* GAR[1]=168  */
+    init_rom[7] = {16&#x27;h0000, 8&#x27;h0C, 8&#x27;h02}; /* S0_MR=UDP   */
+    init_rom[8] = {16&#x27;h0004, 8&#x27;h0C, 8&#x27;h1F}; /* S0_PORT[0]  */
+    init_rom[9] = {16&#x27;h0001, 8&#x27;h0C, 8&#x27;h01}; /* S0_CR=OPEN  */
+end
+
+/* ===== SPI 마스터 ===== */
+/* MODE=0: SCK 아이들=0. MOSI 세팅→SCK↑(슬레이브 샘플)→SCK↓(다음 비트) */
+localparam [11:0] SPI_HALF = CLK_DIV - 1;
+reg [11:0] spi_div;    /* 반주기 카운터 */
+reg  [2:0] spi_bst;    /* 현재 비트 (7→0) */
+reg        spi_phase;  /* 0=SCK 로우, 1=SCK 하이 */
+reg        spi_bsy;    /* 바이트 송수신 중 */
+reg  [7:0] spi_sreg;   /* 송신 시프트 레지스터 */
+reg  [7:0] spi_rx;     /* 수신 완료 바이트 */
+reg        spi_kick;   /* 1클럭 펄스 → 바이트 송신 시작 */
+reg        spi_done;   /* 1클럭 펄스 → 바이트 완료 */
+
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        spi_sck  &lt;= 1&#x27;b0; spi_mosi &lt;= 1&#x27;b0;
+        spi_div  &lt;= 12&#x27;d0; spi_bst  &lt;= 3&#x27;d7; spi_phase &lt;= 1&#x27;b0;
+        spi_bsy  &lt;= 1&#x27;b0; spi_sreg &lt;= 8&#x27;d0; spi_rx &lt;= 8&#x27;d0;
+        spi_done &lt;= 1&#x27;b0;
+    end else begin
+        spi_done &lt;= 1&#x27;b0;
+        if (spi_kick &amp;&amp; !spi_bsy) begin
+            spi_bsy   &lt;= 1&#x27;b1;
+            spi_bst   &lt;= 3&#x27;d7;
+            spi_phase &lt;= 1&#x27;b0;
+            spi_div   &lt;= 12&#x27;d0;
+            spi_mosi  &lt;= spi_sreg[7];  /* 첫 비트 출력 */
+            spi_sck   &lt;= 1&#x27;b0;
+        end else if (spi_bsy) begin
+            if (spi_div == SPI_HALF) begin
+                spi_div &lt;= 12&#x27;d0;
+                if (spi_phase == 1&#x27;b0) begin
+                    /* SCK 상승: 슬레이브가 MOSI 샘플, 마스터가 MISO 샘플 */
+                    spi_sck   &lt;= 1&#x27;b1;
+                    spi_rx    &lt;= {spi_rx[6:0], spi_miso};
+                    spi_phase &lt;= 1&#x27;b1;
+                end else begin
+                    /* SCK 하강: 다음 비트 출력 */
+                    spi_sck   &lt;= 1&#x27;b0;
+                    spi_phase &lt;= 1&#x27;b0;
+                    if (spi_bst == 3&#x27;d0) begin
+                        spi_bsy  &lt;= 1&#x27;b0;
+                        spi_done &lt;= 1&#x27;b1;
+                    end else begin
+                        spi_bst  &lt;= spi_bst - 3&#x27;d1;
+                        spi_mosi &lt;= spi_sreg[spi_bst - 3&#x27;d1];
+                    end
+                end
+            end else begin
+                spi_div &lt;= spi_div + 12&#x27;d1;
+            end
+        end
+    end
+end
+
+/* ===== 메인 FSM ===== */
+localparam [3:0]
+    S_IDLE      = 4&#x27;d0,
+    S_ROM_FRAME = 4&#x27;d1,  /* 초기화 ROM 프레임 송신 */
+    S_TX_BH     = 4&#x27;d2,  /* TX 버퍼 헤더 (3바이트) */
+    S_TX_BD     = 4&#x27;d3,  /* TX 버퍼 데이터 */
+    S_TX_WH     = 4&#x27;d4,  /* Sn_TX_WR 갱신 헤더 (3바이트) */
+    S_TX_WD     = 4&#x27;d5,  /* Sn_TX_WR 갱신 데이터 (2바이트) */
+    S_TX_SC     = 4&#x27;d6,  /* SEND 커맨드 (4바이트) */
+    S_TX_PH     = 4&#x27;d7,  /* POLL Sn_IR 헤더 (3바이트) */
+    S_TX_PD     = 4&#x27;d8,  /* POLL Sn_IR 데이터 (1바이트 수신) */
+    S_DONE      = 4&#x27;d9,
+    S_ERROR     = 4&#x27;d10;
+
+reg  [3:0] state;
+reg  [3:0] rom_idx;    /* ROM 항목 인덱스 (0..9) */
+reg  [5:0] data_idx;   /* TX 데이터 인덱스 */
+reg  [2:0] byte_idx;   /* 현재 프레임 내 바이트 인덱스 */
+reg [15:0] tx_wr_ptr;  /* W5500 TX 쓰기 포인터 추적 */
+reg [15:0] poll_cnt;   /* 폴링 타임아웃 카운터 */
+
+/* go/init 펄스: CTRL 레지스터 bit0/bit1 쓰기, IDLE+!busy 시 유효 */
+wire go_pulse   = mmio_cs &amp;&amp; mmio_we &amp;&amp;
+                  (mmio_addr[15:0] == 16&#x27;h0000) &amp;&amp;
+                  mmio_wdata[0] &amp;&amp; !r_busy &amp;&amp; r_init_done;
+wire init_pulse = mmio_cs &amp;&amp; mmio_we &amp;&amp;
+                  (mmio_addr[15:0] == 16&#x27;h0000) &amp;&amp;
+                  mmio_wdata[1] &amp;&amp; !r_busy;
+
+always @(posedge clk or negedge rst_n) begin : main_fsm
+    integer i;
+    if (!rst_n) begin
+        r_busy      &lt;= 1&#x27;b0; r_err  &lt;= 1&#x27;b0; r_init_done &lt;= 1&#x27;b0;
+        r_tx_len    &lt;= 6&#x27;d0; r_tx_ptr &lt;= 6&#x27;d0;
+        r_irq_st    &lt;= 1&#x27;b0; r_irq_en &lt;= 1&#x27;b0;
+        for (i = 0; i &lt; 64; i = i + 1) r_tx_buf[i] &lt;= 8&#x27;d0;
+        state       &lt;= S_IDLE;
+        rom_idx     &lt;= 4&#x27;d0; data_idx &lt;= 6&#x27;d0; byte_idx &lt;= 3&#x27;d0;
+        tx_wr_ptr   &lt;= 16&#x27;d0; poll_cnt &lt;= 16&#x27;d0;
+        spi_csn     &lt;= 1&#x27;b1;  spi_kick  &lt;= 1&#x27;b0; spi_sreg  &lt;= 8&#x27;d0;
+    end else begin
+        spi_kick &lt;= 1&#x27;b0;  /* default */
+
+        /* ---- MMIO 쓰기 ---- */
+        if (mmio_cs &amp;&amp; mmio_we) begin
+            case (mmio_addr[15:0])
+                16&#x27;h0004: r_tx_len &lt;= mmio_wdata[5:0];
+                16&#x27;h0008: begin
+                    r_tx_buf[r_tx_ptr] &lt;= mmio_wdata[7:0];
+                    if (r_tx_ptr != 6&#x27;d63) r_tx_ptr &lt;= r_tx_ptr + 6&#x27;d1;
+                end
+                16&#x27;hFFF8: r_irq_st &lt;= r_irq_st &amp; ~mmio_wdata[0]; /* W1C */
+                16&#x27;hFFFC: r_irq_en &lt;= mmio_wdata[0];
+                default: ;
+            endcase
+        end
+
+        /* ---- FSM ---- */
+        case (state)
+
+            /* 유휴 */
+            S_IDLE: begin
+                spi_csn &lt;= 1&#x27;b1;
+                if (init_pulse) begin
+                    r_busy   &lt;= 1&#x27;b1; r_err &lt;= 1&#x27;b0;
+                    r_irq_st &lt;= 1&#x27;b0;
+                    rom_idx  &lt;= 4&#x27;d0; byte_idx &lt;= 3&#x27;d0;
+                    tx_wr_ptr &lt;= 16&#x27;d0;
+                    state    &lt;= S_ROM_FRAME;
+                end else if (go_pulse) begin
+                    r_busy   &lt;= 1&#x27;b1; r_err &lt;= 1&#x27;b0;
+                    r_irq_st &lt;= 1&#x27;b0;
+                    r_tx_ptr &lt;= 6&#x27;d0;  /* TX 버퍼 포인터 초기화 */
+                    data_idx &lt;= 6&#x27;d0; byte_idx &lt;= 3&#x27;d0;
+                    state    &lt;= S_TX_BH;
+                end
+            end
+
+            /* ---- 초기화 ROM 순회 ---- */
+            /* 각 엔트리: CSn=0 → addr_hi → addr_lo → ctrl → data → CSn=1 */
+            S_ROM_FRAME: begin
+                if (!spi_bsy &amp;&amp; !spi_kick) begin
+                    case (byte_idx)
+                        3&#x27;d0: begin  /* addr_hi */
+                            spi_csn  &lt;= 1&#x27;b0;
+                            spi_sreg &lt;= init_rom[rom_idx][31:24];
+                            spi_kick &lt;= 1&#x27;b1;
+                            byte_idx &lt;= 3&#x27;d1;
+                        end
+                        3&#x27;d1: begin  /* addr_lo */
+                            if (spi_done) begin
+                                spi_sreg &lt;= init_rom[rom_idx][23:16];
+                                spi_kick &lt;= 1&#x27;b1;
+                                byte_idx &lt;= 3&#x27;d2;
+                            end
+                        end
+                        3&#x27;d2: begin  /* ctrl */
+                            if (spi_done) begin
+                                spi_sreg &lt;= init_rom[rom_idx][15:8];
+                                spi_kick &lt;= 1&#x27;b1;
+                                byte_idx &lt;= 3&#x27;d3;
+                            end
+                        end
+                        3&#x27;d3: begin  /* data */
+                            if (spi_done) begin
+                                spi_sreg &lt;= init_rom[rom_idx][7:0];
+                                spi_kick &lt;= 1&#x27;b1;
+                                byte_idx &lt;= 3&#x27;d4;
+                            end
+                        end
+                        3&#x27;d4: begin  /* 프레임 종료 대기 */
+                            if (spi_done) begin
+                                spi_csn &lt;= 1&#x27;b1;
+                                byte_idx &lt;= 3&#x27;d0;
+                                if (rom_idx == ROM_DEPTH - 1) begin
+                                    /* 모든 ROM 완료 */
+                                    r_init_done &lt;= 1&#x27;b1;
+                                    r_busy      &lt;= 1&#x27;b0;
+                                    state       &lt;= S_IDLE;
+                                end else begin
+                                    rom_idx &lt;= rom_idx + 4&#x27;d1;
+                                end
+                            end
+                        end
+                        default: byte_idx &lt;= 3&#x27;d0;
+                    endcase
+                end
+            end
+
+            /* ---- TX 버퍼 → W5500 TX 블록 헤더 ---- */
+            /* 3바이트: 0x00(addr_hi), 0x00(addr_lo), 0x1C(s0 TX buf write) */
+            S_TX_BH: begin
+                if (!spi_bsy &amp;&amp; !spi_kick) begin
+                    case (byte_idx)
+                        3&#x27;d0: begin
+                            spi_csn  &lt;= 1&#x27;b0;
+                            spi_sreg &lt;= 8&#x27;h00;  /* TX 버퍼 주소 상위 */
+                            spi_kick &lt;= 1&#x27;b1;
+                            byte_idx &lt;= 3&#x27;d1;
+                        end
+                        3&#x27;d1: begin
+                            if (spi_done) begin
+                                spi_sreg &lt;= 8&#x27;h00;  /* TX 버퍼 주소 하위 */
+                                spi_kick &lt;= 1&#x27;b1;
+                                byte_idx &lt;= 3&#x27;d2;
+                            end
+                        end
+                        3&#x27;d2: begin
+                            if (spi_done) begin
+                                spi_sreg &lt;= 8&#x27;h1C;  /* S0 TX buf, write */
+                                spi_kick &lt;= 1&#x27;b1;
+                                byte_idx &lt;= 3&#x27;d3;
+                            end
+                        end
+                        3&#x27;d3: begin
+                            if (spi_done) begin
+                                byte_idx &lt;= 3&#x27;d0;
+                                data_idx &lt;= 6&#x27;d0;
+                                state    &lt;= S_TX_BD;
+                            end
+                        end
+                        default: byte_idx &lt;= 3&#x27;d0;
+                    endcase
+                end
+            end
+
+            /* ---- TX 버퍼 데이터 (r_tx_len 바이트) ---- */
+            S_TX_BD: begin
+                if (!spi_bsy &amp;&amp; !spi_kick) begin
+                    if (data_idx &lt; r_tx_len) begin
+                        if (spi_done || data_idx == 6&#x27;d0) begin
+                            spi_sreg &lt;= r_tx_buf[data_idx];
+                            spi_kick &lt;= 1&#x27;b1;
+                            data_idx &lt;= data_idx + 6&#x27;d1;
+                        end
+                    end else begin
+                        if (spi_done || r_tx_len == 6&#x27;d0) begin
+                            spi_csn   &lt;= 1&#x27;b1;
+                            tx_wr_ptr &lt;= tx_wr_ptr + {10&#x27;d0, r_tx_len};
+                            byte_idx  &lt;= 3&#x27;d0;
+                            state     &lt;= S_TX_WH;
+                        end
+                    end
+                end
+            end
+
+            /* ---- Sn_TX_WR 갱신 헤더 (3바이트) ---- */
+            /* Sn_TX_WR = socket 0 reg 0x0022 */
+            S_TX_WH: begin
+                if (!spi_bsy &amp;&amp; !spi_kick) begin
+                    case (byte_idx)
+                        3&#x27;d0: begin
+                            spi_csn  &lt;= 1&#x27;b0;
+                            spi_sreg &lt;= 8&#x27;h00;  /* 0x0022 주소 상위 */
+                            spi_kick &lt;= 1&#x27;b1;
+                            byte_idx &lt;= 3&#x27;d1;
+                        end
+                        3&#x27;d1: begin
+                            if (spi_done) begin
+                                spi_sreg &lt;= 8&#x27;h22;  /* 0x0022 주소 하위 */
+                                spi_kick &lt;= 1&#x27;b1;
+                                byte_idx &lt;= 3&#x27;d2;
+                            end
+                        end
+                        3&#x27;d2: begin
+                            if (spi_done) begin
+                                spi_sreg &lt;= 8&#x27;h0C;  /* S0 regs, write */
+                                spi_kick &lt;= 1&#x27;b1;
+                                byte_idx &lt;= 3&#x27;d3;
+                            end
+                        end
+                        3&#x27;d3: begin
+                            if (spi_done) begin
+                                byte_idx &lt;= 3&#x27;d0;
+                                state    &lt;= S_TX_WD;
+                            end
+                        end
+                        default: byte_idx &lt;= 3&#x27;d0;
+                    endcase
+                end
+            end
+
+            /* ---- Sn_TX_WR 갱신 데이터 (2바이트: ptr[15:8], ptr[7:0]) ---- */
+            S_TX_WD: begin
+                if (!spi_bsy &amp;&amp; !spi_kick) begin
+                    case (byte_idx)
+                        3&#x27;d0: begin
+                            spi_sreg &lt;= tx_wr_ptr[15:8];
+                            spi_kick &lt;= 1&#x27;b1;
+                            byte_idx &lt;= 3&#x27;d1;
+                        end
+                        3&#x27;d1: begin
+                            if (spi_done) begin
+                                spi_sreg &lt;= tx_wr_ptr[7:0];
+                                spi_kick &lt;= 1&#x27;b1;
+                                byte_idx &lt;= 3&#x27;d2;
+                            end
+                        end
+                        3&#x27;d2: begin
+                            if (spi_done) begin
+                                spi_csn  &lt;= 1&#x27;b1;
+                                byte_idx &lt;= 3&#x27;d0;
+                                state    &lt;= S_TX_SC;
+                            end
+                        end
+                        default: byte_idx &lt;= 3&#x27;d0;
+                    endcase
+                end
+            end
+
+            /* ---- SEND 커맨드 (4바이트: 0x00,0x01,0x0C,0x20) ---- */
+            /* Sn_CR at socket 0 reg 0x0001; SEND = 0x20 */
+            S_TX_SC: begin
+                if (!spi_bsy &amp;&amp; !spi_kick) begin
+                    case (byte_idx)
+                        3&#x27;d0: begin
+                            spi_csn  &lt;= 1&#x27;b0;
+                            spi_sreg &lt;= 8&#x27;h00;
+                            spi_kick &lt;= 1&#x27;b1;
+                            byte_idx &lt;= 3&#x27;d1;
+                        end
+                        3&#x27;d1: begin
+                            if (spi_done) begin
+                                spi_sreg &lt;= 8&#x27;h01;
+                                spi_kick &lt;= 1&#x27;b1;
+                                byte_idx &lt;= 3&#x27;d2;
+                            end
+                        end
+                        3&#x27;d2: begin
+                            if (spi_done) begin
+                                spi_sreg &lt;= 8&#x27;h0C;  /* S0 regs, write */
+                                spi_kick &lt;= 1&#x27;b1;
+                                byte_idx &lt;= 3&#x27;d3;
+                            end
+                        end
+                        3&#x27;d3: begin
+                            if (spi_done) begin
+                                spi_sreg &lt;= 8&#x27;h20;  /* SEND 커맨드 */
+                                spi_kick &lt;= 1&#x27;b1;
+                                byte_idx &lt;= 3&#x27;d4;
+                            end
+                        end
+                        3&#x27;d4: begin
+                            if (spi_done) begin
+                                spi_csn  &lt;= 1&#x27;b1;
+                                byte_idx &lt;= 3&#x27;d0;
+                                poll_cnt &lt;= 16&#x27;d0;
+                                state    &lt;= S_TX_PH;
+                            end
+                        end
+                        default: byte_idx &lt;= 3&#x27;d0;
+                    endcase
+                end
+            end
+
+            /* ---- Sn_IR 폴링 헤더 (3바이트) ---- */
+            /* Sn_IR = socket 0 reg 0x0002, read */
+            S_TX_PH: begin
+                if (!spi_bsy &amp;&amp; !spi_kick) begin
+                    case (byte_idx)
+                        3&#x27;d0: begin
+                            spi_csn  &lt;= 1&#x27;b0;
+                            spi_sreg &lt;= 8&#x27;h00;
+                            spi_kick &lt;= 1&#x27;b1;
+                            byte_idx &lt;= 3&#x27;d1;
+                        end
+                        3&#x27;d1: begin
+                            if (spi_done) begin
+                                spi_sreg &lt;= 8&#x27;h02;
+                                spi_kick &lt;= 1&#x27;b1;
+                                byte_idx &lt;= 3&#x27;d2;
+                            end
+                        end
+                        3&#x27;d2: begin
+                            if (spi_done) begin
+                                spi_sreg &lt;= 8&#x27;h08;  /* S0 regs, read */
+                                spi_kick &lt;= 1&#x27;b1;
+                                byte_idx &lt;= 3&#x27;d3;
+                            end
+                        end
+                        3&#x27;d3: begin
+                            if (spi_done) begin
+                                byte_idx &lt;= 3&#x27;d0;
+                                state    &lt;= S_TX_PD;
+                            end
+                        end
+                        default: byte_idx &lt;= 3&#x27;d0;
+                    endcase
+                end
+            end
+
+            /* ---- Sn_IR 수신 (더미 TX 1바이트) ---- */
+            S_TX_PD: begin
+                if (!spi_bsy &amp;&amp; !spi_kick) begin
+                    if (byte_idx == 3&#x27;d0) begin
+                        spi_sreg &lt;= 8&#x27;h00;  /* 더미 */
+                        spi_kick &lt;= 1&#x27;b1;
+                        byte_idx &lt;= 3&#x27;d1;
+                    end else if (byte_idx == 3&#x27;d1 &amp;&amp; spi_done) begin
+                        spi_csn  &lt;= 1&#x27;b1;
+                        byte_idx &lt;= 3&#x27;d0;
+                        if (spi_rx[4]) begin
+                            /* SENDOK (bit4) 확인 */
+                            state &lt;= S_DONE;
+                        end else if (poll_cnt == 16&#x27;hFFFF) begin
+                            r_err &lt;= 1&#x27;b1;
+                            state &lt;= S_ERROR;
+                        end else begin
+                            poll_cnt &lt;= poll_cnt + 16&#x27;d1;
+                            state    &lt;= S_TX_PH;  /* 재폴링 */
+                        end
+                    end
+                end
+            end
+
+            /* 완료 */
+            S_DONE: begin
+                r_busy   &lt;= 1&#x27;b0;
+                r_irq_st &lt;= 1&#x27;b1;
+                state    &lt;= S_IDLE;
+            end
+
+            /* 오류 */
+            S_ERROR: begin
+                r_busy &lt;= 1&#x27;b0;
+                state  &lt;= S_IDLE;
+            end
+
+            default: state &lt;= S_IDLE;
+        endcase
+    end
+end
+
+/* ===== MMIO 읽기 (조합 논리) ===== */
+always @(*) begin
+    mmio_rdata = 32&#x27;d0;
+    if (mmio_cs &amp;&amp; !mmio_we) begin
+        case (mmio_addr[15:0])
+            16&#x27;h0000: mmio_rdata = {18&#x27;d0, r_init_done, 1&#x27;b0, r_err, r_busy, 10&#x27;d0};
+            16&#x27;h0004: mmio_rdata = {26&#x27;d0, r_tx_len};
+            16&#x27;h000C: mmio_rdata = {26&#x27;d0, r_tx_ptr};
+            16&#x27;hFFF0: mmio_rdata = 32&#x27;h5735_5544; /* &quot;W5UD&quot; */
+            16&#x27;hFFF4: mmio_rdata = 32&#x27;h0000_0100;
+            16&#x27;hFFF8: mmio_rdata = {31&#x27;d0, r_irq_st};
+            16&#x27;hFFFC: mmio_rdata = {31&#x27;d0, r_irq_en};
+            default:  mmio_rdata = 32&#x27;d0;
+        endcase
+    end
+end
+
+endmodule
+</pre></details><details><summary><code>tb/tb_w5500_udp_tx.v</code> <span class="muted">329줄</span></summary><pre>/* tb_w5500_udp_tx.v — W5500 UDP TX IP 자체 점검 테스트벤치
+ * Origin: capstones/mmio-w5500-udp-tx-ip/tb/tb_w5500_udp_tx.v
+ * Verilog-2001.
+ *
+ * 시나리오:
+ *   1. IP_ID 확인 (0xFFF0 == 0x5735_5544)
+ *   2. TX_LEN = 4, TX_DATA 4바이트 적재 (0xDE, 0xAD, 0xBE, 0xEF)
+ *   3. TX_PTR 확인 == 4 (go 전에 읽어야 함 — go가 ptr 초기화)
+ *   4. CTRL bit1(init) → wait_not_busy → init_done(bit13) 확인
+ *   5. CTRL bit0(go)  → wait_not_busy → err(bit11)==0
+ *   6. IRQ_STATUS[0]==1 확인
+ *   7. IRQ_ENABLE=1 → irq 선 == 1 확인
+ *   8. IRQ_STATUS W1C → bit0==0 확인
+ *
+ * 가짜 W5500 SPI 슬레이브:
+ *   - 모든 쓰기 프레임 수용
+ *   - Sn_CR(addr=0x0001) SEND(0x20) 감지 → send_received=1
+ *   - Sn_IR 폴(addr=0x0002, ctrl=0x08 read) → 0x10(SENDOK) 반환
+ *   - 그 외 읽기 → 0x00 반환
+ *
+ * CLK_DIV = 20 (빠른 시뮬레이션; 실제 IP는 CLK_DIV=500)
+ */
+`timescale 1ns/1ps
+
+module tb_w5500_udp_tx;
+
+localparam CLK_DIV  = 20;
+localparam CLK_HALF = 5;  /* 10 ns 주기 클럭 */
+
+/* --- DUT 신호 --- */
+reg         clk, rst_n;
+reg  [15:0] mmio_addr;
+reg  [31:0] mmio_wdata;
+wire [31:0] mmio_rdata;
+reg         mmio_we, mmio_cs;
+wire        spi_sck, spi_mosi, spi_csn;
+wire        irq;
+
+/* --- SPI MISO (슬레이브 → 마스터) --- */
+reg  spi_miso;
+
+/* --- DUT 인스턴스 --- */
+w5500_udp_tx_ip #(.CLK_DIV(CLK_DIV)) dut (
+    .clk        (clk),
+    .rst_n      (rst_n),
+    .mmio_addr  (mmio_addr),
+    .mmio_wdata (mmio_wdata),
+    .mmio_rdata (mmio_rdata),
+    .mmio_we    (mmio_we),
+    .mmio_cs    (mmio_cs),
+    .spi_sck    (spi_sck),
+    .spi_mosi   (spi_mosi),
+    .spi_csn    (spi_csn),
+    .spi_miso   (spi_miso),
+    .irq        (irq)
+);
+
+/* ============================================================
+ * 가짜 W5500 SPI 슬레이브
+ * 프레임: [addr_hi][addr_lo][ctrl_byte][data...]
+ * ctrl_byte[2]=1: 쓰기, ctrl_byte[2]=0: 읽기
+ * ============================================================ */
+integer    slave_bit;
+reg  [7:0] slave_rx;
+integer    frame_byte;
+reg [15:0] frame_addr;
+reg  [7:0] frame_ctrl;
+reg        send_received;       /* SEND 커맨드 수신 플래그 */
+reg  [7:0] slave_tx_byte;      /* 읽기 응답 바이트 */
+integer    slave_tx_bit;
+reg        slave_tx_active;
+reg        slave_tx_first_negedge; /* ctrl 바이트 마지막 negedge 건너뜀 */
+
+initial begin
+    spi_miso               = 1&#x27;b1;
+    slave_bit              = 7;
+    slave_rx               = 8&#x27;h00;
+    frame_byte             = 0;
+    frame_addr             = 16&#x27;h0000;
+    frame_ctrl             = 8&#x27;h00;
+    send_received          = 1&#x27;b0;
+    slave_tx_byte          = 8&#x27;h00;
+    slave_tx_bit           = 6;
+    slave_tx_active        = 1&#x27;b0;
+    slave_tx_first_negedge = 1&#x27;b0;
+end
+
+/* CSn 하강: 프레임 초기화 (send_received는 프레임 간 유지) */
+always @(negedge spi_csn) begin
+    slave_bit              = 7;
+    slave_rx               = 8&#x27;h00;
+    frame_byte             = 0;
+    frame_addr             = 16&#x27;h0000;
+    frame_ctrl             = 8&#x27;h00;
+    slave_tx_active        = 1&#x27;b0;
+    slave_tx_first_negedge = 1&#x27;b0;
+    spi_miso               = 1&#x27;b1;
+end
+
+/* CSn 상승: 슬레이브 릴리즈 */
+always @(posedge spi_csn) begin
+    slave_tx_active = 1&#x27;b0;
+    spi_miso        = 1&#x27;b1;
+end
+
+/* posedge SCK: MOSI 비트 샘플 */
+always @(posedge spi_sck) begin
+    if (!spi_csn) begin
+        slave_rx[slave_bit] = spi_mosi;
+        if (slave_bit == 0) begin
+            /* 바이트 완성 처리 */
+            case (frame_byte)
+                0: begin
+                    frame_addr[15:8] = slave_rx;
+                end
+                1: begin
+                    frame_addr[7:0]  = slave_rx;
+                end
+                2: begin
+                    /* ctrl 바이트 */
+                    frame_ctrl = slave_rx;
+                    if (!slave_rx[2]) begin
+                        /* 읽기 모드: 응답 바이트 결정 */
+                        if (frame_addr == 16&#x27;h0002 &amp;&amp; slave_rx == 8&#x27;h08)
+                            slave_tx_byte = send_received ? 8&#x27;h10 : 8&#x27;h00;
+                        else
+                            slave_tx_byte = 8&#x27;h00;
+                        /* bit7을 지금 출력. 첫 번째 negedge(ctrl 마지막)는 건너뜀 */
+                        spi_miso               = slave_tx_byte[7];
+                        slave_tx_bit           = 6;
+                        slave_tx_first_negedge = 1&#x27;b1;
+                        slave_tx_active        = 1&#x27;b1;
+                    end
+                end
+                default: begin
+                    /* 데이터 바이트 (frame_byte &gt;= 3) */
+                    if (frame_ctrl[2]) begin
+                        /* 쓰기: SEND 커맨드 감지 */
+                        if (frame_ctrl == 8&#x27;h0C &amp;&amp;
+                            frame_addr  == 16&#x27;h0001 &amp;&amp;
+                            slave_rx    == 8&#x27;h20)
+                            send_received = 1&#x27;b1;
+                        frame_addr = frame_addr + 1&#x27;b1;
+                    end
+                    /* 읽기: 마스터가 dummy 송신, 슬레이브는 slave_tx_byte 송신 중 */
+                end
+            endcase
+            frame_byte = frame_byte + 1;
+            slave_bit  = 7;
+        end else begin
+            slave_bit = slave_bit - 1;
+        end
+    end
+end
+
+/* negedge SCK: MISO 비트 출력 (읽기 응답) */
+always @(negedge spi_sck) begin
+    #1; /* 경쟁 조건 방지 */
+    if (!spi_csn &amp;&amp; slave_tx_active) begin
+        if (slave_tx_first_negedge) begin
+            /* ctrl 바이트 마지막 negedge: bit7은 이미 세팅됨, 플래그만 해제 */
+            slave_tx_first_negedge = 1&#x27;b0;
+        end else begin
+            spi_miso = slave_tx_byte[slave_tx_bit];
+            if (slave_tx_bit == 0)
+                slave_tx_active = 1&#x27;b0;
+            else
+                slave_tx_bit = slave_tx_bit - 1;
+        end
+    end
+end
+
+/* ============================================================
+ * 클럭 생성
+ * ============================================================ */
+initial clk = 1&#x27;b0;
+always #CLK_HALF clk = ~clk;
+
+/* ============================================================
+ * MMIO 태스크
+ * ============================================================ */
+task mmio_write;
+    input [15:0] addr;
+    input [31:0] data;
+    begin
+        @(posedge clk); #1;
+        mmio_addr  = addr;
+        mmio_wdata = data;
+        mmio_we    = 1&#x27;b1;
+        mmio_cs    = 1&#x27;b1;
+        @(posedge clk); #1;
+        mmio_we    = 1&#x27;b0;
+        mmio_cs    = 1&#x27;b0;
+    end
+endtask
+
+task mmio_read;
+    input  [15:0] addr;
+    output [31:0] data;
+    begin
+        @(posedge clk); #1;
+        mmio_addr  = addr;
+        mmio_we    = 1&#x27;b0;
+        mmio_cs    = 1&#x27;b1;
+        @(posedge clk); #1;
+        data       = mmio_rdata;
+        mmio_cs    = 1&#x27;b0;
+    end
+endtask
+
+/* BUSY 폴링 태스크 */
+task wait_not_busy;
+    reg [31:0] ctrl_val;
+    integer    timeout;
+    begin
+        timeout  = 0;
+        ctrl_val = 32&#x27;h0000_0400; /* BUSY 비트 세팅 상태로 초기화 */
+        while (ctrl_val[10] == 1&#x27;b1 &amp;&amp; timeout &lt; 200000) begin
+            mmio_read(16&#x27;h0000, ctrl_val);
+            timeout = timeout + 1;
+        end
+        if (timeout &gt;= 200000)
+            $display(&quot;FAIL: BUSY 타임아웃&quot;);
+    end
+endtask
+
+/* ============================================================
+ * 메인 테스트
+ * ============================================================ */
+integer fail_count;
+reg [31:0] rd_val;
+
+initial begin
+    fail_count = 0;
+    rst_n      = 1&#x27;b0;
+    mmio_addr  = 16&#x27;h0000;
+    mmio_wdata = 32&#x27;d0;
+    mmio_we    = 1&#x27;b0;
+    mmio_cs    = 1&#x27;b0;
+
+    repeat(4) @(posedge clk);
+    rst_n = 1&#x27;b1;
+    repeat(2) @(posedge clk);
+
+    /* --- 1. IP_ID 확인 --- */
+    mmio_read(16&#x27;hFFF0, rd_val);
+    if (rd_val !== 32&#x27;h5735_5544) begin
+        $display(&quot;FAIL: IP_ID 기대값 0x57355544, 실제값 0x%08H&quot;, rd_val);
+        fail_count = fail_count + 1;
+    end
+
+    /* --- 2. TX_LEN = 4 --- */
+    mmio_write(16&#x27;h0004, 32&#x27;h0000_0004);
+
+    /* --- 3. TX_DATA 4바이트 적재 --- */
+    mmio_write(16&#x27;h0008, 32&#x27;h0000_00DE);
+    mmio_write(16&#x27;h0008, 32&#x27;h0000_00AD);
+    mmio_write(16&#x27;h0008, 32&#x27;h0000_00BE);
+    mmio_write(16&#x27;h0008, 32&#x27;h0000_00EF);
+
+    /* --- 4. TX_PTR 확인 (go 전에 읽어야 함 — go가 ptr 초기화) --- */
+    mmio_read(16&#x27;h000C, rd_val);
+    if (rd_val[5:0] !== 6&#x27;d4) begin
+        $display(&quot;FAIL: TX_PTR 기대값 4, 실제값 %0d&quot;, rd_val[5:0]);
+        fail_count = fail_count + 1;
+    end
+
+    /* --- 5. 초기화 (bit1=init) --- */
+    mmio_write(16&#x27;h0000, 32&#x27;h0000_0002);
+    wait_not_busy;
+
+    /* --- 6. init_done 확인 (bit13) --- */
+    mmio_read(16&#x27;h0000, rd_val);
+    if (rd_val[13] !== 1&#x27;b1) begin
+        $display(&quot;FAIL: init_done 비트 미세팅 (CTRL=0x%08H)&quot;, rd_val);
+        fail_count = fail_count + 1;
+    end
+
+    /* --- 7. UDP TX 시작 (bit0=go) --- */
+    mmio_write(16&#x27;h0000, 32&#x27;h0000_0001);
+    wait_not_busy;
+
+    /* --- 8. err 확인 (bit11 == 0) --- */
+    mmio_read(16&#x27;h0000, rd_val);
+    if (rd_val[11] !== 1&#x27;b0) begin
+        $display(&quot;FAIL: err 비트 세팅됨 (CTRL=0x%08H)&quot;, rd_val);
+        fail_count = fail_count + 1;
+    end
+
+    /* --- 9. IRQ_STATUS 확인 (bit0 == 1) --- */
+    mmio_read(16&#x27;hFFF8, rd_val);
+    if (rd_val[0] !== 1&#x27;b1) begin
+        $display(&quot;FAIL: IRQ_STATUS done 비트 미세팅&quot;);
+        fail_count = fail_count + 1;
+    end
+
+    /* --- 10. IRQ_ENABLE=1 → irq 선 확인 --- */
+    mmio_write(16&#x27;hFFFC, 32&#x27;h0000_0001);
+    @(posedge clk); #1;
+    if (irq !== 1&#x27;b1) begin
+        $display(&quot;FAIL: irq 선 Low (IRQ_ENABLE=1 후)&quot;);
+        fail_count = fail_count + 1;
+    end
+
+    /* --- 11. IRQ_STATUS W1C → bit0==0 확인 --- */
+    mmio_write(16&#x27;hFFF8, 32&#x27;h0000_0001);
+    mmio_read(16&#x27;hFFF8, rd_val);
+    if (rd_val[0] !== 1&#x27;b0) begin
+        $display(&quot;FAIL: IRQ_STATUS W1C 실패 (bit0 여전히 1)&quot;);
+        fail_count = fail_count + 1;
+    end
+
+    /* --- 최종 판정 --- */
+    if (fail_count == 0)
+        $display(&quot;PASS: W5500 UDP TX IP 검증 완료 (SENDOK 수신, IRQ 동작)&quot;);
+    else
+        $display(&quot;FAIL: %0d 항목 실패&quot;, fail_count);
+
+    $finish;
+end
+
+/* 최대 실행 시간 보호 (CLK_DIV * 2000 프레임 여유) */
+initial begin
+    #(CLK_DIV * 2000 * 10 * 2);
+    $display(&quot;FAIL: 시뮬레이션 타임아웃&quot;);
+    $finish;
+end
+
+endmodule
+</pre></details><details><summary><code>constr/basys3_w5500.xdc</code> <span class="muted">31줄</span></summary><pre>## basys3_w5500.xdc — Basys3 XDC for W5500 UDP TX IP
+## Board: Digilent Basys3 (XC7A35T-1CPG236C)
+## Pmod JA → W5500 Pmod NIC100 (or 직결 W5500 모듈)
+## Origin: capstones/mmio-w5500-udp-tx-ip/constr/basys3_w5500.xdc
+
+## ---- 시스템 클럭 100 MHz ----
+set_property -dict { PACKAGE_PIN W5  IOSTANDARD LVCMOS33 } [get_ports clk]
+create_clock -add -name sys_clk_pin -period 10.000 -waveform {0 5} [get_ports clk]
+
+## ---- 리셋 (BTNC, 액티브 하이 → rst_n으로 반전) ----
+set_property -dict { PACKAGE_PIN U18 IOSTANDARD LVCMOS33 } [get_ports rst_n]
+
+## ---- Pmod JA ---- (W5500 SPI 인터페이스)
+## JA1 → spi_sck  (SCK)
+## JA2 → spi_mosi (MOSI)
+## JA3 → spi_miso (MISO)
+## JA4 → spi_csn  (CSn, 액티브 로우)
+set_property -dict { PACKAGE_PIN J1  IOSTANDARD LVCMOS33 } [get_ports spi_sck]
+set_property -dict { PACKAGE_PIN L2  IOSTANDARD LVCMOS33 } [get_ports spi_mosi]
+set_property -dict { PACKAGE_PIN J2  IOSTANDARD LVCMOS33 } [get_ports spi_miso]
+set_property -dict { PACKAGE_PIN G2  IOSTANDARD LVCMOS33 } [get_ports spi_csn]
+
+## ---- IRQ 출력 (Pmod JA7, 슬롯 연결용) ----
+## irq는 mmio 버스 상위로 연결하므로, 보드 보조 핀으로 노출할 경우에만 활성화
+## set_property -dict { PACKAGE_PIN H1  IOSTANDARD LVCMOS33 } [get_ports irq]
+
+## ---- 타이밍 무시 (SPI 비동기 경계) ----
+set_false_path -from [get_ports spi_miso]
+set_false_path -to   [get_ports spi_sck]
+set_false_path -to   [get_ports spi_mosi]
+set_false_path -to   [get_ports spi_csn]
+</pre></details><details><summary><code>Makefile</code> <span class="muted">36줄</span></summary><pre># Makefile — W5500 UDP TX IP (mmio-w5500-udp-tx-ip)
+# 타깃: lint, sim, synth
+# 도구: iverilog, vvp, yosys
+# Origin: capstones/mmio-w5500-udp-tx-ip/Makefile
+
+RTL_TOP  = rtl/w5500_udp_tx_ip.v
+TB       = tb/tb_w5500_udp_tx.v
+SIM_OUT  = build/sim_w5500_udp_tx
+SYNTH_LOG = build/synth_w5500_udp_tx.log
+
+.PHONY: all lint sim synth clean
+
+all: lint sim
+
+## lint — RTL 문법 검사 (iverilog -tnull)
+lint:
+	@mkdir -p build
+	iverilog -tnull -Wall -Wno-timescale -g2001 $(RTL_TOP)
+	@echo &quot;LINT OK: $(RTL_TOP)&quot;
+
+## sim — 가짜 W5500 슬레이브와 UDP TX 검증
+sim:
+	@mkdir -p build
+	iverilog -g2001 -o $(SIM_OUT) $(TB) $(RTL_TOP)
+	vvp $(SIM_OUT)
+
+## synth — yosys로 자원 추정 (XC7A35T 기준)
+synth:
+	@mkdir -p build
+	yosys -p &quot;read_verilog -sv $(RTL_TOP); \
+	           synth_xilinx -top w5500_udp_tx_ip -flatten; \
+	           stat&quot; 2&gt;&amp;1 | tee $(SYNTH_LOG)
+	@echo &quot;SYNTH LOG: $(SYNTH_LOG)&quot;
+
+clean:
+	rm -rf build/
+</pre></details><h3>시뮬레이션 (iverilog)</h3><ol><li>make lint  — RTL 문법 검사 (iverilog -tnull)</li><li>make sim   — 가짜 W5500 슬레이브와 UDP TX SENDOK 검증; PASS 출력 확인</li><li>make synth — yosys로 자원 추정 (XC7A35T 기준)</li></ol><h3>Vivado 합성</h3><ol><li>Vivado에서 capstone.json의 sources 목록 파일을 프로젝트에 추가한다.</li><li>constr/basys3_w5500.xdc를 제약 파일로 추가한다.</li><li>top=w5500_udp_tx_ip으로 합성·구현한다 (SoC 통합 전 단독 검증용).</li><li>합성 후 LUT/FF/BRAM 사용량과 WNS를 기록한다.</li></ol>
+<h2 id="verify">8. 검증</h2><div class="panel"><table><tr><th>단계</th><th>결과</th><th>내용</th></tr>
+<tr><td>린트(verilator)</td><td>pass (경고 0건)</td><td></td></tr><tr><td>시뮬레이션(iverilog)</td><td>pass (PASS: W5500 UDP TX 11단계 검증 — IP_ID, TX_LEN/DATA/PTR, init_done, go, err==0, IRQ_STATUS, irq선, W1C)</td><td></td></tr><tr><td>합성 추정(yosys)</td><td>pass (합성 성공, stat 파싱 실패로 LUT/FF 미기록)</td><td></td></tr><tr><td>보드 동작</td><td>not-tested</td><td></td></tr>
+</table></div><p>시뮬레이션: 가짜 W5500 SPI 슬레이브로 SEND 커맨드 → SENDOK 폴링 → IRQ 동작까지 검증. CTRL 비트 폭 버그(8&#x27;d0→10&#x27;d0) 수정 후 CI 2회차 통과. S3(보드 동작)는 미수행.</p>
+<h2 id="ref">9. 참고 카드와 위험</h2><h3>참고 카드</h3><ul><li><a href="../catalog/vendor-neutral/wiznet-makers-gavinchang-w5500-udp-loopback.html"><code>wiznet-makers-gavinchang-w5500-udp-loopback</code></a> — W5500 SPI 프레임 구조(addr+ctrl+data)와 Socket 0 송수신 흐름 참조</li><li><a href="../catalog/amd/digilent-pmod-nic100-reference-manual.html"><code>digilent-pmod-nic100-reference-manual</code></a> — Pmod NIC100 핀배치 및 W5500 3.3V 전원 사양 참조</li><li><a href="../catalog/amd/digilent-forum-basys3-ethernet-ipv4-udp.html"><code>digilent-forum-basys3-ethernet-ipv4-udp</code></a> — Basys3 Pmod JA SPI 연결과 UDP 송신 초기화 순서 참조</li></ul><h3>위험·한계</h3><ul><li>mmio-lite 단일 사이클 응답: 긴 SPI 전송 중 BUSY=1이므로 CPU가 폴링 필요</li><li>init ROM 고정: 목적지 IP/MAC/포트를 바꾸려면 RTL 수정 필요</li><li>SENDOK 폴링 무한 루프 방지: poll_cnt == 16&#x27;hFFFF이면 ERR로 전환하므로 ~65535 사이클 대기</li><li>Pmod SPI 선로 용량: 긴 케이블이나 Pmod 체인 사용 시 타이밍 열화 가능</li><li>단일 소켓: 여러 연결을 쓰려면 멀티 소켓 확장 필요</li></ul>
+</main></body></html>

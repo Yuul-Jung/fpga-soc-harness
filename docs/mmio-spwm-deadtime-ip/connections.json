@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-spwm-deadtime-ip",
+  "kind": "digital-block-diagram",
+  "note": "디지털 모듈 연결도다. 외부 부품의 전기 배선(전압, 저항, 커넥터)은 포함하지 않는다.",
+  "bus": "AXI4-Lite",
+  "blocks": [
+    {
+      "id": "top",
+      "name": "basys3_top",
+      "kind": "wrapper",
+      "module": "basys3_top",
+      "file": "rtl/basys3_top.v"
+    },
+    {
+      "id": "demo",
+      "name": "demo_master",
+      "kind": "controller",
+      "module": "demo_master",
+      "file": "rtl/basys3_top.v"
+    },
+    {
+      "id": "ip",
+      "name": "spwm_ip",
+      "kind": "ip",
+      "module": "spwm_ip",
+      "file": "rtl/spwm_ip.v"
+    },
+    {
+      "id": "pmod",
+      "name": "pmod_jb_out",
+      "kind": "external",
+      "module": null,
+      "file": null
+    }
+  ],
+  "links": [
+    {
+      "from": "demo",
+      "to": "ip",
+      "label": "AXI4-Lite write (CTRL/PERIOD/MOD_IDX/DEADTIME)"
+    },
+    {
+      "from": "ip",
+      "to": "pmod",
+      "label": "HIN_A, LIN_A, HIN_B, LIN_B (보완 쌍)"
+    }
+  ]
+}

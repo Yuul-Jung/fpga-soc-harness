@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-imu-cf-ip",
+  "files": [
+    {
+      "group": "rtl",
+      "path": "rtl/cordic_atan2.v",
+      "sha256": "7aad03fa74726f64a282349eade350146fb0dbc1a7cea2c71a6c0fe92029248b",
+      "lines": 130,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/imu_cf_ip.v",
+      "sha256": "8b9e9204563a33e40633a393d61b03e76974ba05fab240ce106b12bf188aed83",
+      "lines": 171,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/axil_imu_cf.v",
+      "sha256": "9ae3aadaf2a55bcf2fd12ca61b01463a8ad521726fe092fccc4a8e39ef898a1e",
+      "lines": 159,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/basys3_imu_cf_top.v",
+      "sha256": "5b5b1f2af969c89059970f382e84f3d0e66a008a7113a17cf389e3025df95131",
+      "lines": 74,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/gpio_stub.v",
+      "sha256": "94b53234e43afc9f7075f8dadc390357b88c7444337b9a50216df0d0c0882ed6",
+      "lines": 42,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/uart_tx.v",
+      "sha256": "ead8c0bdab7ba0f3e522fabb8f2bb7d33f1e86202cf45decf5000cb0814a8f76",
+      "lines": 78,
+      "origin": "first_party"
+    },
+    {
+      "group": "tb",
+      "path": "tb/tb_imu_cf.v",
+      "sha256": "f8b1f48b050cf08f96b35d7d06c22741df02d74b6ef17b7efb91108bff85ae4d",
+      "lines": 184,
+      "origin": "first_party"
+    },
+    {
+      "group": "constraints",
+      "path": "constr/basys3_imu_cf.xdc",
+      "sha256": "210792cddaa51ceaa371d42690b35ee2d5090c05b0f41c918b3a3004cce9839d",
+      "lines": 43,
+      "origin": "first_party"
+    },
+    {
+      "group": "build",
+      "path": "Makefile",
+      "sha256": "0931966fa09a05c4d8652471a202f799b44431eb3ecc10bd6198896e323da088",
+      "lines": 48,
+      "origin": "first_party"
+    }
+  ],
+  "note": "소스는 하네스가 직접 쓴 원본이다. 외부 저장소 코드는 포함하지 않는다(HARNESS §13.3)."
+}

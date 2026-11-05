@@ -1,0 +1,5 @@
+id,name,interface,io_voltage_V,supply_V,qty,board_resident,arduino_compatible,level_shift,notes
+mpu6050,MPU-6050 모듈 (3.3V 호환),I2C (SCL/SDA),3.3,3.3,1,false,true,False,5V 모듈 사용 시 레벨 변환 필수(SDA 양방향). 3.3V 전용 모듈 권장.
+bmp280,BMP280 모듈 (3.3V 호환),I2C (SCL/SDA),3.3,3.3,1,false,true,False,I2C 버스 공유. CSB를 3.3V에 연결(SPI 비활성화).
+hmc5883l,HMC5883L 모듈 (3.3V 호환),I2C (SCL/SDA),3.3,3.3,1,false,true,False,DRDY 핀 미사용(폴링 모드). 모듈 내장 풀업 확인 필요.
+gps_module,"GPS NMEA 모듈 (NEO-6M 등, 3.3V TX)",UART TX → FPGA RX,3.3,3.3,1,false,true,False,"9600 baud, N81 고정. GPS 모듈 VCC는 별도 전원(3.3V 또는 5V, 최대 50mA)."

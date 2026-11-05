@@ -1,0 +1,2 @@
+id,name,interface,io_voltage_V,supply_V,qty,board_resident,arduino_compatible,level_shift,notes
+ext_w5500_pmod,Pmod NIC100 (W5500 기반 Ethernet Pmod),SPI,3.3,3.3,1,false,false,False,Digilent Pmod NIC100 또는 호환 W5500 SPI 모듈. 직결 시 Pmod JA 핀 사용.

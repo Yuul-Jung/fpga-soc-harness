@@ -1,0 +1,884 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>XADC 4채널 아날로그 입력 허브 IP</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+
+.colhead{font:600 11px sans-serif;fill:var(--muted)}
+.link{fill:none;stroke:var(--line);stroke-width:1.5}.arrow{fill:var(--line)}
+.lbl{font:11px sans-serif;fill:var(--muted)}
+.bname{font:600 13px sans-serif;fill:var(--text)}.bdesc{font:11px sans-serif;fill:var(--muted)}
+.k-cpu rect{fill:var(--c-cpu);stroke:var(--c-cpu-s)}.k-bus rect{fill:var(--c-bus);stroke:var(--c-bus-s)}
+.k-periph rect,.k-memory rect{fill:var(--c-per);stroke:var(--c-per-s)}
+.k-external rect{fill:var(--c-ext);stroke:var(--c-ext-s);stroke-dasharray:4 3}
+.k-clock rect{fill:var(--c-clk);stroke:var(--c-clk-s)}
+</style></head><body><header class="top"><a class="brand" href="../hub.html">FPGA SoC 하네스</a><a href="../hub.html">메인</a><a href="../hub.html#capstones">캡스톤</a><a href="../soc-map/tech-tree.html">기술 트리</a><a href="../catalog/index.html">카탈로그</a><a href="../inbox/ideas.html">아이디어</a><a href="../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main>
+<p class="muted">캡스톤 패키지 · Basys3 · 단계 T2</p>
+<h1>XADC 4채널 아날로그 입력 허브 IP</h1><p>Basys3 XADC 프리미티브를 AXI4-Lite 래퍼 안에 숨기고, JXADC 헤더 4채널(VAUX0·1·8·9)을 순환 스캔하여 채널별 12비트 평균값·완료 인터럽트를 레지스터로 노출하는 T2 아날로그 입력 허브 IP.</p>
+<div class="badges"><span class="badge b-not-run">린트: 미실행</span><span class="badge b-not-run">시뮬레이션: 미실행</span><span class="badge b-not-run">합성: 미실행</span><span class="badge b-not-tested">보드: not-tested</span></div>
+<p class="muted">검증 상태는 실행 기록이 있을 때만 표시한다. 기록이 없으면 '미실행'이다.</p>
+<nav><a href="#goal">목표</a><a href="#arch">계통도</a><a href="#hier">모듈 계층</a><a href="#map">메모리맵</a><a href="#ext">외부 부품·전기</a><a href="#road">기술 트리</a><a href="#src">실행 소스</a><a href="#verify">검증</a><a href="#ref">참고·위험</a></nav>
+<h2 id="goal">1. 목표와 범위</h2><h3>목표</h3><ul><li>XADC DRP(Dynamic Reconfiguration Port)를 통해 4채널(VAUX0·1·8·9)을 순환 스캔한다.</li><li>채널별 12비트 평균값(이동 평균 길이 1·2·4·8·16·32·64·128배 설정 가능)을 AXI4-Lite 레지스터로 노출한다.</li><li>스캔 완료 인터럽트(W1C IRQ_STAT, IRQ_EN 마스크)를 제공한다.</li><li>XADC 프리미티브가 없는 iverilog/yosys 환경에서 모의 DRP 모델로 테스트벤치를 통과한다.</li><li>mbv-frozen-v2 xadc 동결 영역(0x4009_0000, 64KB)을 사용하고 IP 표준 AXI4-Lite 래퍼로 설계한다.</li></ul><h3>범위 밖</h3><ul><li>XADC 온칩 온도·공급전압 채널은 사용하지 않는다.</li><li>연속 모드(continuous mode) 또는 이벤트 트리거 모드는 미구현이다.</li><li>보드 보호 없이 1V 이상의 아날로그 입력은 인가하지 않는다.</li><li>S3(보드 동작 확인)은 사용자가 직접 한다. 에이전트는 올리지 않는다.</li></ul><p class="muted">이 패키지의 소스는 하네스가 직접 작성한 Verilog-2001 원본이며 외부 코드를 포함하지 않는다. 아이디어 I-032 기반(차단조건재심사 2026-11-04 10점). mbv-frozen-v2 xadc 동결 영역(0x4009_0000) 사용. 시뮬레이션·합성 결과는 CI에서 검증한다.</p>
+<h2 id="arch">2. 계통도</h2><p>클럭: 100 MHz 입력(W5), AXI4-Lite·DRP 모두 단일 클럭 도메인</p><div class="panel"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 974 208" role="img" aria-label="블록 다이어그램">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arrow"/></marker></defs>
+<text x="24" y="16" class="colhead">클럭·입력·마스터</text>
+<text x="274" y="16" class="colhead">버스</text>
+<text x="524" y="16" class="colhead">주변장치</text>
+<text x="774" y="16" class="colhead">외부</text>
+<path d="M774,63.0 C714,8 760,8 700,63.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="16" class="lbl" text-anchor="middle">AXI4-Lite</text>
+<path d="M612.0,92 L612.0,116" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="104.0" class="lbl" text-anchor="middle">DRP(Digital Reconfiguration Port)</text>
+<path d="M774,145.0 C714,90 760,90 700,145.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="98" class="lbl" text-anchor="middle">analog 0–0.77 V (전압 분배 후)</text>
+<g class="k-external"><rect x="774" y="34" width="176" height="58" rx="8"/><text x="862.0" y="58" text-anchor="middle" class="bname">MicroBlaze V</text><text x="862.0" y="76" text-anchor="middle" class="bdesc">CPU</text></g>
+<g class="k-rtl"><rect x="524" y="34" width="176" height="58" rx="8"/><text x="612.0" y="58" text-anchor="middle" class="bname">axil_xadc_hub</text><text x="612.0" y="76" text-anchor="middle" class="bdesc">XADC Hub</text></g>
+<g class="k-ip"><rect x="524" y="116" width="176" height="58" rx="8"/><text x="612.0" y="140" text-anchor="middle" class="bname">XADC (Basys3 최상위)</text><text x="612.0" y="158" text-anchor="middle" class="bdesc">XADC</text></g>
+<g class="k-external"><rect x="774" y="116" width="176" height="58" rx="8"/><text x="862.0" y="140" text-anchor="middle" class="bname">JXADC 헤더</text><text x="862.0" y="158" text-anchor="middle" class="bdesc">JXADC</text></g>
+</svg></div>
+<p class="muted"><a href="diagram.svg">diagram.svg</a>로 따로 받을 수 있다.</p>
+<h3>버스 규약: AXI4-Lite</h3><div class="panel"><table><tr><th>신호</th><th>방향</th><th>설명</th></tr><tr><td><code>s_axi_awaddr</code></td><td>in</td><td>쓰기 주소</td></tr><tr><td><code>s_axi_awvalid</code></td><td>in</td><td>쓰기 주소 유효</td></tr><tr><td><code>s_axi_awready</code></td><td>out</td><td>쓰기 주소 준비</td></tr><tr><td><code>s_axi_wdata</code></td><td>in</td><td>쓰기 데이터</td></tr><tr><td><code>s_axi_wstrb</code></td><td>in</td><td>쓰기 스트로브</td></tr><tr><td><code>s_axi_wvalid</code></td><td>in</td><td>쓰기 데이터 유효</td></tr><tr><td><code>s_axi_wready</code></td><td>out</td><td>쓰기 데이터 준비</td></tr><tr><td><code>s_axi_bresp</code></td><td>out</td><td>쓰기 응답 (00=OKAY)</td></tr><tr><td><code>s_axi_bvalid</code></td><td>out</td><td>쓰기 응답 유효</td></tr><tr><td><code>s_axi_bready</code></td><td>in</td><td>쓰기 응답 준비</td></tr><tr><td><code>s_axi_araddr</code></td><td>in</td><td>읽기 주소</td></tr><tr><td><code>s_axi_arvalid</code></td><td>in</td><td>읽기 주소 유효</td></tr><tr><td><code>s_axi_arready</code></td><td>out</td><td>읽기 주소 준비</td></tr><tr><td><code>s_axi_rdata</code></td><td>out</td><td>읽기 데이터</td></tr><tr><td><code>s_axi_rresp</code></td><td>out</td><td>읽기 응답</td></tr><tr><td><code>s_axi_rvalid</code></td><td>out</td><td>읽기 데이터 유효</td></tr><tr><td><code>s_axi_rready</code></td><td>in</td><td>읽기 데이터 준비</td></tr></table></div><p>단일 클럭 도메인. aw_ok/wd_ok 래치 패턴, 한 번에 하나의 outstanding 트랜잭션.</p>
+<h3>통합 선언 (SoC 적합성)</h3><div class="panel"><table><tr><th style="white-space:nowrap">버스</th><td><code>AXI4-Lite</code></td></tr><tr><th style="white-space:nowrap">주소맵</th><td><code>mbv-frozen-v2</code> → 동결 맵 <code>mbv-frozen-v2</code> 적합 여부: <b>적합</b></td></tr><tr><th style="white-space:nowrap">이식 계획</th><td>mbv-frozen-v2 xadc 영역(0x4009_0000, 64KB)을 사용. MicroBlaze V 인터럽트 컨트롤러 채널 13 사용.</td></tr></table></div>
+<h2 id="hier">3. 모듈 계층</h2><div class="panel"><ul class="tree"><li><code>basys3_xadc_top</code> <span class="muted">(rtl/basys3_xadc_top.v)</span><ul><li><code>axil_xadc_hub</code> <span class="muted">(rtl/axil_xadc_hub.v)</span></li></ul></li></ul></div>
+<h2 id="map">4. 메모리맵</h2><h3>axil_xadc_hub <code>0x4009_0000</code> <span class="muted">크기 0x100</span></h3><div class="panel"><table><tr><th>오프셋</th><th>이름</th><th>접근</th><th>설명</th></tr><tr><td><code>0x00</code></td><td>CH0_DATA</td><td>RO</td><td>VAUX0 12비트 평균값 [11:0]. 스캔 완료 전에는 0.</td></tr><tr><td><code>0x04</code></td><td>CH1_DATA</td><td>RO</td><td>VAUX1 12비트 평균값 [11:0].</td></tr><tr><td><code>0x08</code></td><td>CH2_DATA</td><td>RO</td><td>VAUX8 12비트 평균값 [11:0].</td></tr><tr><td><code>0x0C</code></td><td>CH3_DATA</td><td>RO</td><td>VAUX9 12비트 평균값 [11:0].</td></tr><tr><td><code>0x10</code></td><td>STATUS</td><td>RO</td><td>[7:4]=ch_valid(4채널 유효 플래그), [0]=busy(FSM 동작 중).</td></tr><tr><td><code>0x14</code></td><td>CTRL</td><td>RW</td><td>[4:2]=avg_sel(0~7, 평균 횟수=1&lt;&lt;avg_sel), [0]=en(1=스캔 시작).</td></tr><tr><td><code>0x18</code></td><td>IRQ_EN</td><td>RW</td><td>[0]=인터럽트 활성화 마스크.</td></tr><tr><td><code>0x1C</code></td><td>IRQ_STAT</td><td>RW</td><td>[0]=스캔 완료 플래그 (W1C: 1 쓰면 클리어).</td></tr><tr><td><code>0xFC</code></td><td>ID_VER</td><td>RO</td><td>0x0032_0100 고정 (IP ID 0x0032, 버전 1.0.0).</td></tr></table></div>
+<h2 id="ext">5. 외부 부품과 전기 회로도</h2><p class="muted">2절의 계통도는 <b>디지털 모듈 연결도</b>다. 전압, 풀업, 커넥터 배선 같은 전기 사항은 이 절에서 따로 다룬다. 기계가 읽는 사본: <a href="bom.csv">bom.csv</a> · <a href="connections.json">connections.json</a></p><p class="badge b-skipped">전기 회로도: 미작성</p><p class="muted">전압 분배기 회로(33kΩ+10kΩ)를 각 채널에 적용해야 함. 미작성.</p><div class="panel"><table><tr><th>id</th><th>부품</th><th>인터페이스</th><th>신호 전압</th><th>구분</th><th>레벨 변환</th><th>비고</th></tr><tr><td><code>pot0</code></td><td>10 kΩ 트리머 가변저항 (CH0 VAUX0)</td><td>JXADC 핀 1(P)/7(N) → VAUXP0/VAUXN0</td><td style="white-space:nowrap">3.3 V</td><td style="white-space:nowrap">외부 모듈</td><td>전압 분배기 필요 (33kΩ+10kΩ, 최대 0.77V)</td><td></td></tr><tr><td><code>pot1</code></td><td>10 kΩ 트리머 가변저항 (CH1 VAUX1)</td><td>JXADC 핀 2(P)/8(N) → VAUXP1/VAUXN1</td><td style="white-space:nowrap">3.3 V</td><td style="white-space:nowrap">외부 모듈</td><td>전압 분배기 필요 (33kΩ+10kΩ, 최대 0.77V)</td><td></td></tr><tr><td><code>pot2</code></td><td>10 kΩ 트리머 가변저항 (CH2 VAUX8)</td><td>JXADC 핀 3(P)/9(N) → VAUXP8/VAUXN8</td><td style="white-space:nowrap">3.3 V</td><td style="white-space:nowrap">외부 모듈</td><td>전압 분배기 필요 (33kΩ+10kΩ, 최대 0.77V)</td><td></td></tr><tr><td><code>pot3</code></td><td>10 kΩ 트리머 가변저항 (CH3 VAUX9)</td><td>JXADC 핀 4(P)/10(N) → VAUXP9/VAUXN9</td><td style="white-space:nowrap">3.3 V</td><td style="white-space:nowrap">외부 모듈</td><td>전압 분배기 필요 (33kΩ+10kΩ, 최대 0.77V)</td><td></td></tr></table></div><p class="muted">Basys3 FPGA 핀은 3.3V 신호만 직접 받는다. 5V·12V·모터·릴레이는 직결하지 않는다.</p>
+<h2 id="road">6. 기술 트리 (이 캡스톤의 확장 경로)</h2><div class="panel"><ul style="list-style:none;padding:0"><li class="step"><span class="tag s-current">T2</span><span>XADC 4채널 AXI4-Lite 허브 (모의 DRP 테스트벤치) <span class='muted'>참고: <a href="../catalog/amd/digilent-basys-3-xadc-demo.html"><code>digilent-basys-3-xadc-demo</code></a>, <a href="../catalog/amd/umd-phys495-basys3-xadc-voltmeter.html"><code>umd-phys495-basys3-xadc-voltmeter</code></a></span></span></li><li class="step"><span class="tag s-planned">T3</span><span>LiteX/MicroBlaze V 펌웨어 드라이버 + VGA 계기판 연동 <span class='muted'>참고: <a href="../catalog/amd/digilent-basys-3-xadc-demo.html"><code>digilent-basys-3-xadc-demo</code></a></span></span></li><li class="step"><span class="tag s-planned">T4</span><span>PID 제어 루프 지령/되먹임 입력 (서보·모터 조합) <span class='muted'>참고: <a href="../catalog/amd/shashankr-basys3-fpga-robotic-arm.html"><code>shashankr-basys3-fpga-robotic-arm</code></a></span></span></li></ul></div>
+<h2 id="src">7. 실행 소스</h2><p>저장소의 <code>capstones/mmio-xadc-hub/</code>에 있는 파일 그대로다. 이 문서는 파일에서 읽어 넣은 것이므로 항상 일치한다. <a href="mmio-xadc-hub.zip">소스 전체 내려받기 (.zip)</a> · <a href="https://github.com/Yuul-Jung/fpga-soc-harness/tree/main/capstones/mmio-xadc-hub">GitHub에서 보기</a></p><details><summary><code>rtl/axil_xadc_hub.v</code> <span class="muted">354줄</span></summary><pre>// axil_xadc_hub.v
+// XADC 4채널 AXI4-Lite 허브 IP (DRP FSM + 레지스터 파일)
+// Verilog-2001. iverilog/verilator/yosys 호환.
+// XADC 프리미티브는 basys3_xadc_top.v가 담당하며 이 파일은 DRP 인터페이스만 사용.
+// 출처: capstones/mmio-xadc-hub/capstone.json
+`default_nettype none
+`timescale 1ns/1ps
+
+module axil_xadc_hub #(
+    parameter BASE_ADDR = 32&#x27;h4009_0000
+) (
+    input  wire        s_axi_aclk,
+    input  wire        s_axi_aresetn,
+    // AW
+    input  wire [31:0] s_axi_awaddr,
+    input  wire        s_axi_awvalid,
+    output reg         s_axi_awready,
+    // W
+    input  wire [31:0] s_axi_wdata,
+    input  wire [3:0]  s_axi_wstrb,
+    input  wire        s_axi_wvalid,
+    output reg         s_axi_wready,
+    // B
+    output reg  [1:0]  s_axi_bresp,
+    output reg         s_axi_bvalid,
+    input  wire        s_axi_bready,
+    // AR
+    input  wire [31:0] s_axi_araddr,
+    input  wire        s_axi_arvalid,
+    output reg         s_axi_arready,
+    // R
+    output reg  [31:0] s_axi_rdata,
+    output reg  [1:0]  s_axi_rresp,
+    output reg         s_axi_rvalid,
+    input  wire        s_axi_rready,
+    // DRP interface (to XADC primitive)
+    output reg         drp_den,
+    output reg         drp_dwe,
+    output reg  [6:0]  drp_daddr,
+    output reg  [15:0] drp_di,
+    input  wire [15:0] drp_do,
+    input  wire        drp_drdy,
+    // Interrupt
+    output wire        irq
+);
+
+    // -----------------------------------------------------------------------
+    // XADC 채널 주소 (Artix-7 JXADC 핀 매핑)
+    // -----------------------------------------------------------------------
+    localparam [6:0] VAUX0 = 7&#x27;h10;  // JXADC 핀 1(P)/7(N)
+    localparam [6:0] VAUX1 = 7&#x27;h11;  // JXADC 핀 2(P)/8(N)
+    localparam [6:0] VAUX8 = 7&#x27;h18;  // JXADC 핀 3(P)/9(N)
+    localparam [6:0] VAUX9 = 7&#x27;h19;  // JXADC 핀 4(P)/10(N)
+
+    // -----------------------------------------------------------------------
+    // DRP FSM 상태
+    // -----------------------------------------------------------------------
+    localparam [2:0] S_IDLE    = 3&#x27;d0,
+                     S_REQ     = 3&#x27;d1,
+                     S_WAIT    = 3&#x27;d2,
+                     S_ACCUM   = 3&#x27;d3,
+                     S_NEXT    = 3&#x27;d4,
+                     S_COMPUTE = 3&#x27;d5,
+                     S_DONE    = 3&#x27;d6;
+
+    // -----------------------------------------------------------------------
+    // 레지스터 오프셋 (기저 주소 0x4009_0000 기준)
+    // -----------------------------------------------------------------------
+    localparam [7:0] REG_CH0    = 8&#x27;h00,  // VAUX0 평균값 RO
+                     REG_CH1    = 8&#x27;h04,  // VAUX1 평균값 RO
+                     REG_CH2    = 8&#x27;h08,  // VAUX8 평균값 RO
+                     REG_CH3    = 8&#x27;h0C,  // VAUX9 평균값 RO
+                     REG_STATUS = 8&#x27;h10,  // [7:4]=ch_valid [0]=busy RO
+                     REG_CTRL   = 8&#x27;h14,  // [4:2]=avg_sel [0]=en RW
+                     REG_IRQ_EN = 8&#x27;h18,  // [0]=irq_en RW
+                     REG_IRQ_ST = 8&#x27;h1C,  // [0]=irq_stat W1C
+                     REG_IDVER  = 8&#x27;hFC;  // 0x0032_0100 RO
+
+    // -----------------------------------------------------------------------
+    // 채널 주소 선택 함수
+    // -----------------------------------------------------------------------
+    function [6:0] ch_addr;
+        input [1:0] ch;
+        begin
+            case (ch)
+                2&#x27;d0: ch_addr = VAUX0;
+                2&#x27;d1: ch_addr = VAUX1;
+                2&#x27;d2: ch_addr = VAUX8;
+                2&#x27;d3: ch_addr = VAUX9;
+                default: ch_addr = VAUX0;
+            endcase
+        end
+    endfunction
+
+    // -----------------------------------------------------------------------
+    // 이동 평균 계산 함수 (accum &gt;&gt; sel의 하위 12비트)
+    // -----------------------------------------------------------------------
+    function [11:0] avg12;
+        input [19:0] sum;
+        input [2:0]  sel;
+        reg [19:0] tmp;
+        begin
+            tmp   = sum &gt;&gt; sel;
+            avg12 = tmp[11:0];
+        end
+    endfunction
+
+    // -----------------------------------------------------------------------
+    // 내부 레지스터
+    // -----------------------------------------------------------------------
+    // AXI 쓰기 래치
+    reg        aw_ok;
+    reg  [7:0] aw_a;
+    reg        wd_ok;
+    reg [31:0] wd_d;
+    reg        do_wr;
+
+    // 제어·상태 레지스터
+    reg        ctrl_en;
+    reg  [2:0] ctrl_avg;
+    reg        irq_en;
+    reg        irq_stat;
+    reg        scan_done;   // 1클럭 펄스, Block 4→Block 2 전달
+
+    // 채널 결과
+    reg [11:0] ch_avg_r [0:3];
+    reg  [3:0] ch_valid_r;
+    reg        fsm_busy;
+
+    // DRP FSM
+    reg  [2:0] state;
+    reg  [1:0] ch_ptr;
+    reg  [4:0] scan_cnt;
+    reg [19:0] accum [0:3];
+    reg [15:0] drp_do_lat;  // drp_drdy 클럭에서 drp_do를 래치 (다음 클럭에 DRP 모델이 소거하기 전에 포착)
+
+    wire [4:0] avg_len = 5&#x27;d1 &lt;&lt; ctrl_avg;
+
+    // -----------------------------------------------------------------------
+    // Block 1: AXI 쓰기 채널 래치 (aw_ok / wd_ok 패턴)
+    // -----------------------------------------------------------------------
+    always @(posedge s_axi_aclk) begin
+        if (!s_axi_aresetn) begin
+            s_axi_awready &lt;= 1&#x27;b0;
+            s_axi_wready  &lt;= 1&#x27;b0;
+            s_axi_bvalid  &lt;= 1&#x27;b0;
+            s_axi_bresp   &lt;= 2&#x27;b00;
+            aw_ok  &lt;= 1&#x27;b0;
+            aw_a   &lt;= 8&#x27;h00;
+            wd_ok  &lt;= 1&#x27;b0;
+            wd_d   &lt;= 32&#x27;h0;
+            do_wr  &lt;= 1&#x27;b0;
+        end else begin
+            do_wr         &lt;= 1&#x27;b0;
+            s_axi_awready &lt;= 1&#x27;b0;
+            s_axi_wready  &lt;= 1&#x27;b0;
+
+            if (s_axi_awvalid &amp;&amp; !aw_ok) begin
+                s_axi_awready &lt;= 1&#x27;b1;
+                aw_ok         &lt;= 1&#x27;b1;
+                aw_a          &lt;= s_axi_awaddr[7:0];
+            end
+
+            if (s_axi_wvalid &amp;&amp; !wd_ok) begin
+                s_axi_wready &lt;= 1&#x27;b1;
+                wd_ok        &lt;= 1&#x27;b1;
+                wd_d         &lt;= s_axi_wdata;
+            end
+
+            if (aw_ok &amp;&amp; wd_ok) begin
+                do_wr        &lt;= 1&#x27;b1;
+                aw_ok        &lt;= 1&#x27;b0;
+                wd_ok        &lt;= 1&#x27;b0;
+                s_axi_bvalid &lt;= 1&#x27;b1;
+                s_axi_bresp  &lt;= 2&#x27;b00;
+            end
+
+            if (s_axi_bvalid &amp;&amp; s_axi_bready)
+                s_axi_bvalid &lt;= 1&#x27;b0;
+        end
+    end
+
+    // -----------------------------------------------------------------------
+    // Block 2: 레지스터 파일 (단일 드라이버)
+    // W1C 클리어 먼저, scan_done 세트가 같은 클럭에 오면 세트가 이긴다
+    // (비차단 대입 순서: 클리어 먼저 ← scan_done 뒤에)
+    // -----------------------------------------------------------------------
+    always @(posedge s_axi_aclk) begin
+        if (!s_axi_aresetn) begin
+            ctrl_en  &lt;= 1&#x27;b0;
+            ctrl_avg &lt;= 3&#x27;d0;
+            irq_en   &lt;= 1&#x27;b0;
+            irq_stat &lt;= 1&#x27;b0;
+        end else begin
+            // W1C 클리어 (먼저)
+            if (do_wr &amp;&amp; (aw_a == REG_IRQ_ST))
+                irq_stat &lt;= irq_stat &amp; ~wd_d[0];
+
+            // scan_done 세트 (나중 → 같은 클럭이면 덮어씀)
+            if (scan_done)
+                irq_stat &lt;= 1&#x27;b1;
+
+            // CTRL 쓰기
+            if (do_wr &amp;&amp; (aw_a == REG_CTRL)) begin
+                ctrl_en  &lt;= wd_d[0];
+                ctrl_avg &lt;= wd_d[4:2];
+            end
+
+            // IRQ_EN 쓰기
+            if (do_wr &amp;&amp; (aw_a == REG_IRQ_EN))
+                irq_en &lt;= wd_d[0];
+        end
+    end
+
+    // -----------------------------------------------------------------------
+    // Block 3: AXI 읽기 채널
+    // -----------------------------------------------------------------------
+    always @(posedge s_axi_aclk) begin
+        if (!s_axi_aresetn) begin
+            s_axi_arready &lt;= 1&#x27;b0;
+            s_axi_rvalid  &lt;= 1&#x27;b0;
+            s_axi_rdata   &lt;= 32&#x27;h0;
+            s_axi_rresp   &lt;= 2&#x27;b00;
+        end else begin
+            s_axi_arready &lt;= 1&#x27;b0;
+
+            if (s_axi_arvalid &amp;&amp; !s_axi_rvalid) begin
+                s_axi_arready &lt;= 1&#x27;b1;
+                s_axi_rvalid  &lt;= 1&#x27;b1;
+                s_axi_rresp   &lt;= 2&#x27;b00;
+                case (s_axi_araddr[7:0])
+                    REG_CH0:    s_axi_rdata &lt;= {20&#x27;h0, ch_avg_r[0]};
+                    REG_CH1:    s_axi_rdata &lt;= {20&#x27;h0, ch_avg_r[1]};
+                    REG_CH2:    s_axi_rdata &lt;= {20&#x27;h0, ch_avg_r[2]};
+                    REG_CH3:    s_axi_rdata &lt;= {20&#x27;h0, ch_avg_r[3]};
+                    REG_STATUS: s_axi_rdata &lt;= {24&#x27;h0, ch_valid_r, 3&#x27;b000, fsm_busy};
+                    REG_CTRL:   s_axi_rdata &lt;= {27&#x27;h0, ctrl_avg, 1&#x27;b0, ctrl_en};
+                    REG_IRQ_EN: s_axi_rdata &lt;= {31&#x27;h0, irq_en};
+                    REG_IRQ_ST: s_axi_rdata &lt;= {31&#x27;h0, irq_stat};
+                    REG_IDVER:  s_axi_rdata &lt;= 32&#x27;h0032_0100;
+                    default:    s_axi_rdata &lt;= 32&#x27;h0;
+                endcase
+            end
+
+            if (s_axi_rvalid &amp;&amp; s_axi_rready)
+                s_axi_rvalid &lt;= 1&#x27;b0;
+        end
+    end
+
+    // -----------------------------------------------------------------------
+    // Block 4: DRP FSM (순환 스캔 + 이동 평균)
+    // -----------------------------------------------------------------------
+    always @(posedge s_axi_aclk) begin
+        if (!s_axi_aresetn) begin
+            state       &lt;= S_IDLE;
+            ch_ptr      &lt;= 2&#x27;d0;
+            scan_cnt    &lt;= 5&#x27;d0;
+            drp_den     &lt;= 1&#x27;b0;
+            drp_dwe     &lt;= 1&#x27;b0;
+            drp_daddr   &lt;= 7&#x27;h0;
+            drp_di      &lt;= 16&#x27;h0;
+            fsm_busy    &lt;= 1&#x27;b0;
+            ch_valid_r  &lt;= 4&#x27;h0;
+            scan_done   &lt;= 1&#x27;b0;
+            accum[0]    &lt;= 20&#x27;h0;
+            accum[1]    &lt;= 20&#x27;h0;
+            accum[2]    &lt;= 20&#x27;h0;
+            accum[3]    &lt;= 20&#x27;h0;
+            ch_avg_r[0] &lt;= 12&#x27;h0;
+            ch_avg_r[1] &lt;= 12&#x27;h0;
+            ch_avg_r[2] &lt;= 12&#x27;h0;
+            ch_avg_r[3] &lt;= 12&#x27;h0;
+            drp_do_lat  &lt;= 16&#x27;h0;
+        end else begin
+            scan_done &lt;= 1&#x27;b0;  // 기본: 펄스 없음
+
+            case (state)
+                S_IDLE: begin
+                    fsm_busy &lt;= 1&#x27;b0;
+                    if (ctrl_en) begin
+                        ch_ptr   &lt;= 2&#x27;d0;
+                        scan_cnt &lt;= 5&#x27;d0;
+                        accum[0] &lt;= 20&#x27;h0;
+                        accum[1] &lt;= 20&#x27;h0;
+                        accum[2] &lt;= 20&#x27;h0;
+                        accum[3] &lt;= 20&#x27;h0;
+                        fsm_busy &lt;= 1&#x27;b1;
+                        state    &lt;= S_REQ;
+                    end
+                end
+
+                S_REQ: begin
+                    drp_den   &lt;= 1&#x27;b1;
+                    drp_dwe   &lt;= 1&#x27;b0;
+                    drp_daddr &lt;= ch_addr(ch_ptr);
+                    drp_di    &lt;= 16&#x27;h0;
+                    state     &lt;= S_WAIT;
+                end
+
+                S_WAIT: begin
+                    drp_den &lt;= 1&#x27;b0;
+                    if (drp_drdy) begin
+                        drp_do_lat &lt;= drp_do;  // drp_drdy 클럭에 drp_do 포착 (DRP 모델이 소거하기 전)
+                        state      &lt;= S_ACCUM;
+                    end
+                end
+
+                S_ACCUM: begin
+                    // drp_do_lat: drp_drdy 클럭에서 포착한 ADC 결과 (DO[15:4] = 12비트)
+                    accum[ch_ptr] &lt;= accum[ch_ptr] + {8&#x27;d0, drp_do_lat[15:4]};
+                    state         &lt;= S_NEXT;
+                end
+
+                S_NEXT: begin
+                    if (ch_ptr == 2&#x27;d3) begin
+                        // 4채널 한 패스 완료
+                        scan_cnt &lt;= scan_cnt + 5&#x27;d1;
+                        ch_ptr   &lt;= 2&#x27;d0;
+                        if (scan_cnt + 5&#x27;d1 &gt;= avg_len)
+                            state &lt;= S_COMPUTE;
+                        else
+                            state &lt;= S_REQ;  // accum 초기화 없이 계속 누적
+                    end else begin
+                        ch_ptr &lt;= ch_ptr + 2&#x27;d1;
+                        state  &lt;= S_REQ;
+                    end
+                end
+
+                S_COMPUTE: begin
+                    ch_avg_r[0] &lt;= avg12(accum[0], ctrl_avg);
+                    ch_avg_r[1] &lt;= avg12(accum[1], ctrl_avg);
+                    ch_avg_r[2] &lt;= avg12(accum[2], ctrl_avg);
+                    ch_avg_r[3] &lt;= avg12(accum[3], ctrl_avg);
+                    ch_valid_r  &lt;= 4&#x27;hF;
+                    state       &lt;= S_DONE;
+                end
+
+                S_DONE: begin
+                    scan_done &lt;= 1&#x27;b1;  // 1클럭 펄스 → Block 2로 전달
+                    state     &lt;= S_IDLE;
+                end
+
+                default: state &lt;= S_IDLE;
+            endcase
+        end
+    end
+
+    // -----------------------------------------------------------------------
+    // 인터럽트 출력
+    // -----------------------------------------------------------------------
+    assign irq = irq_en &amp; irq_stat;
+
+endmodule
+`default_nettype wire
+</pre></details><details><summary><code>rtl/basys3_xadc_top.v</code> <span class="muted">137줄</span></summary><pre>// basys3_xadc_top.v
+// Basys3 최상위: axil_xadc_hub + Xilinx XADC 프리미티브 래퍼
+// Vivado 전용. iverilog/verilator/yosys lint/sim/synth 대상에서 제외.
+// XADC 프리미티브는 Sequential 채널 시퀀서 모드 사용.
+`default_nettype none
+`timescale 1ns/1ps
+
+module basys3_xadc_top (
+    input  wire        aclk,       // 100 MHz (W5)
+    input  wire        aresetn,    // 액티브 로우 리셋 (btnC = U18, 반전 사용)
+    // AXI4-Lite (MicroBlaze V 연결)
+    input  wire [31:0] s_axi_awaddr,
+    input  wire        s_axi_awvalid,
+    output wire        s_axi_awready,
+    input  wire [31:0] s_axi_wdata,
+    input  wire [3:0]  s_axi_wstrb,
+    input  wire        s_axi_wvalid,
+    output wire        s_axi_wready,
+    output wire [1:0]  s_axi_bresp,
+    output wire        s_axi_bvalid,
+    input  wire        s_axi_bready,
+    input  wire [31:0] s_axi_araddr,
+    input  wire        s_axi_arvalid,
+    output wire        s_axi_arready,
+    output wire [31:0] s_axi_rdata,
+    output wire [1:0]  s_axi_rresp,
+    output wire        s_axi_rvalid,
+    input  wire        s_axi_rready,
+    // JXADC 차동 아날로그 입력 (전압 분배기 필수: 최대 0.77 V)
+    input  wire        JXADC_P0,   // VAUX0P (JXADC 핀 1)
+    input  wire        JXADC_N0,   // VAUX0N (JXADC 핀 7)
+    input  wire        JXADC_P1,   // VAUX1P (JXADC 핀 2)
+    input  wire        JXADC_N1,   // VAUX1N (JXADC 핀 8)
+    input  wire        JXADC_P4,   // VAUX8P (JXADC 핀 3)
+    input  wire        JXADC_N4,   // VAUX8N (JXADC 핀 9)
+    input  wire        JXADC_P5,   // VAUX9P (JXADC 핀 4)
+    input  wire        JXADC_N5,   // VAUX9N (JXADC 핀 10)
+    // 인터럽트
+    output wire        irq
+);
+
+    // DRP 내부 연결선
+    wire        drp_den, drp_dwe, drp_drdy;
+    wire  [6:0] drp_daddr;
+    wire [15:0] drp_di, drp_do;
+
+    // -----------------------------------------------------------------------
+    // axil_xadc_hub 인스턴스
+    // -----------------------------------------------------------------------
+    axil_xadc_hub #(
+        .BASE_ADDR(32&#x27;h4009_0000)
+    ) u_hub (
+        .s_axi_aclk    (aclk),
+        .s_axi_aresetn (aresetn),
+        .s_axi_awaddr  (s_axi_awaddr),
+        .s_axi_awvalid (s_axi_awvalid),
+        .s_axi_awready (s_axi_awready),
+        .s_axi_wdata   (s_axi_wdata),
+        .s_axi_wstrb   (s_axi_wstrb),
+        .s_axi_wvalid  (s_axi_wvalid),
+        .s_axi_wready  (s_axi_wready),
+        .s_axi_bresp   (s_axi_bresp),
+        .s_axi_bvalid  (s_axi_bvalid),
+        .s_axi_bready  (s_axi_bready),
+        .s_axi_araddr  (s_axi_araddr),
+        .s_axi_arvalid (s_axi_arvalid),
+        .s_axi_arready (s_axi_arready),
+        .s_axi_rdata   (s_axi_rdata),
+        .s_axi_rresp   (s_axi_rresp),
+        .s_axi_rvalid  (s_axi_rvalid),
+        .s_axi_rready  (s_axi_rready),
+        .drp_den       (drp_den),
+        .drp_dwe       (drp_dwe),
+        .drp_daddr     (drp_daddr),
+        .drp_di        (drp_di),
+        .drp_do        (drp_do),
+        .drp_drdy      (drp_drdy),
+        .irq           (irq)
+    );
+
+    // -----------------------------------------------------------------------
+    // Xilinx XADC 프리미티브 (Sequential 채널 시퀀서)
+    // 참고: UG480 &quot;7 Series FPGAs and Zynq-7000 SoC XADC Dual 12-Bit 1 MSPS ADC&quot;
+    // -----------------------------------------------------------------------
+    wire [15:0] vauxp = {6&#x27;h0, JXADC_P5, JXADC_P4, 6&#x27;h0, JXADC_P1, JXADC_P0};
+    wire [15:0] vauxn = {6&#x27;h0, JXADC_N5, JXADC_N4, 6&#x27;h0, JXADC_N1, JXADC_N0};
+
+    XADC #(
+        .INIT_40 (16&#x27;h9000),  // 채널 시퀀서 모드 (Sequential)
+        .INIT_41 (16&#x27;h2ef0),  // 온도·전압 연속 모드 비활성화
+        .INIT_42 (16&#x27;h0400),  // ADC A 사용, 클럭 분주 4 (100 MHz / 4 = 25 MHz)
+        .INIT_48 (16&#x27;h0303),  // 시퀀서: VAUX0·1·8·9 활성화
+        .INIT_49 (16&#x27;h0303),  // 시퀀서 평균 비활성화 (DRP FSM이 담당)
+        .INIT_4A (16&#x27;h0000),
+        .INIT_4B (16&#x27;h0000),
+        .INIT_4C (16&#x27;h0000),
+        .INIT_4D (16&#x27;h0000),
+        .INIT_4E (16&#x27;h0000),
+        .INIT_4F (16&#x27;h0000),
+        .INIT_50 (16&#x27;hb5ed),  // 온도 경보 임계값 (기본)
+        .INIT_51 (16&#x27;h57e4),
+        .INIT_52 (16&#x27;ha147),
+        .INIT_53 (16&#x27;hca33),
+        .INIT_54 (16&#x27;ha93a),
+        .INIT_55 (16&#x27;h52c6),
+        .INIT_56 (16&#x27;h9555),
+        .INIT_57 (16&#x27;hae4e),
+        .INIT_58 (16&#x27;h5999),
+        .INIT_5C (16&#x27;h5111),
+        .SIM_DEVICE       (&quot;7SERIES&quot;),
+        .SIM_MONITOR_FILE (&quot;design.txt&quot;)
+    ) u_xadc (
+        .DCLK    (aclk),
+        .RESET   (~aresetn),
+        .DEN     (drp_den),
+        .DWE     (drp_dwe),
+        .DADDR   (drp_daddr),
+        .DI      (drp_di),
+        .DO      (drp_do),
+        .DRDY    (drp_drdy),
+        .VAUXP   (vauxp),
+        .VAUXN   (vauxn),
+        .VP      (1&#x27;b0),
+        .VN      (1&#x27;b0),
+        .BUSY    (),
+        .CHANNEL (),
+        .EOC     (),
+        .EOS     (),
+        .JTAGBUSY(),
+        .JTAGLOCKED(),
+        .JTAGMODIFIED(),
+        .OT      (),
+        .ALM     ()
+    );
+
+endmodule
+`default_nettype wire
+</pre></details><details><summary><code>tb/tb_axil_xadc_hub.v</code> <span class="muted">267줄</span></summary><pre>// tb_axil_xadc_hub.v
+// 자체 점검 테스트벤치 — axil_xadc_hub.v만 시험 (XADC 프리미티브 없음)
+// 모의 DRP 모델이 채널 주소별로 고정 응답을 돌려준다.
+// 통과: &quot;PASS&quot; 출력. 실패: &quot;FAIL: N checks failed&quot; 출력.
+`timescale 1ns/1ps
+`default_nettype none
+
+module tb_axil_xadc_hub;
+
+    // -----------------------------------------------------------------------
+    // 클럭·리셋
+    // -----------------------------------------------------------------------
+    reg clk = 0;
+    always #5 clk = ~clk;  // 100 MHz
+
+    reg rst_n = 0;
+    initial begin
+        #12; rst_n = 1;
+    end
+
+    // -----------------------------------------------------------------------
+    // DUT 포트 연결
+    // -----------------------------------------------------------------------
+    reg  [31:0] awaddr  = 0;
+    reg         awvalid = 0;
+    wire        awready;
+    reg  [31:0] wdata   = 0;
+    reg  [3:0]  wstrb   = 4&#x27;hF;
+    reg         wvalid  = 0;
+    wire        wready;
+    wire [1:0]  bresp;
+    wire        bvalid;
+    reg         bready  = 0;
+    reg  [31:0] araddr  = 0;
+    reg         arvalid = 0;
+    wire        arready;
+    wire [31:0] rdata;
+    wire [1:0]  rresp;
+    wire        rvalid;
+    reg         rready  = 0;
+    wire        drp_den;
+    wire        drp_dwe;
+    wire [6:0]  drp_daddr;
+    wire [15:0] drp_di;
+    reg  [15:0] drp_do  = 0;
+    reg         drp_drdy = 0;
+    wire        irq;
+
+    axil_xadc_hub #(
+        .BASE_ADDR(32&#x27;h4009_0000)
+    ) dut (
+        .s_axi_aclk    (clk),
+        .s_axi_aresetn (rst_n),
+        .s_axi_awaddr  (awaddr),
+        .s_axi_awvalid (awvalid),
+        .s_axi_awready (awready),
+        .s_axi_wdata   (wdata),
+        .s_axi_wstrb   (wstrb),
+        .s_axi_wvalid  (wvalid),
+        .s_axi_wready  (wready),
+        .s_axi_bresp   (bresp),
+        .s_axi_bvalid  (bvalid),
+        .s_axi_bready  (bready),
+        .s_axi_araddr  (araddr),
+        .s_axi_arvalid (arvalid),
+        .s_axi_arready (arready),
+        .s_axi_rdata   (rdata),
+        .s_axi_rresp   (rresp),
+        .s_axi_rvalid  (rvalid),
+        .s_axi_rready  (rready),
+        .drp_den       (drp_den),
+        .drp_dwe       (drp_dwe),
+        .drp_daddr     (drp_daddr),
+        .drp_di        (drp_di),
+        .drp_do        (drp_do),
+        .drp_drdy      (drp_drdy),
+        .irq           (irq)
+    );
+
+    // -----------------------------------------------------------------------
+    // 모의 DRP 모델 (1클럭 지연 응답)
+    // 채널 주소 → 고정 ADC 결과 (DO[15:4]에 12비트 정렬)
+    // VAUX0=0x10 → 0xABC0 (12비트=0xABC)
+    // VAUX1=0x11 → 0x1230 (12비트=0x123)
+    // VAUX8=0x18 → 0x4560 (12비트=0x456)
+    // VAUX9=0x19 → 0x7890 (12비트=0x789)
+    // -----------------------------------------------------------------------
+    always @(posedge clk) begin
+        drp_drdy &lt;= 1&#x27;b0;
+        drp_do   &lt;= 16&#x27;h0;
+        if (drp_den) begin
+            case (drp_daddr)
+                7&#x27;h10: drp_do &lt;= 16&#x27;hABC0;
+                7&#x27;h11: drp_do &lt;= 16&#x27;h1230;
+                7&#x27;h18: drp_do &lt;= 16&#x27;h4560;
+                7&#x27;h19: drp_do &lt;= 16&#x27;h7890;
+                default: drp_do &lt;= 16&#x27;h0000;
+            endcase
+            drp_drdy &lt;= 1&#x27;b1;
+        end
+    end
+
+    // -----------------------------------------------------------------------
+    // 태스크: AXI 쓰기
+    // -----------------------------------------------------------------------
+    task axi_write;
+        input [31:0] addr;
+        input [31:0] data;
+        begin
+            @(posedge clk); #1;
+            awaddr  &lt;= addr; awvalid &lt;= 1&#x27;b1;
+            wdata   &lt;= data; wvalid  &lt;= 1&#x27;b1; wstrb &lt;= 4&#x27;hF;
+            @(posedge clk); #1;
+            awvalid &lt;= 1&#x27;b0;
+            wvalid  &lt;= 1&#x27;b0;
+            bready  &lt;= 1&#x27;b1;
+            @(posedge clk); #1;
+            @(posedge clk); #1;
+            bready  &lt;= 1&#x27;b0;
+        end
+    endtask
+
+    // -----------------------------------------------------------------------
+    // 태스크: AXI 읽기
+    // -----------------------------------------------------------------------
+    reg [31:0] rd_data;
+    task axi_read;
+        input [31:0] addr;
+        begin
+            @(posedge clk); #1;
+            araddr  &lt;= addr; arvalid &lt;= 1&#x27;b1;
+            rready  &lt;= 1&#x27;b1;
+            @(posedge clk); #1;
+            arvalid &lt;= 1&#x27;b0;
+            @(posedge clk); #1;
+            rd_data = rdata;   // 블로킹: check_eq 호출 전 rd_data가 갱신돼야 함 (NBA면 X)
+            rready  &lt;= 1&#x27;b0;
+        end
+    endtask
+
+    // -----------------------------------------------------------------------
+    // 검증 카운터
+    // -----------------------------------------------------------------------
+    integer fail_cnt = 0;
+
+    task check_eq;
+        input [31:0] got;
+        input [31:0] exp;
+        input [127:0] tag;
+        begin
+            if (got !== exp) begin
+                $display(&quot;FAIL [%0s]: got=0x%08X exp=0x%08X&quot;, tag, got, exp);
+                fail_cnt = fail_cnt + 1;
+            end
+        end
+    endtask
+
+    // -----------------------------------------------------------------------
+    // IRQ 대기 (타임아웃 포함)
+    // -----------------------------------------------------------------------
+    integer wait_cnt;
+    reg irq_ok;
+    task wait_irq;
+        input integer timeout;
+        begin
+            irq_ok   = 0;
+            wait_cnt = 0;
+            while (!irq &amp;&amp; wait_cnt &lt; timeout) begin
+                @(posedge clk); #1;
+                wait_cnt = wait_cnt + 1;
+            end
+            if (irq) irq_ok = 1;
+            else begin
+                $display(&quot;FAIL: IRQ timeout after %0d cycles&quot;, timeout);
+                fail_cnt = fail_cnt + 1;
+            end
+        end
+    endtask
+
+    // -----------------------------------------------------------------------
+    // 메인 시나리오
+    // -----------------------------------------------------------------------
+    initial begin
+        // 리셋 해제 대기
+        @(posedge rst_n);
+        repeat(5) @(posedge clk);
+
+        // ===================================================================
+        // T1: avg_sel=0 (평균 1회, avg_len=1) 단일 스캔
+        // ===================================================================
+        $display(&quot;--- T1: avg_sel=0 단일 스캔 ---&quot;);
+        // IRQ 활성화
+        axi_write(32&#x27;h4009_0018, 32&#x27;h1);
+        // CTRL: avg_sel=0, en=1
+        axi_write(32&#x27;h4009_0014, 32&#x27;h1);
+
+        // IRQ 대기 (최대 500 클럭)
+        wait_irq(500);
+
+        // 스캔 완료 후 ctrl_en 해제
+        axi_write(32&#x27;h4009_0014, 32&#x27;h0);
+        repeat(50) @(posedge clk);
+
+        // 채널값 확인 (각 채널 12비트 평균 = 모의 DRP 값 그대로)
+        axi_read(32&#x27;h4009_0000); check_eq(rd_data, 32&#x27;h0000_0ABC, &quot;T1_CH0&quot;);
+        axi_read(32&#x27;h4009_0004); check_eq(rd_data, 32&#x27;h0000_0123, &quot;T1_CH1&quot;);
+        axi_read(32&#x27;h4009_0008); check_eq(rd_data, 32&#x27;h0000_0456, &quot;T1_CH2&quot;);
+        axi_read(32&#x27;h4009_000C); check_eq(rd_data, 32&#x27;h0000_0789, &quot;T1_CH3&quot;);
+
+        // IRQ_STAT 확인 (스캔 완료 = 1)
+        axi_read(32&#x27;h4009_001C); check_eq(rd_data, 32&#x27;h0000_0001, &quot;T1_IRQ_STAT_before_W1C&quot;);
+        // irq = irq_en &amp; irq_stat = 1
+        check_eq({31&#x27;h0, irq}, 32&#x27;h0000_0001, &quot;T1_irq_high&quot;);
+
+        // W1C: IRQ_STAT 클리어
+        axi_write(32&#x27;h4009_001C, 32&#x27;h1);
+        repeat(5) @(posedge clk);
+        axi_read(32&#x27;h4009_001C); check_eq(rd_data, 32&#x27;h0000_0000, &quot;T1_IRQ_STAT_after_W1C&quot;);
+        check_eq({31&#x27;h0, irq}, 32&#x27;h0000_0000, &quot;T1_irq_low&quot;);
+
+        // ===================================================================
+        // T2: avg_sel=1 (평균 2회, avg_len=2) 두 번 누적 평균
+        // CH0: (0xABC + 0xABC) &gt;&gt; 1 = 0xABC (동일 값)
+        // ===================================================================
+        $display(&quot;--- T2: avg_sel=1 2회 평균 ---&quot;);
+        axi_write(32&#x27;h4009_0018, 32&#x27;h1);
+        // CTRL: avg_sel=1([4:2]=3&#x27;b001), en=1
+        axi_write(32&#x27;h4009_0014, 32&#x27;h0000_0005);
+
+        wait_irq(1500);
+
+        axi_write(32&#x27;h4009_0014, 32&#x27;h0);
+        repeat(50) @(posedge clk);
+
+        // CH0 평균: (0xABC + 0xABC) &gt;&gt; 1 = 0xABC
+        axi_read(32&#x27;h4009_0000); check_eq(rd_data, 32&#x27;h0000_0ABC, &quot;T2_CH0_avg2&quot;);
+        // CH3 평균: (0x789 + 0x789) &gt;&gt; 1 = 0x789
+        axi_read(32&#x27;h4009_000C); check_eq(rd_data, 32&#x27;h0000_0789, &quot;T2_CH3_avg2&quot;);
+
+        // ID_VER 확인
+        axi_read(32&#x27;h4009_00FC); check_eq(rd_data, 32&#x27;h0032_0100, &quot;T2_ID_VER&quot;);
+
+        // W1C 클리어
+        axi_write(32&#x27;h4009_001C, 32&#x27;h1);
+        repeat(5) @(posedge clk);
+        axi_read(32&#x27;h4009_001C); check_eq(rd_data, 32&#x27;h0000_0000, &quot;T2_IRQ_STAT_clear&quot;);
+
+        // ===================================================================
+        // 최종 결과
+        // ===================================================================
+        repeat(10) @(posedge clk);
+        if (fail_cnt === 0)
+            $display(&quot;PASS&quot;);
+        else
+            $display(&quot;FAIL: %0d checks failed&quot;, fail_cnt);
+        $finish;
+    end
+
+    // 전체 타임아웃 보호
+    initial begin
+        #500000;
+        $display(&quot;FAIL: global timeout&quot;);
+        $finish;
+    end
+
+endmodule
+`default_nettype wire
+</pre></details><details><summary><code>constr/basys3_xadc_hub.xdc</code> <span class="muted">20줄</span></summary><pre># basys3_xadc_hub.xdc
+# Basys3 제약 파일 — XADC 4채널 아날로그 입력 허브
+# 보드: Digilent Basys3 (XC7A35T-1CPG236C)
+
+# 시스템 클럭 100 MHz (W5)
+set_property -dict {PACKAGE_PIN W5 IOSTANDARD LVCMOS33} [get_ports aclk]
+create_clock -add -name sys_clk_pin -period 10.000 -waveform {0 5} [get_ports aclk]
+
+# 리셋 버튼 (btnC = U18, 액티브 하이 → 반전하여 aresetn 생성)
+set_property -dict {PACKAGE_PIN U18 IOSTANDARD LVCMOS33} [get_ports aresetn]
+
+# JXADC 아날로그 핀은 XADC 프리미티브가 직접 관리하므로
+# IOSTANDARD 제약을 추가하지 않는다.
+# 전압 분배기(33kΩ + 10kΩ)로 최대 ≈0.77V 인가 필수.
+#
+# JXADC 핀 배치 (참조: Basys3 Reference Manual, Rev. E):
+#   VAUXP0/N0: 핀 1(P) / 핀 7(N)   → JXADC[1]/JXADC[7]
+#   VAUXP1/N1: 핀 2(P) / 핀 8(N)   → JXADC[2]/JXADC[8]
+#   VAUXP8/N8: 핀 3(P) / 핀 9(N)   → JXADC[3]/JXADC[9]
+#   VAUXP9/N9: 핀 4(P) / 핀 10(N)  → JXADC[4]/JXADC[10]
+</pre></details><details><summary><code>Makefile</code> <span class="muted">22줄</span></summary><pre>## capstones/mmio-xadc-hub/Makefile
+## lint/sim: axil_xadc_hub.v만 대상 (basys3_xadc_top.v는 XADC 프리미티브 미지원)
+## synth: yosys로 axil_xadc_hub.v 자원 추정
+
+lint:
+	iverilog -g2001 -Wall -Wno-timescale -t null \
+		rtl/axil_xadc_hub.v tb/tb_axil_xadc_hub.v
+
+sim: build/
+	iverilog -g2001 -Wall -Wno-timescale \
+		-o build/sim.vvp \
+		rtl/axil_xadc_hub.v tb/tb_axil_xadc_hub.v
+	vvp build/sim.vvp
+
+synth: build/
+	yosys -p &quot;synth_xilinx -flatten -top axil_xadc_hub; write_json build/synth.json&quot; \
+		rtl/axil_xadc_hub.v
+
+build/:
+	mkdir -p build
+
+.PHONY: lint sim synth
+</pre></details><h3>시뮬레이션 (iverilog)</h3><ol><li>make lint  — axil_xadc_hub.v 문법 검사 (basys3_xadc_top.v 제외)</li><li>make sim   — 모의 DRP로 테스트벤치 실행; &#x27;PASS&#x27; 출력 확인</li><li>make synth — yosys로 axil_xadc_hub.v 자원 추정</li></ol><h3>Vivado 합성</h3><ol><li>Vivado에서 basys3_xadc_top.v와 axil_xadc_hub.v를 프로젝트에 추가한다.</li><li>constr/basys3_xadc_hub.xdc를 제약 파일로 추가한다.</li><li>XADC 프리미티브는 Vivado IP Catalog 또는 직접 인스턴스로 추가한다.</li><li>합성 후 LUT/FF/BRAM 사용량과 WNS를 기록한다.</li></ol>
+<h2 id="verify">8. 검증</h2><div class="panel"><table><tr><th>단계</th><th>결과</th><th>내용</th></tr>
+<tr><td>린트(verilator)</td><td>미실행</td><td></td></tr><tr><td>시뮬레이션(iverilog)</td><td>미실행</td><td></td></tr><tr><td>합성 추정(yosys)</td><td>미실행</td><td></td></tr><tr><td>보드 동작</td><td>not-tested</td><td></td></tr>
+</table></div><p>S0 → CI에서 lint+sim+synth 통과 시 S2. S3(보드 동작)는 사용자가 한다.</p>
+<h2 id="ref">9. 참고 카드와 위험</h2><h3>참고 카드</h3><ul><li><a href="../catalog/amd/digilent-basys-3-xadc-demo.html"><code>digilent-basys-3-xadc-demo</code></a> — Basys3 XADC 데모: DRP 시퀀서, 채널 주소(VAUX0·1·8·9), VGA 출력 구조 열람</li><li><a href="../catalog/amd/umd-phys495-basys3-xadc-voltmeter.html"><code>umd-phys495-basys3-xadc-voltmeter</code></a> — XADC 순차 스캔 FSM, DRP 타이밍(DEN/DRDY 1클럭 지연) 확인</li><li><a href="../catalog/amd/unilim-vahid-xadc-basys3-vhdl.html"><code>unilim-vahid-xadc-basys3-vhdl</code></a> — XADC VHDL 래퍼: 채널 선택 주소 맵, 단일 클럭 DRP 접근 패턴</li><li><a href="../catalog/amd/shashankr-basys3-fpga-robotic-arm.html"><code>shashankr-basys3-fpga-robotic-arm</code></a> — XADC 조이스틱 → 서보 조합: 아날로그 입력 → 제어 루프 사용 사례</li></ul><h3>위험·한계</h3><ul><li>XADC 최대 허용 아날로그 입력 1.0V를 초과하면 소자 손상 위험. 반드시 전압 분배기를 사용할 것.</li><li>basys3_xadc_top.v의 XADC 프리미티브는 iverilog/yosys에서 지원하지 않아 lint/sim/synth 대상에서 제외.</li><li>DRP 응답 타이밍은 근거 카드 열람값(DEN→DRDY 1클럭) 기준이며, 실제 Vivado 시뮬레이션에서 확인 필요.</li><li>avg_sel=7(128배 평균)에서 accum 비트폭 오버플로 위험: 20비트 accum으로 최대 128×4095=524160 &lt; 2^20, 안전.</li></ul>
+</main></body></html>

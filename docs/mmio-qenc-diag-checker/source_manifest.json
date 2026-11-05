@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-qenc-diag-checker",
+  "files": [
+    {
+      "group": "rtl",
+      "path": "rtl/qenc_diag.v",
+      "sha256": "6dd6ee8709e98424bee99dbdd37d9b706eb68b6d2b665cf00214961820aadc5d",
+      "lines": 167,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/axil_qenc_wrap.v",
+      "sha256": "4c35ed8611096256164489547001e6fa266fb963609be385558f677525dfa866",
+      "lines": 178,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/basys3_qenc_top.v",
+      "sha256": "9ee63fd7e1d4abe64895f8c641b8afb76fe8345dd4a888dbb3fb466b06451ba8",
+      "lines": 70,
+      "origin": "first_party"
+    },
+    {
+      "group": "tb",
+      "path": "tb/tb_axil_qenc_wrap.v",
+      "sha256": "193abf3c74f45d31356fbd0a69942e3ac0ceb2f80f75906955f5376ff8e932fd",
+      "lines": 309,
+      "origin": "first_party"
+    },
+    {
+      "group": "constraints",
+      "path": "constr/qenc_basys3.xdc",
+      "sha256": "9c1bd9b55cbe496773ad886aaf400e8e074e31608a5ce2d0c7b3108a5a8b2466",
+      "lines": 43,
+      "origin": "first_party"
+    },
+    {
+      "group": "build",
+      "path": "Makefile",
+      "sha256": "e218d527f7c295d6762d7f9991bb12d0d319984ee4eb1885bf590e70f5a10b6c",
+      "lines": 52,
+      "origin": "first_party"
+    }
+  ],
+  "note": "소스는 하네스가 직접 쓴 원본이다. 외부 저장소 코드는 포함하지 않는다(HARNESS §13.3)."
+}

@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-uart-axilite-bridge",
+  "kind": "digital-block-diagram",
+  "note": "디지털 모듈 연결도다. 외부 부품의 전기 배선(전압, 저항, 커넥터)은 포함하지 않는다.",
+  "bus": "UART→AXI4-Lite",
+  "blocks": [
+    {
+      "id": "clk",
+      "name": "CLK_100",
+      "kind": "clock",
+      "module": "-",
+      "file": null
+    },
+    {
+      "id": "xrst",
+      "name": "BTNC 리셋",
+      "kind": "external",
+      "module": "-",
+      "file": null
+    },
+    {
+      "id": "xrx",
+      "name": "UART_RXD (PC→FPGA)",
+      "kind": "external",
+      "module": "-",
+      "file": null
+    },
+    {
+      "id": "xtx",
+      "name": "UART_TXD (FPGA→PC)",
+      "kind": "external",
+      "module": "-",
+      "file": null
+    },
+    {
+      "id": "xled",
+      "name": "LED[15:0]",
+      "kind": "external",
+      "module": "-",
+      "file": null
+    },
+    {
+      "id": "xsw",
+      "name": "SW[15:0]",
+      "kind": "external",
+      "module": "-",
+      "file": null
+    },
+    {
+      "id": "urx",
+      "name": "uart_rx",
+      "kind": "RTL",
+      "module": "uart_rx",
+      "file": "rtl/uart_rx.v"
+    },
+    {
+      "id": "utx",
+      "name": "uart_tx",
+      "kind": "RTL",
+      "module": "uart_tx",
+      "file": "rtl/uart_tx.v"
+    },
+    {
+      "id": "brg",
+      "name": "uart_axilite_bridge",
+      "kind": "RTL",
+      "module": "uart_axilite_bridge",
+      "file": "rtl/uart_axilite_bridge.v"
+    },
+    {
+      "id": "gpio",
+      "name": "demo_gpio_slave",
+      "kind": "RTL",
+      "module": "demo_gpio_slave",
+      "file": "rtl/basys3_top.v"
+    },
+    {
+      "id": "top",
+      "name": "basys3_top",
+      "kind": "RTL",
+      "module": "basys3_top",
+      "file": "rtl/basys3_top.v"
+    }
+  ],
+  "links": [
+    {
+      "from": "clk",
+      "to": "brg",
+      "label": "clk"
+    },
+    {
+      "from": "xrst",
+      "to": "brg",
+      "label": "rst"
+    },
+    {
+      "from": "xrx",
+      "to": "urx",
+      "label": "uart_rx_pin"
+    },
+    {
+      "from": "urx",
+      "to": "brg",
+      "label": "rx_data+rx_valid"
+    },
+    {
+      "from": "brg",
+      "to": "utx",
+      "label": "tx_data+tx_valid"
+    },
+    {
+      "from": "utx",
+      "to": "xtx",
+      "label": "uart_tx_pin"
+    },
+    {
+      "from": "brg",
+      "to": "gpio",
+      "label": "AXI4-Lite M"
+    },
+    {
+      "from": "xsw",
+      "to": "gpio",
+      "label": "sw[15:0]"
+    },
+    {
+      "from": "gpio",
+      "to": "xled",
+      "label": "led[15:0]"
+    }
+  ]
+}

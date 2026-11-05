@@ -1,0 +1,55 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>beningo-freertos-to-zephyr-migration</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../../hub.html">FPGA SoC 하네스</a><a href="../../hub.html">메인</a><a href="../../hub.html#capstones">캡스톤</a><a href="../../soc-map/tech-tree.html">기술 트리</a><a href="../../catalog/index.html">카탈로그</a><a href="../../inbox/ideas.html">아이디어</a><a href="../../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/catalog/embedded/beningo-freertos-to-zephyr-migration.md">GitHub 원본: catalog/embedded/beningo-freertos-to-zephyr-migration.md</a></p><h1>beningo-freertos-to-zephyr-migration</h1><div class="panel fm"><table><tr><td>name</td><td><a href="beningo-freertos-to-zephyr-migration.html">beningo-freertos-to-zephyr-migration</a></td></tr><tr><td>url</td><td>https://www.beningo.com/migrating-from-freertos-to-zephyr/</td></tr><tr><td>source_type</td><td>article</td></tr><tr><td>vendor</td><td>neutral</td></tr><tr><td>board</td><td>[]</td></tr><tr><td>fit_basys3</td><td>needs-port</td></tr><tr><td>cpu</td><td>none(MCU 펌웨어)</td></tr><tr><td>language</td><td>C</td></tr><tr><td>tools</td><td>[]</td></tr><tr><td>bus</td><td>none</td></tr><tr><td>peripherals</td><td>[]</td></tr><tr><td>stage</td><td>T2</td></tr><tr><td>license</td><td>unknown</td></tr><tr><td>stats</td><td>{stars: 0, commits: 0, last_update: 2023-01-01}</td></tr><tr><td>doc_language</td><td>en</td></tr><tr><td>verification</td><td>L3</td></tr><tr><td>checked_at</td><td>2026-11-04</td></tr><tr><td>sources</td><td>[https://www.beningo.com/migrating-from-freertos-to-zephyr/]</td></tr></table></div><h2>요약</h2>
+<p>FreeRTOS에서 Zephyr RTOS로 마이그레이션하는 방법을 API 매핑 테이블과 함께 설명한 Jacob Beningo(임베디드 컨설턴트)의 블로그 글. 태스크·세마포어·큐의 FreeRTOS↔Zephyr API 대응표와 주요 포팅 함정(우선순위 역전, 스택 단위 차이, ISR API 차이)을 명시함.</p>
+<h2>구조</h2>
+<p><strong>API 매핑 테이블 (주요 항목):</strong></p>
+<div class="panel"><table><tr><th>FreeRTOS</th><th>Zephyr</th></tr><tr><td><code>xTaskCreate()</code></td><td><code>K_THREAD_DEFINE()</code></td></tr><tr><td><code>vTaskDelay()</code></td><td><code>k_msleep()</code></td></tr><tr><td><code>xSemaphoreCreateBinary()</code></td><td><code>K_SEM_DEFINE()</code></td></tr><tr><td><code>xSemaphoreTake()</code></td><td><code>k_sem_take()</code></td></tr><tr><td><code>xSemaphoreGive()</code></td><td><code>k_sem_give()</code></td></tr><tr><td><code>xQueueCreate()</code></td><td><code>K_MSGQ_DEFINE()</code></td></tr><tr><td><code>xQueueSend()</code></td><td><code>k_msgq_put()</code></td></tr><tr><td><code>xQueueReceive()</code></td><td><code>k_msgq_get()</code></td></tr><tr><td><code>vTaskSuspend()</code></td><td><code>k_thread_suspend()</code></td></tr><tr><td><code>pvTaskGetThreadLocalStoragePointer()</code></td><td>없음 (Zephyr 미지원)</td></tr></table></div>
+<p><strong>포팅 함정 3가지:</strong></p>
+<ol><li style="margin-left:0.0em"><strong>우선순위 반전 (Priority Inversion)</strong></li><li style="margin-left:1.7999999999999998em">FreeRTOS: 숫자 클수록 높은 우선순위 (예: 10 &gt; 5)</li><li style="margin-left:1.7999999999999998em">Zephyr: 숫자 작을수록 높은 우선순위 (예: 0 &gt; 5)</li><li style="margin-left:1.7999999999999998em">포팅 시 <code>configMAX_PRIORITIES - 1 - old_priority</code>로 변환 필요</li></ol>
+<ol><li style="margin-left:0.0em"><strong>스택 단위 차이</strong></li><li style="margin-left:1.7999999999999998em">FreeRTOS: 스택 크기 단위 = 워드 (4B, Cortex-M 기준)</li><li style="margin-left:1.7999999999999998em">Zephyr: 스택 크기 단위 = 바이트</li><li style="margin-left:1.7999999999999998em">포팅 시 FreeRTOS 스택 × 4 = Zephyr 스택 (Cortex-M 기준)</li></ol>
+<ol><li style="margin-left:0.0em"><strong>ISR API 차이</strong></li><li style="margin-left:1.7999999999999998em">FreeRTOS: <code>xSemaphoreGiveFromISR()</code>, <code>xQueueSendFromISR()</code> (ISR 전용 함수군 존재)</li><li style="margin-left:1.7999999999999998em">Zephyr: 일반 <code>k_sem_give()</code>, <code>k_msgq_put()</code>을 ISR에서 그대로 사용 가능. 단, ISR에서 블로킹 대기 불가</li></ol>
+<p><strong>Zephyr 빌드 시스템 (FreeRTOS와 차이점):</strong></p>
+<ul><li style="margin-left:0.0em">프로젝트 설정: <code>prj.conf</code> (Kconfig 텍스트 파일), <code>CMakeLists.txt</code></li><li style="margin-left:0.0em">하드웨어 추상화: devicetree <code>.dts/.overlay</code> 파일에서 보드 하드웨어 선언</li><li style="margin-left:0.0em">멀티플랫폼 빌드: <code>west build -b &lt;board&gt; --</code> 명령</li></ul>
+<h2>검증·재현성</h2>
+<ul><li style="margin-left:0.0em">출처: Jacob Beningo 임베디드 컨설팅 블로그 (beningo.com). 저자는 임베디드 소프트웨어 컨설턴트 겸 강사</li><li style="margin-left:0.0em">API 매핑 테이블은 FreeRTOS 10.x와 Zephyr 3.x 기준으로 추정 (버전 명시 없음)</li><li style="margin-left:0.0em">직접 실행 없음; 코드 예시 형태로 제공된 내용을 카드에 포함</li><li style="margin-left:0.0em">함정 항목(우선순위, 스택, ISR)은 FreeRTOS·Zephyr 공식 문서에서 교차 확인 가능한 사실</li></ul>
+<h2>한계·위험</h2>
+<ul><li style="margin-left:0.0em">API 매핑이 완전하지 않음; 타이머, 이벤트 그룹, 스트림 버퍼 등 항목은 별도 확인 필요</li><li style="margin-left:0.0em"><code>pvTaskGetThreadLocalStoragePointer()</code> 등 FreeRTOS 전용 기능은 Zephyr에 대응 없음 — 설계 변경 필요</li><li style="margin-left:0.0em">Zephyr의 devicetree 추상화 계층은 FreeRTOS에 없는 개념이므로 드라이버 계층 완전 재작성이 필요한 경우 있음</li><li style="margin-left:0.0em">버전 명시가 없어 특정 FreeRTOS/Zephyr 버전 간 차이 반영 여부 불명확</li></ul>
+<h2>재사용 메모</h2>
+<p>RTOS 간 포팅 비용을 정량화하는 근거 카드. MCU 보조 프로세서(STM32, ESP32)가 FreeRTOS에서 Zephyr로 전환될 때 얼마나 큰 코드 변경이 필요한지 사전 평가 기준이 된다.</p>
+<p>개조: MicroBlaze V SoC 직접 이식 대상은 없다(MCU 전용 RTOS). 그러나 ① AXI 슬레이브 IP 드라이버를 MCU 보조 프로세서에서 구동할 때 FreeRTOS와 Zephyr 중 어느 쪽에서 더 간단하게 쓸 수 있는지 선택 근거가 된다. ② &quot;우선순위 반전&quot; 함정은 MicroBlaze V + FreeRTOS 조합에서도 동일하게 발생 — Vitis에서 태스크 우선순위 설정 시 주의 사항으로 메모 필요. ③ ISR에서 세마포어 give/큐 send 패턴은 AXI 인터럽트 핸들러(ISR) → FreeRTOS 태스크 통지 패턴에 그대로 적용됨. MicroBlaze V XPS 인터럽트 핸들러에서 <code>xSemaphoreGiveFromISR()</code> 호출하는 패턴 설계에 활용.</p>
+<ul><li style="margin-left:0.0em"><strong>라이선스 확인 필요</strong>: 블로그 글 라이선스 미명시(unknown). 코드 스니펫을 직접 복사하기 전에 라이선스를 확인한다. 패턴·개념 참고만 허용.</li></ul></main></body></html>

@@ -1,0 +1,812 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>소프트 논리 분석기 IP (BRAM 샘플 메모리 + 에지 트리거)</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+
+.colhead{font:600 11px sans-serif;fill:var(--muted)}
+.link{fill:none;stroke:var(--line);stroke-width:1.5}.arrow{fill:var(--line)}
+.lbl{font:11px sans-serif;fill:var(--muted)}
+.bname{font:600 13px sans-serif;fill:var(--text)}.bdesc{font:11px sans-serif;fill:var(--muted)}
+.k-cpu rect{fill:var(--c-cpu);stroke:var(--c-cpu-s)}.k-bus rect{fill:var(--c-bus);stroke:var(--c-bus-s)}
+.k-periph rect,.k-memory rect{fill:var(--c-per);stroke:var(--c-per-s)}
+.k-external rect{fill:var(--c-ext);stroke:var(--c-ext-s);stroke-dasharray:4 3}
+.k-clock rect{fill:var(--c-clk);stroke:var(--c-clk-s)}
+</style></head><body><header class="top"><a class="brand" href="../hub.html">FPGA SoC 하네스</a><a href="../hub.html">메인</a><a href="../hub.html#capstones">캡스톤</a><a href="../soc-map/tech-tree.html">기술 트리</a><a href="../catalog/index.html">카탈로그</a><a href="../inbox/ideas.html">아이디어</a><a href="../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main>
+<p class="muted">캡스톤 패키지 · Basys3 · 단계 T2</p>
+<h1>소프트 논리 분석기 IP (BRAM 샘플 메모리 + 에지 트리거)</h1><p>16채널 디지털 신호를 BRAM에 캡처하고 AXI4-Lite로 읽어내는 소프트 논리 분석기. 에지 트리거 FSM(상승/하강), 프리트리거 버퍼, 채널 마스크 기능 포함.</p>
+<div class="badges"><span class="badge b-not-run">린트: 미실행</span><span class="badge b-not-run">시뮬레이션: 미실행</span><span class="badge b-not-run">합성: 미실행</span><span class="badge b-not-run">보드: 미실행</span></div>
+<p class="muted">검증 상태는 실행 기록이 있을 때만 표시한다. 기록이 없으면 '미실행'이다.</p>
+<nav><a href="#goal">목표</a><a href="#arch">계통도</a><a href="#hier">모듈 계층</a><a href="#map">메모리맵</a><a href="#ext">외부 부품·전기</a><a href="#road">기술 트리</a><a href="#src">실행 소스</a><a href="#verify">검증</a><a href="#ref">참고·위험</a></nav>
+<h2 id="goal">1. 목표와 범위</h2><h3>목표</h3><ul><li>16채널 디지털 입력을 BRAM에 연속 캡처</li><li>에지 트리거(상승/하강) FSM으로 캡처 시점 제어</li><li>프리트리거 버퍼로 트리거 이전 신호 보존</li><li>AXI4-Lite 슬레이브 인터페이스로 호스트 CPU 접근</li><li>채널 마스크(CH_EN)로 관심 신호 선택</li><li>iverilog/yosys CI 통과 (S1/S2)</li></ul><h3>범위 밖</h3><ul><li>UART .vcd 덤프 (이 패키지는 BRAM 캡처 코어만 구현)</li><li>아날로그 신호 캡처 (디지털 전용)</li><li>보드 동작 확인 (S3, 사람이 수행)</li><li>트리거 체인 / 복합 트리거</li></ul><p class="muted">이 패키지의 소스는 하네스가 직접 작성한 Verilog-2001 원본이며 외부 코드를 포함하지 않는다. 아이디어 I-067 기반(ready 상태). AXI4-Lite 슬레이브. 동결 맵 free_slots[16]=0x401A_0000 배정 제안(미동결). 시뮬레이션·합성 결과는 CI에서 검증한다.</p>
+<h2 id="arch">2. 계통도</h2><p>클럭: aclk 100 MHz (Basys3 W5)</p><div class="panel"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 974 208" role="img" aria-label="블록 다이어그램">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arrow"/></marker></defs>
+<text x="24" y="16" class="colhead">클럭·입력·마스터</text>
+<text x="274" y="16" class="colhead">버스</text>
+<text x="524" y="16" class="colhead">주변장치</text>
+<text x="774" y="16" class="colhead">외부</text>
+<path d="M612.0,92 L612.0,116" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="104.0" class="lbl" text-anchor="middle">arm/force/srst/trig_ch/trig_pol/pretrig/ch_en/rd_addr</text>
+<path d="M612.0,174 L612.0,34" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="104.0" class="lbl" text-anchor="middle">sample_out/armed/capturing/full/trig_found/trig_addr</text>
+<path d="M700,145.0 C737.0,145.0 737.0,63.0 774,63.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="97.0" class="lbl" text-anchor="middle">inferred BRAM r/w</text>
+<path d="M774,145.0 C714,90 760,90 700,145.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="98" class="lbl" text-anchor="middle">ch_in[15:0]</text>
+<g class="k-rtl"><rect x="524" y="34" width="176" height="58" rx="8"/><text x="612.0" y="58" text-anchor="middle" class="bname">axil_sla_wrap</text><text x="612.0" y="76" text-anchor="middle" class="bdesc">AXI4-Lite 래퍼</text></g>
+<g class="k-rtl"><rect x="524" y="116" width="176" height="58" rx="8"/><text x="612.0" y="140" text-anchor="middle" class="bname">sla_core</text><text x="612.0" y="158" text-anchor="middle" class="bdesc">SLA 코어</text></g>
+<g class="k-external"><rect x="774" y="34" width="176" height="58" rx="8"/><text x="862.0" y="58" text-anchor="middle" class="bname">BRAM (Xilinx Block RAM)</text><text x="862.0" y="76" text-anchor="middle" class="bdesc">Block RAM</text></g>
+<g class="k-external"><rect x="774" y="116" width="176" height="58" rx="8"/><text x="862.0" y="140" text-anchor="middle" class="bname">16ch Digital Input</text><text x="862.0" y="158" text-anchor="middle" class="bdesc">디지털 입력</text></g>
+</svg></div>
+<p class="muted"><a href="diagram.svg">diagram.svg</a>로 따로 받을 수 있다.</p>
+<h3>버스 규약: AXI4-Lite</h3><div class="panel"><table><tr><th>신호</th><th>방향</th><th>설명</th></tr><tr><td><code>s_awaddr</code></td><td>in</td><td>쓰기 주소 (레지스터 오프셋 [7:0])</td></tr><tr><td><code>s_awvalid</code></td><td>in</td><td>쓰기 주소 유효</td></tr><tr><td><code>s_awready</code></td><td>out</td><td>쓰기 주소 수락</td></tr><tr><td><code>s_wdata</code></td><td>in</td><td>쓰기 데이터</td></tr><tr><td><code>s_wstrb</code></td><td>in</td><td>바이트 스트로브 (전달만, 바이트 선택 미구현)</td></tr><tr><td><code>s_wvalid</code></td><td>in</td><td>쓰기 데이터 유효</td></tr><tr><td><code>s_wready</code></td><td>out</td><td>쓰기 데이터 수락</td></tr><tr><td><code>s_bresp</code></td><td>out</td><td>쓰기 응답 (항상 OKAY)</td></tr><tr><td><code>s_bvalid</code></td><td>out</td><td>쓰기 응답 유효</td></tr><tr><td><code>s_bready</code></td><td>in</td><td>쓰기 응답 수락</td></tr><tr><td><code>s_araddr</code></td><td>in</td><td>읽기 주소 [7:0]</td></tr><tr><td><code>s_arvalid</code></td><td>in</td><td>읽기 주소 유효</td></tr><tr><td><code>s_arready</code></td><td>out</td><td>읽기 주소 수락</td></tr><tr><td><code>s_rdata</code></td><td>out</td><td>읽기 데이터</td></tr><tr><td><code>s_rresp</code></td><td>out</td><td>읽기 응답 (항상 OKAY)</td></tr><tr><td><code>s_rvalid</code></td><td>out</td><td>읽기 데이터 유효</td></tr><tr><td><code>s_rready</code></td><td>in</td><td>읽기 데이터 수락</td></tr></table></div><p>단일 마스터 가정. WSTRB는 전달만 하고 바이트 선택은 미구현(전체 32비트 쓰기)</p>
+<h3>통합 선언 (SoC 적합성)</h3><p class="badge b-fail">이 패키지는 MicroBlaze V 동결 주소맵과 호환되지 않는다 (파일럿). 아래 이식 계획을 따라야 SoC에 합칠 수 있다.</p><div class="panel"><table><tr><th style="white-space:nowrap">버스</th><td><code>AXI4-Lite</code></td></tr><tr><th style="white-space:nowrap">주소맵</th><td><code>custom</code> → 동결 맵 <code>mbv-frozen-v2</code> 적합 여부: <b>부분 적합</b></td></tr><tr><th style="white-space:nowrap">이식 계획</th><td>동결 맵 free_slots[16] 기준 0x401A_0000에 배치 제안. 사용자 동결 대기 중.</td></tr></table></div>
+<h2 id="hier">3. 모듈 계층</h2><div class="panel"><ul class="tree"><li><code>axil_sla_wrap</code> <span class="muted">(rtl/axil_sla_wrap.v)</span><ul><li><code>sla_core</code> <span class="muted">(rtl/sla_core.v)</span></li></ul></li></ul></div>
+<h2 id="map">4. 메모리맵</h2><h3>axil_sla_wrap <code>0x401A_0000</code> <span class="muted">크기 0x10000</span></h3><div class="panel"><table><tr><th>오프셋</th><th>이름</th><th>접근</th><th>설명</th></tr><tr><td><code>0x00</code></td><td>CTRL</td><td>RW</td><td>bit0=ARM(자동 클리어), bit1=FORCE(자동 클리어), bit2=TRIG_POL, bit3=SRST(자동 클리어)</td></tr><tr><td><code>0x04</code></td><td>STATUS</td><td>RO</td><td>bit0=ARMED, bit1=CAPTURING, bit2=FULL, bit3=TRIG_FOUND, [19:8]=TRIG_ADDR</td></tr><tr><td><code>0x08</code></td><td>TRIG_CH</td><td>RW</td><td>[3:0]=트리거 채널 번호 (0~15)</td></tr><tr><td><code>0x0C</code></td><td>PRETRIG</td><td>RW</td><td>[DEPTH_LOG2-1:0]=프리트리거 샘플 수 (기본 0)</td></tr><tr><td><code>0x10</code></td><td>CH_EN</td><td>RW</td><td>[15:0]=채널 활성 마스크 (기본 0xFFFF)</td></tr><tr><td><code>0x14</code></td><td>RD_ADDR</td><td>RW</td><td>[DEPTH_LOG2-1:0]=BRAM 읽기 주소</td></tr><tr><td><code>0x18</code></td><td>RD_DATA</td><td>RO</td><td>[15:0]=RD_ADDR 위치의 샘플 데이터 (1사이클 BRAM 레이턴시)</td></tr></table></div>
+<h2 id="ext">5. 외부 부품과 전기 회로도</h2><p class="muted">2절의 계통도는 <b>디지털 모듈 연결도</b>다. 전압, 풀업, 커넥터 배선 같은 전기 사항은 이 절에서 따로 다룬다. 기계가 읽는 사본: <a href="bom.csv">bom.csv</a> · <a href="connections.json">connections.json</a></p><p class="badge b-skipped">전기 회로도: 미작성</p><p class="muted">디지털 전용. 외부 전기 회로도 미작성.</p><div class="panel"><table><tr><th>id</th><th>부품</th><th>인터페이스</th><th>신호 전압</th><th>구분</th><th>레벨 변환</th><th>비고</th></tr><tr><td><code>pmod_jb</code></td><td>Pmod JB (16채널 입력용 2×Pmod)</td><td>GPIO</td><td style="white-space:nowrap">3.3V V</td><td style="white-space:nowrap">외부 모듈</td><td>불필요 (3.3V)</td><td>채널 0~7: JB 하단, 채널 8~15: JA 등 추가 Pmod. xdc에서 핀 배정 필요</td></tr></table></div><p class="muted">Basys3 FPGA 핀은 3.3V 신호만 직접 받는다. 5V·12V·모터·릴레이는 직결하지 않는다.</p>
+<h2 id="road">6. 기술 트리 (이 캡스톤의 확장 경로)</h2><div class="panel"><ul style="list-style:none;padding:0"><li class="step"><span class="tag s-current">T2</span><span>BRAM 캡처 + AXI4-Lite 접근 (이 패키지) <span class='muted'>참고: <code>mmio-qenc-diag-checker</code></span></span></li><li class="step"><span class="tag s-planned">T2</span><span>UART .vcd 덤프 추가 (캡처 완료 후 직렬 전송) <span class='muted'>참고: <code>mmio-uart-axilite-bridge</code></span></span></li><li class="step"><span class="tag s-planned">T3</span><span>다채널 트리거 체인 / 패턴 트리거</span></li></ul></div>
+<h2 id="src">7. 실행 소스</h2><p>저장소의 <code>capstones/mmio-sla-bram-capture/</code>에 있는 파일 그대로다. 이 문서는 파일에서 읽어 넣은 것이므로 항상 일치한다. <a href="mmio-sla-bram-capture.zip">소스 전체 내려받기 (.zip)</a> · <a href="https://github.com/Yuul-Jung/fpga-soc-harness/tree/main/capstones/mmio-sla-bram-capture">GitHub에서 보기</a></p><details><summary><code>rtl/sla_core.v</code> <span class="muted">205줄</span></summary><pre>// sla_core.v — 소프트 논리 분석기 코어 (16채널 BRAM 샘플 메모리 + 에지 트리거 FSM)
+// I-067 소프트 논리 분석기 IP (mmio-sla-bram-capture, T2)
+// Verilog-2001. iverilog/verilator/yosys 호환.
+//
+// 포트:
+//   clk        — 시스템 클럭
+//   rst        — 동기 active-high 리셋
+//   arm        — 1사이클 펄스: IDLE→ARMED 전이
+//   force_trig — 1사이클 펄스: 트리거 강제 발생 (ARMED 상태에서만 유효)
+//   srst       — 소프트 리셋 (모든 카운터·상태 초기화)
+//   trig_ch    — [3:0] 트리거 채널 번호 (0~15)
+//   trig_pol   — 1=하강 에지, 0=상승 에지
+//   pretrig    — [DEPTH_LOG2-1:0] 트리거 전 보관 샘플 수
+//   ch_en      — [15:0] 채널 활성 마스크
+//   ch_in      — [15:0] 디지털 입력 (외부 메타스테이블 방지 2단 FF 적용 후 연결)
+//   rd_addr    — [DEPTH_LOG2-1:0] BRAM 읽기 주소
+//
+//   sample_out — [15:0] rd_addr의 샘플 데이터
+//   armed      — 1=ARMED 상태
+//   capturing  — 1=캡처 진행 중 (pre-trigger 포함)
+//   full       — 1=BRAM 가득 참 (캡처 완료)
+//   trig_found — 1=트리거 발생 확인
+//   trig_addr  — [DEPTH_LOG2-1:0] 트리거 발생 시점의 쓰기 주소
+
+`default_nettype none
+
+module sla_core #(
+    parameter DEPTH_LOG2 = 12   // BRAM 깊이 (2^12 = 4096 샘플). 테스트벤치는 8로 줄임
+) (
+    input  wire                   clk,
+    input  wire                   rst,
+
+    // 제어
+    input  wire                   arm,
+    input  wire                   force_trig,
+    input  wire                   srst,
+    input  wire [3:0]             trig_ch,
+    input  wire                   trig_pol,
+    input  wire [DEPTH_LOG2-1:0]  pretrig,
+    input  wire [15:0]            ch_en,
+
+    // 채널 입력
+    input  wire [15:0]            ch_in,
+
+    // BRAM 읽기
+    input  wire [DEPTH_LOG2-1:0]  rd_addr,
+    output reg  [15:0]            sample_out,
+
+    // 상태 출력
+    output reg                    armed,
+    output reg                    capturing,
+    output reg                    full,
+    output reg                    trig_found,
+    output reg  [DEPTH_LOG2-1:0]  trig_addr
+);
+
+    localparam DEPTH = 1 &lt;&lt; DEPTH_LOG2;
+
+    // ── 2단 메타스테이블 방지 ──────────────────────────────
+    reg [15:0] ch0, ch1;
+    always @(posedge clk) begin
+        ch0 &lt;= ch_in;
+        ch1 &lt;= ch0;
+    end
+
+    // ── 이전 사이클 ch1 (에지 검출용) ────────────────────
+    reg [15:0] ch1_d;
+    always @(posedge clk)
+        ch1_d &lt;= ch1;
+
+    // ── 채널 마스크 ──────────────────────────────────────
+    wire [15:0] masked = ch1 &amp; ch_en;
+
+    // ── 트리거 에지 검출 ──────────────────────────────────
+    wire trig_bit     = ch1[trig_ch];
+    wire trig_bit_d   = ch1_d[trig_ch];
+    // 상승 에지(pol=0): d=0, now=1 / 하강 에지(pol=1): d=1, now=0
+    wire edge_hit = trig_pol ? ( trig_bit_d &amp; ~trig_bit)
+                              : (~trig_bit_d &amp;  trig_bit);
+
+    // ── BRAM (추론 BRAM, Xilinx Block RAM 매핑 대상) ──────
+    (* ram_style = &quot;block&quot; *)
+    reg [15:0] bram [0:DEPTH-1];
+
+    // ── 쓰기 포인터와 샘플 카운터 ─────────────────────────
+    reg [DEPTH_LOG2-1:0] wr_addr;
+    reg [DEPTH_LOG2:0]   sample_cnt;   // DEPTH_LOG2+1 비트 (DEPTH까지 셀 수 있음)
+
+    // ── pre-trigger 카운터 ───────────────────────────────
+    // pretrig 샘플을 쌓을 때까지 트리거 검출을 억제한다.
+    reg [DEPTH_LOG2-1:0] pre_cnt;
+    reg                  pre_done;     // pre-trigger 채움 완료
+    reg                  trig_req;     // 트리거 요청 래치 (1사이클 펄스 유실 방지)
+
+    // ── FSM ───────────────────────────────────────────────
+    // IDLE: armed=0, capturing=0, full=0
+    // ARMED: armed=1, capturing=0, full=0  — arm 펄스로 진입, pre-trigger 채움 중
+    // CAPTURING: armed=1, capturing=1, full=0  — 트리거 발생 후 나머지 채움
+    // FULL: full=1
+    localparam S_IDLE      = 2&#x27;d0;
+    localparam S_ARMED     = 2&#x27;d1;
+    localparam S_CAPTURING = 2&#x27;d2;
+    localparam S_FULL      = 2&#x27;d3;
+
+    reg [1:0] state;
+
+    always @(posedge clk) begin
+        if (rst || srst) begin
+            state      &lt;= S_IDLE;
+            armed      &lt;= 1&#x27;b0;
+            capturing  &lt;= 1&#x27;b0;
+            full       &lt;= 1&#x27;b0;
+            trig_found &lt;= 1&#x27;b0;
+            trig_addr  &lt;= {DEPTH_LOG2{1&#x27;b0}};
+            wr_addr    &lt;= {DEPTH_LOG2{1&#x27;b0}};
+            sample_cnt &lt;= {(DEPTH_LOG2+1){1&#x27;b0}};
+            pre_cnt    &lt;= {DEPTH_LOG2{1&#x27;b0}};
+            pre_done   &lt;= 1&#x27;b0;
+            trig_req   &lt;= 1&#x27;b0;
+        end else begin
+            case (state)
+                S_IDLE: begin
+                    if (arm) begin
+                        state      &lt;= S_ARMED;
+                        armed      &lt;= 1&#x27;b1;
+                        capturing  &lt;= 1&#x27;b0;
+                        full       &lt;= 1&#x27;b0;
+                        trig_found &lt;= 1&#x27;b0;
+                        wr_addr    &lt;= {DEPTH_LOG2{1&#x27;b0}};
+                        sample_cnt &lt;= {(DEPTH_LOG2+1){1&#x27;b0}};
+                        pre_cnt    &lt;= {DEPTH_LOG2{1&#x27;b0}};
+                        pre_done   &lt;= (pretrig == {DEPTH_LOG2{1&#x27;b0}});
+                        trig_req   &lt;= 1&#x27;b0;
+                    end
+                end
+
+                S_ARMED: begin
+                    // 샘플을 계속 써넣는다 (링 버퍼처럼 순환)
+                    bram[wr_addr] &lt;= masked;
+                    wr_addr    &lt;= wr_addr + 1&#x27;b1;
+
+                    // pre-trigger 카운터
+                    if (!pre_done) begin
+                        if (pre_cnt &gt;= pretrig - 1&#x27;b1)
+                            pre_done &lt;= 1&#x27;b1;
+                        else
+                            pre_cnt &lt;= pre_cnt + 1&#x27;b1;
+                    end
+
+                    // 트리거 요청 래치 (pre_done 전 도착한 1사이클 펄스도 보존)
+                    if (force_trig || edge_hit)
+                        trig_req &lt;= 1&#x27;b1;
+
+                    // 트리거 검출 (pre_done 후에만)
+                    if (pre_done &amp;&amp; (trig_req || force_trig || edge_hit)) begin
+                        state      &lt;= S_CAPTURING;
+                        capturing  &lt;= 1&#x27;b1;
+                        trig_found &lt;= 1&#x27;b1;
+                        trig_addr  &lt;= wr_addr;
+                        sample_cnt &lt;= {{DEPTH_LOG2{1&#x27;b0}}, 1&#x27;b1};
+                        trig_req   &lt;= 1&#x27;b0;
+                    end
+                end
+
+                S_CAPTURING: begin
+                    // 트리거 이후 나머지 DEPTH 샘플을 채운다
+                    bram[wr_addr] &lt;= masked;
+                    wr_addr    &lt;= wr_addr + 1&#x27;b1;
+                    sample_cnt &lt;= sample_cnt + 1&#x27;b1;
+
+                    if (sample_cnt &gt;= DEPTH - 1) begin
+                        state     &lt;= S_FULL;
+                        capturing &lt;= 1&#x27;b0;
+                        full      &lt;= 1&#x27;b1;
+                    end
+                end
+
+                S_FULL: begin
+                    // arm 펄스가 오면 재무장
+                    if (arm) begin
+                        state      &lt;= S_ARMED;
+                        armed      &lt;= 1&#x27;b1;
+                        capturing  &lt;= 1&#x27;b0;
+                        full       &lt;= 1&#x27;b0;
+                        trig_found &lt;= 1&#x27;b0;
+                        wr_addr    &lt;= {DEPTH_LOG2{1&#x27;b0}};
+                        sample_cnt &lt;= {(DEPTH_LOG2+1){1&#x27;b0}};
+                        pre_cnt    &lt;= {DEPTH_LOG2{1&#x27;b0}};
+                        pre_done   &lt;= (pretrig == {DEPTH_LOG2{1&#x27;b0}});
+                        trig_req   &lt;= 1&#x27;b0;
+                    end
+                end
+
+                default: state &lt;= S_IDLE;
+            endcase
+        end
+    end
+
+    // ── BRAM 읽기 포트 (1사이클 레이턴시) ────────────────
+    always @(posedge clk)
+        sample_out &lt;= bram[rd_addr];
+
+endmodule
+
+`default_nettype wire
+</pre></details><details><summary><code>rtl/axil_sla_wrap.v</code> <span class="muted">213줄</span></summary><pre>// axil_sla_wrap.v — AXI4-Lite 슬레이브 래퍼 (sla_core 인스턴스)
+// I-067 소프트 논리 분석기 IP (mmio-sla-bram-capture, T2)
+// Verilog-2001. iverilog/verilator/yosys 호환.
+//
+// 레지스터 맵 (AXI araddr[7:0] 기준):
+//   0x00  CTRL      [RW] bit0=ARM(자동 클리어), bit1=FORCE(자동 클리어),
+//                        bit2=TRIG_POL(0=상승/1=하강), bit3=SRST
+//   0x04  STATUS    [RO] bit0=ARMED, bit1=CAPTURING, bit2=FULL, bit3=TRIG_FOUND,
+//                        [19:8]=TRIG_ADDR[11:0] (상위 비트 MSB 위치)
+//   0x08  TRIG_CH   [RW] [3:0]=트리거 채널 번호 (0~15)
+//   0x0C  PRETRIG   [RW] [DEPTH_LOG2-1:0]=프리트리거 샘플 수
+//   0x10  CH_EN     [RW] [15:0]=채널 활성 마스크 (기본 0xFFFF)
+//   0x14  RD_ADDR   [RW] [DEPTH_LOG2-1:0]=BRAM 읽기 주소
+//   0x18  RD_DATA   [RO] [15:0]=RD_ADDR의 샘플 데이터 (1사이클 레이턴시, AXI 읽기 2사이클)
+
+`default_nettype none
+
+module axil_sla_wrap #(
+    parameter DEPTH_LOG2 = 12   // sla_core와 맞춤 (테스트벤치는 8로 줄임)
+) (
+    // AXI 클럭/리셋
+    input  wire        aclk,
+    input  wire        aresetn,  // active-low
+
+    // AXI4-Lite Write Channel
+    input  wire [7:0]  s_awaddr,
+    input  wire        s_awvalid,
+    output reg         s_awready,
+    input  wire [31:0] s_wdata,
+    input  wire [3:0]  s_wstrb,
+    input  wire        s_wvalid,
+    output reg         s_wready,
+    output reg  [1:0]  s_bresp,
+    output reg         s_bvalid,
+    input  wire        s_bready,
+
+    // AXI4-Lite Read Channel
+    input  wire [7:0]  s_araddr,
+    input  wire        s_arvalid,
+    output reg         s_arready,
+    output reg  [31:0] s_rdata,
+    output reg  [1:0]  s_rresp,
+    output reg         s_rvalid,
+    input  wire        s_rready,
+
+    // 채널 입력 (메타스테이블 방지는 sla_core 내부)
+    input  wire [15:0] ch_in
+);
+
+    // ── 내부 리셋 (active-high) ───────────────────────────
+    wire rst = !aresetn;
+
+    // ── 제어 레지스터 ────────────────────────────────────
+    reg        ctrl_arm;        // 1사이클 펄스 (자동 클리어)
+    reg        ctrl_force;      // 1사이클 펄스 (자동 클리어)
+    reg        ctrl_trig_pol;
+    reg        ctrl_srst;       // 1사이클 펄스 (자동 클리어)
+    reg [3:0]  ctrl_trig_ch;
+    reg [DEPTH_LOG2-1:0] ctrl_pretrig;
+    reg [15:0] ctrl_ch_en;
+    reg [DEPTH_LOG2-1:0] ctrl_rd_addr;
+
+    // ── sla_core 출력 ───────────────────────────────────
+    wire [15:0]            sample_out;
+    wire                   armed;
+    wire                   capturing;
+    wire                   full;
+    wire                   trig_found;
+    wire [DEPTH_LOG2-1:0]  trig_addr;
+
+    // STATUS[19:8]=TRIG_ADDR를 항상 12비트 필드에 넣기 위한 zero-extension
+    // (DEPTH_LOG2 &lt;= 12 범위에서만 사용)
+    wire [11:0]            trig_addr_12 = trig_addr;
+
+    // ── sla_core 인스턴스 ────────────────────────────────
+    sla_core #(
+        .DEPTH_LOG2(DEPTH_LOG2)
+    ) u_core (
+        .clk        (aclk),
+        .rst        (rst),
+        .arm        (ctrl_arm),
+        .force_trig (ctrl_force),
+        .srst       (ctrl_srst),
+        .trig_ch    (ctrl_trig_ch),
+        .trig_pol   (ctrl_trig_pol),
+        .pretrig    (ctrl_pretrig),
+        .ch_en      (ctrl_ch_en),
+        .ch_in      (ch_in),
+        .rd_addr    (ctrl_rd_addr),
+        .sample_out (sample_out),
+        .armed      (armed),
+        .capturing  (capturing),
+        .full       (full),
+        .trig_found (trig_found),
+        .trig_addr  (trig_addr)
+    );
+
+    // ── Write FSM ─────────────────────────────────────────
+    reg       aw_pend;
+    reg [7:0] aw_addr_r;
+    reg       w_pend;
+    reg [31:0] w_data_r;
+
+    always @(posedge aclk) begin
+        if (rst) begin
+            s_awready    &lt;= 1&#x27;b0;
+            s_wready     &lt;= 1&#x27;b0;
+            s_bvalid     &lt;= 1&#x27;b0;
+            s_bresp      &lt;= 2&#x27;b00;
+            aw_pend      &lt;= 1&#x27;b0;
+            w_pend       &lt;= 1&#x27;b0;
+            ctrl_arm     &lt;= 1&#x27;b0;
+            ctrl_force   &lt;= 1&#x27;b0;
+            ctrl_trig_pol &lt;= 1&#x27;b0;
+            ctrl_srst    &lt;= 1&#x27;b0;
+            ctrl_trig_ch &lt;= 4&#x27;d0;
+            ctrl_pretrig &lt;= {DEPTH_LOG2{1&#x27;b0}};
+            ctrl_ch_en   &lt;= 16&#x27;hFFFF;
+            ctrl_rd_addr &lt;= {DEPTH_LOG2{1&#x27;b0}};
+        end else begin
+            // 1사이클 펄스 자동 클리어
+            ctrl_arm   &lt;= 1&#x27;b0;
+            ctrl_force &lt;= 1&#x27;b0;
+            ctrl_srst  &lt;= 1&#x27;b0;
+
+            // awready 핸드셰이크
+            if (s_awvalid &amp;&amp; !aw_pend &amp;&amp; !s_bvalid) begin
+                s_awready &lt;= 1&#x27;b1;
+                aw_pend   &lt;= 1&#x27;b1;
+                aw_addr_r &lt;= s_awaddr;
+            end else begin
+                s_awready &lt;= 1&#x27;b0;
+            end
+
+            // wready 핸드셰이크
+            if (s_wvalid &amp;&amp; !w_pend &amp;&amp; !s_bvalid) begin
+                s_wready &lt;= 1&#x27;b1;
+                w_pend   &lt;= 1&#x27;b1;
+                w_data_r &lt;= s_wdata;
+            end else begin
+                s_wready &lt;= 1&#x27;b0;
+            end
+
+            // 주소와 데이터 모두 수신 → 레지스터 쓰기 + bresp
+            if (aw_pend &amp;&amp; w_pend &amp;&amp; !s_bvalid) begin
+                case (aw_addr_r[7:2])
+                    6&#x27;h00: begin  // CTRL
+                        ctrl_arm     &lt;= w_data_r[0];
+                        ctrl_force   &lt;= w_data_r[1];
+                        ctrl_trig_pol &lt;= w_data_r[2];
+                        ctrl_srst    &lt;= w_data_r[3];
+                    end
+                    6&#x27;h02: ctrl_trig_ch  &lt;= w_data_r[3:0];       // TRIG_CH
+                    6&#x27;h03: ctrl_pretrig  &lt;= w_data_r[DEPTH_LOG2-1:0]; // PRETRIG
+                    6&#x27;h04: ctrl_ch_en    &lt;= w_data_r[15:0];      // CH_EN
+                    6&#x27;h05: ctrl_rd_addr  &lt;= w_data_r[DEPTH_LOG2-1:0]; // RD_ADDR
+                    default: ;  // 나머지는 무시, OKAY 반환
+                endcase
+                s_bvalid &lt;= 1&#x27;b1;
+                s_bresp  &lt;= 2&#x27;b00;  // OKAY
+                aw_pend  &lt;= 1&#x27;b0;
+                w_pend   &lt;= 1&#x27;b0;
+            end
+
+            if (s_bvalid &amp;&amp; s_bready)
+                s_bvalid &lt;= 1&#x27;b0;
+        end
+    end
+
+    // ── Read FSM ──────────────────────────────────────────
+    // RD_DATA는 sla_core에서 1사이클 레이턴시가 있으므로
+    // arready를 assert한 다음 사이클에 rvalid를 올린다.
+    reg [7:0] ar_addr_r;
+
+    always @(posedge aclk) begin
+        if (rst) begin
+            s_arready &lt;= 1&#x27;b0;
+            s_rvalid  &lt;= 1&#x27;b0;
+            s_rdata   &lt;= 32&#x27;h0;
+            s_rresp   &lt;= 2&#x27;b00;
+        end else begin
+            if (s_arvalid &amp;&amp; !s_rvalid) begin
+                s_arready &lt;= 1&#x27;b1;
+                ar_addr_r &lt;= s_araddr;
+            end else begin
+                s_arready &lt;= 1&#x27;b0;
+            end
+
+            if (s_arready &amp;&amp; s_arvalid) begin
+                s_rvalid &lt;= 1&#x27;b1;
+                s_rresp  &lt;= 2&#x27;b00;
+                case (ar_addr_r[7:2])
+                    6&#x27;h00: s_rdata &lt;= {28&#x27;b0, ctrl_srst, ctrl_trig_pol,
+                                       ctrl_force, ctrl_arm};  // CTRL 읽기
+                    6&#x27;h01: s_rdata &lt;= {12&#x27;b0, trig_addr_12,
+                                       4&#x27;b0, trig_found, full, capturing, armed}; // STATUS
+                    6&#x27;h02: s_rdata &lt;= {28&#x27;b0, ctrl_trig_ch};   // TRIG_CH
+                    6&#x27;h03: s_rdata &lt;= {{(32-DEPTH_LOG2){1&#x27;b0}}, ctrl_pretrig}; // PRETRIG
+                    6&#x27;h04: s_rdata &lt;= {16&#x27;b0, ctrl_ch_en};     // CH_EN
+                    6&#x27;h05: s_rdata &lt;= {{(32-DEPTH_LOG2){1&#x27;b0}}, ctrl_rd_addr}; // RD_ADDR
+                    6&#x27;h06: s_rdata &lt;= {16&#x27;b0, sample_out};     // RD_DATA
+                    default: s_rdata &lt;= 32&#x27;hDEAD_BEEF;
+                endcase
+            end
+
+            if (s_rvalid &amp;&amp; s_rready)
+                s_rvalid &lt;= 1&#x27;b0;
+        end
+    end
+
+endmodule
+
+`default_nettype wire
+</pre></details><details><summary><code>tb/tb_axil_sla_wrap.v</code> <span class="muted">259줄</span></summary><pre>// tb_axil_sla_wrap.v — 자체 점검형 테스트벤치
+// I-067 소프트 논리 분석기 IP (mmio-sla-bram-capture, T2)
+// Verilog-2001. iverilog 호환.
+//
+// 통과 → &quot;PASS&quot; 로 시작하는 줄, 실패 → &quot;FAIL&quot; 로 시작하는 줄 출력.
+// 비교는 !== 로 X/Z도 실패로 센다.
+//
+// 테스트 케이스:
+//   TC1: ARM + FORCE 트리거 → STATUS.FULL=1, STATUS.TRIG_FOUND=1, STATUS.ARMED=1
+//   TC2: ARM + 실제 상승 에지 (ch0) → TRIG_FOUND=1, RD_DATA[trig_addr] bit0=1
+//   TC3: CH_EN 마스킹 → ARM + FORCE → RD_DATA에 비활성 채널 비트 = 0
+//
+// DEPTH_LOG2=8 (256 샘플)으로 짧게 설정해 빠른 시뮬레이션.
+
+`timescale 1ns/1ps
+`default_nettype none
+
+module tb_axil_sla_wrap;
+
+    // ── 클럭 ──────────────────────────────────────────────
+    reg aclk;
+    initial aclk = 0;
+    always #5 aclk = ~aclk;  // 100 MHz (10 ns 주기)
+
+    // ── DUT 포트 ──────────────────────────────────────────
+    reg        aresetn;
+    reg  [7:0] s_awaddr;
+    reg        s_awvalid;
+    wire       s_awready;
+    reg  [31:0] s_wdata;
+    reg  [3:0]  s_wstrb;
+    reg         s_wvalid;
+    wire        s_wready;
+    wire [1:0]  s_bresp;
+    wire        s_bvalid;
+    reg         s_bready;
+    reg  [7:0]  s_araddr;
+    reg         s_arvalid;
+    wire        s_arready;
+    wire [31:0] s_rdata;
+    wire [1:0]  s_rresp;
+    wire        s_rvalid;
+    reg         s_rready;
+    reg  [15:0] ch_in;
+
+    // ── DUT 인스턴스 (DEPTH_LOG2=8, 256 샘플) ───────────
+    axil_sla_wrap #(
+        .DEPTH_LOG2(8)
+    ) dut (
+        .aclk      (aclk),
+        .aresetn   (aresetn),
+        .s_awaddr  (s_awaddr),
+        .s_awvalid (s_awvalid),
+        .s_awready (s_awready),
+        .s_wdata   (s_wdata),
+        .s_wstrb   (s_wstrb),
+        .s_wvalid  (s_wvalid),
+        .s_wready  (s_wready),
+        .s_bresp   (s_bresp),
+        .s_bvalid  (s_bvalid),
+        .s_bready  (s_bready),
+        .s_araddr  (s_araddr),
+        .s_arvalid (s_arvalid),
+        .s_arready (s_arready),
+        .s_rdata   (s_rdata),
+        .s_rresp   (s_rresp),
+        .s_rvalid  (s_rvalid),
+        .s_rready  (s_rready),
+        .ch_in     (ch_in)
+    );
+
+    // ── 실패 카운터 ───────────────────────────────────────
+    integer fail_cnt;
+
+    // ── AXI4-Lite 헬퍼 태스크 ────────────────────────────
+    task axil_write;
+        input [7:0]  addr;
+        input [31:0] data;
+        begin
+            @(posedge aclk); #1;
+            s_awaddr = addr; s_awvalid = 1;
+            s_wdata  = data; s_wvalid  = 1; s_wstrb = 4&#x27;hF;
+            s_bready = 1;
+            wait(s_bvalid); @(posedge aclk); #1;
+            s_awvalid = 0;
+            s_wvalid  = 0;
+            s_bready  = 0;
+        end
+    endtask
+
+    task axil_read;
+        input  [7:0]  addr;
+        output [31:0] data;
+        begin
+            @(posedge aclk); #1;
+            s_araddr = addr; s_arvalid = 1;
+            wait(s_arready); @(posedge aclk); #1;
+            s_arvalid = 0;
+            s_rready  = 1;
+            wait(s_rvalid);
+            data = s_rdata;
+            @(posedge aclk); #1;
+            s_rready = 0;
+        end
+    endtask
+
+    // ── 체크 헬퍼 ────────────────────────────────────────
+    task check_eq;
+        input [255:0] name;
+        input [31:0]  got;
+        input [31:0]  exp;
+        begin
+            if (got !== exp) begin
+                $display(&quot;FAIL %0s: got=%0h exp=%0h&quot;, name, got, exp);
+                fail_cnt = fail_cnt + 1;
+            end else begin
+                $display(&quot;pass %0s: %0h&quot;, name, got);
+            end
+        end
+    endtask
+
+    task check_ne;
+        input [255:0] name;
+        input [31:0]  got;
+        input [31:0]  neq;
+        begin
+            if (got === neq) begin
+                $display(&quot;FAIL %0s: got=%0h (expected !==%0h)&quot;, name, got, neq);
+                fail_cnt = fail_cnt + 1;
+            end else begin
+                $display(&quot;pass %0s: %0h != %0h&quot;, name, got, neq);
+            end
+        end
+    endtask
+
+    // ── 메인 ─────────────────────────────────────────────
+    reg [31:0] rd;
+    reg [7:0]  trig_a;
+    integer    i;
+
+    initial begin
+        // 초기화
+        fail_cnt  = 0;
+        aresetn   = 0;
+        s_awvalid = 0; s_wvalid = 0; s_bready = 0;
+        s_arvalid = 0; s_rready = 0;
+        s_awaddr  = 0; s_wdata = 0; s_wstrb = 0;
+        s_araddr  = 0;
+        ch_in = 16&#x27;h0000;
+
+        repeat(5) @(posedge aclk);
+        aresetn = 1;
+        repeat(2) @(posedge aclk);
+
+        // 공통 설정: TRIG_CH=0, PRETRIG=10, CH_EN=0xFFFF, TRIG_POL=0(상승)
+        axil_write(8&#x27;h08, 32&#x27;h0);        // TRIG_CH=0
+        axil_write(8&#x27;h0C, 32&#x27;d10);       // PRETRIG=10
+        axil_write(8&#x27;h10, 32&#x27;hFFFF);     // CH_EN=0xFFFF
+
+        // ────────────────────────────────────────────────
+        // TC1: ARM + FORCE 트리거
+        //   PRETRIG=10 → 10클럭 대기 후 FORCE 발생
+        //   256 - pretrig(10) + 트리거 위치 ≈ 256 샘플 채움
+        //   STATUS: FULL=1, TRIG_FOUND=1, ARMED=1
+        // ────────────────────────────────────────────────
+        $display(&quot;=== TC1: ARM + FORCE 트리거 ===&quot;);
+        axil_write(8&#x27;h00, 32&#x27;h1);  // ARM (bit0=1)
+        // pre-trigger 채움 대기 (2단 FF + pre_cnt=10 + 여유)
+        repeat(20) @(posedge aclk);
+        // FORCE 트리거 (bit1=1)
+        axil_write(8&#x27;h00, 32&#x27;h2);
+        // 256 샘플 캡처 대기 (256 클럭 + 여유)
+        repeat(400) @(posedge aclk);
+
+        axil_read(8&#x27;h04, rd);
+        check_eq(&quot;TC1:ARMED&quot;,      rd &amp; 32&#x27;h1, 32&#x27;h1);
+        check_eq(&quot;TC1:FULL&quot;,       (rd &gt;&gt; 2) &amp; 32&#x27;h1, 32&#x27;h1);
+        check_eq(&quot;TC1:TRIG_FOUND&quot;, (rd &gt;&gt; 3) &amp; 32&#x27;h1, 32&#x27;h1);
+
+        // ────────────────────────────────────────────────
+        // TC2: ARM + 실제 상승 에지 (ch0=bit0)
+        //   PRETRIG=0으로 설정 → 즉시 트리거 검출 가능
+        //   ch_in[0] 를 0→1로 올리면 트리거 발생
+        //   RD_DATA[trig_addr][0] = 1 이어야 함
+        // ────────────────────────────────────────────────
+        $display(&quot;=== TC2: ARM + 실제 상승 에지 ===&quot;);
+        axil_write(8&#x27;h0C, 32&#x27;d0);   // PRETRIG=0
+        ch_in = 16&#x27;h0000;
+
+        axil_write(8&#x27;h00, 32&#x27;h1);   // ARM
+        // 2단 FF 전파 + 여유
+        repeat(5) @(posedge aclk);
+        // ch0 상승 에지
+        @(posedge aclk); #1;
+        ch_in = 16&#x27;h0001;
+        // 2단 FF 전파 대기
+        repeat(5) @(posedge aclk);
+        // 256 샘플 채움 대기
+        repeat(280) @(posedge aclk);
+
+        axil_read(8&#x27;h04, rd);
+        check_eq(&quot;TC2:TRIG_FOUND&quot;, (rd &gt;&gt; 3) &amp; 32&#x27;h1, 32&#x27;h1);
+        check_eq(&quot;TC2:FULL&quot;,       (rd &gt;&gt; 2) &amp; 32&#x27;h1, 32&#x27;h1);
+
+        // trig_addr 읽기 (STATUS[19:8])
+        trig_a = (rd &gt;&gt; 8) &amp; 8&#x27;hFF;
+        $display(&quot;pass TC2:TRIG_ADDR=%0d&quot;, trig_a);
+
+        // trig_addr 위치의 샘플: ch0=1 이어야 함
+        axil_write(8&#x27;h14, {24&#x27;d0, trig_a});  // RD_ADDR=trig_addr
+        repeat(3) @(posedge aclk);           // BRAM 1사이클 레이턴시 + 여유
+        axil_read(8&#x27;h18, rd);
+        check_eq(&quot;TC2:RD_DATA_bit0_at_trig&quot;, rd &amp; 32&#x27;h1, 32&#x27;h1);
+
+        // ────────────────────────────────────────────────
+        // TC3: CH_EN 마스킹
+        //   CH_EN=0x00FE (bit0 비활성) → ARM + FORCE
+        //   캡처 후 모든 샘플의 bit0 = 0 이어야 함 (ch_in[0]=1 유지)
+        // ────────────────────────────────────────────────
+        $display(&quot;=== TC3: CH_EN 마스킹 ===&quot;);
+        axil_write(8&#x27;h10, 32&#x27;h00FE);  // CH_EN: bit0 비활성
+        axil_write(8&#x27;h0C, 32&#x27;d5);     // PRETRIG=5
+        ch_in = 16&#x27;h0001;              // bit0=1 (하지만 마스킹됨)
+
+        axil_write(8&#x27;h00, 32&#x27;h1);     // ARM
+        repeat(15) @(posedge aclk);
+        axil_write(8&#x27;h00, 32&#x27;h2);     // FORCE
+        repeat(400) @(posedge aclk);
+
+        axil_read(8&#x27;h04, rd);
+        check_eq(&quot;TC3:FULL&quot;, (rd &gt;&gt; 2) &amp; 32&#x27;h1, 32&#x27;h1);
+
+        // 주소 0의 샘플 읽기: bit0은 마스킹되어 0이어야 함
+        axil_write(8&#x27;h14, 32&#x27;h0);     // RD_ADDR=0
+        repeat(3) @(posedge aclk);
+        axil_read(8&#x27;h18, rd);
+        check_eq(&quot;TC3:RD_DATA_bit0_masked&quot;, rd &amp; 32&#x27;h1, 32&#x27;h0);
+
+        // ────────────────────────────────────────────────
+        // 최종 판정
+        // ────────────────────────────────────────────────
+        if (fail_cnt === 0)
+            $display(&quot;PASS all %0d checks&quot;, 7);
+        else
+            $display(&quot;FAIL %0d check(s) failed&quot;, fail_cnt);
+
+        $finish;
+    end
+
+    // ── 타임아웃 ─────────────────────────────────────────
+    initial begin
+        #2000000;
+        $display(&quot;FAIL timeout&quot;);
+        $finish;
+    end
+
+endmodule
+
+`default_nettype wire
+</pre></details><details><summary><code>Makefile</code> <span class="muted">49줄</span></summary><pre># Makefile — mmio-sla-bram-capture (I-067, T2)
+# 타깃: lint, sim, synth
+# iverilog / verilator / yosys 사용
+# HARNESS.md §13.3: 순수 Verilog-2001, CI에서 S1(시뮬)/S2(합성)
+
+RTL_SRCS := rtl/sla_core.v rtl/axil_sla_wrap.v
+TB_SRCS  := tb/tb_axil_sla_wrap.v
+TOP      := axil_sla_wrap
+
+.PHONY: all lint sim synth clean
+
+all: lint sim synth
+
+## ── 린트: iverilog 컴파일만 (실행 없음) ──────────────────────
+lint:
+	iverilog -g2001 -Wall -o /dev/null $(RTL_SRCS) $(TB_SRCS)
+	@echo &quot;lint: PASS&quot;
+
+## ── 시뮬레이션: iverilog + vvp ───────────────────────────────
+sim:
+	@mkdir -p build
+	iverilog -g2001 -Wall -o build/sim.vvp $(TB_SRCS) $(RTL_SRCS)
+	vvp build/sim.vvp | tee build/sim.out
+	@if grep -q &#x27;^FAIL&#x27; build/sim.out; then \
+	    echo &quot;SIMULATION FAILED&quot;; exit 1; \
+	else \
+	    echo &quot;SIMULATION PASSED&quot;; \
+	fi
+
+build/sim.vvp: $(TB_SRCS) $(RTL_SRCS)
+	@mkdir -p build
+	iverilog -g2001 -Wall -o build/sim.vvp $(TB_SRCS) $(RTL_SRCS)
+
+## ── 합성: yosys (자원 추정) ──────────────────────────────────
+synth:
+	@mkdir -p build
+	yosys -q -p &#x27;read_verilog -sv $(RTL_SRCS); \
+	    synth_xilinx -top $(TOP) -flatten; \
+	    stat&#x27; \
+	    2&gt;&amp;1 | tee build/synth.log
+	@echo &quot;synth: 위 stat 참조 (yosys 추정, Vivado와 다를 수 있음)&quot;
+
+## ── 정리 ─────────────────────────────────────────────────────
+clean:
+	rm -rf build/
+
+## ── 디렉터리 생성 ─────────────────────────────────────────────
+build/:
+	mkdir -p build
+</pre></details><h3>시뮬레이션 (iverilog)</h3><ol><li>make lint  — RTL 문법 검사 (iverilog -tnull)</li><li>make sim   — iverilog+vvp로 tb_axil_sla_wrap 실행. PASS/FAIL 출력 확인.</li></ol><h3>합성 추정 (yosys)</h3><ol><li>make synth  — yosys synth_xilinx. 자원 추정(BRAM 타일 1개 이상 예상).</li></ol><h3>Vivado 합성</h3><ol><li>DEPTH_LOG2=12(기본), aclk=W5(100MHz), ch_in 핀은 xdc에서 Pmod JA/JB에 배정.</li><li>프로젝트에서 axil_sla_wrap을 AXI4-Lite 슬레이브로 추가.</li></ol>
+<h2 id="verify">8. 검증</h2><div class="panel"><table><tr><th>단계</th><th>결과</th><th>내용</th></tr>
+<tr><td>린트(verilator)</td><td>미실행</td><td></td></tr><tr><td>시뮬레이션(iverilog)</td><td>미실행</td><td></td></tr><tr><td>합성 추정(yosys)</td><td>미실행</td><td></td></tr><tr><td>보드 동작</td><td>미실행</td><td></td></tr>
+</table></div><p>S3 보드 검증은 사람이 수행. 에이전트는 S0~S2만 기록.</p>
+<h2 id="ref">9. 참고 카드와 위험</h2><h3>참고 카드</h3><ul><li><code>mmio-qenc-diag-checker</code> — AXI4-Lite FSM 패턴, BRAM 추론, 2단 메타스테이블 FF 참고 <span class="muted">(카드 미작성)</span></li><li><code>mmio-uart-axilite-bridge</code> — UART 덤프 연동 로드맵 참고 <span class="muted">(카드 미작성)</span></li></ul><h3>위험·한계</h3><ul><li>BRAM 1사이클 읽기 레이턴시: RD_ADDR 쓰기 후 1사이클 뒤 RD_DATA가 유효. AXI 읽기는 2사이클 후 rvalid 반환.</li><li>DEPTH_LOG2=12에서 BRAM 타일 소비 증가 (4096×16bit = 8KB). Basys3 50개 BRAM 중 1개 소비.</li><li>pre_done 계산: pretrig=0이면 즉시 pre_done=1. 작은 pretrig 값에서 1사이클 오차 가능.</li><li>STATUS[19:8]은 DEPTH_LOG2=8 테스트벤치에서 하위 8비트만 유효 (상위 4비트 항상 0).</li></ul>
+</main></body></html>

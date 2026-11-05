@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-motor-safety-wrapper",
+  "kind": "digital-block-diagram",
+  "note": "디지털 모듈 연결도다. 외부 부품의 전기 배선(전압, 저항, 커넥터)은 포함하지 않는다.",
+  "bus": "mmio-lite",
+  "blocks": [
+    {
+      "id": "top",
+      "name": "basys3_top",
+      "kind": "board-wrapper",
+      "module": "basys3_top",
+      "file": "rtl/basys3_top.v"
+    },
+    {
+      "id": "soc",
+      "name": "soc_top",
+      "kind": "soc-core",
+      "module": "soc_top",
+      "file": "rtl/soc_top.v"
+    },
+    {
+      "id": "bus",
+      "name": "mmio_bus",
+      "kind": "bus-decoder",
+      "module": "mmio_bus",
+      "file": "rtl/mmio_bus.v"
+    },
+    {
+      "id": "gpio",
+      "name": "gpio",
+      "kind": "peripheral",
+      "module": "gpio",
+      "file": "rtl/gpio.v"
+    },
+    {
+      "id": "uart",
+      "name": "uart_tx",
+      "kind": "peripheral",
+      "module": "uart_tx",
+      "file": "rtl/uart_tx.v"
+    },
+    {
+      "id": "safety",
+      "name": "motor_safety_ip",
+      "kind": "peripheral",
+      "module": "motor_safety_ip",
+      "file": "rtl/motor_safety_ip.v"
+    },
+    {
+      "id": "master",
+      "name": "demo_master",
+      "kind": "sim-master",
+      "module": "demo_master",
+      "file": "rtl/demo_master.v"
+    }
+  ],
+  "links": [
+    {
+      "from": "top",
+      "to": "soc",
+      "label": "clk/rst/io"
+    },
+    {
+      "from": "soc",
+      "to": "bus",
+      "label": "mmio-lite"
+    },
+    {
+      "from": "bus",
+      "to": "gpio",
+      "label": "sel_gpio"
+    },
+    {
+      "from": "bus",
+      "to": "uart",
+      "label": "sel_uart"
+    },
+    {
+      "from": "bus",
+      "to": "safety",
+      "label": "sel_safety"
+    },
+    {
+      "from": "master",
+      "to": "bus",
+      "label": "sim drive (tb only)"
+    }
+  ]
+}

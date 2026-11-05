@@ -1,0 +1,48 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>nandland-project4-debounce-switch</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+</style></head><body><header class="top"><a class="brand" href="../../hub.html">FPGA SoC 하네스</a><a href="../../hub.html">메인</a><a href="../../hub.html#capstones">캡스톤</a><a href="../../soc-map/tech-tree.html">기술 트리</a><a href="../../catalog/index.html">카탈로그</a><a href="../../inbox/ideas.html">아이디어</a><a href="../../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main class="md"><p class="muted"><a href="https://github.com/Yuul-Jung/fpga-soc-harness/blob/main/catalog/vendor-neutral/nandland-project4-debounce-switch.md">GitHub 원본: catalog/vendor-neutral/nandland-project4-debounce-switch.md</a></p><h1>nandland-project4-debounce-switch</h1><div class="panel fm"><table><tr><td>name</td><td><a href="nandland-project4-debounce-switch.html">nandland-project4-debounce-switch</a></td></tr><tr><td>url</td><td>https://nandland.com/project-4-debounce-a-switch/</td></tr><tr><td>source_type</td><td>article</td></tr><tr><td>vendor</td><td>neutral</td></tr><tr><td>board</td><td>[NandLand Go Board]</td></tr><tr><td>fit_basys3</td><td>needs-port</td></tr><tr><td>cpu</td><td>none(FSM)</td></tr><tr><td>language</td><td>Verilog, VHDL</td></tr><tr><td>tools</td><td>[]</td></tr><tr><td>bus</td><td>none</td></tr><tr><td>peripherals</td><td>[switch-debounce]</td></tr><tr><td>stage</td><td>T0</td></tr><tr><td>license</td><td>unknown</td></tr><tr><td>stats</td><td>{}</td></tr><tr><td>doc_language</td><td>en</td></tr><tr><td>verification</td><td>L3</td></tr><tr><td>checked_at</td><td>2026-11-05</td></tr><tr><td>sources</td><td>[https://nandland.com/project-4-debounce-a-switch/]</td></tr></table></div><h2>요약</h2>
+<p>NandLand.com의 스위치 디바운스 입문 프로젝트(Project 4). iCE40HX1KVQ100 (25 MHz, NandLand Go Board) 기준이지만 Verilog·VHDL 양언어 소스와 카운터 기반 알고리즘을 완전히 설명한 교육 자료. Basys3(100 MHz)로 포팅 시 카운터 한계값만 4배 조정.</p>
+<h2>구조</h2>
+<ul><li style="margin-left:0.0em"><strong>알고리즘</strong>: 순수 카운터 방식 (FSM 없음)</li><li style="margin-left:1.2em"><code>i_Switch ≠ r_State</code>: 카운터 증가</li><li style="margin-left:1.2em">카운터 도달(<code>c_DEBOUNCE_LIMIT = 250_000</code>): <code>r_State</code> ← <code>i_Switch</code>, 카운터 리셋</li><li style="margin-left:1.2em"><code>i_Switch = r_State</code>: 카운터 즉시 리셋 (안정 상태 유지)</li><li style="margin-left:0.0em"><strong>타이밍</strong>: 10 ms @ 25 MHz (c_DEBOUNCE_LIMIT = 250,000, 18비트 카운터)</li><li style="margin-left:0.0em"><strong>모듈 인터페이스</strong>:</li><li style="margin-left:1.2em"><code>Debounce_Switch(i_Clk, i_Switch → o_Switch)</code>: 순수 디바운스 모듈</li><li style="margin-left:1.2em"><code>Debounce_Project_Top(i_Clk, i_Switch_1 → o_LED_1)</code>: 최상위 (토글 LED 출력)</li><li style="margin-left:0.0em"><strong>에지 활용</strong>: 디바운스된 <code>o_Switch</code>의 오름 에지에서 LED를 토글 (내장 로직, 별도 에지 모듈 없음)</li><li style="margin-left:0.0em"><strong>언어</strong>: Verilog와 VHDL 양쪽 소스 제공 — 같은 로직을 비교 학습 가능</li></ul>
+<h2>검증·재현성</h2>
+<ul><li style="margin-left:0.0em">NandLand.com 사이트에서 소스 코드와 설명 직접 열람(L3)</li><li style="margin-left:0.0em">Go Board(iCE40) 기준. Basys3(Artix-7) 포팅 시 필요한 변경:</li><li style="margin-left:1.2em"><code>c_DEBOUNCE_LIMIT</code>: 250,000 → 1,000,000 (25 MHz → 100 MHz, 10 ms 유지, 20비트 카운터)</li><li style="margin-left:1.2em">핀 배정(xdc)과 클럭 소스 교체</li><li style="margin-left:1.2em">iCE40 전용 IP(SB_PLL40 등) 없으므로 RTL 로직 자체는 그대로 사용 가능</li></ul>
+<h2>한계·위험</h2>
+<ul><li style="margin-left:0.0em">라이선스: 사이트에 명시되지 않음. 코드 사용 전 nandland.com 이용약관 확인 필요</li><li style="margin-left:0.0em">짧은 누름, 긴 누름, 멀티 클릭 감지 없음 — 순수 디바운스만 제공</li><li style="margin-left:0.0em">FSM 없는 단순 카운터 방식이므로 카운터 도달 직전에 채터가 발생하면 타이밍이 늘어날 수 있음 (내 판단)</li></ul>
+<h2>재사용 메모</h2>
+<p>가져올 수 있는 부분: 카운터 기반 디바운스 로직 (Verilog). iCE40 전용 요소 없어 Artix-7 RTL 그대로 적용 가능.</p>
+<p>개조: Basys3 포팅은 <code>c_DEBOUNCE_LIMIT</code> 파라미터만 변경으로 완료. MicroBlaze V AXI4-Lite 버튼 IP의 디바운스 계층(하위 모듈)으로 사용 가능. 파라미터를 AXI 레지스터로 외부화하면 소프트웨어에서 임계값 조정 가능. FSM 없는 단순 구조라 byu-ecen220-lab08-debounce-basys3의 FSM 버전과 비교 학습용으로 적합(S7 사다리 T0 첫 계단). 옮길 수 없는 부분: 없음 (보드 고유 요소 없는 순수 RTL 로직).</p>
+<p>내 판단: S4 제약 역전 사례 — FPGA는 클럭마다 카운터를 하드웨어로 병렬 증가시키는 반면, MCU는 같은 타이머를 소프트웨어 폴링으로 처리해야 한다. 이 단순 Verilog 모듈은 &quot;FPGA에서 디바운스는 1개 모듈 인스턴스 = 1개 버튼이고 각 버튼이 완전히 독립적&quot;임을 보여주는 최소 사례.</p></main></body></html>

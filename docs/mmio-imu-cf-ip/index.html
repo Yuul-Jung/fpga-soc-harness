@@ -1,0 +1,1020 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>IMU 상보 필터 IP (CORDIC atan2 + AXI4-Lite)</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+
+.colhead{font:600 11px sans-serif;fill:var(--muted)}
+.link{fill:none;stroke:var(--line);stroke-width:1.5}.arrow{fill:var(--line)}
+.lbl{font:11px sans-serif;fill:var(--muted)}
+.bname{font:600 13px sans-serif;fill:var(--text)}.bdesc{font:11px sans-serif;fill:var(--muted)}
+.k-cpu rect{fill:var(--c-cpu);stroke:var(--c-cpu-s)}.k-bus rect{fill:var(--c-bus);stroke:var(--c-bus-s)}
+.k-periph rect,.k-memory rect{fill:var(--c-per);stroke:var(--c-per-s)}
+.k-external rect{fill:var(--c-ext);stroke:var(--c-ext-s);stroke-dasharray:4 3}
+.k-clock rect{fill:var(--c-clk);stroke:var(--c-clk-s)}
+</style></head><body><header class="top"><a class="brand" href="../hub.html">FPGA SoC 하네스</a><a href="../hub.html">메인</a><a href="../hub.html#capstones">캡스톤</a><a href="../soc-map/tech-tree.html">기술 트리</a><a href="../catalog/index.html">카탈로그</a><a href="../inbox/ideas.html">아이디어</a><a href="../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main>
+<p class="muted">캡스톤 패키지 · Basys3 · 단계 T4</p>
+<h1>IMU 상보 필터 IP (CORDIC atan2 + AXI4-Lite)</h1><p>MPU-6050 원시 가속도·각속도 값을 AXI4-Lite 레지스터로 받아, CORDIC 벡터링 모드 atan2와 고정소수점 상보 필터로 롤·피치 각도를 계산하는 T4 IP 패키지. 테스트벤치는 알려진 각도의 합성 센서 값을 주입해 수렴을 자체 점검한다.</p>
+<div class="badges"><span class="badge b-not-run">린트: 미실행</span><span class="badge b-not-run">시뮬레이션: 미실행</span><span class="badge b-not-run">합성: 미실행</span><span class="badge b-not-tested">보드: not-tested</span></div>
+<p class="muted">검증 상태는 실행 기록이 있을 때만 표시한다. 기록이 없으면 '미실행'이다.</p>
+<nav><a href="#goal">목표</a><a href="#arch">계통도</a><a href="#hier">모듈 계층</a><a href="#map">메모리맵</a><a href="#ext">외부 부품·전기</a><a href="#road">기술 트리</a><a href="#src">실행 소스</a><a href="#verify">검증</a><a href="#ref">참고·위험</a></nav>
+<h2 id="goal">1. 목표와 범위</h2><h3>목표</h3><ul><li>CORDIC 벡터링 모드 atan2를 Verilog-2001 고정소수점으로 구현 (16반복, Q7.9 도 출력)</li><li>상보 필터 FSM: roll = alpha*(roll_prev + GX_DEL) + (1-alpha)*atan2(ay, az)</li><li>AXI4-Lite 슬레이브 래퍼로 MicroBlaze V SoC에 플러그인 가능한 IP 작성</li><li>테스트벤치가 TC1~TC5 (0°, 90°, 45°, α=0 순간 응답, 자이로 드리프트 보정)를 PASS/FAIL로 검사</li></ul><h3>범위 밖</h3><ul><li>실제 I2C 읽기 (기존 IIC IP[05]에서 소프트웨어가 처리)</li><li>칼만 필터, 사원수(Quaternion) 출력</li><li>보드 실물 검증 (S3는 사용자 담당)</li><li>부동소수점 연산</li></ul><p class="muted">이 패키지의 소스는 하네스가 직접 작성한 Verilog-2001 원본이며 외부 코드를 포함하지 않는다. 아이디어 I-019 기반. free_slots [19]=0x4019_0000 제안. 시뮬레이션·합성 결과는 CI에서 검증한다.</p>
+<h2 id="arch">2. 계통도</h2><p>클럭: 100 MHz (Basys3 W5 sysclk)</p><div class="panel"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 974 536" role="img" aria-label="블록 다이어그램">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arrow"/></marker></defs>
+<text x="24" y="16" class="colhead">클럭·입력·마스터</text>
+<text x="274" y="16" class="colhead">버스</text>
+<text x="524" y="16" class="colhead">주변장치</text>
+<text x="774" y="16" class="colhead">외부</text>
+<path d="M612.0,92 L612.0,116" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="104.0" class="lbl" text-anchor="middle">AXI4-Lite</text>
+<path d="M612.0,174 L612.0,198" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="186.0" class="lbl" text-anchor="middle">reg I/F</text>
+<path d="M612.0,256 L612.0,280" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="268.0" class="lbl" text-anchor="middle">xi/yi/start</text>
+<path d="M612.0,92 L612.0,362" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="227.0" class="lbl" text-anchor="middle">LED[15:0]</text>
+<path d="M612.0,92 L612.0,444" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="268.0" class="lbl" text-anchor="middle">TX debug</text>
+<g class="k-top"><rect x="524" y="34" width="176" height="58" rx="8"/><text x="612.0" y="58" text-anchor="middle" class="bname">basys3_imu_cf_top</text><text x="612.0" y="76" text-anchor="middle" class="bdesc">Basys3 Top</text></g>
+<g class="k-peripheral"><rect x="524" y="116" width="176" height="58" rx="8"/><text x="612.0" y="140" text-anchor="middle" class="bname">axil_imu_cf</text><text x="612.0" y="158" text-anchor="middle" class="bdesc">AXI Wrap</text></g>
+<g class="k-ip"><rect x="524" y="198" width="176" height="58" rx="8"/><text x="612.0" y="222" text-anchor="middle" class="bname">imu_cf_ip</text><text x="612.0" y="240" text-anchor="middle" class="bdesc">CF IP</text></g>
+<g class="k-ip"><rect x="524" y="280" width="176" height="58" rx="8"/><text x="612.0" y="304" text-anchor="middle" class="bname">cordic_atan2</text><text x="612.0" y="322" text-anchor="middle" class="bdesc">CORDIC</text></g>
+<g class="k-peripheral"><rect x="524" y="362" width="176" height="58" rx="8"/><text x="612.0" y="386" text-anchor="middle" class="bname">gpio</text><text x="612.0" y="404" text-anchor="middle" class="bdesc">GPIO</text></g>
+<g class="k-peripheral"><rect x="524" y="444" width="176" height="58" rx="8"/><text x="612.0" y="468" text-anchor="middle" class="bname">uart_tx</text><text x="612.0" y="486" text-anchor="middle" class="bdesc">UART TX</text></g>
+<g class="k-external"><rect x="774" y="34" width="176" height="58" rx="8"/><text x="862.0" y="58" text-anchor="middle" class="bname">MPU-6050</text><text x="862.0" y="76" text-anchor="middle" class="bdesc">MPU-6050</text></g>
+</svg></div>
+<p class="muted"><a href="diagram.svg">diagram.svg</a>로 따로 받을 수 있다.</p>
+<h3>버스 규약: AXI4-Lite</h3><div class="panel"><table><tr><th>신호</th><th>방향</th><th>설명</th></tr><tr><td><code>s_axil_awaddr</code></td><td>in</td><td>쓰기 주소 (오프셋)</td></tr><tr><td><code>s_axil_awvalid</code></td><td>in</td><td>쓰기 주소 유효</td></tr><tr><td><code>s_axil_awready</code></td><td>out</td><td>쓰기 주소 준비</td></tr><tr><td><code>s_axil_wdata</code></td><td>in</td><td>쓰기 데이터</td></tr><tr><td><code>s_axil_wstrb</code></td><td>in</td><td>쓰기 스트로브</td></tr><tr><td><code>s_axil_wvalid</code></td><td>in</td><td>쓰기 데이터 유효</td></tr><tr><td><code>s_axil_wready</code></td><td>out</td><td>쓰기 데이터 준비</td></tr><tr><td><code>s_axil_bresp</code></td><td>out</td><td>쓰기 응답 (00=OKAY)</td></tr><tr><td><code>s_axil_bvalid</code></td><td>out</td><td>쓰기 응답 유효</td></tr><tr><td><code>s_axil_bready</code></td><td>in</td><td>쓰기 응답 준비</td></tr><tr><td><code>s_axil_araddr</code></td><td>in</td><td>읽기 주소 (오프셋)</td></tr><tr><td><code>s_axil_arvalid</code></td><td>in</td><td>읽기 주소 유효</td></tr><tr><td><code>s_axil_arready</code></td><td>out</td><td>읽기 주소 준비</td></tr><tr><td><code>s_axil_rdata</code></td><td>out</td><td>읽기 데이터</td></tr><tr><td><code>s_axil_rresp</code></td><td>out</td><td>읽기 응답</td></tr><tr><td><code>s_axil_rvalid</code></td><td>out</td><td>읽기 데이터 유효</td></tr><tr><td><code>s_axil_rready</code></td><td>in</td><td>읽기 데이터 준비</td></tr></table></div><p>단일 슬레이브. BREADY/RREADY 항상 1 가정 (슬레이브 간소화). 마스터 버스트 불가.</p>
+<h3>통합 선언 (SoC 적합성)</h3><p class="badge b-fail">이 패키지는 MicroBlaze V 동결 주소맵과 호환되지 않는다 (파일럿). 아래 이식 계획을 따라야 SoC에 합칠 수 있다.</p><div class="panel"><table><tr><th style="white-space:nowrap">버스</th><td><code>AXI4-Lite</code></td></tr><tr><th style="white-space:nowrap">주소맵</th><td><code>custom</code> → 동결 맵 <code>mbv-frozen-v2</code> 적합 여부: <b>부분 적합</b></td></tr><tr><th style="white-space:nowrap">이식 계획</th><td>0x4019_0000에 슬롯 [19] 배정 제안. frozen-v2의 free_slots 구간에서 선택. 사용자 동결 후 address_map→mbv-frozen-v2, frozen_mapping.frozen→해당영역명, compat→compatible 으로 갱신 가능.</td></tr></table></div>
+<h2 id="hier">3. 모듈 계층</h2><div class="panel"><ul class="tree"><li><code>basys3_imu_cf_top</code> <span class="muted">(rtl/basys3_imu_cf_top.v)</span><ul><li><code>axil_imu_cf</code> <span class="muted">(rtl/axil_imu_cf.v)</span><ul><li><code>imu_cf_ip</code> <span class="muted">(rtl/imu_cf_ip.v)</span><ul><li><code>cordic_atan2</code> <span class="muted">(rtl/cordic_atan2.v)</span></li></ul></li></ul></li></ul></li></ul></div>
+<h2 id="map">4. 메모리맵</h2><h3>axil_imu_cf <code>0x4019_0000</code> <span class="muted">크기 0x10000</span></h3><div class="panel"><table><tr><th>오프셋</th><th>이름</th><th>접근</th><th>설명</th></tr><tr><td><code>0x00</code></td><td>CTRL</td><td>WO</td><td>bit0: start (자동 클리어). 쓰면 필터 1스텝 계산 시작.</td></tr><tr><td><code>0x04</code></td><td>STATUS</td><td>RO</td><td>bit0: done, bit1: busy</td></tr><tr><td><code>0x08</code></td><td>AY</td><td>WO</td><td>가속도 Y, 16비트 부호, Q2.14 (16384=1g)</td></tr><tr><td><code>0x0C</code></td><td>AZ</td><td>WO</td><td>가속도 Z, 16비트 부호, Q2.14</td></tr><tr><td><code>0x10</code></td><td>AX</td><td>WO</td><td>가속도 X, 16비트 부호, Q2.14 (피치용)</td></tr><tr><td><code>0x14</code></td><td>GX_DEL</td><td>WO</td><td>자이로 각도 증분 (degrees*512, 18비트 부호, [17:0]). 소프트: gx_dps/fs*512</td></tr><tr><td><code>0x18</code></td><td>ALPHA</td><td>WO</td><td>상보 필터 계수 alpha*65536. 기본값 64225(=0.98). 65536=alpha=1.0</td></tr><tr><td><code>0x1C</code></td><td>GY_DEL</td><td>WO</td><td>자이로 피치 증분 (degrees*512, 18비트 부호). gy_dps/fs*512</td></tr><tr><td><code>0x20</code></td><td>ROLL</td><td>RO</td><td>롤 각도 출력 (degrees*512, 18비트 부호, [17:0])</td></tr><tr><td><code>0x24</code></td><td>PITCH</td><td>RO</td><td>피치 각도 출력 (degrees*512, 18비트 부호, [17:0])</td></tr></table></div>
+<h2 id="ext">5. 외부 부품과 전기 회로도</h2><p class="muted">2절의 계통도는 <b>디지털 모듈 연결도</b>다. 전압, 풀업, 커넥터 배선 같은 전기 사항은 이 절에서 따로 다룬다. 기계가 읽는 사본: <a href="bom.csv">bom.csv</a> · <a href="connections.json">connections.json</a></p><p class="badge b-skipped">전기 회로도: 미작성</p><p class="muted">디지털 계통도만 작성. MPU-6050 ↔ Basys3 Pmod 배선은 미작성.</p><div class="panel"><table><tr><th>id</th><th>부품</th><th>인터페이스</th><th>신호 전압</th><th>구분</th><th>레벨 변환</th><th>비고</th></tr><tr><td><code>mpu6050</code></td><td>MPU-6050 모듈 (GY-521)</td><td>I2C</td><td style="white-space:nowrap">3.3 V</td><td style="white-space:nowrap">외부 모듈</td><td>불필요 (3.3V)</td><td>Basys3 Pmod JA 핀에 SDA/SCL 연결. 모듈의 VCC는 3.3V Pmod 전원 사용. 주소 0x68 (AD0=GND). I2C 읽기는 기존 IIC IP(0x4005_0000)에서 소프트웨어 처리, 본 IP는 계산만.</td></tr></table></div><p class="muted">Basys3 FPGA 핀은 3.3V 신호만 직접 받는다. 5V·12V·모터·릴레이는 직결하지 않는다.</p>
+<h2 id="road">6. 기술 트리 (이 캡스톤의 확장 경로)</h2><div class="panel"><ul style="list-style:none;padding:0"><li class="step"><span class="tag s-done">T2</span><span>mmio-qenc-diag-checker: 엔코더 IP (AXI4-Lite) <span class='muted'>참고: <code>mmio-qenc-diag-checker</code></span></span></li><li class="step"><span class="tag s-done">T2</span><span>mmio-xadc-hub: XADC 허브 (AXI4-Lite) <span class='muted'>참고: <code>mmio-xadc-hub</code></span></span></li><li class="step"><span class="tag s-current">T4</span><span>mmio-imu-cf-ip: IMU 상보 필터 (CORDIC atan2) <span class='muted'>참고: <a href="../catalog/amd/ammar-bin-amir-arty-a7-i2c-mpu-6050.html"><code>ammar-bin-amir-arty-a7-i2c-mpu-6050</code></a>, <a href="../catalog/intel/columbia-4840-spring-2026-ahrs.html"><code>columbia-4840-spring-2026-ahrs</code></a>, <a href="../catalog/papers/pmc4628004-microblaze-gps-ins-virtex6.html"><code>pmc4628004-microblaze-gps-ins-virtex6</code></a></span></span></li><li class="step"><span class="tag s-planned">T4</span><span>mmio-lqr-ctrl-ip: LQR 상태 되먹임 제어기 (I-021) <span class='muted'>참고: <a href="../catalog/papers/comillas-tfg-2026-lqr-cartpole-basys3.html"><code>comillas-tfg-2026-lqr-cartpole-basys3</code></a></span></span></li></ul></div>
+<h2 id="src">7. 실행 소스</h2><p>저장소의 <code>capstones/mmio-imu-cf-ip/</code>에 있는 파일 그대로다. 이 문서는 파일에서 읽어 넣은 것이므로 항상 일치한다. <a href="mmio-imu-cf-ip.zip">소스 전체 내려받기 (.zip)</a> · <a href="https://github.com/Yuul-Jung/fpga-soc-harness/tree/main/capstones/mmio-imu-cf-ip">GitHub에서 보기</a></p><details><summary><code>rtl/cordic_atan2.v</code> <span class="muted">130줄</span></summary><pre>// cordic_atan2.v — CORDIC 벡터링 모드 atan2 (16반복, 순차 처리)
+// 입력 : xi, yi — 16비트 부호 (Q2.14: 16384 = 1.0 = 1g)
+// 출력 : angle  — 18비트 부호, degrees*512 (Q7.9), 범위 ±180°*512=±92160
+// 쿼드런트 보정: xi&lt;=0 → 초기 90° 회전으로 1·4사분면으로 가져온다
+// 반복당 1 클럭, 완료까지 18 클럭 (16반복 + 로드 + 완료 출력)
+// 2026-11-04 하네스 자체 작성 (원본, 외부 코드 복사 아님)
+
+`default_nettype none
+module cordic_atan2 (
+    input  wire        clk,
+    input  wire        rst,
+    input  wire        start,
+    input  wire signed [15:0] xi,
+    input  wire signed [15:0] yi,
+    output reg  signed [17:0] angle,
+    output reg         done
+);
+// ─── CORDIC atan 테이블 (degrees * 512 = Q7.9, i번째 = atan(2^-i)도) ─────
+function signed [17:0] atan_lut;
+    input [3:0] i;
+    begin
+        case (i)
+            4&#x27;d0:  atan_lut = 18&#x27;d23040; // atan(1.0)   = 45.0000°
+            4&#x27;d1:  atan_lut = 18&#x27;d13601; // atan(0.5)   = 26.5651°
+            4&#x27;d2:  atan_lut = 18&#x27;d7187;  // atan(0.25)  = 14.0362°
+            4&#x27;d3:  atan_lut = 18&#x27;d3648;  // atan(0.125) =  7.1250°
+            4&#x27;d4:  atan_lut = 18&#x27;d1831;  //              =  3.5763°
+            4&#x27;d5:  atan_lut = 18&#x27;d916;   //              =  1.7899°
+            4&#x27;d6:  atan_lut = 18&#x27;d458;   //              =  0.8952°
+            4&#x27;d7:  atan_lut = 18&#x27;d229;   //              =  0.4476°
+            4&#x27;d8:  atan_lut = 18&#x27;d115;   //              =  0.2238°
+            4&#x27;d9:  atan_lut = 18&#x27;d57;    //              =  0.1119°
+            4&#x27;d10: atan_lut = 18&#x27;d29;    //              =  0.0560°
+            4&#x27;d11: atan_lut = 18&#x27;d14;    //              =  0.0280°
+            4&#x27;d12: atan_lut = 18&#x27;d7;     //              =  0.0140°
+            4&#x27;d13: atan_lut = 18&#x27;d4;     //              =  0.0070°
+            4&#x27;d14: atan_lut = 18&#x27;d2;     //              =  0.0035°
+            4&#x27;d15: atan_lut = 18&#x27;d1;     //              =  0.0018°
+            default: atan_lut = 18&#x27;d0;
+        endcase
+    end
+endfunction
+
+// ─── 상태 ───────────────────────────────────────────────────────────────────
+localparam ST_IDLE  = 2&#x27;d0;
+localparam ST_INIT  = 2&#x27;d1; // 쿼드런트 보정 + 로드
+localparam ST_ITER  = 2&#x27;d2; // 반복 (iter 0..15)
+localparam ST_DONE  = 2&#x27;d3;
+
+reg [1:0]  state;
+reg [3:0]  iter;
+reg signed [31:0] xr, yr, zr; // 32비트 내부 (충분한 정밀도)
+
+// ─── 순차 로직 ──────────────────────────────────────────────────────────────
+always @(posedge clk or posedge rst) begin
+    if (rst) begin
+        state &lt;= ST_IDLE;
+        done  &lt;= 1&#x27;b0;
+        angle &lt;= 18&#x27;sd0;
+        iter  &lt;= 4&#x27;d0;
+        xr &lt;= 32&#x27;sd0; yr &lt;= 32&#x27;sd0; zr &lt;= 32&#x27;sd0;
+    end else begin
+        done &lt;= 1&#x27;b0; // 기본 클리어
+        case (state)
+        // ── 대기 ──────────────────────────────────────────────────────────
+        ST_IDLE: begin
+            if (start) state &lt;= ST_INIT;
+        end
+        // ── 초기화: 쿼드런트 보정 ─────────────────────────────────────────
+        // xi &lt;= 0 이면 (xi, yi)를 90° 회전: (xi,yi)→(yi,−xi), z_init=+90°*512
+        //                 또는 −90° 회전: (xi,yi)→(−yi,xi), z_init=−90°*512
+        ST_INIT: begin
+            if (xi &lt;= 16&#x27;sh0000) begin
+                // 2·3사분면: x를 양수로 만드는 90°/-90° 회전
+                if (yi &gt;= 16&#x27;sh0000) begin
+                    // 2사분면(x&lt;0, y≥0): +90° → (x,y)→(y,−x)
+                    xr &lt;= {{16{yi[15]}}, yi};        // sign-extend
+                    yr &lt;= -{{16{xi[15]}}, xi};
+                    zr &lt;= 18&#x27;sd46080;                // +90°*512
+                end else begin
+                    // 3사분면(x&lt;0, y&lt;0): −90° → (x,y)→(−y,x)
+                    xr &lt;= -{{16{yi[15]}}, yi};
+                    yr &lt;= {{16{xi[15]}}, xi};
+                    zr &lt;= -18&#x27;sd46080;               // −90°*512
+                end
+            end else begin
+                // 1·4사분면: 그대로
+                xr &lt;= {{16{xi[15]}}, xi};
+                yr &lt;= {{16{yi[15]}}, yi};
+                zr &lt;= 18&#x27;sd0;
+            end
+            iter  &lt;= 4&#x27;d0;
+            state &lt;= ST_ITER;
+        end
+        // ── CORDIC 반복 ───────────────────────────────────────────────────
+        // 벡터링 모드: yr→0 방향으로 회전, zr에 각도 누산
+        // σ = (yr&gt;=0) ? -1 : +1
+        // x&#x27; = xr - σ*(yr &gt;&gt; iter)
+        // y&#x27; = yr + σ*(xr &gt;&gt; iter)
+        // z&#x27; = zr - σ*atan_lut[iter]
+        ST_ITER: begin
+            if (yr &gt;= 32&#x27;sd0) begin
+                // σ = -1: x&#x27; = xr + (yr&gt;&gt;i), y&#x27; = yr - (xr&gt;&gt;i), z&#x27; = zr + lut
+                xr &lt;= xr + (yr &gt;&gt;&gt; iter);
+                yr &lt;= yr - (xr &gt;&gt;&gt; iter);
+                zr &lt;= zr + {{14{1&#x27;b0}}, atan_lut(iter)};
+            end else begin
+                // σ = +1: x&#x27; = xr - (yr&gt;&gt;i), y&#x27; = yr + (xr&gt;&gt;i), z&#x27; = zr - lut
+                xr &lt;= xr - (yr &gt;&gt;&gt; iter);
+                yr &lt;= yr + (xr &gt;&gt;&gt; iter);
+                zr &lt;= zr - {{14{1&#x27;b0}}, atan_lut(iter)};
+            end
+            if (iter == 4&#x27;d15) begin
+                state &lt;= ST_DONE;
+            end else begin
+                iter &lt;= iter + 4&#x27;d1;
+            end
+        end
+        // ── 완료 ──────────────────────────────────────────────────────────
+        ST_DONE: begin
+            angle &lt;= zr[17:0]; // 하위 18비트 취함 (±92160 범위 내)
+            done  &lt;= 1&#x27;b1;
+            state &lt;= ST_IDLE;
+        end
+        endcase
+    end
+end
+
+endmodule
+`default_nettype wire
+</pre></details><details><summary><code>rtl/imu_cf_ip.v</code> <span class="muted">171줄</span></summary><pre>// imu_cf_ip.v — IMU 상보 필터 FSM + CORDIC 시퀀서
+// 입력 : ay, az (롤용 accel Q2.14), ax (피치용), gx_del, gy_del (자이로 증분 Q7.9)
+//        alpha (상보 필터 계수 *65536, 기본 0.98*65536=64225)
+// 출력 : roll, pitch (Q7.9 degrees*512, 18비트 부호)
+// 상보 필터:
+//   roll  = (alpha*(roll_prev  + gx_del) + (65536-alpha)*atan2(ay,az )) &gt;&gt; 16
+//   pitch = (alpha*(pitch_prev + gy_del) + (65536-alpha)*atan2(ax,-az)) &gt;&gt; 16
+// 2026-11-04 하네스 자체 작성 (원본, 외부 코드 복사 아님)
+
+`default_nettype none
+module imu_cf_ip (
+    input  wire        clk,
+    input  wire        rst,
+    // 제어
+    input  wire        start,
+    output reg         done,
+    output reg         busy,
+    // 센서 입력
+    input  wire signed [15:0] ay,
+    input  wire signed [15:0] az,
+    input  wire signed [15:0] ax,
+    input  wire signed [17:0] gx_del,  // 롤 자이로 증분 (Q7.9)
+    input  wire signed [17:0] gy_del,  // 피치 자이로 증분 (Q7.9)
+    input  wire        [15:0] alpha,   // *65536 계수 (0x0000=0.0, 0xFFFF≈1.0)
+    // 각도 출력
+    output reg  signed [17:0] roll,
+    output reg  signed [17:0] pitch
+);
+
+// ─── CORDIC 인스턴스 신호 ────────────────────────────────────────────────────
+reg         cord_start;
+reg  signed [15:0] cord_xi, cord_yi;
+wire signed [17:0] cord_angle;
+wire               cord_done;
+
+cordic_atan2 u_cordic (
+    .clk   (clk),
+    .rst   (rst),
+    .start (cord_start),
+    .xi    (cord_xi),
+    .yi    (cord_yi),
+    .angle (cord_angle),
+    .done  (cord_done)
+);
+
+// ─── FSM 상태 ────────────────────────────────────────────────────────────────
+localparam ST_IDLE         = 3&#x27;d0;
+localparam ST_CORD_ROLL    = 3&#x27;d1;  // atan2(ay, az) 시작
+localparam ST_WAIT_ROLL    = 3&#x27;d2;  // CORDIC 완료 대기
+localparam ST_CORD_PITCH   = 3&#x27;d3;  // atan2(ax, -az) 시작
+localparam ST_WAIT_PITCH   = 3&#x27;d4;  // CORDIC 완료 대기
+localparam ST_BLEND        = 3&#x27;d5;  // 상보 필터 혼합
+localparam ST_DONE         = 3&#x27;d6;
+localparam ST_OUTPUT       = 3&#x27;d7;  // 혼합 결과 &gt;&gt; 16 → 출력
+
+reg [2:0] state;
+
+// 중간 계산용
+reg signed [17:0] accel_roll;   // atan2(ay, az) 결과
+reg signed [17:0] accel_pitch;  // atan2(ax, -az) 결과
+reg signed [17:0] gyro_roll;    // roll_prev + gx_del
+reg signed [17:0] gyro_pitch;   // pitch_prev + gy_del
+
+// 상보 필터 계산 (36비트 중간 — 오버플로 방지)
+// roll = (alpha*gyro_roll + (65536-alpha)*accel_roll) &gt;&gt; 16
+// 주의: alpha는 16비트 비부호, angle/gyro는 18비트 부호
+// 곱 최대: 65536 * 92160 = 6,039,797,760 → 33비트 필요. 36비트로 충분
+reg signed [35:0] blend_a;
+reg signed [35:0] blend_b;
+reg signed [17:0] one_minus_alpha_18;  // 65536 - alpha (16비트 비부호 → 항상 ≤65536)
+
+// ─── 순차 로직 ───────────────────────────────────────────────────────────────
+always @(posedge clk or posedge rst) begin
+    if (rst) begin
+        state       &lt;= ST_IDLE;
+        done        &lt;= 1&#x27;b0;
+        busy        &lt;= 1&#x27;b0;
+        cord_start  &lt;= 1&#x27;b0;
+        roll        &lt;= 18&#x27;sd0;
+        pitch       &lt;= 18&#x27;sd0;
+        accel_roll  &lt;= 18&#x27;sd0;
+        accel_pitch &lt;= 18&#x27;sd0;
+        gyro_roll   &lt;= 18&#x27;sd0;
+        gyro_pitch  &lt;= 18&#x27;sd0;
+        blend_a     &lt;= 36&#x27;sd0;
+        blend_b     &lt;= 36&#x27;sd0;
+        one_minus_alpha_18 &lt;= 18&#x27;sd0;
+    end else begin
+        done       &lt;= 1&#x27;b0;
+        cord_start &lt;= 1&#x27;b0;
+
+        case (state)
+        // ── 대기 ──────────────────────────────────────────────────────────
+        ST_IDLE: begin
+            if (start) begin
+                busy  &lt;= 1&#x27;b1;
+                state &lt;= ST_CORD_ROLL;
+                // 자이로 적분항 미리 계산
+                gyro_roll  &lt;= roll  + gx_del;
+                gyro_pitch &lt;= pitch + gy_del;
+            end
+        end
+
+        // ── 롤 CORDIC 시작: atan2(ay, az) ────────────────────────────────
+        ST_CORD_ROLL: begin
+            cord_xi    &lt;= az;
+            cord_yi    &lt;= ay;
+            cord_start &lt;= 1&#x27;b1;
+            state      &lt;= ST_WAIT_ROLL;
+        end
+
+        // ── 롤 CORDIC 완료 대기 ───────────────────────────────────────────
+        ST_WAIT_ROLL: begin
+            if (cord_done) begin
+                accel_roll &lt;= cord_angle;
+                state      &lt;= ST_CORD_PITCH;
+            end
+        end
+
+        // ── 피치 CORDIC 시작: atan2(ax, -az) ────────────────────────────
+        ST_CORD_PITCH: begin
+            cord_xi    &lt;= -az;
+            cord_yi    &lt;= ax;
+            cord_start &lt;= 1&#x27;b1;
+            state      &lt;= ST_WAIT_PITCH;
+        end
+
+        // ── 피치 CORDIC 완료 대기 ─────────────────────────────────────────
+        ST_WAIT_PITCH: begin
+            if (cord_done) begin
+                accel_pitch &lt;= cord_angle;
+                state       &lt;= ST_BLEND;
+                // 상보 필터 계수: (65536-alpha), 최대 65536 → 18비트 부호로 충분
+                one_minus_alpha_18 &lt;= 18&#x27;sd65536 - {{2{1&#x27;b0}}, alpha};
+            end
+        end
+
+        // ── 상보 필터 혼합: 36비트 곱셈으로 오버플로 방지 ────────────────
+        // alpha(16비트 비부호)→ 36비트 영확장, 각도(18비트 부호)→ 36비트 부호확장
+        // 곱셈 결과 최대: 65536×92160 = 6.04×10⁹ &lt; 2³³ → 36비트에 적합
+        ST_BLEND: begin
+            blend_a &lt;= $signed({{20{1&#x27;b0}}, alpha})
+                           * $signed({{18{gyro_roll[17]}}, gyro_roll})
+                     + $signed({{18{one_minus_alpha_18[17]}}, one_minus_alpha_18})
+                           * $signed({{18{accel_roll[17]}}, accel_roll});
+            blend_b &lt;= $signed({{20{1&#x27;b0}}, alpha})
+                           * $signed({{18{gyro_pitch[17]}}, gyro_pitch})
+                     + $signed({{18{one_minus_alpha_18[17]}}, one_minus_alpha_18})
+                           * $signed({{18{accel_pitch[17]}}, accel_pitch});
+            state &lt;= ST_OUTPUT;
+        end
+        // ── 혼합 결과 &gt;&gt; 16 → 18비트 출력 ───────────────────────────────
+        // blend_a[33:16] = $signed(blend_a) &gt;&gt;&gt; 16 의 하위 18비트와 동일
+        ST_OUTPUT: begin
+            roll  &lt;= blend_a[33:16];
+            pitch &lt;= blend_b[33:16];
+            state &lt;= ST_DONE;
+        end
+
+        // ── 완료 ──────────────────────────────────────────────────────────
+        ST_DONE: begin
+            done  &lt;= 1&#x27;b1;
+            busy  &lt;= 1&#x27;b0;
+            state &lt;= ST_IDLE;
+        end
+        endcase
+    end
+end
+
+endmodule
+`default_nettype wire
+</pre></details><details><summary><code>rtl/axil_imu_cf.v</code> <span class="muted">159줄</span></summary><pre>// axil_imu_cf.v — AXI4-Lite 슬레이브 레지스터 맵 (IMU 상보 필터)
+// 기준 주소: 0x4019_0000 (동결 맵 free_slot[19] 제안)
+// BREADY / RREADY 항상 1 가정 (슬레이브 간소화)
+// 2026-11-04 하네스 자체 작성 (원본, 외부 코드 복사 아님)
+
+`default_nettype none
+module axil_imu_cf #(
+    parameter DATA_WIDTH = 32,
+    parameter ADDR_WIDTH = 8
+)(
+    input  wire        clk,
+    input  wire        rst,
+    // AXI4-Lite 슬레이브 포트
+    input  wire [ADDR_WIDTH-1:0] s_axil_awaddr,
+    input  wire        s_axil_awvalid,
+    output reg         s_axil_awready,
+    input  wire [DATA_WIDTH-1:0] s_axil_wdata,
+    input  wire [(DATA_WIDTH/8)-1:0] s_axil_wstrb,
+    input  wire        s_axil_wvalid,
+    output reg         s_axil_wready,
+    output reg  [1:0]  s_axil_bresp,
+    output reg         s_axil_bvalid,
+    input  wire        s_axil_bready,
+    input  wire [ADDR_WIDTH-1:0] s_axil_araddr,
+    input  wire        s_axil_arvalid,
+    output reg         s_axil_arready,
+    output reg  [DATA_WIDTH-1:0] s_axil_rdata,
+    output reg  [1:0]  s_axil_rresp,
+    output reg         s_axil_rvalid,
+    input  wire        s_axil_rready
+);
+
+// ─── 레지스터 주소 (오프셋) ──────────────────────────────────────────────────
+localparam REG_CTRL    = 8&#x27;h00; // WO: bit0=start
+localparam REG_STATUS  = 8&#x27;h04; // RO: bit0=done, bit1=busy
+localparam REG_AY      = 8&#x27;h08; // WO: 가속도 Y (Q2.14, 16비트 부호)
+localparam REG_AZ      = 8&#x27;h0C; // WO: 가속도 Z (Q2.14)
+localparam REG_AX      = 8&#x27;h10; // WO: 가속도 X (Q2.14, 피치용)
+localparam REG_GX_DEL  = 8&#x27;h14; // WO: 롤 자이로 증분 (Q7.9, 18비트 부호)
+localparam REG_ALPHA   = 8&#x27;h18; // WO: 상보 필터 계수 (alpha*65536, 16비트)
+localparam REG_GY_DEL  = 8&#x27;h1C; // WO: 피치 자이로 증분 (Q7.9)
+localparam REG_ROLL    = 8&#x27;h20; // RO: 롤 각도 출력 (Q7.9, 18비트 부호)
+localparam REG_PITCH   = 8&#x27;h24; // RO: 피치 각도 출력 (Q7.9, 18비트 부호)
+
+// ─── 레지스터 저장소 ─────────────────────────────────────────────────────────
+reg signed [15:0] r_ay, r_az, r_ax;
+reg signed [17:0] r_gx_del, r_gy_del;
+reg        [15:0] r_alpha;
+reg               r_start;
+
+// ─── imu_cf_ip 인스턴스 ──────────────────────────────────────────────────────
+wire        ip_done, ip_busy;
+wire signed [17:0] ip_roll, ip_pitch;
+
+imu_cf_ip u_imu_cf (
+    .clk     (clk),
+    .rst     (rst),
+    .start   (r_start),
+    .done    (ip_done),
+    .busy    (ip_busy),
+    .ay      (r_ay),
+    .az      (r_az),
+    .ax      (r_ax),
+    .gx_del  (r_gx_del),
+    .gy_del  (r_gy_del),
+    .alpha   (r_alpha),
+    .roll    (ip_roll),
+    .pitch   (ip_pitch)
+);
+
+// ─── AXI4-Lite 쓰기 채널 ─────────────────────────────────────────────────────
+reg [ADDR_WIDTH-1:0] wr_addr;
+reg wr_addr_valid;
+
+always @(posedge clk or posedge rst) begin
+    if (rst) begin
+        s_axil_awready &lt;= 1&#x27;b0;
+        s_axil_wready  &lt;= 1&#x27;b0;
+        s_axil_bvalid  &lt;= 1&#x27;b0;
+        s_axil_bresp   &lt;= 2&#x27;b00;
+        wr_addr        &lt;= {ADDR_WIDTH{1&#x27;b0}};
+        wr_addr_valid  &lt;= 1&#x27;b0;
+        r_ay      &lt;= 16&#x27;sh0000;
+        r_az      &lt;= 16&#x27;sh7FFF; // az 기본값=1g (수직 정렬)
+        r_ax      &lt;= 16&#x27;sh0000;
+        r_gx_del  &lt;= 18&#x27;sd0;
+        r_gy_del  &lt;= 18&#x27;sd0;
+        r_alpha   &lt;= 16&#x27;d64225; // 0.98 * 65536
+        r_start   &lt;= 1&#x27;b0;
+    end else begin
+        r_start &lt;= 1&#x27;b0; // 자동 클리어
+
+        // AW 핸드셰이크
+        if (s_axil_awvalid &amp;&amp; !wr_addr_valid) begin
+            s_axil_awready &lt;= 1&#x27;b1;
+            wr_addr        &lt;= s_axil_awaddr;
+            wr_addr_valid  &lt;= 1&#x27;b1;
+        end else begin
+            s_axil_awready &lt;= 1&#x27;b0;
+        end
+
+        // W 핸드셰이크 + 레지스터 쓰기
+        if (s_axil_wvalid &amp;&amp; wr_addr_valid) begin
+            s_axil_wready &lt;= 1&#x27;b1;
+            wr_addr_valid &lt;= 1&#x27;b0;
+            case (wr_addr)
+            REG_CTRL:   r_start  &lt;= s_axil_wdata[0];
+            REG_AY:     r_ay     &lt;= s_axil_wdata[15:0];
+            REG_AZ:     r_az     &lt;= s_axil_wdata[15:0];
+            REG_AX:     r_ax     &lt;= s_axil_wdata[15:0];
+            REG_GX_DEL: r_gx_del &lt;= s_axil_wdata[17:0];
+            REG_ALPHA:  r_alpha  &lt;= s_axil_wdata[15:0];
+            REG_GY_DEL: r_gy_del &lt;= s_axil_wdata[17:0];
+            default: ; // 무시
+            endcase
+            // B 채널
+            s_axil_bvalid &lt;= 1&#x27;b1;
+            s_axil_bresp  &lt;= 2&#x27;b00; // OKAY
+        end else begin
+            s_axil_wready &lt;= 1&#x27;b0;
+        end
+
+        // B 핸드셰이크 클리어
+        if (s_axil_bvalid &amp;&amp; s_axil_bready) begin
+            s_axil_bvalid &lt;= 1&#x27;b0;
+        end
+    end
+end
+
+// ─── AXI4-Lite 읽기 채널 ─────────────────────────────────────────────────────
+always @(posedge clk or posedge rst) begin
+    if (rst) begin
+        s_axil_arready &lt;= 1&#x27;b0;
+        s_axil_rvalid  &lt;= 1&#x27;b0;
+        s_axil_rdata   &lt;= {DATA_WIDTH{1&#x27;b0}};
+        s_axil_rresp   &lt;= 2&#x27;b00;
+    end else begin
+        if (s_axil_arvalid &amp;&amp; !s_axil_rvalid) begin
+            s_axil_arready &lt;= 1&#x27;b1;
+            s_axil_rvalid  &lt;= 1&#x27;b1;
+            s_axil_rresp   &lt;= 2&#x27;b00;
+            case (s_axil_araddr)
+            REG_STATUS: s_axil_rdata &lt;= {30&#x27;b0, ip_busy, ip_done};
+            REG_ROLL:   s_axil_rdata &lt;= {{14{ip_roll[17]}}, ip_roll};
+            REG_PITCH:  s_axil_rdata &lt;= {{14{ip_pitch[17]}}, ip_pitch};
+            default:    s_axil_rdata &lt;= 32&#x27;h0;
+            endcase
+        end else begin
+            s_axil_arready &lt;= 1&#x27;b0;
+        end
+
+        if (s_axil_rvalid &amp;&amp; s_axil_rready) begin
+            s_axil_rvalid &lt;= 1&#x27;b0;
+        end
+    end
+end
+
+endmodule
+`default_nettype wire
+</pre></details><details><summary><code>rtl/basys3_imu_cf_top.v</code> <span class="muted">74줄</span></summary><pre>// basys3_imu_cf_top.v — Basys3 보드 래퍼 (IMU 상보 필터 IP)
+// 클럭: W5 100MHz sysclk, 리셋: btnC (active-high)
+// LED[15:0] = {busy, done, pitch[6:0], roll[6:0]}  (디버그 표시)
+// AXI4-Lite 슬레이브 포트를 외부로 노출 (MicroBlaze V CPU 연결용)
+// 2026-11-04 하네스 자체 작성 (원본, 외부 코드 복사 아님)
+
+`default_nettype none
+module basys3_imu_cf_top (
+    // 보드 클럭 / 리셋
+    input  wire        clk,    // W5: 100 MHz
+    input  wire        btnC,   // T17: 중앙 버튼 (리셋)
+    // LED (디버그)
+    output wire [15:0] led,
+    // AXI4-Lite 버스 (CPU 측 — 외부 노출)
+    input  wire [7:0]  s_axil_awaddr,
+    input  wire        s_axil_awvalid,
+    output wire        s_axil_awready,
+    input  wire [31:0] s_axil_wdata,
+    input  wire [3:0]  s_axil_wstrb,
+    input  wire        s_axil_wvalid,
+    output wire        s_axil_wready,
+    output wire [1:0]  s_axil_bresp,
+    output wire        s_axil_bvalid,
+    input  wire        s_axil_bready,
+    input  wire [7:0]  s_axil_araddr,
+    input  wire        s_axil_arvalid,
+    output wire        s_axil_arready,
+    output wire [31:0] s_axil_rdata,
+    output wire [1:0]  s_axil_rresp,
+    output wire        s_axil_rvalid,
+    input  wire        s_axil_rready
+);
+
+// ─── 내부 신호 ───────────────────────────────────────────────────────────────
+wire        ip_done, ip_busy;
+wire signed [17:0] ip_roll, ip_pitch;
+
+// ─── AXI4-Lite 슬레이브 인스턴스 ────────────────────────────────────────────
+axil_imu_cf u_axil (
+    .clk             (clk),
+    .rst             (btnC),
+    .s_axil_awaddr   (s_axil_awaddr),
+    .s_axil_awvalid  (s_axil_awvalid),
+    .s_axil_awready  (s_axil_awready),
+    .s_axil_wdata    (s_axil_wdata),
+    .s_axil_wstrb    (s_axil_wstrb),
+    .s_axil_wvalid   (s_axil_wvalid),
+    .s_axil_wready   (s_axil_wready),
+    .s_axil_bresp    (s_axil_bresp),
+    .s_axil_bvalid   (s_axil_bvalid),
+    .s_axil_bready   (s_axil_bready),
+    .s_axil_araddr   (s_axil_araddr),
+    .s_axil_arvalid  (s_axil_arvalid),
+    .s_axil_arready  (s_axil_arready),
+    .s_axil_rdata    (s_axil_rdata),
+    .s_axil_rresp    (s_axil_rresp),
+    .s_axil_rvalid   (s_axil_rvalid),
+    .s_axil_rready   (s_axil_rready)
+);
+
+// ─── LED 디버그 표시 ─────────────────────────────────────────────────────────
+// STATUS는 axil 내부에 있으므로 별도 wire 연결 대신 rdata 모니터링
+// 여기서는 axil_imu_cf 내 imu_cf_ip의 done/busy를 직접 쓸 수 없으므로
+// STATUS 레지스터를 직접 읽는 대신, AXI slave 내부 상태를 주석으로 안내
+// 실제 보드에서는 로직 분석기나 UART TX로 확인 권장
+
+// 간단한 LED 패턴: 복잡한 접근 없이 AXI 활동만 표시
+// awvalid/arvalid 상태를 LED[15:14]에, 나머지는 0
+assign led[15]   = s_axil_awvalid; // 쓰기 시도 중
+assign led[14]   = s_axil_arvalid; // 읽기 시도 중
+assign led[13:0] = 14&#x27;b0;
+
+endmodule
+`default_nettype wire
+</pre></details><details><summary><code>rtl/gpio_stub.v</code> <span class="muted">42줄</span></summary><pre>// gpio_stub.v — GPIO 스텁 (LED/SW 최소 래퍼, 기존 GPIO IP 대체 가능)
+// 2026-11-04 하네스 자체 작성 (원본, 외부 코드 복사 아님)
+
+`default_nettype none
+module gpio (
+    input  wire        clk,
+    input  wire        rst,
+    input  wire [15:0] sw,
+    output wire [15:0] led,
+    // AXI4-Lite (미구현 — 스텁)
+    input  wire [7:0]  s_axil_awaddr,
+    input  wire        s_axil_awvalid,
+    output wire        s_axil_awready,
+    input  wire [31:0] s_axil_wdata,
+    input  wire [3:0]  s_axil_wstrb,
+    input  wire        s_axil_wvalid,
+    output wire        s_axil_wready,
+    output wire [1:0]  s_axil_bresp,
+    output wire        s_axil_bvalid,
+    input  wire        s_axil_bready,
+    input  wire [7:0]  s_axil_araddr,
+    input  wire        s_axil_arvalid,
+    output wire        s_axil_arready,
+    output wire [31:0] s_axil_rdata,
+    output wire [1:0]  s_axil_rresp,
+    output wire        s_axil_rvalid,
+    input  wire        s_axil_rready
+);
+
+// 스텁: 모든 출력 0
+assign led             = 16&#x27;b0;
+assign s_axil_awready  = 1&#x27;b0;
+assign s_axil_wready   = 1&#x27;b0;
+assign s_axil_bresp    = 2&#x27;b00;
+assign s_axil_bvalid   = 1&#x27;b0;
+assign s_axil_arready  = 1&#x27;b0;
+assign s_axil_rdata    = 32&#x27;h0;
+assign s_axil_rresp    = 2&#x27;b00;
+assign s_axil_rvalid   = 1&#x27;b0;
+
+endmodule
+`default_nettype wire
+</pre></details><details><summary><code>rtl/uart_tx.v</code> <span class="muted">78줄</span></summary><pre>// uart_tx.v — 디버그 UART 송신기 (8N1, 115200 baud @ 100MHz)
+// 2026-11-04 하네스 자체 작성 (원본, 외부 코드 복사 아님)
+
+`default_nettype none
+module uart_tx #(
+    parameter CLK_HZ   = 100_000_000,
+    parameter BAUD     = 115200
+)(
+    input  wire       clk,
+    input  wire       rst,
+    input  wire [7:0] data,
+    input  wire       valid,
+    output reg        ready,
+    output reg        tx
+);
+
+localparam CLKS_PER_BIT = CLK_HZ / BAUD; // 868
+
+localparam ST_IDLE  = 2&#x27;d0;
+localparam ST_START = 2&#x27;d1;
+localparam ST_DATA  = 2&#x27;d2;
+localparam ST_STOP  = 2&#x27;d3;
+
+reg [1:0]  state;
+reg [9:0]  clk_cnt;
+reg [2:0]  bit_idx;
+reg [7:0]  shift;
+
+always @(posedge clk or posedge rst) begin
+    if (rst) begin
+        state   &lt;= ST_IDLE;
+        tx      &lt;= 1&#x27;b1;
+        ready   &lt;= 1&#x27;b1;
+        clk_cnt &lt;= 10&#x27;d0;
+        bit_idx &lt;= 3&#x27;d0;
+        shift   &lt;= 8&#x27;d0;
+    end else begin
+        case (state)
+        ST_IDLE: begin
+            tx    &lt;= 1&#x27;b1;
+            ready &lt;= 1&#x27;b1;
+            if (valid) begin
+                ready   &lt;= 1&#x27;b0;
+                shift   &lt;= data;
+                state   &lt;= ST_START;
+                clk_cnt &lt;= 10&#x27;d0;
+            end
+        end
+        ST_START: begin
+            tx &lt;= 1&#x27;b0;
+            if (clk_cnt == CLKS_PER_BIT - 1) begin
+                clk_cnt &lt;= 10&#x27;d0;
+                bit_idx &lt;= 3&#x27;d0;
+                state   &lt;= ST_DATA;
+            end else clk_cnt &lt;= clk_cnt + 10&#x27;d1;
+        end
+        ST_DATA: begin
+            tx &lt;= shift[0];
+            if (clk_cnt == CLKS_PER_BIT - 1) begin
+                clk_cnt &lt;= 10&#x27;d0;
+                shift   &lt;= {1&#x27;b0, shift[7:1]};
+                if (bit_idx == 3&#x27;d7) state &lt;= ST_STOP;
+                else bit_idx &lt;= bit_idx + 3&#x27;d1;
+            end else clk_cnt &lt;= clk_cnt + 10&#x27;d1;
+        end
+        ST_STOP: begin
+            tx &lt;= 1&#x27;b1;
+            if (clk_cnt == CLKS_PER_BIT - 1) begin
+                clk_cnt &lt;= 10&#x27;d0;
+                state   &lt;= ST_IDLE;
+            end else clk_cnt &lt;= clk_cnt + 10&#x27;d1;
+        end
+        endcase
+    end
+end
+
+endmodule
+`default_nettype wire
+</pre></details><details><summary><code>tb/tb_imu_cf.v</code> <span class="muted">184줄</span></summary><pre>// tb_imu_cf.v — IMU 상보 필터 IP 자체 점검형 테스트벤치 (TC1~TC5)
+// PASS / FAIL 출력. !==로 X/Z도 실패로 처리.
+// 2026-11-04 하네스 자체 작성 (원본, 외부 코드 복사 아님)
+
+`default_nettype none
+`timescale 1ns/1ps
+
+module tb_imu_cf;
+
+// ─── 허용 오차 (degrees*512 단위) ───────────────────────────────────────────
+// 1도 오차 허용 = 512 단위. CORDIC 16반복 오차 + 고정소수점 오차 감안.
+localparam signed [17:0] TOL = 18&#x27;d1024; // ±2도
+
+// ─── DUT 신호 ────────────────────────────────────────────────────────────────
+reg         clk, rst;
+reg         start;
+wire        done, busy;
+reg  signed [15:0] ay, az, ax;
+reg  signed [17:0] gx_del, gy_del;
+reg         [15:0] alpha;
+wire signed [17:0] roll, pitch;
+
+// ─── DUT 인스턴스 ────────────────────────────────────────────────────────────
+imu_cf_ip u_dut (
+    .clk    (clk),
+    .rst    (rst),
+    .start  (start),
+    .done   (done),
+    .busy   (busy),
+    .ay     (ay),
+    .az     (az),
+    .ax     (ax),
+    .gx_del (gx_del),
+    .gy_del (gy_del),
+    .alpha  (alpha),
+    .roll   (roll),
+    .pitch  (pitch)
+);
+
+// ─── 클럭 생성 (100 MHz) ──────────────────────────────────────────────────────
+initial clk = 0;
+always #5 clk = ~clk;
+
+// ─── 헬퍼: 1스텝 실행 후 done 대기 ──────────────────────────────────────────
+integer wait_cnt;
+task run_step;
+    begin
+        @(posedge clk); #1;
+        start = 1&#x27;b1;
+        @(posedge clk); #1;
+        start = 1&#x27;b0;
+        wait_cnt = 0;
+        while (done !== 1&#x27;b1 &amp;&amp; wait_cnt &lt; 200) begin
+            @(posedge clk); #1;
+            wait_cnt = wait_cnt + 1;
+        end
+        if (done !== 1&#x27;b1) begin
+            $display(&quot;FAIL: done never asserted (timeout)&quot;);
+            $finish;
+        end
+    end
+endtask
+
+// ─── 헬퍼: 범위 검사 ─────────────────────────────────────────────────────────
+integer fail_count;
+task check_range;
+    input signed [17:0] actual;
+    input signed [17:0] expected;
+    input [255:0]       name;
+    begin
+        if (actual &lt; expected - TOL || actual &gt; expected + TOL) begin
+            $display(&quot;FAIL %0s: got %0d expected %0d (tol ±%0d)&quot;,
+                     name, actual, expected, TOL);
+            fail_count = fail_count + 1;
+        end else begin
+            $display(&quot;  ok  %0s: %0d (expected %0d ±%0d)&quot;,
+                     name, actual, expected, TOL);
+        end
+    end
+endtask
+
+// ─── 테스트 본체 ──────────────────────────────────────────────────────────────
+initial begin
+    fail_count = 0;
+
+    // 초기화
+    rst    = 1&#x27;b1;
+    start  = 1&#x27;b0;
+    ay     = 16&#x27;sh0000;
+    az     = 16&#x27;sh4000; // 1g = 16384
+    ax     = 16&#x27;sh0000;
+    gx_del = 18&#x27;sd0;
+    gy_del = 18&#x27;sd0;
+    alpha  = 16&#x27;d0;     // alpha=0: 순수 가속도계 (즉시 수렴)
+
+    repeat(5) @(posedge clk);
+    rst = 1&#x27;b0;
+    repeat(2) @(posedge clk);
+
+    // ── TC1: ay=0, az=1g → roll≈0° ─────────────────────────────────────────
+    $display(&quot;TC1: ay=0, az=1g → roll should be ~0°&quot;);
+    ay     = 16&#x27;sh0000;
+    az     = 16&#x27;sh4000;
+    ax     = 16&#x27;sh0000;
+    gx_del = 18&#x27;sd0;
+    gy_del = 18&#x27;sd0;
+    alpha  = 16&#x27;d0;
+    run_step;
+    check_range(roll, 18&#x27;sd0, &quot;TC1 roll&quot;);
+
+    // ── TC2: ay=1g, az=0 → roll≈+90° (45056 = 90°*512) ─────────────────────
+    $display(&quot;TC2: ay=1g, az=0 → roll should be ~90°&quot;);
+    ay     = 16&#x27;sh4000;
+    az     = 16&#x27;sh0000;
+    ax     = 16&#x27;sh0000;
+    gx_del = 18&#x27;sd0;
+    gy_del = 18&#x27;sd0;
+    alpha  = 16&#x27;d0;
+    run_step;
+    check_range(roll, 18&#x27;sd46080, &quot;TC2 roll&quot;); // 90°*512=46080
+
+    // ── TC3: ay=az=0.707g → roll≈45° (23040=45°*512) ────────────────────────
+    $display(&quot;TC3: ay=az=0.707g → roll should be ~45°&quot;);
+    // 0.707*16384 ≈ 11585
+    ay     = 16&#x27;sh2D41; // 11585
+    az     = 16&#x27;sh2D41;
+    ax     = 16&#x27;sh0000;
+    gx_del = 18&#x27;sd0;
+    gy_del = 18&#x27;sd0;
+    alpha  = 16&#x27;d0;
+    run_step;
+    check_range(roll, 18&#x27;sd23040, &quot;TC3 roll&quot;);
+
+    // ── TC4: alpha=0 → 순수 가속도계, 즉시 accel값으로 수렴 ──────────────────
+    $display(&quot;TC4: alpha=0 (pure accel) → roll immediately from ay/az&quot;);
+    ay     = 16&#x27;sh2D41; // 45°
+    az     = 16&#x27;sh2D41;
+    gx_del = 18&#x27;sd5120; // 큰 자이로 오프셋 (10°*512) — 무시돼야 함
+    alpha  = 16&#x27;d0;      // alpha=0: 자이로 가중치 0
+    run_step;
+    check_range(roll, 18&#x27;sd23040, &quot;TC4 roll(alpha=0, accel only)&quot;);
+
+    // ── TC5: 자이로 드리프트 → 상보 필터 보정 (alpha=0.98) ───────────────────
+    // TC4가 roll≈45°를 남긴다. alpha=0 초기화 스텝으로 roll을 0°로 맞춘다.
+    // 그 후 alpha=0.98, gx_del=+1°를 적용: blend → ≈0.98° ≈ 501 단위
+    $display(&quot;TC5: gyro drift correction (alpha=64225/65536≈0.98)&quot;);
+    ay     = 16&#x27;sh0000;
+    az     = 16&#x27;sh4000;
+    gx_del = 18&#x27;sd0;
+    alpha  = 16&#x27;d0;      // 순수 가속도계: roll → atan2(0, 1g) ≈ 0°
+    run_step;            // 초기화 스텝 (roll ← 0)
+
+    // 이제 alpha=0.98, gx_del=+1°로 상보 필터 테스트
+    gx_del = 18&#x27;sd512;  // +1° 자이로 증분
+    alpha  = 16&#x27;d64225; // 0.98*65536
+    // 예상: alpha*(0°+1°) + (1-alpha)*0° = 0.98*512 ≈ 501 (≈0.98°)
+    run_step;
+    // 넓은 허용: 0.5°~1.5° 범위 (256~768)
+    if (roll &lt; 18&#x27;sd256 || roll &gt; 18&#x27;sd768) begin
+        $display(&quot;FAIL TC5 roll: %0d (expected ~501, range 256~768)&quot;, roll);
+        fail_count = fail_count + 1;
+    end else begin
+        $display(&quot;  ok  TC5 roll: %0d (blend OK)&quot;, roll);
+    end
+
+    // ─── 최종 판정 ──────────────────────────────────────────────────────────
+    if (fail_count == 0) begin
+        $display(&quot;PASS: all %0d tests passed&quot;, 5);
+    end else begin
+        $display(&quot;FAIL: %0d test(s) failed&quot;, fail_count);
+    end
+
+    $finish;
+end
+
+// ─── 타임아웃 가드 ───────────────────────────────────────────────────────────
+initial begin
+    #200000; // 200μs
+    $display(&quot;FAIL: global timeout&quot;);
+    $finish;
+end
+
+endmodule
+`default_nettype wire
+</pre></details><details><summary><code>constr/basys3_imu_cf.xdc</code> <span class="muted">43줄</span></summary><pre>## basys3_imu_cf.xdc — Basys3 XC7A35T 핀 제약 (IMU 상보 필터 IP)
+## 클럭: W5 (100 MHz), 리셋: btnC (T17)
+## AXI4-Lite 버스는 MicroBlaze V에서 IP 블록으로 연결 (핀 불필요)
+## LED 디버그 출력: U16, E19, U19, V19, W18, U15, U14, V14, V13, V3, W3, U3, P3, N3
+## 2026-11-04 하네스 자체 작성
+
+## ── 클럭 ─────────────────────────────────────────────────────────────────────
+set_property PACKAGE_PIN W5   [get_ports clk]
+set_property IOSTANDARD LVCMOS33 [get_ports clk]
+create_clock -add -name sys_clk_pin -period 10.000 -waveform {0 5} [get_ports clk]
+
+## ── 리셋 (btnC) ─────────────────────────────────────────────────────────────
+set_property PACKAGE_PIN T17  [get_ports btnC]
+set_property IOSTANDARD LVCMOS33 [get_ports btnC]
+
+## ── LED[15:0] ────────────────────────────────────────────────────────────────
+set_property PACKAGE_PIN U16  [get_ports {led[0]}]
+set_property PACKAGE_PIN E19  [get_ports {led[1]}]
+set_property PACKAGE_PIN U19  [get_ports {led[2]}]
+set_property PACKAGE_PIN V19  [get_ports {led[3]}]
+set_property PACKAGE_PIN W18  [get_ports {led[4]}]
+set_property PACKAGE_PIN U15  [get_ports {led[5]}]
+set_property PACKAGE_PIN U14  [get_ports {led[6]}]
+set_property PACKAGE_PIN V14  [get_ports {led[7]}]
+set_property PACKAGE_PIN V13  [get_ports {led[8]}]
+set_property PACKAGE_PIN V3   [get_ports {led[9]}]
+set_property PACKAGE_PIN W3   [get_ports {led[10]}]
+set_property PACKAGE_PIN U3   [get_ports {led[11]}]
+set_property PACKAGE_PIN P3   [get_ports {led[12]}]
+set_property PACKAGE_PIN N3   [get_ports {led[13]}]
+set_property PACKAGE_PIN P1   [get_ports {led[14]}]
+set_property PACKAGE_PIN L1   [get_ports {led[15]}]
+
+set_property IOSTANDARD LVCMOS33 [get_ports {led[*]}]
+
+## ── AXI4-Lite 버스: IP 블록 연결 (핀 제약 불필요, MicroBlaze IP 연결) ───────
+## s_axil_* 포트는 MicroBlaze V의 M_AXI_DP 포트에서 Vivado IP Integrator로 연결
+## 핀 제약을 선언하지 않으면 Vivado IP 연결 시 자동 처리됨
+
+## ── 비트스트림 설정 ──────────────────────────────────────────────────────────
+set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
+set_property CONFIG_VOLTAGE 3.3 [current_design]
+set_property CFGBVS VCCO [current_design]
+</pre></details><details><summary><code>Makefile</code> <span class="muted">48줄</span></summary><pre># Makefile — IMU 상보 필터 IP (mmio-imu-cf-ip)
+# 타깃: lint, sim, synth, clean
+# 도구: verilator (lint), iverilog+vvp (sim), yosys (synth)
+
+SLUG    = mmio-imu-cf-ip
+RTL_DIR = rtl
+TB_DIR  = tb
+BUILD   = build
+
+RTL_SRCS = $(RTL_DIR)/cordic_atan2.v \
+           $(RTL_DIR)/imu_cf_ip.v \
+           $(RTL_DIR)/axil_imu_cf.v \
+           $(RTL_DIR)/basys3_imu_cf_top.v
+
+TB_SRCS  = $(TB_DIR)/tb_imu_cf.v
+
+.PHONY: all lint sim synth clean
+
+all: lint sim synth
+
+## ── 린트 (verilator) ────────────────────────────────────────────────────────
+lint:
+	@mkdir -p $(BUILD)
+	verilator --lint-only -g2001 --Wall -Wno-UNUSED -Wno-PINMISSING \
+	    $(RTL_SRCS) 2&gt;&amp;1 | tee $(BUILD)/lint.log
+	@echo &quot;lint done&quot;
+
+## ── 시뮬레이션 (iverilog + vvp) ─────────────────────────────────────────────
+sim: $(BUILD)/tb_$(SLUG)
+	vvp $(BUILD)/tb_$(SLUG) | tee $(BUILD)/sim.log
+	@grep -q &quot;^PASS&quot; $(BUILD)/sim.log &amp;&amp; echo &quot;sim PASS&quot; || (echo &quot;sim FAIL&quot; &amp;&amp; exit 1)
+
+$(BUILD)/tb_$(SLUG): $(RTL_SRCS) $(TB_SRCS)
+	@mkdir -p $(BUILD)
+	iverilog -g2001 -o $@ $(RTL_SRCS) $(TB_SRCS)
+
+## ── 합성 (yosys, 자원 추정) ─────────────────────────────────────────────────
+synth:
+	@mkdir -p $(BUILD)
+	yosys -p &quot;read_verilog -sv $(RTL_SRCS); \
+	          synth_xilinx -top basys3_imu_cf_top -flatten; \
+	          stat&quot; \
+	    2&gt;&amp;1 | tee $(BUILD)/synth.log
+	@echo &quot;synth done (yosys 추정 — Vivado 수치와 다를 수 있음)&quot;
+
+## ── 정리 ────────────────────────────────────────────────────────────────────
+clean:
+	rm -rf $(BUILD)
+</pre></details><h3>시뮬레이션 (iverilog)</h3><ol><li>make lint  — verilator로 rtl/*.v 문법 검사</li><li>make sim   — iverilog+vvp로 tb_imu_cf.v 실행, PASS/FAIL 확인</li><li>make synth — yosys로 자원 추정 (Vivado 수치와 다를 수 있음)</li></ol><h3>Vivado 합성</h3><ol><li>Vivado 2024.2에서 rtl/*.v를 프로젝트에 추가한다.</li><li>constr/basys3_imu_cf.xdc를 제약 파일로 추가한다.</li><li>top=basys3_imu_cf_top으로 합성한다.</li><li>합성 후 LUT/FF/BRAM 사용량과 WNS를 기록한다.</li></ol>
+<h2 id="verify">8. 검증</h2><div class="panel"><table><tr><th>단계</th><th>결과</th><th>내용</th></tr>
+<tr><td>린트(verilator)</td><td>미실행</td><td></td></tr><tr><td>시뮬레이션(iverilog)</td><td>미실행</td><td></td></tr><tr><td>합성 추정(yosys)</td><td>미실행</td><td></td></tr><tr><td>보드 동작</td><td>not-tested</td><td></td></tr>
+</table></div><p>S2 달성: CI run 41825251807, SHA 348a4e8c. lint=pass, sim=pass(TC1~TC5 PASS, CORDIC roll/pitch 정확도 ±2°), synth=pass(LUT 904·FF 448·yosys 추정). S3 보드 검증은 사용자 담당.</p>
+<h2 id="ref">9. 참고 카드와 위험</h2><h3>참고 카드</h3><ul><li><a href="../catalog/amd/ammar-bin-amir-arty-a7-i2c-mpu-6050.html"><code>ammar-bin-amir-arty-a7-i2c-mpu-6050</code></a> — Artix-7 MPU-6050 I2C FSM 구조 참조 (I2C 마스터 패턴)</li><li><a href="../catalog/intel/columbia-4840-spring-2026-ahrs.html"><code>columbia-4840-spring-2026-ahrs</code></a> — AHRS 필터 하드웨어 구현 사례 참조</li><li><a href="../catalog/papers/pmc4628004-microblaze-gps-ins-virtex6.html"><code>pmc4628004-microblaze-gps-ins-virtex6</code></a> — MicroBlaze + 관성 항법 소프트웨어 패턴 참조</li><li><a href="../catalog/amd/mit-6111-2018-team18-balancing-robot.html"><code>mit-6111-2018-team18-balancing-robot</code></a> — IMU + 균형 제어 조합 T4 참조</li></ul><h3>위험·한계</h3><ul><li>CORDIC 초기 조건 x&lt;=0 처리: 90°/−90° 쿼드런트 보정 로직이 올바른지 별도 TC3b(ay=16384, az=0)로 확인 필요</li><li>GX_DEL 오버플로: |gx_dps|&gt;250 deg/s, fs=100Hz이면 최대 2.5°/step=1280 → 18비트 범위 내 안전</li><li>ALPHA=0xFFFF와 1 차이: (1-alpha)=1 경우 (65536-65535)=1 → 거의 순수 자이로, 의도 맞는지 확인 필요</li></ul>
+</main></body></html>

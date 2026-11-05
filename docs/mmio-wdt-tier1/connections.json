@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-wdt-tier1",
+  "kind": "digital-block-diagram",
+  "note": "디지털 모듈 연결도다. 외부 부품의 전기 배선(전압, 저항, 커넥터)은 포함하지 않는다.",
+  "bus": "AXI4-Lite",
+  "blocks": [
+    {
+      "id": "axil_wrap",
+      "name": "axil_wdt_wrap",
+      "kind": "rtl",
+      "module": "axil_wdt_wrap",
+      "file": "rtl/axil_wdt_wrap.v"
+    },
+    {
+      "id": "wdt_core",
+      "name": "wdt_core",
+      "kind": "rtl",
+      "module": "wdt_core",
+      "file": "rtl/wdt_core.v"
+    }
+  ],
+  "links": [
+    {
+      "from": "axil_wrap",
+      "to": "wdt_core",
+      "label": "enable/kick/srst/load_val"
+    },
+    {
+      "from": "wdt_core",
+      "to": "axil_wrap",
+      "label": "count_out/timeout/timeout_lat/running"
+    }
+  ]
+}

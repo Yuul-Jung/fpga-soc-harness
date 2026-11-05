@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-xadc-pwr-mon",
+  "files": [
+    {
+      "group": "rtl",
+      "path": "rtl/xadc_pwr_mon_ip.v",
+      "sha256": "d6112c21f087649f54c80394f70edb53b77aa4601c8c36a83f4faf5da86bcc2f",
+      "lines": 329,
+      "origin": "first_party"
+    },
+    {
+      "group": "rtl",
+      "path": "rtl/basys3_top.v",
+      "sha256": "e117f5ea19a5b89a0eeba260274e8d36f6663c3240ba1984c44f520e52a10531",
+      "lines": 129,
+      "origin": "first_party"
+    },
+    {
+      "group": "tb",
+      "path": "tb/tb_xadc_pwr_mon.v",
+      "sha256": "3bc8c787e2ceaf808f1d25acb680a6008043586e1614aaaf88c471e12ddf064d",
+      "lines": 291,
+      "origin": "first_party"
+    },
+    {
+      "group": "constraints",
+      "path": "constr/basys3.xdc",
+      "sha256": "5acdd10578b6d8f26665ea7aab0adf1085c883e78068e9f370796594694b4c2c",
+      "lines": 46,
+      "origin": "first_party"
+    },
+    {
+      "group": "build",
+      "path": "Makefile",
+      "sha256": "1d3db4a6d01d4a31cf51a8aef19f358e7d4bdad681e5eb7caabe064c206d6307",
+      "lines": 64,
+      "origin": "first_party"
+    }
+  ],
+  "note": "소스는 하네스가 직접 쓴 원본이다. 외부 저장소 코드는 포함하지 않는다(HARNESS §13.3)."
+}

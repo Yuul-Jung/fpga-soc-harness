@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "slug": "mmio-i2c-master-ip",
+  "kind": "digital-block-diagram",
+  "note": "디지털 모듈 연결도다. 외부 부품의 전기 배선(전압, 저항, 커넥터)은 포함하지 않는다.",
+  "bus": "mmio-lite",
+  "blocks": [
+    {
+      "id": "top",
+      "name": "basys3_top",
+      "kind": "board_wrapper",
+      "module": "basys3_top",
+      "file": "rtl/basys3_top.v"
+    },
+    {
+      "id": "soc",
+      "name": "soc_top",
+      "kind": "soc_core",
+      "module": "soc_top",
+      "file": "rtl/soc_top.v"
+    },
+    {
+      "id": "bus",
+      "name": "mmio_bus",
+      "kind": "bus_decoder",
+      "module": "mmio_bus",
+      "file": "rtl/mmio_bus.v"
+    },
+    {
+      "id": "i2c",
+      "name": "i2c_master_ip",
+      "kind": "peripheral",
+      "module": "i2c_master_ip",
+      "file": "rtl/i2c_master_ip.v"
+    },
+    {
+      "id": "demo",
+      "name": "demo_master",
+      "kind": "controller",
+      "module": "demo_master",
+      "file": "rtl/demo_master.v"
+    },
+    {
+      "id": "pmod",
+      "name": "pmod_i2c",
+      "kind": "external",
+      "module": null,
+      "file": null
+    }
+  ],
+  "links": [
+    {
+      "from": "top",
+      "to": "soc",
+      "label": "clk, rst_n"
+    },
+    {
+      "from": "soc",
+      "to": "bus",
+      "label": "mmio_addr/wdata/rdata/we"
+    },
+    {
+      "from": "bus",
+      "to": "i2c",
+      "label": "cs, addr, wdata, rdata, we"
+    },
+    {
+      "from": "demo",
+      "to": "bus",
+      "label": "MMIO master port"
+    },
+    {
+      "from": "i2c",
+      "to": "pmod",
+      "label": "scl_o/sda_o (open-drain)"
+    },
+    {
+      "from": "pmod",
+      "to": "i2c",
+      "label": "sda_i (입력 루프백)"
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+id,name,interface,io_voltage_V,supply_V,qty,board_resident,arduino_compatible,level_shift,notes
+jstk2,Digilent PmodJSTK2,"SPI (Mode 0, 1 MHz)",3.3,3.3,1,false,false,,"Basys3 Pmod JA (JA1~JA4: CS, MOSI, MISO, SCLK). 커넥터 핀 6=GND, 12=3.3V."
+servo_a,RC 서보 A (SG90 계열),PWM 50 Hz,3.3,5.0,1,false,true,optional,"Pmod JB1에 신호(서보 A). 서보 적색=외부5V, 갈색=GND, 주황=신호."
+servo_b,RC 서보 B (SG90 계열),PWM 50 Hz,3.3,5.0,1,false,true,optional,Pmod JB2에 신호(서보 B).

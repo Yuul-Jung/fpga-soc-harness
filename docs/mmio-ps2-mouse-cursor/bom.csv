@@ -1,0 +1,5 @@
+id,name,interface,io_voltage_V,supply_V,qty,board_resident,arduino_compatible,level_shift,notes
+p_mouse,PS/2 마우스 (Basys3 USB-HID 에뮬레이션),PS/2 CLK+DATA (오픈 드레인),3.3,,1,true,false,,Basys3 USB HID 포트가 PS/2 마우스를 에뮬레이션. 보드 내장 풀업 저항 포함. kbd 주변장치([0B])와 동시 사용 불가. USB HID 허브 미지원으로 키보드+마우스 동시 불가.
+p_vga,VGA 모니터 (Basys3 내장 15핀 커넥터),VGA 아날로그 RGB + HSYNC/VSYNC,3.3,,1,true,false,,Basys3 보드 내장 VGA 커넥터. 저항 DAC(4비트 각 채널)로 아날로그 RGB 출력. 별도 연결 불필요.
+p_led,Basys3 LED 4개,GPIO 출력,3.3,,4,true,false,,"LED[3]=irq, LED[2]=streaming, LED[1]=init_done, LED[0]=left_btn"
+p_btnc,Basys3 센터 버튼 (BTNC),GPIO 입력,3.3,,1,true,false,,비동기 리셋

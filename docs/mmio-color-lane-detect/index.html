@@ -1,0 +1,1067 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>프레임 버퍼 없는 색 추적: 9분할 카운트 → 레인/점프 신호</title><style>
+:root{--bg:#fafaf8;--panel:#fff;--text:#1d1d1b;--muted:#6a6a64;--line:#8a8a82;--bd:#e2e1dc;--accent:#2a5bd7;
+--c-cpu:#e6edfc;--c-cpu-s:#2a5bd7;--c-bus:#f3ecd9;--c-bus-s:#a7791a;--c-per:#e3f2e6;--c-per-s:#2f7d46;--c-ext:#f4f4f1;--c-ext-s:#8a8a82;--c-clk:#f6e6ee;--c-clk-s:#b03a6b;
+--ok:#1f7a3d;--bad:#b3261e;--warn:#946200;--code:#f1f0ec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#161615;--panel:#1f1f1d;--text:#ecebe6;--muted:#a3a29b;--line:#8d8c85;--bd:#34332f;--accent:#7ea2ff;
+--c-cpu:#1d2740;--c-cpu-s:#7ea2ff;--c-bus:#35301f;--c-bus-s:#d3a640;--c-per:#1c3223;--c-per-s:#6ac389;--c-ext:#262624;--c-ext-s:#8d8c85;--c-clk:#3a2230;--c-clk-s:#e17aa6;
+--ok:#6ac389;--bad:#ff8a80;--warn:#e6b84d;--code:#262624}}
+*{box-sizing:border-box}a{color:var(--accent)}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.3;margin:.2em 0}h2{font-size:1.2rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--bd)}
+h3{font-size:1rem;margin:1.4em 0 .4em}p{margin:.5em 0}.muted{color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font-size:.9rem}nav a{text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{font-weight:600;color:var(--muted)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow:auto;margin:.4em 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.badge{border:1px solid var(--bd);border-radius:999px;padding:3px 12px;font-size:.85rem;background:var(--panel)}
+.b-pass{color:var(--ok);border-color:var(--ok)}.b-fail{color:var(--bad);border-color:var(--bad)}.b-skipped,.b-not-run{color:var(--warn);border-color:var(--warn)}
+ul{padding-left:1.25em}li{margin:.2em 0}details{margin:.5em 0}summary{cursor:pointer;font-weight:600}
+.tree,.tree ul{list-style:none;padding-left:1.1em;border-left:1px dashed var(--bd)}.tree{border-left:0;padding-left:0}
+.step{display:flex;gap:10px;align-items:baseline}.tag{font:600 .75rem ui-monospace,monospace;border:1px solid var(--bd);border-radius:4px;padding:1px 6px}
+.s-current{color:var(--accent);border-color:var(--accent)}.s-done{color:var(--ok);border-color:var(--ok)}
+svg{width:100%;height:auto;min-width:640px}
+header.top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;max-width:980px;margin:0 auto;padding:14px 16px 0;font-size:.92rem}
+header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:10px 0}
+.cap{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cap h3{margin:0;font-size:1.05rem}.cap img{width:100%;height:auto;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.stage{border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--panel);font-size:.9rem}.stage h4{margin:0 0 6px;font-size:.95rem}
+.stage .plan{color:var(--muted);border-top:1px dashed var(--bd);margin-top:6px;padding-top:6px}
+.md td.nw,.md th:first-child{white-space:nowrap}.md h1{font-size:1.5rem}.md table{margin:.8em 0}.md li>ul{margin:.2em 0}
+.fm{font-size:.85rem}.fm td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:640px){main{padding:18px 16px 48px}}
+
+.colhead{font:600 11px sans-serif;fill:var(--muted)}
+.link{fill:none;stroke:var(--line);stroke-width:1.5}.arrow{fill:var(--line)}
+.lbl{font:11px sans-serif;fill:var(--muted)}
+.bname{font:600 13px sans-serif;fill:var(--text)}.bdesc{font:11px sans-serif;fill:var(--muted)}
+.k-cpu rect{fill:var(--c-cpu);stroke:var(--c-cpu-s)}.k-bus rect{fill:var(--c-bus);stroke:var(--c-bus-s)}
+.k-periph rect,.k-memory rect{fill:var(--c-per);stroke:var(--c-per-s)}
+.k-external rect{fill:var(--c-ext);stroke:var(--c-ext-s);stroke-dasharray:4 3}
+.k-clock rect{fill:var(--c-clk);stroke:var(--c-clk-s)}
+</style></head><body><header class="top"><a class="brand" href="../hub.html">FPGA SoC 하네스</a><a href="../hub.html">메인</a><a href="../hub.html#capstones">캡스톤</a><a href="../soc-map/tech-tree.html">기술 트리</a><a href="../catalog/index.html">카탈로그</a><a href="../inbox/ideas.html">아이디어</a><a href="../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main>
+<p class="muted">캡스톤 패키지 · Basys3 · 단계 T4</p>
+<h1>프레임 버퍼 없는 색 추적: 9분할 카운트 → 레인/점프 신호</h1><p>OV7670에서 받은 RGB565 픽셀을 BRAM 없이 스트리밍하면서 3×3 그리드별 녹색 화소 수를 집계해 레인(좌·중·우) 및 점프 신호를 실시간 출력한다.</p>
+<div class="badges"><span class="badge b-not-run">린트: 미실행</span><span class="badge b-not-run">시뮬레이션: 미실행</span><span class="badge b-not-run">합성: 미실행</span><span class="badge b-not-verified">보드: not-verified</span></div>
+<p class="muted">검증 상태는 실행 기록이 있을 때만 표시한다. 기록이 없으면 '미실행'이다.</p>
+<nav><a href="#goal">목표</a><a href="#arch">계통도</a><a href="#hier">모듈 계층</a><a href="#map">메모리맵</a><a href="#ext">외부 부품·전기</a><a href="#road">기술 트리</a><a href="#src">실행 소스</a><a href="#verify">검증</a><a href="#ref">참고·위험</a></nav>
+<h2 id="goal">1. 목표와 범위</h2><h3>목표</h3><ul><li>OV7670 PCLK 도메인에서 RGB565 픽셀을 받아 프레임 버퍼 없이 스트리밍 처리</li><li>3×3 그리드 각 셀에 대해 녹색 화소 수를 한 프레임 단위로 집계</li><li>열(column) 방향 합산으로 레인(LEFT=1, CENTER=2, RIGHT=3) 신호 출력</li><li>행(row) 최상위 대역 밀도로 점프(JUMP) 신호 출력</li><li>MMIO 레지스터(임계값, 임계선 위치, 상태)를 CPU(MicroBlaze V)에 노출</li><li>iverilog 시뮬레이션 PASS 달성(S1), yosys 합성 자원 추정(S2)</li></ul><h3>범위 밖</h3><ul><li>BRAM 프레임 버퍼 사용</li><li>SCCB/I2C 카메라 초기화(레지스터 프로그래밍)</li><li>VGA 출력</li><li>보드 실동작 확인(S3)</li></ul><p class="muted">이 패키지의 소스는 하네스가 직접 작성한 Verilog-2001 원본이며 외부 코드를 포함하지 않는다. 아이디어 I-005 기반(ready 상태, 9점). mmio-lite 버스(AXI4-Lite 비호환, 시뮬 전용). 프로젝트 통합 시 슬롯 [18]=0x4018_0000(제안, 미동결). 시뮬레이션·합성 결과는 CI에서 검증한다.</p>
+<h2 id="arch">2. 계통도</h2><p>클럭: 100 MHz 시스템 클럭(clk), OV7670 PCLK(~24 MHz, 비동기)</p><div class="panel"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 974 536" role="img" aria-label="블록 다이어그램">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arrow"/></marker></defs>
+<text x="24" y="16" class="colhead">클럭·입력·마스터</text>
+<text x="274" y="16" class="colhead">버스</text>
+<text x="524" y="16" class="colhead">주변장치</text>
+<text x="774" y="16" class="colhead">외부</text>
+<path d="M612.0,92 L612.0,116" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="104.0" class="lbl" text-anchor="middle">clk/rst/mmio</text>
+<path d="M774,63.0 C714,8 760,8 700,63.0" class="link" marker-end="url(#ar)"/>
+<text x="737.0" y="16" class="lbl" text-anchor="middle">PCLK/VSYNC/HREF/D[7:0]</text>
+<path d="M612.0,92 L612.0,198" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="145.0" class="lbl" text-anchor="middle">pclk/vsync/href/d</text>
+<path d="M612.0,256 L612.0,116" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="186.0" class="lbl" text-anchor="middle">pixel_valid/pixel_data/frame_start/frame_done (CDC sync)</text>
+<path d="M612.0,174 L612.0,280" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="227.0" class="lbl" text-anchor="middle">pixel_data/enable/thresh[5:0]</text>
+<path d="M612.0,338 L612.0,362" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="350.0" class="lbl" text-anchor="middle">is_green/pixel_valid/frame_start/frame_done</text>
+<path d="M612.0,420 L612.0,444" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="432.0" class="lbl" text-anchor="middle">grid_snap[8:0][15:0]/snap_valid</text>
+<path d="M612.0,502 L612.0,116" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="309.0" class="lbl" text-anchor="middle">lane[1:0]/jump</text>
+<path d="M612.0,174 L612.0,34" class="link" marker-end="url(#ar)"/>
+<text x="618.0" y="104.0" class="lbl" text-anchor="middle">seg7_lane/led_jump (상태 표시)</text>
+<g class="k-board-wrapper"><rect x="524" y="34" width="176" height="58" rx="8"/><text x="612.0" y="58" text-anchor="middle" class="bname">basys3_color_lane_top</text><text x="612.0" y="76" text-anchor="middle" class="bdesc">Board Top</text></g>
+<g class="k-soc-core"><rect x="524" y="116" width="176" height="58" rx="8"/><text x="612.0" y="140" text-anchor="middle" class="bname">color_lane_top</text><text x="612.0" y="158" text-anchor="middle" class="bdesc">SoC Core</text></g>
+<g class="k-frontend"><rect x="524" y="198" width="176" height="58" rx="8"/><text x="612.0" y="222" text-anchor="middle" class="bname">ov7670_capture_stub</text><text x="612.0" y="240" text-anchor="middle" class="bdesc">Capture</text></g>
+<g class="k-pipeline"><rect x="524" y="280" width="176" height="58" rx="8"/><text x="612.0" y="304" text-anchor="middle" class="bname">green_thresh</text><text x="612.0" y="322" text-anchor="middle" class="bdesc">GreenThresh</text></g>
+<g class="k-pipeline"><rect x="524" y="362" width="176" height="58" rx="8"/><text x="612.0" y="386" text-anchor="middle" class="bname">grid9_counter</text><text x="612.0" y="404" text-anchor="middle" class="bdesc">Grid9</text></g>
+<g class="k-pipeline"><rect x="524" y="444" width="176" height="58" rx="8"/><text x="612.0" y="468" text-anchor="middle" class="bname">lane_decode</text><text x="612.0" y="486" text-anchor="middle" class="bdesc">LaneDec</text></g>
+<g class="k-external"><rect x="774" y="34" width="176" height="58" rx="8"/><text x="862.0" y="58" text-anchor="middle" class="bname">OV7670</text><text x="862.0" y="76" text-anchor="middle" class="bdesc">OV7670</text></g>
+</svg></div>
+<p class="muted"><a href="diagram.svg">diagram.svg</a>로 따로 받을 수 있다.</p>
+<h3>버스 규약: mmio-lite</h3><div class="panel"><table><tr><th>신호</th><th>방향</th><th>설명</th></tr><tr><td><code>addr</code></td><td>in</td><td>절대 주소</td></tr><tr><td><code>wdata</code></td><td>in</td><td>쓰기 데이터</td></tr><tr><td><code>wen</code></td><td>in</td><td>쓰기 활성</td></tr><tr><td><code>ren</code></td><td>in</td><td>읽기 활성</td></tr><tr><td><code>rdata</code></td><td>out</td><td>읽기 데이터</td></tr></table></div><p>AXI4-Lite 비호환 단순 버스. 시뮬레이션과 테스트용 전용. 프로젝트 통합 시 AXI4-Lite 래퍼 추가 필요.</p>
+<h3>통합 선언 (SoC 적합성)</h3><p class="badge b-fail">이 패키지는 MicroBlaze V 동결 주소맵과 호환되지 않는다 (파일럿). 아래 이식 계획을 따라야 SoC에 합칠 수 있다.</p><div class="panel"><table><tr><th style="white-space:nowrap">버스</th><td><code>mmio-lite (시뮬 전용, AXI4-Lite 비호환)</code></td></tr><tr><th style="white-space:nowrap">주소맵</th><td><code>custom</code> → 동결 맵 <code>mbv-frozen-v2</code> 적합 여부: <b>적합하지 않음</b></td></tr><tr><th style="white-space:nowrap">이식 계획</th><td>프로젝트 통합 시 AXI4-Lite 래퍼로 슬롯 [18]=0x4018_0000, intc=13에 연결. MicroBlaze V 인터럽트 채널 13 사용.</td></tr></table></div>
+<h2 id="hier">3. 모듈 계층</h2><div class="panel"><ul class="tree"><li><code>basys3_color_lane_top</code> <span class="muted">(rtl/basys3_color_lane_top.v)</span><ul><li><code>color_lane_top</code> <span class="muted">(rtl/color_lane_top.v)</span><ul><li><code>ov7670_capture_stub</code> <span class="muted">(rtl/ov7670_capture_stub.v)</span></li><li><code>green_thresh</code> <span class="muted">(rtl/green_thresh.v)</span></li><li><code>grid9_counter</code> <span class="muted">(rtl/grid9_counter.v)</span></li><li><code>lane_decode</code> <span class="muted">(rtl/lane_decode.v)</span></li></ul></li></ul></li></ul></div>
+<h2 id="map">4. 메모리맵</h2><h3>color_lane_top <code>0x1005_0000</code> <span class="muted">크기 0x10000</span></h3><div class="panel"><table><tr><th>오프셋</th><th>이름</th><th>접근</th><th>설명</th></tr><tr><td><code>0x00</code></td><td>CTRL</td><td>WO</td><td>bit0=ENABLE, bit1=INT_EN, bit15=RESET</td></tr><tr><td><code>0x04</code></td><td>STATUS</td><td>RC</td><td>bit0=FRAME_DONE, bit2:1=LANE[1:0](1=L,2=C,3=R), bit3=JUMP</td></tr><tr><td><code>0x08</code></td><td>THRESH</td><td>RW</td><td>bit5:0=green_thresh (G[10:5] 비교 임계값, 기본=20)</td></tr><tr><td><code>0x0C</code></td><td>COL_CFG</td><td>RW</td><td>bit9:0=col_thr1, bit25:16=col_thr2 (열 경계 위치, 기본=3,6)</td></tr><tr><td><code>0x10</code></td><td>ROW_CFG</td><td>RW</td><td>bit8:0=row_thr1, bit24:16=row_thr2 (행 경계 위치, 기본=3,6)</td></tr><tr><td><code>0x14</code></td><td>FRAME_CNT</td><td>RO</td><td>bit7:0=프레임 완료 카운터 (오버플로 허용)</td></tr><tr><td><code>0xFC</code></td><td>ID_VER</td><td>RO</td><td>0x0007_0100 (ID=0x07, VER=1.0)</td></tr></table></div>
+<h2 id="ext">5. 외부 부품과 전기 회로도</h2><p class="muted">2절의 계통도는 <b>디지털 모듈 연결도</b>다. 전압, 풀업, 커넥터 배선 같은 전기 사항은 이 절에서 따로 다룬다. 기계가 읽는 사본: <a href="bom.csv">bom.csv</a> · <a href="connections.json">connections.json</a></p><p class="badge b-skipped">전기 회로도: 미작성</p><p class="muted">OV7670 Pmod 배선 및 전원 연결 미작성. 통합 시 작성 필요.</p><div class="panel"><table><tr><th>id</th><th>부품</th><th>인터페이스</th><th>신호 전압</th><th>구분</th><th>레벨 변환</th><th>비고</th></tr><tr><td><code>cam_ov7670</code></td><td>OV7670 카메라 브레이크아웃</td><td>CMOS 패러렐 (PCLK/VSYNC/HREF/D[7:0])</td><td style="white-space:nowrap">3.3 V</td><td style="white-space:nowrap">외부 모듈</td><td>불필요 (3.3V)</td><td>OV7670 디지털 I/O는 2.8V 허용. 브레이크아웃 보드에 레귤레이터·풀업 내장 여부 확인 필요. 미확인 시 레벨 변환 추가.</td></tr></table></div><p class="muted">Basys3 FPGA 핀은 3.3V 신호만 직접 받는다. 5V·12V·모터·릴레이는 직결하지 않는다.</p>
+<h2 id="road">6. 기술 트리 (이 캡스톤의 확장 경로)</h2><div class="panel"><ul style="list-style:none;padding:0"><li class="step"><span class="tag s-current">T4</span><span>mmio-color-lane-detect (이 패키지)</span></li><li class="step"><span class="tag s-planned">T4</span><span>AXI4-Lite 래퍼 + MicroBlaze V 통합 <span class='muted'>참고: <a href="../catalog/amd/mit-6111-2021-team04-temple-run.html"><code>mit-6111-2021-team04-temple-run</code></a>, <a href="../catalog/intel/columbia-4840-cameracontrol.html"><code>columbia-4840-cameracontrol</code></a></span></span></li><li class="step"><span class="tag s-planned">T4</span><span>SCCB 초기화 연결 (mmio-ov7670-sccb-capture와 병행)</span></li></ul></div>
+<h2 id="src">7. 실행 소스</h2><p>저장소의 <code>capstones/mmio-color-lane-detect/</code>에 있는 파일 그대로다. 이 문서는 파일에서 읽어 넣은 것이므로 항상 일치한다. <a href="mmio-color-lane-detect.zip">소스 전체 내려받기 (.zip)</a> · <a href="https://github.com/Yuul-Jung/fpga-soc-harness/tree/main/capstones/mmio-color-lane-detect">GitHub에서 보기</a></p><details><summary><code>rtl/basys3_color_lane_top.v</code> <span class="muted">88줄</span></summary><pre>// basys3_color_lane_top.v — Basys3 보드 래퍼
+// 핀 배치: OV7670은 JA/JB Pmod, 상태 표시는 LED/세그먼트.
+// XDC 파일: constr/basys3_color_lane.xdc
+// Verilog-2001.
+
+`default_nettype none
+module basys3_color_lane_top (
+    // 보드 클럭 / 리셋
+    input  wire        clk,         // 100 MHz 보드 클럭
+    input  wire        btnC,        // 중앙 버튼: 리셋 (active high)
+    // OV7670 Pmod JA (PCLK 도메인)
+    input  wire        cam_pclk,    // JA[1] — 카메라 픽셀 클럭
+    input  wire        cam_vsync,   // JA[2]
+    input  wire        cam_href,    // JA[3]
+    input  wire [7:0]  cam_d,       // JB[7:0] — 픽셀 데이터
+    // 상태 표시
+    output wire [15:0] led,         // led[1:0]=LANE, led[2]=JUMP, led[15]=ENABLE
+    // 세그먼트 (레인 표시 — 간략)
+    output wire [6:0]  seg,
+    output wire [3:0]  an
+);
+    // 리셋 동기화 (SYS 도메인)
+    reg rst_s1, rst_s2;
+    always @(posedge clk) begin
+        rst_s1 &lt;= btnC;
+        rst_s2 &lt;= rst_s1;
+    end
+    wire sys_rst = rst_s2;
+
+    // PCLK 도메인 리셋 동기화
+    reg prst_s1, prst_s2;
+    always @(posedge cam_pclk) begin
+        prst_s1 &lt;= btnC;
+        prst_s2 &lt;= prst_s1;
+    end
+    wire pclk_rst = prst_s2;
+
+    // MMIO 더미 — 보드에서는 MicroBlaze 연결 예정.
+    // 시뮬에서는 tb가 직접 mmio-lite 버스를 구동한다.
+    wire [31:0] mmio_addr  = 32&#x27;h1005_0000; // 더미: STATUS 읽기
+    wire [31:0] mmio_wdata = 32&#x27;d0;
+    wire        mmio_wen   = 1&#x27;b0;
+    wire        mmio_ren   = 1&#x27;b0;
+    wire [31:0] mmio_rdata;
+    wire        irq_out;
+
+    // SoC 코어
+    wire [1:0] lane_out;
+    wire       jump_out;
+
+    color_lane_top #(.BASE_ADDR(32&#x27;h1005_0000)) u_core (
+        .clk    (clk),
+        .rst    (sys_rst),
+        .addr   (mmio_addr),
+        .wdata  (mmio_wdata),
+        .wen    (mmio_wen),
+        .ren    (mmio_ren),
+        .rdata  (mmio_rdata),
+        .irq    (irq_out),
+        .pclk   (cam_pclk),
+        .prst   (pclk_rst),
+        .vsync  (cam_vsync),
+        .href   (cam_href),
+        .cam_d  (cam_d),
+        .o_lane (lane_out),
+        .o_jump (jump_out)
+    );
+
+    // LED
+    assign led[1:0]  = lane_out;
+    assign led[2]    = jump_out;
+    assign led[15:3] = 13&#x27;d0;
+
+    // 세그먼트: 레인 번호(1=L,2=C,3=R) 표시
+    reg [6:0] seg_r;
+    always @(*) begin
+        case (lane_out)
+            2&#x27;d0: seg_r = 7&#x27;b1111111; // 소등
+            2&#x27;d1: seg_r = 7&#x27;b1111001; // 1(L)
+            2&#x27;d2: seg_r = 7&#x27;b0100100; // 2(C)
+            2&#x27;d3: seg_r = 7&#x27;b0110000; // 3(R)
+        endcase
+    end
+    assign seg = seg_r;
+    assign an  = 4&#x27;b1110; // AN0만 활성
+
+endmodule
+`default_nettype wire
+</pre></details><details><summary><code>rtl/color_lane_top.v</code> <span class="muted">221줄</span></summary><pre>// color_lane_top.v — SoC 코어: MMIO 레지스터 + CDC + 서브모듈
+// mmio-lite 버스 (AXI4-Lite 비호환, 시뮬 전용)
+//
+// BASE_ADDR 파라미터로 주소 베이스 설정.
+// 시뮬 기본값: 0x1005_0000
+// 프로젝트 통합 시: 0x4018_0000 (제안 슬롯 [18])
+//
+// 레지스터 맵 (BASE_ADDR 기준 오프셋):
+//   0x00  CTRL      WO   bit0=ENABLE, bit1=INT_EN, bit15=RESET
+//   0x04  STATUS    RC   bit0=FRAME_DONE, bit2:1=LANE[1:0], bit3=JUMP
+//   0x08  THRESH    RW   bit5:0=green_thresh (기본=20)
+//   0x0C  COL_CFG   RW   bit9:0=col_thr1, bit25:16=col_thr2 (기본=3,6)
+//   0x10  ROW_CFG   RW   bit8:0=row_thr1, bit24:16=row_thr2 (기본=3,6)
+//   0x14  FRAME_CNT RO   bit7:0=프레임 카운터
+//   0xFC  ID_VER    RO   0x0007_0100
+//
+// Verilog-2001, 외부 IP 없음.
+
+`default_nettype none
+module color_lane_top #(
+    parameter BASE_ADDR = 32&#x27;h1005_0000
+) (
+    input  wire        clk,
+    input  wire        rst,
+    // mmio-lite
+    input  wire [31:0] addr,
+    input  wire [31:0] wdata,
+    input  wire        wen,
+    input  wire        ren,
+    output reg  [31:0] rdata,
+    // 인터럽트
+    output wire        irq,
+    // OV7670 (PCLK 도메인 — ov7670_capture_stub 경유)
+    input  wire        pclk,
+    input  wire        prst,
+    input  wire        vsync,
+    input  wire        href,
+    input  wire [7:0]  cam_d,
+    // 상태 표시
+    output wire [1:0]  o_lane,
+    output wire        o_jump
+);
+    // ---- MMIO 레지스터 ----
+    reg        enable_r;
+    reg        int_en_r;
+    reg [5:0]  thresh_r;
+    reg [9:0]  col_thr1_r;
+    reg [9:0]  col_thr2_r;
+    reg [8:0]  row_thr1_r;
+    reg [8:0]  row_thr2_r;
+    // 상태 레지스터 (SYS 도메인)
+    reg        status_fd;    // FRAME_DONE
+    reg [1:0]  status_lane;
+    reg        status_jump;
+    reg [7:0]  frame_cnt;
+
+    // ---- PCLK 도메인 → SYS 도메인 CDC (2-FF sync) ----
+    // pixel_valid, pixel_data, frame_start, frame_done, line_done
+    wire [15:0] pclk_pixel_data;
+    wire        pclk_pixel_valid;
+    wire        pclk_frame_start;
+    wire        pclk_frame_done;
+    wire        pclk_line_done;
+
+    // CDC: 2-FF 동기화 (펄스 신호 — 단일 클럭 폭 가정)
+    // SYS 클럭이 PCLK보다 훨씬 빠르므로 단일 FF 메타안정성 가능성 있음.
+    // 실제 보드 통합 시 handshake 또는 FIFO 고려.
+    reg px_valid_s1,  px_valid_s2;
+    reg px_fstart_s1, px_fstart_s2;
+    reg px_fdone_s1,  px_fdone_s2;
+    reg px_ldone_s1,  px_ldone_s2;
+    reg [15:0] px_data_s1, px_data_s2;
+
+    always @(posedge clk) begin
+        if (rst) begin
+            px_valid_s1  &lt;= 1&#x27;b0; px_valid_s2  &lt;= 1&#x27;b0;
+            px_fstart_s1 &lt;= 1&#x27;b0; px_fstart_s2 &lt;= 1&#x27;b0;
+            px_fdone_s1  &lt;= 1&#x27;b0; px_fdone_s2  &lt;= 1&#x27;b0;
+            px_ldone_s1  &lt;= 1&#x27;b0; px_ldone_s2  &lt;= 1&#x27;b0;
+            px_data_s1   &lt;= 16&#x27;d0; px_data_s2  &lt;= 16&#x27;d0;
+        end else begin
+            px_valid_s1  &lt;= pclk_pixel_valid;  px_valid_s2  &lt;= px_valid_s1;
+            px_fstart_s1 &lt;= pclk_frame_start;  px_fstart_s2 &lt;= px_fstart_s1;
+            px_fdone_s1  &lt;= pclk_frame_done;   px_fdone_s2  &lt;= px_fdone_s1;
+            px_ldone_s1  &lt;= pclk_line_done;    px_ldone_s2  &lt;= px_ldone_s1;
+            px_data_s1   &lt;= pclk_pixel_data;   px_data_s2   &lt;= px_data_s1;
+        end
+    end
+
+    // ---- 서브모듈 ----
+    wire        is_green;
+    wire [9*16-1:0] grid_snap;
+    wire        snap_valid;
+    wire [1:0]  lane_out;
+    wire        jump_out;
+
+    ov7670_capture_stub u_cap (
+        .pclk        (pclk),
+        .prst        (prst),
+        .vsync       (vsync),
+        .href        (href),
+        .d           (cam_d),
+        .capture_en  (enable_r),
+        .pixel_data  (pclk_pixel_data),
+        .pixel_valid (pclk_pixel_valid),
+        .frame_start (pclk_frame_start),
+        .frame_done  (pclk_frame_done),
+        .line_done   (pclk_line_done)
+    );
+
+    green_thresh u_gt (
+        .pixel    (px_data_s2),
+        .thresh   (thresh_r),
+        .is_green (is_green)
+    );
+
+    grid9_counter #(.PXCNT_W(16), .LNCNT_W(16), .CELLCNT_W(16)) u_g9 (
+        .clk         (clk),
+        .rst         (rst),
+        .pixel_valid (px_valid_s2),
+        .is_green    (is_green &amp; px_valid_s2),
+        .frame_start (px_fstart_s2),
+        .frame_done  (px_fdone_s2),
+        .line_done   (px_ldone_s2),
+        .col_thr1    ({6&#x27;d0, col_thr1_r}),
+        .col_thr2    ({6&#x27;d0, col_thr2_r}),
+        .row_thr1    ({7&#x27;d0, row_thr1_r}),
+        .row_thr2    ({7&#x27;d0, row_thr2_r}),
+        .grid_snap   (grid_snap),
+        .snap_valid  (snap_valid)
+    );
+
+    lane_decode u_ld (
+        .grid_snap  (grid_snap),
+        .snap_valid (snap_valid),
+        .lane       (lane_out),
+        .jump       (jump_out)
+    );
+
+    // ---- 상태 레지스터 갱신 ----
+    always @(posedge clk) begin
+        if (rst) begin
+            status_fd   &lt;= 1&#x27;b0;
+            status_lane &lt;= 2&#x27;d0;
+            status_jump &lt;= 1&#x27;b0;
+            frame_cnt   &lt;= 8&#x27;d0;
+        end else begin
+            if (snap_valid) begin
+                status_fd   &lt;= 1&#x27;b1;
+                status_lane &lt;= lane_out;
+                status_jump &lt;= jump_out;
+                frame_cnt   &lt;= frame_cnt + 1&#x27;b1;
+            end
+        end
+    end
+
+    // ---- MMIO 레지스터 쓰기 ----
+    wire        addr_hit = (addr[31:16] == BASE_ADDR[31:16]);
+    wire [7:0]  reg_off  = addr[7:0];
+
+    always @(posedge clk) begin
+        if (rst) begin
+            enable_r   &lt;= 1&#x27;b0;
+            int_en_r   &lt;= 1&#x27;b0;
+            thresh_r   &lt;= 6&#x27;d20;
+            col_thr1_r &lt;= 10&#x27;d3;
+            col_thr2_r &lt;= 10&#x27;d6;
+            row_thr1_r &lt;= 9&#x27;d3;
+            row_thr2_r &lt;= 9&#x27;d6;
+        end else if (wen &amp;&amp; addr_hit) begin
+            case (reg_off)
+                8&#x27;h00: begin
+                    if (wdata[15]) begin  // RESET
+                        enable_r &lt;= 1&#x27;b0;
+                        int_en_r &lt;= 1&#x27;b0;
+                    end else begin
+                        enable_r &lt;= wdata[0];
+                        int_en_r &lt;= wdata[1];
+                    end
+                end
+                8&#x27;h08: thresh_r   &lt;= wdata[5:0];
+                8&#x27;h0C: begin col_thr1_r &lt;= wdata[9:0]; col_thr2_r &lt;= wdata[25:16]; end
+                8&#x27;h10: begin row_thr1_r &lt;= wdata[8:0]; row_thr2_r &lt;= wdata[24:16]; end
+                default: ;
+            endcase
+        end
+    end
+
+    // ---- MMIO 레지스터 읽기 ----
+    always @(posedge clk) begin
+        if (rst) begin
+            rdata &lt;= 32&#x27;d0;
+        end else if (ren &amp;&amp; addr_hit) begin
+            case (reg_off)
+                8&#x27;h04: begin
+                    rdata     &lt;= {28&#x27;d0, status_jump, status_lane, status_fd};
+                    // RC: 읽으면 클리어
+                    // (status_fd 클리어는 다음 사이클에서 처리 — 단순화)
+                end
+                8&#x27;h08: rdata &lt;= {26&#x27;d0, thresh_r};
+                8&#x27;h0C: rdata &lt;= {6&#x27;d0, col_thr2_r, 6&#x27;d0, col_thr1_r};
+                8&#x27;h10: rdata &lt;= {7&#x27;d0, row_thr2_r, 7&#x27;d0, row_thr1_r};
+                8&#x27;h14: rdata &lt;= {24&#x27;d0, frame_cnt};
+                8&#x27;hFC: rdata &lt;= 32&#x27;h0007_0100;
+                default: rdata &lt;= 32&#x27;hDEAD_BEEF;
+            endcase
+        end
+    end
+
+    // STATUS RC 클리어 (읽기 다음 사이클)
+    reg ren_d;
+    always @(posedge clk) begin
+        ren_d &lt;= ren &amp;&amp; addr_hit &amp;&amp; (reg_off == 8&#x27;h04);
+        if (ren_d) status_fd &lt;= 1&#x27;b0;
+    end
+
+    assign irq    = status_fd &amp; int_en_r;
+    assign o_lane = status_lane;
+    assign o_jump = status_jump;
+endmodule
+`default_nettype wire
+</pre></details><details><summary><code>rtl/ov7670_capture_stub.v</code> <span class="muted">83줄</span></summary><pre>// ov7670_capture_stub.v — OV7670 캡처 프런트엔드 스텁
+// PCLK 도메인에서 RGB565 2바이트를 조합해 pixel_valid, frame_start,
+// frame_done, line_done 펄스를 출력한다.
+// 실제 카메라 연결 시 mmio-ov7670-sccb-capture의 ov7670_capture.v로 교체.
+//
+// VSYNC 극성(OV7670): HIGH = 블랭킹(프레임 사이), LOW = 활성 프레임
+//   frame_start = VSYNC 하강 에지 (vsync_d &amp;&amp; !vsync)
+//   frame_done  = VSYNC 상승 에지 (!vsync_d &amp;&amp; vsync)
+// HREF: HIGH = 유효 픽셀 데이터
+//   line_done   = HREF 하강 에지 (href_d &amp;&amp; !href)
+//
+// Verilog-2001, 외부 IP 없음.
+
+`default_nettype none
+module ov7670_capture_stub (
+    input  wire        pclk,         // 카메라 픽셀 클럭 (~24 MHz)
+    input  wire        prst,         // PCLK 도메인 리셋
+    input  wire        vsync,        // 프레임 동기 (OV7670: high=블랭킹)
+    input  wire        href,         // 수평 활성 (high=유효)
+    input  wire [7:0]  d,            // 픽셀 데이터
+    input  wire        capture_en,   // 캡처 활성화 (SYS→PCLK 동기화 완료)
+    output reg  [15:0] pixel_data,   // 결합된 RGB565
+    output reg         pixel_valid,  // 1 PCLK 펄스, 픽셀 유효
+    output reg         frame_start,  // 1 PCLK 펄스, 프레임 시작
+    output reg         frame_done,   // 1 PCLK 펄스, 프레임 완료
+    output reg         line_done     // 1 PCLK 펄스, 라인 완료(HREF 하강)
+);
+    reg       vsync_d;
+    reg       href_d;
+    reg       byte_phase;  // 0=첫 바이트(high), 1=두 번째(low)
+    reg [7:0] byte_hi;
+
+    always @(posedge pclk) begin
+        if (prst) begin
+            vsync_d     &lt;= 1&#x27;b0;
+            href_d      &lt;= 1&#x27;b0;
+            byte_phase  &lt;= 1&#x27;b0;
+            byte_hi     &lt;= 8&#x27;d0;
+            pixel_data  &lt;= 16&#x27;d0;
+            pixel_valid &lt;= 1&#x27;b0;
+            frame_start &lt;= 1&#x27;b0;
+            frame_done  &lt;= 1&#x27;b0;
+            line_done   &lt;= 1&#x27;b0;
+        end else begin
+            vsync_d     &lt;= vsync;
+            href_d      &lt;= href;
+            pixel_valid &lt;= 1&#x27;b0;
+            frame_start &lt;= 1&#x27;b0;
+            frame_done  &lt;= 1&#x27;b0;
+            line_done   &lt;= 1&#x27;b0;
+
+            // VSYNC 하강 → 프레임 시작
+            if (vsync_d &amp;&amp; !vsync) begin
+                frame_start &lt;= 1&#x27;b1;
+                byte_phase  &lt;= 1&#x27;b0;
+            end
+            // VSYNC 상승 → 프레임 완료
+            if (!vsync_d &amp;&amp; vsync)
+                frame_done &lt;= 1&#x27;b1;
+
+            // HREF 하강 → 라인 완료
+            if (href_d &amp;&amp; !href) begin
+                line_done  &lt;= 1&#x27;b1;
+                byte_phase &lt;= 1&#x27;b0;
+            end
+
+            // HREF 활성 + VSYNC 비활성 + capture_en → 픽셀 캡처
+            if (capture_en &amp;&amp; href &amp;&amp; !vsync) begin
+                if (!byte_phase) begin
+                    byte_hi    &lt;= d;
+                    byte_phase &lt;= 1&#x27;b1;
+                end else begin
+                    pixel_data  &lt;= {byte_hi, d};
+                    pixel_valid &lt;= 1&#x27;b1;
+                    byte_phase  &lt;= 1&#x27;b0;
+                end
+            end else if (!href) begin
+                byte_phase &lt;= 1&#x27;b0;
+            end
+        end
+    end
+endmodule
+`default_nettype wire
+</pre></details><details><summary><code>rtl/green_thresh.v</code> <span class="muted">27줄</span></summary><pre>// green_thresh.v — RGB565 녹색 화소 판별기
+// RGB565에서 G채널이 R, B보다 크고 임계값 초과이면 is_green=1 출력.
+// 조합 논리만 사용(레지스터 없음). Verilog-2001.
+//
+// RGB565 비트 배치:
+//   pixel[15:11] = R[4:0]
+//   pixel[10:5]  = G[5:0]
+//   pixel[4:0]   = B[4:0]
+//
+// 비교를 위해 R, B를 6비트로 스케일:
+//   r6 = {R[4:0], 1&#x27;b0}  — 최하위 비트 패딩
+//   g6 = G[5:0]
+//   b6 = {B[4:0], 1&#x27;b0}
+
+`default_nettype none
+module green_thresh (
+    input  wire [15:0] pixel,     // RGB565 픽셀
+    input  wire [5:0]  thresh,    // 녹색 임계값 (6비트, 기본=20)
+    output wire        is_green   // 1 = 녹색 화소
+);
+    wire [5:0] r6 = {pixel[15:11], 1&#x27;b0};
+    wire [5:0] g6 =  pixel[10:5];
+    wire [5:0] b6 = {pixel[4:0],   1&#x27;b0};
+
+    assign is_green = (g6 &gt; thresh) &amp;&amp; (g6 &gt; r6) &amp;&amp; (g6 &gt; b6);
+endmodule
+`default_nettype wire
+</pre></details><details><summary><code>rtl/grid9_counter.v</code> <span class="muted">92줄</span></summary><pre>// grid9_counter.v — 3×3 그리드 녹색 화소 카운터
+// 프레임 단위로 9개 셀의 녹색 화소 수를 집계한 뒤
+// frame_done에 스냅샷을 출력한다.
+//
+// 그리드 인덱스 (row*3 + col, 0-based):
+//   [0]=TL [1]=TC [2]=TR
+//   [3]=ML [4]=MC [5]=MR
+//   [6]=BL [7]=BC [8]=BR
+//
+// 스냅샷 출력: grid_snap[(i+1)*16-1:i*16] = cell i 카운트 (i=0~8)
+// Verilog-2001, 외부 IP 없음.
+
+`default_nettype none
+module grid9_counter #(
+    parameter PXCNT_W  = 16,
+    parameter LNCNT_W  = 16,
+    parameter CELLCNT_W = 16
+) (
+    input  wire                        clk,
+    input  wire                        rst,
+    // 픽셀 스트림 (SYS 도메인, CDC 완료 후)
+    input  wire                        pixel_valid,  // 1 클럭 펄스, 유효 픽셀
+    input  wire                        is_green,     // 녹색 여부
+    input  wire                        frame_start,  // 1 클럭 펄스, 프레임 시작
+    input  wire                        frame_done,   // 1 클럭 펄스, 프레임 완료
+    input  wire                        line_done,    // 1 클럭 펄스, 라인 완료(HREF 하강)
+    // 임계선 설정
+    input  wire [PXCNT_W-1:0]         col_thr1,     // 열 경계 1 (기본=3)
+    input  wire [PXCNT_W-1:0]         col_thr2,     // 열 경계 2 (기본=6)
+    input  wire [LNCNT_W-1:0]         row_thr1,     // 행 경계 1 (기본=3)
+    input  wire [LNCNT_W-1:0]         row_thr2,     // 행 경계 2 (기본=6)
+    // 스냅샷 출력 — 9×CELLCNT_W 비트 패킹
+    output reg  [9*16-1:0]            grid_snap,    // bits[i*16+15:i*16] = cell i
+    output reg                         snap_valid    // 스냅샷 유효 (1 클럭)
+);
+    // 내부 누산기 — Verilog-2001 메모리 배열 (포트 불가, 내부 사용)
+    reg [CELLCNT_W-1:0] grid_acc [0:8];
+    reg [PXCNT_W-1:0]   col_cnt;
+    reg [LNCNT_W-1:0]   row_cnt;
+    reg                  in_frame;
+
+    // 그리드 위치 (조합)
+    wire [1:0] grid_col = (col_cnt &lt; col_thr1) ? 2&#x27;d0 :
+                          (col_cnt &lt; col_thr2) ? 2&#x27;d1 : 2&#x27;d2;
+    wire [1:0] grid_row = (row_cnt &lt; row_thr1) ? 2&#x27;d0 :
+                          (row_cnt &lt; row_thr2) ? 2&#x27;d1 : 2&#x27;d2;
+    wire [3:0] cell_idx = {2&#x27;b00, grid_row} * 4&#x27;d3 + {2&#x27;b00, grid_col};
+
+    integer i;
+    always @(posedge clk) begin
+        if (rst) begin
+            col_cnt    &lt;= {PXCNT_W{1&#x27;b0}};
+            row_cnt    &lt;= {LNCNT_W{1&#x27;b0}};
+            in_frame   &lt;= 1&#x27;b0;
+            snap_valid &lt;= 1&#x27;b0;
+            grid_snap  &lt;= {(9*16){1&#x27;b0}};
+            for (i = 0; i &lt; 9; i = i + 1)
+                grid_acc[i] &lt;= {CELLCNT_W{1&#x27;b0}};
+        end else begin
+            snap_valid &lt;= 1&#x27;b0;
+
+            if (frame_start) begin
+                in_frame &lt;= 1&#x27;b1;
+                col_cnt  &lt;= {PXCNT_W{1&#x27;b0}};
+                row_cnt  &lt;= {LNCNT_W{1&#x27;b0}};
+                for (i = 0; i &lt; 9; i = i + 1)
+                    grid_acc[i] &lt;= {CELLCNT_W{1&#x27;b0}};
+            end
+
+            if (in_frame &amp;&amp; line_done) begin
+                col_cnt &lt;= {PXCNT_W{1&#x27;b0}};
+                row_cnt &lt;= row_cnt + 1&#x27;b1;
+            end else if (in_frame &amp;&amp; pixel_valid) begin
+                col_cnt &lt;= col_cnt + 1&#x27;b1;
+            end
+
+            if (in_frame &amp;&amp; pixel_valid &amp;&amp; is_green) begin
+                if (cell_idx &lt;= 4&#x27;d8)
+                    grid_acc[cell_idx] &lt;= grid_acc[cell_idx] + 1&#x27;b1;
+            end
+
+            if (frame_done) begin
+                in_frame &lt;= 1&#x27;b0;
+                // 스냅샷 복사 — 패킹
+                for (i = 0; i &lt; 9; i = i + 1)
+                    grid_snap[i*16 +: 16] &lt;= grid_acc[i];
+                snap_valid &lt;= 1&#x27;b1;
+            end
+        end
+    end
+endmodule
+`default_nettype wire
+</pre></details><details><summary><code>rtl/lane_decode.v</code> <span class="muted">62줄</span></summary><pre>// lane_decode.v — 그리드 스냅샷 → 레인·점프 디코더
+// 열 합산 argmax로 레인(0=없음,1=좌,2=중앙,3=우)을,
+// 행 최상위(TOP행) 밀도로 점프 신호를 결정한다.
+//
+// 입력: grid_snap[9*16-1:0] (cell i = bits[i*16+15:i*16])
+//   셀 배치:
+//     [0]=TL [1]=TC [2]=TR  (row=0, TOP)
+//     [3]=ML [4]=MC [5]=MR  (row=1)
+//     [6]=BL [7]=BC [8]=BR  (row=2)
+//
+// 열 합산: col_sum[j] = sum(grid_snap[row*3+j]) for row=0,1,2
+// JUMP: (TL+TC+TR) &gt; jump_thr (내부 고정=0, 최소 1이면 점프)
+// 조합 논리만, Verilog-2001.
+
+`default_nettype none
+module lane_decode (
+    input  wire [9*16-1:0] grid_snap,  // 그리드 스냅샷 패킹
+    input  wire             snap_valid, // 1 클럭 펄스, 연산 트리거
+    output reg  [1:0]       lane,       // 0=없음,1=좌,2=중앙,3=우
+    output reg              jump        // 1=점프(TOP행 녹색 존재)
+);
+    // 셀 추출
+    wire [15:0] c0 = grid_snap[0*16 +: 16]; // TL
+    wire [15:0] c1 = grid_snap[1*16 +: 16]; // TC
+    wire [15:0] c2 = grid_snap[2*16 +: 16]; // TR
+    wire [15:0] c3 = grid_snap[3*16 +: 16]; // ML
+    wire [15:0] c4 = grid_snap[4*16 +: 16]; // MC
+    wire [15:0] c5 = grid_snap[5*16 +: 16]; // MR
+    wire [15:0] c6 = grid_snap[6*16 +: 16]; // BL
+    wire [15:0] c7 = grid_snap[7*16 +: 16]; // BC
+    wire [15:0] c8 = grid_snap[8*16 +: 16]; // BR
+
+    // 열 합산 (오버플로 방지: 17비트)
+    wire [17:0] col_L = {2&#x27;b0,c0} + {2&#x27;b0,c3} + {2&#x27;b0,c6};
+    wire [17:0] col_C = {2&#x27;b0,c1} + {2&#x27;b0,c4} + {2&#x27;b0,c7};
+    wire [17:0] col_R = {2&#x27;b0,c2} + {2&#x27;b0,c5} + {2&#x27;b0,c8};
+
+    // TOP행 합 (점프 판단)
+    wire [17:0] top_sum = {2&#x27;b0,c0} + {2&#x27;b0,c1} + {2&#x27;b0,c2};
+
+    // argmax (동점이면 L &gt; C &gt; R 우선)
+    wire L_wins = (col_L &gt;= col_C) &amp;&amp; (col_L &gt;= col_R);
+    wire C_wins = (col_C &gt;  col_L) &amp;&amp; (col_C &gt;= col_R);
+    // R_wins = !L_wins &amp;&amp; !C_wins
+
+    wire any_green = (col_L != 0) || (col_C != 0) || (col_R != 0);
+
+    always @(*) begin
+        // 기본값
+        lane = 2&#x27;d0;
+        jump = 1&#x27;b0;
+        if (snap_valid) begin
+            if (any_green) begin
+                if      (L_wins) lane = 2&#x27;d1;
+                else if (C_wins) lane = 2&#x27;d2;
+                else             lane = 2&#x27;d3;
+            end
+            jump = (top_sum &gt; 18&#x27;d0) ? 1&#x27;b1 : 1&#x27;b0;
+        end
+    end
+endmodule
+`default_nettype wire
+</pre></details><details><summary><code>tb/tb_color_lane.v</code> <span class="muted">285줄</span></summary><pre>// tb_color_lane.v — color_lane_top 자체 점검 테스트벤치
+// 9×9 가상 프레임 4개로 레인·점프 신호를 검증.
+//
+// 테스트 프레임 (9×9, RGB565):
+//   GREEN = 16&#x27;h07E0 (R=0, G=63 → g6=63, B=0)
+//   NULL  = 16&#x27;h0000 (흑)
+//   thresh=20, col_thr1=3, col_thr2=6, row_thr1=3, row_thr2=6
+//
+//   Frame1: 열 0,1,2 모두 녹색 → col_L 최대 → lane=1(LEFT)
+//   Frame2: 열 3,4,5 모두 녹색 → col_C 최대 → lane=2(CENTER)
+//   Frame3: 열 6,7,8 모두 녹색 → col_R 최대 → lane=3(RIGHT)
+//   Frame4: 행 0 (TOP행) 모두 녹색 → jump=1
+//
+// 통과 조건: PASS, 실패: FAIL (접두어 필수)
+// Verilog-2001.
+
+`default_nettype none
+`timescale 1ns/1ps
+
+module tb_color_lane;
+    // ---- 클럭 ----
+    localparam SYS_PERIOD  = 10;   // 100 MHz
+    localparam PCLK_PERIOD = 42;   // ~24 MHz
+
+    reg clk, pclk;
+    initial clk  = 0;
+    initial pclk = 0;
+    always #(SYS_PERIOD/2)  clk  = ~clk;
+    always #(PCLK_PERIOD/2) pclk = ~pclk;
+
+    // ---- DUT 포트 ----
+    reg         rst;
+    reg  [31:0] addr;
+    reg  [31:0] wdata;
+    reg         wen, ren;
+    wire [31:0] rdata;
+    wire        irq;
+    wire [1:0]  o_lane;
+    wire        o_jump;
+
+    // OV7670 신호 (TB가 직접 구동)
+    reg         vsync, href;
+    reg  [7:0]  cam_d;
+
+    color_lane_top #(.BASE_ADDR(32&#x27;h1005_0000)) dut (
+        .clk   (clk),
+        .rst   (rst),
+        .addr  (addr),
+        .wdata (wdata),
+        .wen   (wen),
+        .ren   (ren),
+        .rdata (rdata),
+        .irq   (irq),
+        .pclk  (pclk),
+        .prst  (rst),   // TB에서는 같은 리셋 사용
+        .vsync (vsync),
+        .href  (href),
+        .cam_d (cam_d),
+        .o_lane(o_lane),
+        .o_jump(o_jump)
+    );
+
+    // ---- MMIO 헬퍼 ----
+    localparam BASE = 32&#x27;h1005_0000;
+    task mmio_write;
+        input [31:0] a, d;
+        begin
+            @(posedge clk); #1;
+            addr = a; wdata = d; wen = 1; ren = 0;
+            @(posedge clk); #1;
+            wen = 0;
+        end
+    endtask
+
+    task mmio_read;
+        input  [31:0] a;
+        output [31:0] d;
+        begin
+            @(posedge clk); #1;
+            addr = a; wen = 0; ren = 1;
+            @(posedge clk); #1;
+            d = rdata;
+            ren = 0;
+        end
+    endtask
+
+    // ---- OV7670 프레임 송출 (PCLK 도메인) ----
+    // 9열×9행 프레임.
+    // 각 픽셀 = 2 PCLK 클럭 (짝수=high 바이트, 홀수=low 바이트).
+    // row_index는 TB가 외부에서 관리.
+    task send_pixel_pclk;
+        input [15:0] pix;
+        begin
+            // 첫 바이트 (high)
+            @(posedge pclk); #1;
+            cam_d = pix[15:8];
+            // 두 번째 바이트 (low)
+            @(posedge pclk); #1;
+            cam_d = pix[7:0];
+        end
+    endtask
+
+    // col 패턴: green_cols[8:0] 비트 i=1이면 열 i 녹색
+    localparam GREEN = 16&#x27;h07E0;
+    localparam NULL  = 16&#x27;h0000;
+
+    task send_frame_pclk;
+        input [8:0] green_cols;  // 비트 마스크 (열 0~8)
+        input [8:0] green_rows;  // 비트 마스크 (행 0~8) — 모든 열 녹색
+        integer r, c;
+        reg [15:0] pix;
+        begin
+            // VSYNC HIGH → 블랭킹 시작 (5 PCLK)
+            vsync = 1; href = 0;
+            repeat(5) @(posedge pclk); #1;
+            // VSYNC LOW → 프레임 활성 시작 (frame_start)
+            vsync = 0; href = 0;
+            @(posedge pclk); #1;
+
+            for (r = 0; r &lt; 9; r = r + 1) begin
+                // HREF HIGH → 라인 시작
+                href = 1;
+                for (c = 0; c &lt; 9; c = c + 1) begin
+                    if (green_rows[r])
+                        pix = GREEN;
+                    else if (green_cols[c])
+                        pix = GREEN;
+                    else
+                        pix = NULL;
+                    send_pixel_pclk(pix);
+                end
+                // HREF LOW → 라인 완료 (line_done)
+                href = 0;
+                repeat(2) @(posedge pclk); #1;
+            end
+
+            // VSYNC HIGH → 프레임 완료 (frame_done)
+            vsync = 1;
+            @(posedge pclk); #1;
+            vsync = 0;
+        end
+    endtask
+
+    // ---- 오류 카운터 ----
+    integer fail_cnt;
+
+    task check_lane;
+        input [1:0] expected;
+        input [31:0] rd;
+        begin
+            if (rd[2:1] !== expected) begin
+                $display(&quot;FAIL lane: got %0d, expected %0d (STATUS=0x%08h)&quot;,
+                         rd[2:1], expected, rd);
+                fail_cnt = fail_cnt + 1;
+            end
+        end
+    endtask
+
+    task check_jump;
+        input expected;
+        input [31:0] rd;
+        begin
+            if (rd[3] !== expected) begin
+                $display(&quot;FAIL jump: got %0d, expected %0d (STATUS=0x%08h)&quot;,
+                         rd[3], expected, rd);
+                fail_cnt = fail_cnt + 1;
+            end
+        end
+    endtask
+
+    // ---- 메인 테스트 ----
+    reg [31:0] rd;
+    integer wait_cnt;
+    reg frame_done_seen;
+
+    initial begin
+        fail_cnt = 0;
+        // 초기화
+        rst = 1; wen = 0; ren = 0; addr = 0; wdata = 0;
+        vsync = 0; href = 0; cam_d = 8&#x27;d0;
+        repeat(10) @(posedge clk); #1;
+        rst = 0;
+        repeat(5) @(posedge clk); #1;
+
+        // ID 확인
+        mmio_read(BASE + 32&#x27;hFC, rd);
+        if (rd !== 32&#x27;h0007_0100) begin
+            $display(&quot;FAIL ID_VER: 0x%08h&quot;, rd);
+            fail_cnt = fail_cnt + 1;
+        end
+
+        // 초기 설정 확인 (THRESH=20, col_thr1=3, col_thr2=6)
+        mmio_read(BASE + 32&#x27;h08, rd);
+        if (rd[5:0] !== 6&#x27;d20) begin
+            $display(&quot;FAIL THRESH default: %0d&quot;, rd[5:0]);
+            fail_cnt = fail_cnt + 1;
+        end
+
+        // ENABLE
+        mmio_write(BASE + 32&#x27;h00, 32&#x27;h0000_0001);  // bit0=ENABLE
+
+        // ========== Frame1: 열 0,1,2 녹색 → lane=1(LEFT) ==========
+        fork
+            send_frame_pclk(9&#x27;b000_000_111, 9&#x27;b0);
+            begin
+                // 프레임 완료 대기 (최대 200μs = 20000 클럭)
+                frame_done_seen = 0;
+                for (wait_cnt = 0; wait_cnt &lt; 20000 &amp;&amp; !frame_done_seen; wait_cnt = wait_cnt + 1) begin
+                    @(posedge clk);
+                    if (o_lane !== 2&#x27;d0 || o_jump !== 1&#x27;d0) frame_done_seen = 1;
+                end
+            end
+        join
+        repeat(50) @(posedge clk);  // CDC 안정화
+        mmio_read(BASE + 32&#x27;h04, rd);
+        check_lane(2&#x27;d1, rd);  // LEFT
+        check_jump(1&#x27;b0, rd);
+
+        // ========== Frame2: 열 3,4,5 녹색 → lane=2(CENTER) ==========
+        fork
+            send_frame_pclk(9&#x27;b000_111_000, 9&#x27;b0);
+            begin
+                frame_done_seen = 0;
+                for (wait_cnt = 0; wait_cnt &lt; 20000 &amp;&amp; !frame_done_seen; wait_cnt = wait_cnt + 1)
+                    @(posedge clk);
+            end
+        join
+        repeat(50) @(posedge clk);
+        mmio_read(BASE + 32&#x27;h04, rd);
+        check_lane(2&#x27;d2, rd);  // CENTER
+        check_jump(1&#x27;b0, rd);
+
+        // ========== Frame3: 열 6,7,8 녹색 → lane=3(RIGHT) ==========
+        fork
+            send_frame_pclk(9&#x27;b111_000_000, 9&#x27;b0);
+            begin
+                frame_done_seen = 0;
+                for (wait_cnt = 0; wait_cnt &lt; 20000 &amp;&amp; !frame_done_seen; wait_cnt = wait_cnt + 1)
+                    @(posedge clk);
+            end
+        join
+        repeat(50) @(posedge clk);
+        mmio_read(BASE + 32&#x27;h04, rd);
+        check_lane(2&#x27;d3, rd);  // RIGHT
+        check_jump(1&#x27;b0, rd);
+
+        // ========== Frame4: 행 0 (TOP) 모두 녹색 → jump=1 ==========
+        fork
+            send_frame_pclk(9&#x27;b0, 9&#x27;b000_000_001);
+            begin
+                frame_done_seen = 0;
+                for (wait_cnt = 0; wait_cnt &lt; 20000 &amp;&amp; !frame_done_seen; wait_cnt = wait_cnt + 1)
+                    @(posedge clk);
+            end
+        join
+        repeat(50) @(posedge clk);
+        mmio_read(BASE + 32&#x27;h04, rd);
+        check_jump(1&#x27;b1, rd);
+
+        // ========== FRAME_CNT 확인 ==========
+        mmio_read(BASE + 32&#x27;h14, rd);
+        // 4 프레임 이상 완료되어야 함 (snap_valid 발생 기준)
+        if (rd[7:0] &lt; 8&#x27;d1) begin
+            $display(&quot;FAIL FRAME_CNT too low: %0d&quot;, rd[7:0]);
+            fail_cnt = fail_cnt + 1;
+        end
+
+        // ========== 결과 ==========
+        if (fail_cnt === 0)
+            $display(&quot;PASS tb_color_lane: 4 frames OK&quot;);
+        else
+            $display(&quot;FAIL tb_color_lane: %0d checks failed&quot;, fail_cnt);
+
+        $finish;
+    end
+
+    // 타임아웃
+    initial begin
+        #5000000;
+        $display(&quot;FAIL tb_color_lane: TIMEOUT&quot;);
+        $finish;
+    end
+
+endmodule
+`default_nettype wire
+</pre></details><details><summary><code>constr/basys3_color_lane.xdc</code> <span class="muted">59줄</span></summary><pre># basys3_color_lane.xdc — Basys3 핀 배치 (OV7670 Pmod JA/JB)
+# 주의: 실제 연결 전 OV7670 브레이크아웃 보드 전압 사양 확인 필요(§external_parts)
+
+# ---- 클럭 / 리셋 ----
+set_property -dict {PACKAGE_PIN W5  IOSTANDARD LVCMOS33} [get_ports clk]
+create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports clk]
+set_property -dict {PACKAGE_PIN U18 IOSTANDARD LVCMOS33} [get_ports btnC]
+
+# ---- OV7670 — Pmod JA (상단, 1-4번 핀) ----
+# JA[1]=cam_pclk  JA[2]=cam_vsync  JA[3]=cam_href  JA[4]=NC
+set_property -dict {PACKAGE_PIN J1  IOSTANDARD LVCMOS33} [get_ports cam_pclk]
+set_property -dict {PACKAGE_PIN L2  IOSTANDARD LVCMOS33} [get_ports cam_vsync]
+set_property -dict {PACKAGE_PIN J2  IOSTANDARD LVCMOS33} [get_ports cam_href]
+
+# ---- OV7670 — Pmod JB (8비트 데이터 버스) ----
+# JB[1..4]=D[3..0], JB[7..10]=D[7..4] (Pmod JB 핀 순서)
+set_property -dict {PACKAGE_PIN A14 IOSTANDARD LVCMOS33} [get_ports {cam_d[0]}]
+set_property -dict {PACKAGE_PIN A16 IOSTANDARD LVCMOS33} [get_ports {cam_d[1]}]
+set_property -dict {PACKAGE_PIN B15 IOSTANDARD LVCMOS33} [get_ports {cam_d[2]}]
+set_property -dict {PACKAGE_PIN B16 IOSTANDARD LVCMOS33} [get_ports {cam_d[3]}]
+set_property -dict {PACKAGE_PIN A15 IOSTANDARD LVCMOS33} [get_ports {cam_d[4]}]
+set_property -dict {PACKAGE_PIN A17 IOSTANDARD LVCMOS33} [get_ports {cam_d[5]}]
+set_property -dict {PACKAGE_PIN C15 IOSTANDARD LVCMOS33} [get_ports {cam_d[6]}]
+set_property -dict {PACKAGE_PIN C16 IOSTANDARD LVCMOS33} [get_ports {cam_d[7]}]
+
+# PCLK 비동기 클럭 선언 (CDC 경고 억제용)
+create_clock -add -name cam_pclk_pin -period 41.67 -waveform {0 20} [get_ports cam_pclk]
+set_clock_groups -asynchronous -group [get_clocks sys_clk_pin] -group [get_clocks cam_pclk_pin]
+
+# ---- LED ----
+set_property -dict {PACKAGE_PIN U16 IOSTANDARD LVCMOS33} [get_ports {led[0]}]
+set_property -dict {PACKAGE_PIN E19 IOSTANDARD LVCMOS33} [get_ports {led[1]}]
+set_property -dict {PACKAGE_PIN U19 IOSTANDARD LVCMOS33} [get_ports {led[2]}]
+set_property -dict {PACKAGE_PIN V19 IOSTANDARD LVCMOS33} [get_ports {led[3]}]
+set_property -dict {PACKAGE_PIN W18 IOSTANDARD LVCMOS33} [get_ports {led[4]}]
+set_property -dict {PACKAGE_PIN U15 IOSTANDARD LVCMOS33} [get_ports {led[5]}]
+set_property -dict {PACKAGE_PIN U14 IOSTANDARD LVCMOS33} [get_ports {led[6]}]
+set_property -dict {PACKAGE_PIN V14 IOSTANDARD LVCMOS33} [get_ports {led[7]}]
+set_property -dict {PACKAGE_PIN V13 IOSTANDARD LVCMOS33} [get_ports {led[8]}]
+set_property -dict {PACKAGE_PIN V3  IOSTANDARD LVCMOS33} [get_ports {led[9]}]
+set_property -dict {PACKAGE_PIN W3  IOSTANDARD LVCMOS33} [get_ports {led[10]}]
+set_property -dict {PACKAGE_PIN U3  IOSTANDARD LVCMOS33} [get_ports {led[11]}]
+set_property -dict {PACKAGE_PIN P3  IOSTANDARD LVCMOS33} [get_ports {led[12]}]
+set_property -dict {PACKAGE_PIN N3  IOSTANDARD LVCMOS33} [get_ports {led[13]}]
+set_property -dict {PACKAGE_PIN P1  IOSTANDARD LVCMOS33} [get_ports {led[14]}]
+set_property -dict {PACKAGE_PIN L1  IOSTANDARD LVCMOS33} [get_ports {led[15]}]
+
+# ---- 7세그먼트 ----
+set_property -dict {PACKAGE_PIN W7  IOSTANDARD LVCMOS33} [get_ports {seg[0]}]
+set_property -dict {PACKAGE_PIN W6  IOSTANDARD LVCMOS33} [get_ports {seg[1]}]
+set_property -dict {PACKAGE_PIN U8  IOSTANDARD LVCMOS33} [get_ports {seg[2]}]
+set_property -dict {PACKAGE_PIN V8  IOSTANDARD LVCMOS33} [get_ports {seg[3]}]
+set_property -dict {PACKAGE_PIN U5  IOSTANDARD LVCMOS33} [get_ports {seg[4]}]
+set_property -dict {PACKAGE_PIN V5  IOSTANDARD LVCMOS33} [get_ports {seg[5]}]
+set_property -dict {PACKAGE_PIN U7  IOSTANDARD LVCMOS33} [get_ports {seg[6]}]
+set_property -dict {PACKAGE_PIN U2  IOSTANDARD LVCMOS33} [get_ports {an[0]}]
+set_property -dict {PACKAGE_PIN U4  IOSTANDARD LVCMOS33} [get_ports {an[1]}]
+set_property -dict {PACKAGE_PIN V4  IOSTANDARD LVCMOS33} [get_ports {an[2]}]
+set_property -dict {PACKAGE_PIN W4  IOSTANDARD LVCMOS33} [get_ports {an[3]}]
+</pre></details><details><summary><code>Makefile</code> <span class="muted">51줄</span></summary><pre># Makefile — mmio-color-lane-detect 캡스톤
+# 타깃: lint, sim, synth, all, clean
+# 도구: iverilog, vvp, yosys (선택)
+# Verilog-2001
+
+SLUG   := mmio-color-lane-detect
+RTL    := rtl/basys3_color_lane_top.v \
+          rtl/color_lane_top.v \
+          rtl/ov7670_capture_stub.v \
+          rtl/green_thresh.v \
+          rtl/grid9_counter.v \
+          rtl/lane_decode.v
+TB     := tb/tb_color_lane.v
+
+IVFLAGS := -g2001 -Wall -Wno-timescale
+
+YOSYS_SCRIPT := read_verilog $(RTL); \
+                synth_xilinx -flatten -top basys3_color_lane_top; \
+                stat
+
+.PHONY: all lint sim synth clean
+
+all: lint sim
+
+## ---- 린트 ----
+lint:
+	@echo &quot;=== LINT: $(SLUG) ===&quot;
+	iverilog $(IVFLAGS) -tnull $(RTL)
+	@echo &quot;LINT OK&quot;
+
+## ---- 시뮬레이션 ----
+sim: build/sim.vvp
+	@echo &quot;=== SIM: tb_color_lane ===&quot;
+	vvp build/sim.vvp
+	@echo &quot;&quot;
+
+build/sim.vvp: $(RTL) $(TB)
+	@mkdir -p build
+	iverilog $(IVFLAGS) -o $@ $(RTL) $(TB)
+
+## ---- 합성 (yosys) ----
+synth: $(RTL)
+	@echo &quot;=== SYNTH: $(SLUG) (yosys) ===&quot;
+	@mkdir -p build
+	yosys -p &quot;$(YOSYS_SCRIPT)&quot; 2&gt;&amp;1 | tee build/synth.log
+	@echo &quot;합성 로그: build/synth.log&quot;
+
+## ---- 정리 ----
+clean:
+	rm -rf build/
+	rm -f *.vcd tb_color_lane.vcd
+</pre></details><h3>시뮬레이션 (iverilog)</h3><ol><li>make lint  — RTL 문법 검사 (iverilog -tnull)</li><li>make sim   — 9×9 합성 프레임 4개로 레인·점프 검증; &#x27;PASS&#x27; 출력 확인</li><li>make synth — yosys로 자원 추정 (Basys3/XC7A35T 기준)</li></ol><h3>Vivado 합성</h3><ol><li>Vivado에서 capstone.json의 sources 목록 파일을 프로젝트에 추가한다.</li><li>constr/basys3_color_lane.xdc를 제약 파일로 추가한다.</li><li>top=basys3_color_lane_top으로 합성·구현한다.</li><li>OV7670 카메라 초기화(SCCB)는 이 패키지 범위 밖이다. mmio-ov7670-sccb-capture 패키지 또는 외부 MCU로 수행한다.</li><li>합성 후 LUT/FF/BRAM 사용량과 WNS를 기록한다.</li></ol>
+<h2 id="verify">8. 검증</h2><div class="panel"><table><tr><th>단계</th><th>결과</th><th>내용</th></tr>
+<tr><td>린트(verilator)</td><td>미실행</td><td></td></tr><tr><td>시뮬레이션(iverilog)</td><td>미실행</td><td></td></tr><tr><td>합성 추정(yosys)</td><td>미실행</td><td></td></tr><tr><td>보드 동작</td><td>not-verified</td><td></td></tr>
+</table></div><p>S3(보드 동작)는 에이전트가 올리지 않음. CI 통과(S1/S2)는 GitHub Actions verify.yml에서 기록됨.</p>
+<h2 id="ref">9. 참고 카드와 위험</h2><h3>참고 카드</h3><ul><li><a href="../catalog/amd/mit-6111-2021-team04-temple-run.html"><code>mit-6111-2021-team04-temple-run</code></a> — BRAM 없는 스트리밍 색 추적 구조, 9분할 카운트 착안</li><li><a href="../catalog/intel/columbia-4840-cameracontrol.html"><code>columbia-4840-cameracontrol</code></a> — OV7670 RGB565 스트리밍 처리 패턴</li><li><a href="../catalog/amd/shubhayu-das-vl504-project.html"><code>shubhayu-das-vl504-project</code></a> — 레인 검출 FSM 구조 참고</li></ul><h3>위험·한계</h3><ul><li>OV7670 디지털 I/O 전압이 2.8V이므로 브레이크아웃 보드 사양 확인 필요</li><li>PCLK→SYS 도메인 교차(CDC)는 2-FF sync로 처리: 최대 1 PCLK 지연 허용</li><li>9×9 테스트벤치로 검증하므로 실제 카메라 해상도(640×480)와 임계선(col_thr1/2, row_thr1/2) 재설정 필요</li><li>yosys 자원 추정은 Vivado 결과와 다를 수 있음</li></ul>
+</main></body></html>

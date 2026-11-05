@@ -1,0 +1,2 @@
+id,name,interface,io_voltage_V,supply_V,qty,board_resident,arduino_compatible,level_shift,notes
+u1,28BYJ-48 스텝모터 + ULN2003 드라이버 보드,4선 단극성 (IN1~IN4),"5V (로직 신호 IN1~IN4는 3.3V 호환, ULN2003 입력 임계치 ~1V)",5V 외부 공급 (USB 5V 가능),1,false,true,False,Pmod JA[3:0]에 ULN2003 IN1~IN4 연결. GND 공통. 역기전력 보호는 ULN2003 내장 플라이백 다이오드.
