@@ -49,7 +49,6 @@ module axil_led_matrix_slave #(
     input  wire        iir_busy,
 
     // 에너지·기울기 (읽기 전용 레지스터에 연결)
-    input  wire [7:0][31:0] energy,  // SystemVerilog 형태 — Verilog-2001 호환으로 아래에서 개별 선언
     input  wire [31:0] energy0, energy1, energy2, energy3,
     input  wire [31:0] energy4, energy5, energy6, energy7,
     input  wire signed [9:0] x_tilt_in,

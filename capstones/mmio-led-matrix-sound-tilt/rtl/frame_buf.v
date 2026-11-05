@@ -97,14 +97,16 @@ module frame_buf #(
                 if (mode[1:0] != 2'b00) begin
                     begin : dot_draw
                         reg [3:0] dot_col;
+                        reg [3:0] dot_row_int;  // 4비트 임시: 오버플로 방지
                         reg [2:0] dot_row;
                         // X(±512) → 열 0~15, Y(±512) → 행 0~7
                         // x_hold: -512~511 → 0~15 선형 매핑
-                        dot_col = x_hold[9:6] + 4'd8;  // 상위 4비트 + 중점 보정
-                        dot_row = y_hold[9:7] + 3'd4;  // 상위 3비트 + 중점 보정
+                        dot_col     = x_hold[9:6] + 4'd8;         // 상위 4비트 + 중점 보정
+                        dot_row_int = {1'b0, y_hold[9:7]} + 4'd4; // 1비트 확장으로 오버플로 방지
                         // 범위 클램프
-                        if (dot_col > 4'd15) dot_col = 4'd15;
-                        if (dot_row > 3'd7)  dot_row = 3'd7;
+                        if (dot_col > 4'd15)    dot_col     = 4'd15;
+                        if (dot_row_int > 4'd7) dot_row_int = 4'd7;
+                        dot_row = dot_row_int[2:0];
                         bitmap[dot_row*COLS + dot_col] <= 1;
                     end
                 end

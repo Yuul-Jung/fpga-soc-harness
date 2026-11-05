@@ -105,15 +105,16 @@ always @(posedge clk or negedge rst_n) begin
 
                     if (!sclk_phase) begin
                         // 하강에지(SCLK 1→0): 다음 MOSI 준비
-                        if (bit_cnt < N_BITS - 1) begin
+                        // N_BITS 사이클까지 bit_cnt를 올려야 falling-edge 샘플이 40회 가능
+                        if (bit_cnt < N_BITS) begin
                             bit_cnt  <= bit_cnt + 1'b1;
                             tx_shift <= {tx_shift[38:0], 1'b0};
                             spi_mosi <= tx_shift[38];
                         end
                     end else begin
-                        // 상승에지(SCLK 0→1): MISO 샘플
+                        // 상승에지(SCLK 0→1): MISO 샘플 (총 40비트)
                         rx_shift <= {rx_shift[38:0], spi_miso};
-                        if (bit_cnt == N_BITS - 1) begin
+                        if (bit_cnt == N_BITS) begin
                             state <= S_DONE;
                         end
                     end
