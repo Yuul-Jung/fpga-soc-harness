@@ -22,7 +22,7 @@ TOP_MOD  := axil_rc_arb
 lint:
 	@echo "=== lint ==="
 	verilator --lint-only -Wall --Wno-UNUSEDSIGNAL --Wno-WIDTH \
-	    -g2001 $(RTL_SRCS)
+	    $(RTL_SRCS)
 	@echo "lint OK"
 
 # ── 시뮬레이션 (iverilog + vvp) ─────────────────────────────────────

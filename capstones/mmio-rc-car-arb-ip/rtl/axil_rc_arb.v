@@ -1,3 +1,4 @@
+`timescale 1ns/1ps
 // axil_rc_arb.v — RC카 중재 IP AXI4-Lite 슬레이브 최상위
 // 레지스터 (8 × 32-bit):
 //   0x00 CTRL      RW  [0]=EN [2:1]=DIR [11:4]=SPEED [12]=SCAN_START(strobe)

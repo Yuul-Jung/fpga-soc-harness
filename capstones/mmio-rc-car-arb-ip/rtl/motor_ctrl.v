@@ -1,3 +1,4 @@
+`timescale 1ns/1ps
 // motor_ctrl.v — 2-채널 DC 모터 PWM 드라이버 (TB6612FNG 호환)
 // PWM 주파수: 20 kHz (5000 클럭 @ 100 MHz)
 // dir: 00=STOP(coast), 01=FWD, 10=BWD, 11=SPIN_L

@@ -1,3 +1,4 @@
+`timescale 1ns/1ps
 // arb_fsm.v — 명령 우선순위 중재 FSM
 // dist_min < threshold  → arb_stop = 1 (안전 정지, 명령 무관)
 // dist_min >= threshold + HYST(5cm) → arb_stop = 0 (복귀)

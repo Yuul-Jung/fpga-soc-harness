@@ -1,3 +1,4 @@
+`timescale 1ns/1ps
 // servo_pwm.v — 50 Hz 서보 PWM 발생기
 // 100 MHz 클럭, 20 ms 주기(2_000_000 클럭)
 // angle[7:0]: 0 → 1 ms 펄스(0°), 180 → 2 ms 펄스(180°)

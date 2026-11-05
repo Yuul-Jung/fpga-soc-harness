@@ -1,3 +1,4 @@
+`timescale 1ns/1ps
 // hcsr04_drv.v — HC-SR04 단일 측정 드라이버
 // clk 100 MHz, 동기 리셋(active-low rst_n)
 // start 펄스 → TRIG 10 µs → ECHO 계측 → dist_cm 출력 + done 펄스
@@ -30,7 +31,7 @@ module hcsr04_drv (
     localparam S_MEAS    = 2'd3;
 
     reg [1:0]  state;
-    reg [20:0] cnt;    // 최대 2300000 < 2^22
+    reg [21:0] cnt;    // 최대 2300000 < 2^22
 
     // 에코 동기화 (2단 FF)
     reg echo_s1, echo_s2;
@@ -45,14 +46,14 @@ module hcsr04_drv (
             trig    <= 1'b0;
             dist_cm <= 10'd0;
             done    <= 1'b0;
-            cnt     <= 21'd0;
+            cnt     <= 22'd0;
         end else begin
             done <= 1'b0;  // 기본값
             case (state)
                 S_IDLE: begin
                     trig <= 1'b0;
                     if (start) begin
-                        cnt   <= 21'd0;
+                        cnt   <= 22'd0;
                         trig  <= 1'b1;
                         state <= S_TRIG;
                     end
@@ -60,23 +61,23 @@ module hcsr04_drv (
                 S_TRIG: begin
                     if (cnt == TRIG_CYCLES - 1) begin
                         trig  <= 1'b0;
-                        cnt   <= 21'd0;
+                        cnt   <= 22'd0;
                         state <= S_WAIT;
                     end else begin
-                        cnt <= cnt + 21'd1;
+                        cnt <= cnt + 22'd1;
                     end
                 end
                 S_WAIT: begin
                     // ECHO 상승 엣지를 기다린다
                     if (echo_s2) begin
-                        cnt   <= 21'd0;
+                        cnt   <= 22'd0;
                         state <= S_MEAS;
                     end else if (cnt == TIMEOUT_CYC - 1) begin
                         dist_cm <= 10'h3FF;  // 타임아웃
                         done    <= 1'b1;
                         state   <= S_IDLE;
                     end else begin
-                        cnt <= cnt + 21'd1;
+                        cnt <= cnt + 22'd1;
                     end
                 end
                 S_MEAS: begin
@@ -84,7 +85,7 @@ module hcsr04_drv (
                     if (!echo_s2) begin
                         // 하강 엣지: 거리 계산
                         dist_cm <= (cnt >= TIMEOUT_CYC) ? 10'h3FF
-                                   : cnt[20:0] / CM_DIVISOR;
+                                   : cnt / CM_DIVISOR;
                         done    <= 1'b1;
                         state   <= S_IDLE;
                     end else if (cnt == TIMEOUT_CYC - 1) begin
@@ -92,7 +93,7 @@ module hcsr04_drv (
                         done    <= 1'b1;
                         state   <= S_IDLE;
                     end else begin
-                        cnt <= cnt + 21'd1;
+                        cnt <= cnt + 22'd1;
                     end
                 end
                 default: state <= S_IDLE;

@@ -87,6 +87,7 @@ module tb_rc_car_arb;
         repeat(6) @(posedge clk);
         @(negedge clk); rst_n = 1;
         repeat(2) @(posedge clk);
+        $display("DBG: reset done");
 
         // ══ T1: THRESHOLD 레지스터 쓰기·읽기 ══
         axi_wr(32'h10, 32'd30);        // THRESHOLD = 30 cm
@@ -122,17 +123,24 @@ module tb_rc_car_arb;
         // ══ T4: 스캔 실행 + 에코 응답 (dist = 1 cm per direction) ══
         // 스캔 개시: CTRL[12]=1
         axi_wr(32'h00, 32'h1001);      // EN=1, SCAN_START=1
+        $display("DBG: scan started");
         // 에코 드라이버: L/C/R 각각 5800 클럭(= 1 cm)
         for (i = 0; i < 3; i = i + 1) begin
+            $display("DBG: waiting for trig[%0d]", i);
             @(posedge trig);            // TRIG 상승
+            $display("DBG: trig[%0d] high at %0t", i, $time);
             @(negedge trig);            // TRIG 하강 (1000 클럭 후)
+            $display("DBG: trig[%0d] low, sending echo", i);
             repeat(5) @(posedge clk);   // 짧은 대기
             echo = 1;
             repeat(5800) @(posedge clk);// 1 cm = 5800 클럭
             echo = 0;
+            $display("DBG: echo[%0d] done at %0t", i, $time);
             repeat(20) @(posedge clk);  // 측정 완료 여유
         end
+        $display("DBG: all echoes done, waiting settle");
         repeat(100) @(posedge clk);     // S_RET 정착 + scan_done 처리
+        $display("DBG: settle done");
 
         // DIST_L/C/R = 1 cm
         axi_rd(32'h04);
