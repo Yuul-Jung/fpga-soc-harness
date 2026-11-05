@@ -19,8 +19,15 @@ jobs:
         run: python3 tools/check.py
       - name: 전수 감사 (문서도 새로 만들어 대조)
         run: python3 tools/audit.py
+      - name: 업스트림 변경 감시 (읽기 전용, 실패해도 감사는 계속)
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 tools/upstream_watch.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: audit-report
-          path: build/audit.json
+          path: |
+            build/audit.json
+            build/upstream_drift.json

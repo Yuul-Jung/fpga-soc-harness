@@ -53,6 +53,9 @@ jobs:
           echo "::notice::library: $(grep -E '^(PASS|FAIL)' library-check.log | tail -1)"
 
       # 검증·개선 커밋 (스케줄 실행 시)
+      - name: 사용자 RTL 검증 (ipcheck/, 승인된 IP만)
+        run: python3 tools/ipcheck.py
+
       - name: Verify commit & push
         if: github.event_name == 'schedule'
         run: |
