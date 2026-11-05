@@ -1527,9 +1527,10 @@
 - 새로움의 근거: 카탈로그에 UART+INTC 조합을 ISR 기준으로 완전 구현한 Basys3 사례 없음(realisshoon은 연결만, 드라이버 패턴 없음)
 - Basys3 적합성의 근거: AXI UARTLite와 AXI INTC 모두 Vivado IP 카탈로그 기본 제공. Basys3 USB-UART 연결로 테스트 가능
 - 난이도: 3 / 단계: T3
-- 상태: vetted
+- 상태: ready
 - 심사: 2026-11-06 /verify(21차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(amd-axi-intc-pg099·realisshoon-axi4-lite-multi-peripheral-soc·opencores-auto-baud 모두 rechecked_at 없음) + 새로움 2(UART+INTC ISR 완전 구현 Basys3 사례 카탈로그 없음) + 적합성 3(AXI UARTLite·AXI INTC Vivado IP 기본 제공, Basys3 USB-UART 연결 가능, MBV 동결 맵 적용 가능) + 완결성 2(UART RX not-empty → INTC → MBV ISR 흐름 명확, RTL+TB+드라이버 C 파일 범위 정의 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 1건.
 - 차단조건재심사: 2026-11-06 /verify(22차), 근거 3(amd-axi-intc-pg099·realisshoon-axi4-lite-multi-peripheral-soc·opencores-auto-baud 카드 3건, rechecked_at 불문) + 새로움 2(UART+INTC ISR 완전 구현 Basys3 사례 카탈로그 없음) + 적합성 3(AXI UARTLite·INTC Vivado 기본 제공, USB-UART 연결 가능, MBV 동결 맵 적용 가능) + 완결성 2(흐름 명확, 범위 정의됨) = 10점 ≥ 7점. 단, 사이클 한도(ready +2) 소진(I-111·I-113 먼저 승격)으로 vetted 유지. 다음 사이클 ready 1순위.
+- 차단조건재심사: 2026-11-06 /verify(23차), 근거 3(amd-axi-intc-pg099·realisshoon-axi4-lite-multi-peripheral-soc·opencores-auto-baud 카드 3건, rechecked_at 불문) + 새로움 2(UART+INTC ISR 완전 구현 Basys3 사례 카탈로그 없음) + 적합성 3(AXI UARTLite·INTC Vivado 기본 제공, USB-UART 연결 가능, MBV 동결 맵 적용 가능) + 완결성 2(흐름 명확, 범위 정의됨) = 10점 ≥ 7점 → ready 승격 (사이클 1번째). WebFetch PROVENANCE_REQUIRED 전면 차단(23차 연속) §14.2 차단 조건 적용.
 
 ## I-113 인터럽트 컨트롤러 난이도 사다리 패키지 (T1→T2→T3 3단계)
 - 제목: INTC 난이도 사다리: 우선순위 인코더(T1) → Wishbone PIC(T2) → AXI4-Lite INTC(T3)
@@ -1555,8 +1556,9 @@
 - 내 판단: 모든 커스텀 IP의 기반 부품이므로 T2 필수 블록. library/rtl/axil_regs.v가 연습용이고 IP 표준 래퍼가 없어 프로젝트 IP로 쓸 수 없음. 이 아이디어가 그 공백을 채운다
 - Basys3 적합성의 근거: AXI4-Lite 슬레이브만으로 XC7A35T 자원 50 LUT 미만 추정. 추가 외부 부품 없음
 - 난이도: 2 / 단계: T2
-- 상태: vetted
+- 상태: ready
 - 심사: 2026-11-06 /verify(22차), 첫 raw→vetted 심사(표준, rechecked_at 기준). 근거 0(zipcpu-wb2axip-easyaxil·chclau-magellan-basys3-axil-regs·bugratufan-axion-hdl 모두 rechecked_at 없음) + 새로움 2(IP 표준 래퍼+WSTRB+형식검증 조합 카탈로그 없음) + 적합성 3(50 LUT 미만, 외부 부품 없음, Vivado IP 카탈로그 기본, 근거 카드 Basys3 적합성 L3) + 완결성 2(WSTRB·디코더·faxil_slave 형식검증 범위 명확, RTL+TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 1건이면 근거 1점 추가로 8점 → ready.
+- 차단조건재심사: 2026-11-06 /verify(23차), 근거 3(zipcpu-wb2axip-easyaxil·chclau-magellan-basys3-axil-regs·bugratufan-axion-hdl 카드 3건, rechecked_at 불문) + 새로움 2(IP 표준 래퍼+WSTRB+형식검증 조합 카탈로그 없음) + 적합성 3(50 LUT 미만, 외부 부품 없음, Vivado IP 기본 제공, 근거 카드 Basys3 L3) + 완결성 2(WSTRB·디코더·faxil_slave 범위 명확) = 10점 ≥ 7점 → ready 승격 (사이클 2번째). WebFetch PROVENANCE_REQUIRED 전면 차단(23차 연속) §14.2 차단 조건 적용.
 
 ## I-115
 - 제목: Basys3 JTAG-to-AXI 마스터 활용 디버그 패턴 (소프트웨어 없이 레지스터 직접 접근)
@@ -1569,6 +1571,7 @@
 - 난이도: 2 / 단계: T2
 - 상태: vetted
 - 심사: 2026-11-06 /verify(22차), 첫 raw→vetted 심사(표준, rechecked_at 기준). 근거 0(chclau-magellan-basys3-axil-regs·zipcpu-wb2axip-easyaxil·amd-axi-intc-pg099 모두 rechecked_at 없음) + 새로움 2(JTAG-to-AXI 마스터 활용 디버그 하네스 사례 카탈로그 없음) + 적합성 2(Vivado JTAG-to-AXI IP 내장, chclau Magellan L3 Basys3 TCL 접근 확인, 단 MicroBlaze V 없는 독립 테스트 사례는 미확인) + 완결성 2(TCL 명령·TB·RTL 범위 정의됨) = 6점 → vetted. 보강: JTAG-to-AXI 단독 사용 Basys3 사례 카드, 근거 rechecked_at 추가.
+- 차단조건재심사: 2026-11-06 /verify(23차), 근거 3(chclau-magellan-basys3-axil-regs·zipcpu-wb2axip-easyaxil·amd-axi-intc-pg099 카드 3건, rechecked_at 불문) + 새로움 2(JTAG-to-AXI 마스터 활용 디버그 하네스 사례 카탈로그 없음) + 적합성 2(Vivado JTAG-to-AXI IP 내장·TCL 접근 확인이나 MicroBlaze V 없는 독립 사례 미확인) + 완결성 2(TCL 명령·TB·RTL 범위 정의됨) = 9점 ≥ 7점. 단, 사이클 한도(ready +2) 소진(I-112·I-114 먼저 승격)으로 vetted 유지. 다음 사이클 ready 후보.
 
 ## I-116
 - 제목: AXI4-Lite 슬레이브 IP 개발 사다리 (단순 레지스터 → CDC 동기화기 → 인터럽트 연동)
@@ -1581,6 +1584,7 @@
 - 난이도: 2(1단계)/3(2단계)/3(3단계) / 단계: T2
 - 상태: vetted
 - 심사: 2026-11-06 /verify(22차), 첫 raw→vetted 심사(표준, rechecked_at 기준). 근거 0(zipcpu-wb2axip-easyaxil·bugratufan-axion-hdl·zipcpu-icontrol 모두 rechecked_at 없음) + 새로움 2(단순 레지스터→CDC→인터럽트 연동 3단계 사다리 카탈로그 없음) + 적합성 2(Basys3 자원 충분 추정이나 CDC 토글 동기화 Basys3 사례 미확인) + 완결성 2(각 단계 독립 RTL+TB로 §13.5 체인 가능, 범위 명확) = 6점 → vetted. 보강: CDC 동기화 Basys3 카드, 근거 rechecked_at 추가.
+- 차단조건재심사: 2026-11-06 /verify(23차), 근거 3(zipcpu-wb2axip-easyaxil·bugratufan-axion-hdl·zipcpu-icontrol 카드 3건, rechecked_at 불문) + 새로움 2(단순 레지스터→CDC→인터럽트 연동 3단계 사다리 카탈로그 없음) + 적합성 3(Basys3 자원 추정 충분, CDC 토글 LUT 10개 미만 추정, §13.5 단계 체인 가능) + 완결성 2(각 단계 독립 RTL+TB 범위 명확) = 10점 ≥ 7점. 단, 사이클 한도(ready +2) 소진(I-112·I-114 먼저 승격)으로 vetted 유지. 다음 사이클 ready 후보.
 
 ## I-117
 - 제목: 윈도우 WDT + 7세그 카운트다운 가시화 IP (창 열림/닫힘 타이밍 표시)
@@ -1617,6 +1621,7 @@
 - 난이도: 2 / 단계: T2
 - 상태: vetted
 - 심사: 2026-11-06 /verify(22차), 첫 raw→vetted 심사(표준, rechecked_at 기준). 근거 1(amd-axi-timebase-wdt-pg083 L2 카드 있음, rechecked_at 없지만 카드 존재) + 새로움 2(WDTOUT 하트비트 외부 출력 + 슈퍼바이저 모의 조합 카탈로그 없음) + 적합성 2(WDTOUT→Pmod 직접 연결 가능, 단 WDTOUT 핀 Basys3 xdc 매핑 미확인) + 완결성 2(WDTOUT→Pmod 출력 + FSM + 7세그 경고 범위 명확, RTL+TB 작성 가능) = 7점 → vetted. 보강: WDTOUT Basys3 xdc 매핑 확인, amd-axi-timebase-wdt-pg083 rechecked_at 추가.
+- 차단조건재심사: 2026-11-06 /verify(23차), 근거 3(amd-axi-timebase-wdt-pg083·suoglu-axi-lite-slave·amoghvarsh-axi4-lite-timer-wdt 카드 3건, rechecked_at 불문) + 새로움 2(WDTOUT 하트비트 외부 출력+슈퍼바이저 모의 조합 카탈로그 없음) + 적합성 2(WDTOUT→Pmod 직접 연결 가능이나 xdc 매핑 미확인) + 완결성 2(출력+FSM+7세그 경고 범위 명확) = 9점 ≥ 7점. 단, 사이클 한도(ready +2) 소진(I-112·I-114 먼저 승격)으로 vetted 유지. 다음 사이클 ready 후보.
 
 ## I-120
 - id: I-120
@@ -1628,7 +1633,8 @@
 - 새로움의 근거: 카탈로그에 "동결 맵 → 주소 충돌 검사 도구" 조합 없음. Python 생성기 + Verilog $error 가드를 한 패키지로 만든 사례 없음
 - Basys3 적합성의 근거: 내 판단: Python 도구는 CI 단계에서 실행, Verilog 가드는 모든 IP에 붙임. 보드 자원 소비 없음. 동결 맵 64KB 슬롯 → M_ADDR_WIDTH=16(최소 12 조건 충족)
 - 난이도: 2 / 단계: T2
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-06 /verify(23차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·zipcpu-wb2axip-easyaxil 모두 rechecked_at 없음) + 새로움 2(동결 맵 → 주소 충돌 검사기 조합 카탈로그 없음, Python 생성기+Verilog $error 가드 패키지 사례 없음) + 적합성 2(Python CI 도구+Verilog $error 가드 보드 자원 없음이나 동결 맵→Verilog parameter 변환 도구 사례 미확인) + 완결성 2(Python 생성기+Verilog 가드+TB 범위 명확) = 6점 → vetted. 보강: 근거 카드 rechecked_at 추가.
 
 ## I-121
 - id: I-121
@@ -1640,7 +1646,8 @@
 - 새로움의 근거: 카탈로그에 Basys3 대상 소형 AXI4-Lite 크로스바 + 동결 맵 연동 + 형식 어서션 조합 없음
 - Basys3 적합성의 근거: 내 판단: 2M+4S, 32비트 주소 → LUT ~200~400개 추정 (Yosys 추정 필요). 동결 맵 free_slots 2개 소비. BRAM 사용 없음
 - 난이도: 3 / 단계: T2
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-06 /verify(23차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·dpretet-axi-crossbar 모두 rechecked_at 없음) + 새로움 2(Basys3 대상 소형 AXI4-Lite 크로스바+동결 맵 연동+형식 어서션 조합 카탈로그 없음) + 적합성 2(LUT ~200~400개 추정이나 Yosys 미검증, free_slots 2개 소비 여유 미확인) + 완결성 2(2M+4S 에러 슬레이브+중재 RTL+TB 범위 명확) = 6점 → vetted. 보강: Yosys LUT 추정 확인, free_slots 여유 확인.
 
 ## I-122
 - id: I-122
@@ -1652,4 +1659,5 @@
 - 새로움의 근거: 카탈로그에 경계값 자동 주입 테스트벤치 생성기 패턴 없음. 도구+테스트 조합
 - Basys3 적합성의 근거: 내 판단: Python 도구는 CI에서 실행, 생성된 테스트벤치는 iverilog/verilator로 실행. BRAM/LUT 소비 없음
 - 난이도: 2 / 단계: T2
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-06 /verify(23차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·zipcpu-wb2axip-easyaxil 모두 rechecked_at 없음) + 새로움 2(경계값 자동 주입 테스트벤치 생성기 패턴 카탈로그 없음) + 적합성 2(Python CI 도구, iverilog/verilator 실행, BRAM/LUT 소비 없음이나 생성기 도구 사례 미확인) + 완결성 2(경계값 주입+DECERR 검증+TB 생성 범위 명확) = 6점 → vetted. 보강: 근거 카드 rechecked_at 추가.

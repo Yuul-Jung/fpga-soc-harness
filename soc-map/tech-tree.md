@@ -110,7 +110,8 @@ FreeRTOS·Zephyr 비교 카드는 MicroBlaze V + AXI INTC RTOS 설계에 개조 
 - gap T1: Basys3 MicroBlaze V에 연결된 AXI4-Lite 워치독 IP 카드 없음; amd-axi-timebase-wdt-pg083(L2)·amoghvarsh-axi4-lite-timer-wdt(L2)·mij001-axil-timer(L3) 카드 추가됨 — AMD IP 직접 연결(yes) 또는 MIT 타이머 개조(needs-port) 경로 확보; I-070(vetted) + I-117~I-119(vetted) 아이디어 있음.
 - gap T2: Basys3 MicroBlaze V에 연결된 AXI4-Lite INTC IP 오픈소스 카드 없음(AMD IP(PG099)는 Xilinx EULA로 묶임); amd-axi-intc-pg099(L3)·zipcpu-icontrol(L3, Wishbone)·realisshoon-axi4-lite-multi-peripheral-soc(L2) 카드 추가됨 — PG099 호환 오픈소스 Verilog IP 아직 없음; I-111(ready)·I-113(ready) 아이디어가 채울 예정.
 - gap T2: Basys3 BRAM 명령 메모리 CRC 검사 AXI IP 카드 없음(I-071 vetted, 5점, I-070 선행 필요).
-- gap T2: MicroBlaze V IP 표준을 준수하는 AXI4-Lite 슬레이브 레지스터 파일 Verilog-2001 IP 카드 없음; zipcpu-wb2axip-easyaxil(L3)·chclau-magellan-basys3-axil-regs(L3)·bugratufan-axion-hdl(L3) 패턴 카드 추가됨; I-114(vetted)가 채울 예정. 상세 비교: atlas/axil-peripheral-ip.md.
+- gap T2: MicroBlaze V IP 표준을 준수하는 AXI4-Lite 슬레이브 레지스터 파일 Verilog-2001 IP 카드 없음; zipcpu-wb2axip-easyaxil(L3)·chclau-magellan-basys3-axil-regs(L3)·bugratufan-axion-hdl(L3) 패턴 카드 추가됨; I-114(ready)가 채울 예정. 상세 비교: atlas/axil-peripheral-ip.md.
+- gap T2: 동결 맵과 연동되는 AXI4-Lite 소형 크로스바 / 주소 충돌 검사기 IP 카드 없음; alexforencich-verilog-axi-crossbar(L3, MIT)·dpretet-axi-crossbar(L3, MIT)·zipcpu-wb2axip-crossbar-addrdecode(L2, 라이선스 미확인) 패턴 카드 추가됨; I-120(vetted, 충돌 검사기)·I-121(vetted, 2M+4S 크로스바)·I-122(vetted, TB 생성기) 아이디어가 채울 예정. 상세 비교: atlas/axil-peripheral-ip.md §4.
 - gap T2: 전자기술 도메인에 SPWM·XADC 카드가 14건 추가되었으나, Basys3+MicroBlaze V AXI4-Lite SPWM IP 카드 없음 — I-077(ready 후보)이 채울 예정.
 - gap T2: XADC 전원 모니터 AXI-Lite IP 카드 없음 — I-075(ready)가 채울 예정.
 

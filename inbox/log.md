@@ -209,3 +209,5 @@
 
 2026-11-06 03:42 | verify | 재열람 0 (WebFetch PROVENANCE_REQUIRED 전면 차단 22차 연속) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +2 (I-111 차단조건재심사 10점, I-113 차단조건재심사 10점) | vetted +7 (I-112 차단조건재심사 10점 한도소진·유지, I-114 7점, I-115 6점, I-116 6점, I-117 6점, I-118 5점, I-119 7점) | atlas/axil-peripheral-ip.md 신규·soc-map +9카드 갱신
 2026-11-06 04:21 | collect | AXI 크로스바 주소 디코딩·충돌 회피 패턴 [B3] · S2 조합 탐색(주)+S1 인접 도메인 이식(보조) | 카드 +3 (alexforencich-verilog-axi-crossbar L3, dpretet-axi-crossbar L3, zipcpu-wb2axip-crossbar-addrdecode L2) | 아이디어 +3 (I-120~122) | 큐 잔여 605 | blocked 4 (ZipCPU/wb2axip GitHub README — PROVENANCE_REQUIRED)
+
+2026-11-06 04:43 | verify | 재열람 0 (WebFetch PROVENANCE_REQUIRED 전면 차단 23차 연속) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +2 (I-112 차단조건재심사 10점, I-114 차단조건재심사 10점) | vetted +3 (I-120~122 첫심사 각 6점) | 차단조건재심사 추가 (I-115 9점·I-116 10점·I-119 9점 한도소진 유지) | atlas/axil-peripheral-ip.md §4 AXI 크로스바 절 추가·soc-map gap 1건 추가

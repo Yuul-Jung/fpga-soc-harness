@@ -1,7 +1,7 @@
 # AXI4-Lite 주변장치 IP 비교: INTC·타이머/WDT·레지스터 템플릿
 
-갱신: 2026-11-06 (/verify 22차). 카드 10건 기반.
-인터럽트 컨트롤러(INTC), 타이머·WDT, AXI4-Lite 슬레이브 레지스터 파일 사례를 정리한다. 모두 MicroBlaze V SoC의 `free_slots` 배정과 관련된 주제다.
+갱신: 2026-11-06 (/verify 23차). 카드 13건 기반.
+인터럽트 컨트롤러(INTC), 타이머·WDT, AXI4-Lite 슬레이브 레지스터 파일, AXI4 크로스바/인터커넥트 사례를 정리한다. 모두 MicroBlaze V SoC의 `free_slots` 배정과 관련된 주제다.
 
 ---
 
@@ -72,19 +72,53 @@
 
 ---
 
+## 4. AXI4 크로스바 / 인터커넥트 IP
+
+(2026-11-06 /verify 23차 추가. 카드 3건 기반: alexforencich-verilog-axi-crossbar, dpretet-axi-crossbar, zipcpu-wb2axip-crossbar-addrdecode)
+
+| 항목 | alexforencich-verilog-axi-crossbar | dpretet-axi-crossbar | zipcpu-wb2axip-crossbar-addrdecode |
+|---|---|---|---|
+| 카드 | [alexforencich-verilog-axi-crossbar](../catalog/vendor-neutral/alexforencich-verilog-axi-crossbar.md) | [dpretet-axi-crossbar](../catalog/vendor-neutral/dpretet-axi-crossbar.md) | [zipcpu-wb2axip-crossbar-addrdecode](../catalog/vendor-neutral/zipcpu-wb2axip-crossbar-addrdecode.md) |
+| 버스 | AXI4 | AXI4, AXI4-Lite | AXI4-Lite, AXI4, Wishbone |
+| 언어 | Verilog-2001 | SystemVerilog | Verilog |
+| 등급 | L3 | L3 | L2 |
+| 라이선스 | MIT | MIT | unknown(GPL 추정, 미확인) |
+| 주소 디코딩 방식 | 범위 기반(M_BASE_ADDR, 2^M_ADDR_WIDTH 경계) | 시작+끝 주소 범위 | SLAVE_ADDR/MASK AND 방식 |
+| 중복 주소 검출 | elaboration-time `$error`/$finish | 미구현(향후 계획) | 없음(형식 검증으로 대체) |
+| 에러 슬레이브 | m_decerr 플래그 | DECERR 반환 | NS+1번째 에러 슬레이브 |
+| 중재 방식 | 접수 제어(ID 추적, S_THREADS/S_ACCEPT) | 라운드 로빈(우선순위 최대 4단계) | 번호 낮은 마스터 우선, stay_on_channel |
+| 형식 검증 | 없음 | 없음(CocoTB 향후 계획) | SymbiYosys($onehot0 grant) |
+| 위자드/도구 | 없음 | JSON/TUI 위자드 | 없음 |
+| CDC 지원 | 없음 | 있음 | 없음 |
+| Basys3 적합성 | needs-port | needs-port | needs-port |
+| 단계 | T2 | T2 | T2 |
+
+**패턴 (내 판단):**
+- alexforencich: `M_BASE_ADDR`가 0이면 순차 자동 배치(2^M_ADDR_WIDTH 단위), elaboration-time `$error`로 겹침 차단 — 동결 맵 슬롯에서 파라미터 직접 추출 가능. M_ADDR_WIDTH 최소 12비트(4KB) 조건이 Basys3 Pmod 범위(4KB 미만) 사례를 제한함.
+- dpretet: JSON 위자드로 RTL 자동 생성하는 접근법이 `config/soc_address_map.json` 패턴과 구조적으로 유사. SystemVerilog 전용 → iverilog 최신 버전 필요, Verilog-only 플로에는 부적합.
+- zipcpu wb2axip: `SLAVE_ADDR/SLAVE_MASK` AND-마스크 방식은 2의 거듭제곱 정렬 범위만 표현 가능(동결 맵 64KB 슬롯과 호환). `$onehot0` 어서션으로 grant 무결성 형식 검증 — 단, 라이선스 미확인(GPL 추정)이므로 코드 반입 전 확인 필수.
+
+**MicroBlaze V 개조 경로 (내 판단):**
+소형 AXI4-Lite 크로스바(I-121)는 alexforencich 범위 비교 패턴과 zipcpu 에러 슬레이브·중재 규칙을 참조해 Verilog-2001 자체 RTL로 작성한다. `M_BASE_ADDR`는 `config/soc_address_map.json`의 `free_slots`에서 직접 채우는 `parameter` 블록으로 연결. dpretet의 JSON 위자드 접근법은 동결 맵→RTL 생성 도구(I-120) 아이디어의 참조 패턴으로 활용.
+
+---
+
 ## 조합 아이디어 요약
 
 | 아이디어 | 조합 | 근거 카드 | 상태 |
 |---|---|---|---|
 | I-111 AXI4-Lite INTC IP | PG099 호환 Verilog INTC | amd-axi-intc-pg099, zipcpu-icontrol, mij001-axil-timer | ready |
-| I-112 UART+INTC 연동 | UART RX not-empty 인터럽트 | amd-axi-intc-pg099, realisshoon, opencores-auto-baud | vetted |
+| I-112 UART+INTC 연동 | UART RX not-empty 인터럽트 | amd-axi-intc-pg099, realisshoon, opencores-auto-baud | ready |
 | I-113 INTC 난이도 사다리 | T1 OR→T2 icontrol→T3 AXI INTC | zipcpu-icontrol, amd-axi-intc-pg099, mij001-axil-timer | ready |
-| I-114 AXI4-Lite 레지스터 파일 IP | WSTRB+$clog2+faxil_slave | zipcpu-wb2axip-easyaxil, chclau-magellan, bugratufan-axion | vetted |
+| I-114 AXI4-Lite 레지스터 파일 IP | WSTRB+$clog2+faxil_slave | zipcpu-wb2axip-easyaxil, chclau-magellan, bugratufan-axion | ready |
 | I-115 JTAG-to-AXI 디버그 하네스 | JTAG-to-AXI + TCL 패턴 | chclau-magellan, zipcpu-easyaxil, amd-axi-intc-pg099 | vetted |
 | I-116 AXI4-Lite 슬레이브 사다리 | RW뱅크→CDC→인터럽트 소스 | zipcpu-wb2axip-easyaxil, bugratufan-axion, zipcpu-icontrol | vetted |
 | I-117 WDT + 7세그 가시화 | 윈도우 WDT + 7세그 FSM | amd-axi-timebase-wdt-pg083, mij001-axil-timer, chclau-magellan | vetted |
 | I-118 삼중 WDT 비교 패널 | 기본+윈도우+SW에뮬 WDT | amd-axi-timebase-wdt-pg083, ignaciosim-tt06, mij001-axil-timer | vetted |
 | I-119 WDT 하트비트 핀 출력 | WDTOUT→Pmod+슈퍼바이저 FSM | amd-axi-timebase-wdt-pg083, suoglu-axi-lite-slave, amoghvarsh | vetted |
+| I-120 동결 맵 AXI 충돌 검사기 | Python 생성기 + Verilog $error 가드 | alexforencich-verilog-axi-crossbar, zipcpu-wb2axip-crossbar-addrdecode, zipcpu-wb2axip-easyaxil | vetted |
+| I-121 2M+4S AXI4-Lite 소형 크로스바 | 에러 슬레이브+중재+형식 어서션 | alexforencich-verilog-axi-crossbar, zipcpu-wb2axip-crossbar-addrdecode, dpretet-axi-crossbar | vetted |
+| I-122 AXI 주소 범위 TB 자동 생성기 | 경계값 주입+DECERR 검증 | alexforencich-verilog-axi-crossbar, zipcpu-wb2axip-crossbar-addrdecode, zipcpu-wb2axip-easyaxil | vetted |
 
 ---
 
