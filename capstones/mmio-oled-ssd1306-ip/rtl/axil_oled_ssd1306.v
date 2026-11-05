@@ -54,6 +54,16 @@ module axil_oled_ssd1306 #(
     output reg         irq_refresh_done
 );
 
+    // ── verilator UNUSEDSIGNAL 억제: AXI 표준 필수 포트이나 일부 비트 미사용 ──────
+    /* verilator lint_off UNUSEDSIGNAL */
+    wire _unused_axil = &{s_wstrb,              // 쓰기 스트로브 (전 바이트 쓰기)
+                          s_awaddr[7:4],
+                          s_awaddr[1:0],
+                          s_araddr[7:4],
+                          s_araddr[1:0],
+                          s_wdata[31:10]};      // 상위 비트 미사용 (최대 사용 범위 [9:0])
+    /* verilator lint_on UNUSEDSIGNAL */
+
     // ═══════════════════════════════════════════════════
     // 1. SPI 초기화 ROM (24바이트)
     // ═══════════════════════════════════════════════════
@@ -144,10 +154,7 @@ module axil_oled_ssd1306 #(
     reg [1:0]  hdr_idx;     // 페이지 헤더 명령 인덱스 (0..2)
     reg        in_header;   // 헤더 전송 중
 
-    // 갱신 완료 IRQ (refresh_irq_r은 미래 확장용 선언, 현재 미구동)
-    /* verilator lint_off UNUSEDSIGNAL */
-    reg  refresh_irq_r;
-    /* verilator lint_on UNUSEDSIGNAL */
+    // 갱신 완료 IRQ: irq_refresh_done 포트가 직접 구동 (refresh_irq_r 중간 레지스터 제거됨)
 
     // 리셋 카운터 (10 사이클)
     reg [3:0] rst_cnt;

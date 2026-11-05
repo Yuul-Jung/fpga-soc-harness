@@ -105,10 +105,12 @@ module tb_axil_oled_ssd1306;
             @(posedge clk); #1;
             s_awaddr = addr; s_awvalid = 1;
             s_wdata  = data; s_wvalid  = 1;
-            wait (s_awready && s_wready);
+            // DUT가 주소(1사이클)→데이터+응답(다음 사이클) 순차 처리:
+            // s_awready와 s_wready는 별개 사이클에 각각 1클럭 펄스
+            wait (s_awready);         // 주소 채널 완료 (1클럭 펄스)
+            wait (s_bvalid);          // 데이터 처리 + 응답 (다음 사이클)
             @(posedge clk); #1;
             s_awvalid = 0; s_wvalid = 0;
-            wait (s_bvalid);
             @(posedge clk); #1;
         end
     endtask
@@ -120,10 +122,10 @@ module tb_axil_oled_ssd1306;
             @(posedge clk); #1;
             s_araddr = addr; s_arvalid = 1;
             wait (s_arready);
+            // s_arready·s_rvalid·s_rdata가 동일 사이클에 세팅됨 (즉시 유효)
+            data = s_rdata;
             @(posedge clk); #1;
             s_arvalid = 0;
-            wait (s_rvalid);
-            data = s_rdata;
             @(posedge clk); #1;
         end
     endtask
