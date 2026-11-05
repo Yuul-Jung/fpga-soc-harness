@@ -149,23 +149,33 @@ module bldc_hall_sixstep_ip #(
     wire [2:0] step = ctrl_dir ? (3'd5 - step_fwd) : step_fwd;
 
     reg [2:0] step_prev;
-    reg       fault_lat;   // sticky fault (clear on CTRL write)
+    reg       fault_lat;      // sticky fault (single driver below)
+    reg       fault_raw_d;    // previous cycle fault_raw for edge detection
 
-    // ctrl_write_done: combinational true when CTRL register write completes this cycle
-    wire ctrl_write_done = s_wvalid && waddr_valid && (waddr_lat == REG_CTRL);
-
-    // Single always block owns fault_lat (prevents multi-driver race)
-    // Priority: reset > CTRL-write-clear > fault_raw-set
-    always @(posedge clk) begin
-        if (!rst_n)
-            fault_lat <= 1'b0;
-        else if (ctrl_write_done)
-            fault_lat <= 1'b0;
-        else if (fault_raw)
-            fault_lat <= 1'b1;
-    end
+    wire fault_rise   = fault_raw & ~fault_raw_d;  // first cycle of invalid hall
+    // Combinatorial: CTRL register write in progress this cycle
+    wire ctrl_writing = s_wvalid & waddr_valid & (waddr_lat == REG_CTRL);
 
     wire step_change = (step != step_prev) && !fault_raw;
+
+    // -----------------------------------------------------------------------
+    // Single-driver fault_lat block (rising-edge trigger; CTRL write clears)
+    // Setting fault_lat on rising edge only means a sustained invalid-hall
+    // signal (fault_raw stays high) does NOT re-assert fault_lat after a
+    // software clear via CTRL register write.
+    // -----------------------------------------------------------------------
+    always @(posedge clk) begin
+        if (!rst_n) begin
+            fault_lat   <= 1'b0;
+            fault_raw_d <= 1'b0;
+        end else begin
+            fault_raw_d <= fault_raw;
+            if (ctrl_writing)       // software clear wins
+                fault_lat <= 1'b0;
+            else if (fault_rise)    // set on first cycle of invalid hall only
+                fault_lat <= 1'b1;
+        end
+    end
 
     // -----------------------------------------------------------------------
     // Commutation deadtime counter
@@ -260,7 +270,7 @@ module bldc_hall_sixstep_ip #(
                         ctrl_en  <= s_wdata[0];
                         ctrl_ie  <= s_wdata[1];
                         ctrl_dir <= s_wdata[2];
-                        // fault_lat cleared via ctrl_write_done in its own always block
+                        // fault_lat cleared via ctrl_writing signal in its own always block
                     end
                     REG_DUTY:     r_duty     <= s_wdata[9:0];
                     REG_DEADTIME: r_deadtime <= s_wdata[7:0];

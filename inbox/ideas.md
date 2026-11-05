@@ -261,7 +261,7 @@
 - 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(controleng-relay-method-automates-pid-loop-tuning·kmitl-iccas-2003-auto-tune-digital-pid-fpga·tees-isie-2017-compass-search-self-tuning-pid-dc-drive, rechecked_at 불문) → 차단 근거 3 + 새로움 2(릴레이 피드백 FPGA 사례 없음) + 적합성 2(릴레이 FSM 비교기·카운터, Pmod 소수, 레벨 변환 명시) + 완결성 1(모터 모델 1차+지연 파라미터 미정) = 8점 ≥ 7 → ready 승격. §14.2 차단 조건 적용(사이클 1번째).
 
 ## I-023 BLDC 사다리: 홀센서 6스텝 FSM + 데드타임 PWM IP → 전류 샘플링 창 → 모터 모델 폐루프 테스트벤치
-- 상태: used (slug: mmio-bldc-hall-sixstep-ip, 2026-11-05)
+- 상태: used (slug: mmio-bldc-hall-sixstep-ip, 2026-11-05; 동반 패키지: mmio-bldc-sixstep-ip, 2026-11-05)
 - 요약: 내 판단: 홀 3입력 해독 FSM(양방향), 10비트 PWM, 상·하 암 데드타임 삽입을 AXI4-Lite 레지스터(듀티, 방향, 데드타임 클럭 수, 홀 상태 읽기)로 묶는다. 테스트벤치는 홀 신호를 생성하는 단순 회전자 모델을 붙여 상 순서, 상·하 암 동시 ON 없음, 데드타임 최소값을 자체 점검한다. 다음 단계로 FOC의 하단 3암 ON 구간 샘플링 신호를 같은 PWM에서 뽑는다.
 - 조합: [홀센서 해독 FSM, 데드타임 PWM, 샘플 트리거, AXI4-Lite 레지스터]
 - 근거: [arief-2026-ijecbe-artix7-36v-bldc-hall-sixstep, wangxuan95-fpga-foc, mari-upc-2022-fpga-foc-ipmsm-field-weakening]
