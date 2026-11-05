@@ -1,6 +1,6 @@
 # SoC 기술 트리 (단계별 카드 연결)
 
-갱신: 2026-11-05 (/verify 13차). 카드 200건 기준. 비 FPGA 도메인(STM32 18건·ESP32 14건·RPi·Arduino·임베디드·전자기술 14건·papers 포함). 10차: 전자기술 도메인 14건 추가(SPWM 인버터·게이트 드라이버·전원 설계·XADC 아날로그 프런트엔드). 13차: I-082·I-083 ready 승격(PCB 설계 체크리스트), 감사 경고 수정 3건(라이선스 주석 추가).
+갱신: 2026-11-06 (/verify 20차). 카드 244건 기준. 비 FPGA 도메인(STM32 18건·ESP32 14건·RPi·Arduino·임베디드·전자기술 14건·papers 포함). 10차: 전자기술 도메인 14건 추가(SPWM 인버터·게이트 드라이버·전원 설계·XADC 아날로그 프런트엔드). 13차: I-082·I-083 ready 승격(PCB 설계 체크리스트), 감사 경고 수정 3건(라이선스 주석 추가). 20차: VGA·7세그·프레임버퍼·카메라·LED·PWM 카드 9건 추가(video-vga 그룹 6건+camera 1건+pwm-rgb 2건). atlas/video-vga.md 신규 작성.
 
 ---
 
@@ -10,9 +10,9 @@
 |---|---|---|
 | T0 | zipcpu-pmodamp2-project-ladder (T0-T2) | 핀 확인과 단음 단계 |
 | T1 | wangxuan95-fpga-sdcard-file, element14-security-camera-2-sd-card-interfacing | CPU 없이 FSM으로 SD·카메라 |
-| T2 | digilent-forum-pmodamp3-basys3-i2s, zipcpu-sdspi, zipcpu-pmodamp2-project-ladder | I2S 송신, Wishbone 주변장치 |
+| T2 | digilent-forum-pmodamp3-basys3-i2s, zipcpu-sdspi, zipcpu-pmodamp2-project-ladder, argrabowski-fpga-vga-display, itsnotjiaching-ec311project | I2S 송신, Wishbone 주변장치, VGA+7세그 동시 표시 |
 | T3 | (FPGA 카드 없음) | gap: 프레임워크 기반 SoC에 주변장치를 붙인 Basys3 사례 미확보 |
-| T4 | columbia-4840-audio-visualizer | DE1-SoC HPS 기반 — Basys3 직접 이식 불가 |
+| T4 | columbia-4840-audio-visualizer, byu-ecen423-lab10-riscv-vga-7seg | DE1-SoC HPS 기반·BYU RISC-V VGA 텍스트+7세그 (소스 비공개) |
 | T5 | (카드 없음) | gap: DRAM 보드 필요, 현 카탈로그 범위 밖 |
 
 ---
@@ -97,6 +97,9 @@ FreeRTOS·Zephyr 비교 카드는 MicroBlaze V + AXI INTC RTOS 설계에 개조 
 
 - gap T1→T2: 오디오·SD를 AXI4-Lite 레지스터 맵으로 감싼 Basys3 완성형 카드 미확보.
 - gap T2→T4: FPGA 내부 FFT (BRAM 제약) 사례 없음 — Columbia는 HW FFT 포기.
+- gap T2: Basys3 MicroBlaze V AXI4-Lite VGA 텍스트 IP 카드 없음 — I-108(vetted)이 채울 예정. 근거: argrabowski, byu-ecen423, itsnotjiaching 카드.
+- gap T2: 듀얼포트 BRAM 프레임버퍼 AXI4-Lite 슬레이브 IP 카드 없음. 근거: fcayci, talsania, projf 카드.
+- gap T1: RGB LED Basys3 AXI4-Lite 슬레이브 IP 카드 없음 — I-030(ready), I-031(ready)이 채울 예정. 근거: maplesilicon, mit-6205, olivier-le-sage 카드.
 - gap T2: 모터 제어(엔코더 + PID) 를 Basys3 AXI4-Lite IP로 구현한 FPGA 카드 없음; STM32 도메인에 모터 제어 카드 다수 → 개조 경로는 있으나 Basys3 이식 카드 아직 없음(내 판단).
 - gap T3: ESP32 BLE/Wi-Fi를 UART로 Basys3에 붙인 통합 SoC 카드 없음.
 - gap T3: Basys3 LiteX Linux 부트 최적화(U-Boot, BusyBox init) 사례 없음; RPi Yocto·Buildroot 사례 → 개조 경로 있음(I-059, I-060, 내 판단).
@@ -108,6 +111,24 @@ FreeRTOS·Zephyr 비교 카드는 MicroBlaze V + AXI INTC RTOS 설계에 개조 
 - gap T2: Basys3 BRAM 명령 메모리 CRC 검사 AXI IP 카드 없음(I-071 vetted, 5점, I-070 선행 필요).
 - gap T2: 전자기술 도메인에 SPWM·XADC 카드가 14건 추가되었으나, Basys3+MicroBlaze V AXI4-Lite SPWM IP 카드 없음 — I-077(ready 후보)이 채울 예정.
 - gap T2: XADC 전원 모니터 AXI-Lite IP 카드 없음 — I-075(ready)가 채울 예정.
+
+---
+
+## VGA·카메라·LED·PWM 도메인 단계 연결 (개조 참고)
+
+VGA 출력·프레임버퍼·카메라 파이프라인·LED PWM 카드. 상세는 `atlas/video-vga.md` 참조.
+
+| 단계 | 카드 | 개조 대상 |
+|---|---|---|
+| T1 | maplesilicon-mapleled-core (vendor-neutral) | 감마 LUT BRAM 초기화 패턴 → AXI4-Lite 슬레이브 감마-PWM IP (I-030) |
+| T1 | mit-6205-rgb-pwm-week01 (papers) | PWM glitch 방지 패턴(래치-at-reset), cocotb 테스트벤치 → AXI4-Lite RGB PWM IP (I-030) |
+| T2 | argrabowski-fpga-vga-display (amd) | VGA 타이밍 + 7세그 멀티플렉서 분리 패턴 → AXI4-Lite VGA IP (I-108) |
+| T2 | itsnotjiaching-ec311project (amd) | Pong VGA+7세그 score.v 멀티플렉서 패턴 → AXI4-Lite VGA IP + MBV C 드라이버 (I-109) |
+| T2 | fcayci-xilinx-vga-framebuffer-ip-core (amd) | 듀얼포트 BRAM 포트A=CPU·포트B=VGA 스캔 → AXI4-Lite 프레임버퍼 IP |
+| T2 | talsania-fpga-image-buffer (vendor-neutral) | UART→BRAM 로더 → no-dram 환경에서 MBV 소프트웨어 memcpy 패턴으로 이식 |
+| T2 | projf-projf-explore (vendor-neutral) | BRAM 타일·스프라이트 패턴 → Basys3 VGA 그래픽 IP (SV→Verilog-2001 변환 필요) |
+| T4 | byu-ecen423-lab10-riscv-vga-7seg (amd) | MMIO VGA 텍스트+7세그 소프트웨어 드라이버 패턴 → MBV C 드라이버 설계 참고 (소스 비공개) |
+| T4 | olivier-le-sage-camera-filters (vendor-neutral) | 시프트 근사 감마+YUV 변환 패턴 → AXI4-Lite 색공간 처리 IP |
 
 ---
 

@@ -340,7 +340,7 @@
 - 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(digilent-pmod-oled-reference-manual·lushaylabs-tang-nano-9k-ssd1306-oled·masterplayer-lcd-st7789-sv, rechecked_at 불문) → 차단 근거 3 + 새로움 2(OLED IP 없음) + 적합성 2(Pmod 1개·512 B BRAM 소량) + 완결성 2(초기화 ROM+버퍼 범위 명확) = 9점 ≥ 7, 사이클 상한 2건 도달로 vetted 유지. 다음 사이클에서 ready 승격 가능.
 
 ## I-030 1-Wire 온도 IP: 비트 마스터 하드웨어 + 스크래치패드·CRC 소프트웨어 분담, DS18B20 모델 포함 테스트벤치
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: 리셋·쓰기 비트·읽기 비트만 FSM으로 구현한 1-Wire 비트 마스터를 AXI4-Lite 레지스터(명령, 데이터, 상태, 완료 인터럽트)로 노출하고, Convert T 대기·CRC·ROM 선택은 소프트웨어가 맡는다. 테스트벤치는 DS18B20 응답 모델로 프레즌스와 스크래치패드 바이트열을 비교한다.
 - 조합: [DS18B20(1-Wire), AXI4-Lite 레지스터, 타이머 인터럽트, 7세그/UART 표시]
 - 근거: [cvut-pehnelt-2014-vhdl-periferie-nexys4, analog-maxim-interfacing-ds18x20, opencores-onewire-ds1820]
@@ -349,10 +349,11 @@
 - 난이도: 2 / 단계: T2
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(1-Wire 비트 마스터 IP 없음) + 적합성 2(Pmod 1핀·외부 풀업·BRAM 불필요) + 완결성 2(리셋·쓰기·읽기 비트 FSM + DS18B20 모델 범위 명확) = 6점. 보강: 근거 카드 rechecked_at 1건.
 - 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(cvut-pehnelt-2014-vhdl-periferie-nexys4·analog-maxim-interfacing-ds18x20·opencores-onewire-ds1820, rechecked_at 불문) → 차단 근거 3 + 새로움 2(1-Wire IP 없음) + 적합성 2(Pmod 1핀·풀업·BRAM 불필요) + 완결성 2(비트 FSM+DS18B20 모델 명확) = 9점 ≥ 7, 사이클 상한 2건 도달로 vetted 유지. 다음 사이클에서 ready 승격 가능.
+- 차단조건재심사: 2026-11-06 /verify(20차), WebFetch PROVENANCE_REQUIRED 20차 연속 차단. 차단 근거 3 + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7 → ready 승격(사이클 1번째). §14.2 차단 조건 적용.
 
 
 ## I-031 블루투스 텔레메트리 브리지 IP: UART 슬롯 위 프레임 송수신 + STATE/EN GPIO, HC-05 응답 모델 테스트벤치
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: HC-05/06을 동결 맵 UART 영역에 연결하고, 연결 상태(STATE)와 AT 진입(EN)을 GPIO 비트로 두어 제어 루프 값(속도·각도)을 프레임으로 송신, 폰의 명령 1바이트를 수신해 목표값 레지스터에 쓰는 구조. 시험은 9600 bps 비트열을 생성하는 모델로 수신과 프레임 송신을 비교하는 자체 점검 tb.
 - 조합: [HC-05(UART, STATE, EN), AXI4-Lite 레지스터, 수신 인터럽트, 엔코더·PID 값]
 - 근거: [hackster-ee2259-lab8-bluetooth-uart, epfl-prsoc-bluetooth-hc05, ndroid-hc06-at-commandcenter]
@@ -361,6 +362,7 @@
 - 난이도: 2 / 단계: T2
 - 심사: 2026-11-04 /verify, 근거 0 + 새로움 2(HC-05 AT 분리+모델 시험 없음) + 적합성 2(Pmod 1개·3.3V·9600 bps 분주 명확) + 완결성 2(프레임 송수신 모델 범위 명확) = 6점. 보강: 근거 카드 rechecked_at 1건.
 - 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(hackster-ee2259-lab8-bluetooth-uart·epfl-prsoc-bluetooth-hc05·ndroid-hc06-at-commandcenter, rechecked_at 불문) → 차단 근거 3 + 새로움 2(HC-05 AT 분리+모델 시험 없음) + 적합성 2(Pmod 1개·3.3V·9600 bps) + 완결성 2(프레임 송수신 모델 명확) = 9점 ≥ 7, 사이클 상한 2건 도달로 vetted 유지. 다음 사이클에서 ready 승격 가능.
+- 차단조건재심사: 2026-11-06 /verify(20차), WebFetch PROVENANCE_REQUIRED 20차 연속 차단. 차단 근거 3 + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7 → ready 승격(사이클 2번째). §14.2 차단 조건 적용.
 
 ## I-032 아날로그 입력 허브 IP: XADC 4채널(JXADC) 스캔 + 채널별 스케일·평균 레지스터, 모의 ADC 모델 테스트벤치
 - 상태: used (mmio-xadc-hub-checker, 2026-11-04)
@@ -1468,31 +1470,32 @@
 - 심사: 2026-11-05 /verify(19차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(mit-6205-rgb-pwm-week01·maplesilicon-mapleled-core·olivier-le-sage-camera-filters 모두 rechecked_at 없음) + 새로움 2(T1~T2 RGB LED 사다리 패키지 카탈로그 없음) + 적합성 2(I-105·I-106 Basys3 적합성 확인, 단계별 Makefile 타겟 분리 가능 — 내 판단) + 완결성 2(5단계 각각 독립 RTL+TB, 단계별 Makefile 타겟 명확) = 6점 → vetted. 보강: 근거 카드 rechecked_at 1건, I-105·I-106 먼저 패키지화 후 통합.
 
 ## I-108 VGA 텍스트 오버레이 + 7세그 동기화 AXI4-Lite IP (S2 조합)
-- 상태: raw
+- 상태: vetted
 - 요약: 내 판단: BYU ECEN 423 Lab 10의 MMIO 패턴을 착안해, 80×30 문자 버퍼와 7세그 카운터를 단일 AXI4-Lite 슬레이브 IP 안에서 공통 타임스탬프로 묶는 IP. VGA 텍스트 출력이 활성 비디오 선에만 작동하고, 수직 귀선 기간에 7세그 디지트를 순환 갱신한다. 두 디스플레이가 같은 프레임 경계에 동기화되는 패턴을 명세화하고 Basys3에서 검증한다.
 - 조합: [video-vga(텍스트 컨트롤러), 7seg-mux, AXI4-Lite, BRAM(문자 버퍼)]
 - 근거: [byu-ecen423-lab10-riscv-vga-7seg, argrabowski-fpga-vga-display, itsnotjiaching-ec311project]
 - 새로움의 근거: 카탈로그에 VGA와 7세그를 단일 AXI4-Lite IP로 통합해 VSync 기준으로 동기화하는 패키지 없음. 개별 IP 두 개를 합치는 것보다 같은 클럭 도메인 안에서 공통 타임스탬프를 갖는 구조가 차별점(내 판단).
 - Basys3 적합성의 근거: Basys3 VGA 12비트 DAC + 4자리 공통-양극 7세그 모두 보드 내장. 80×30 문자 버퍼 = 2400 바이트 → BRAM 1개 미만. AXI4-Lite free_slot 1개. 25MHz VGA 픽셀 클럭은 100MHz 분주.
 - 난이도: 3 / 단계: T2
-- 심사: (미심사)
+- 심사: 2026-11-06 /verify(20차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(byu-ecen423-lab10-riscv-vga-7seg·argrabowski-fpga-vga-display·itsnotjiaching-ec311project 모두 rechecked_at 없음) + 새로움 2(VGA+7세그 단일 AXI4-Lite IP+VSync 동기화 카탈로그 없음) + 적합성 3(VGA 12비트 DAC·4자리 7세그 보드 내장, 80×30 char buf 2400 B < BRAM 1개, 25MHz 픽셀 클럭 100MHz 분주 가능 — 카드 근거 있음) + 완결성 2(AXI4-Lite 슬레이브+문자 버퍼+7세그 FSM+텍스트 렌더러 범위 명확, RTL+TB 작성 가능) = 7점 → vetted. 보강 필요: 근거 카드 rechecked_at 1건 이상(ready 조건: 8점 이상 AND 근거 3).
 
 ## I-109 Pong 게임 VGA+7세그 SoC 패키지: MicroBlaze V C 드라이버로 게임 상태 관리 (S7 중간 단계)
-- 상태: raw
+- 상태: vetted
 - 요약: 내 판단: itsnotjiaching-ec311project의 Pong 게임 구조를 MicroBlaze V SoC로 이식. 공·패들 위치를 AXI4-Lite 레지스터로 노출하고, MicroBlaze V C 드라이버가 게임 루프(패들 이동, 충돌 판정, 점수 갱신)를 소프트웨어로 처리. VGA 렌더링과 7세그 점수 표시는 FSM이 담당. FPGA가 렌더링만, 소프트웨어가 로직만 맡는 역할 분리 패턴을 T3 사례로 만든다.
 - 조합: [video-vga(렌더링 FSM), 7seg-mux, AXI4-Lite, MicroBlaze V, hid-btn/hid-sw]
 - 근거: [itsnotjiaching-ec311project, argrabowski-fpga-vga-display, byu-ecen423-lab10-riscv-vga-7seg]
 - 새로움의 근거: 카탈로그의 게임 카드들은 FSM 단독 처리(sdcarlson-fpga-snake는 MicroBlaze이나 하드웨어 미포함). 게임 로직을 MicroBlaze V C 드라이버로 올리고 VGA+7세그를 AXI4-Lite 슬레이브로 묶는 조합 패키지는 없음.
 - Basys3 적합성의 근거: Basys3 VGA, 7세그, 버튼 모두 보드 내장. MicroBlaze V는 동결 맵 기반, 게임 로직 소프트웨어화는 AXI-UART Lite 불필요(순수 메모리 맵 접근). BRAM 프레임버퍼 불필요(픽셀 렌더링은 FSM이 실시간 계산).
 - 난이도: 3 / 단계: T3
-- 심사: (미심사)
+- 심사: 2026-11-06 /verify(20차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(itsnotjiaching-ec311project·argrabowski-fpga-vga-display·byu-ecen423-lab10-riscv-vga-7seg 모두 rechecked_at 없음) + 새로움 2(MBV C 드라이버 + VGA+7세그 AXI4-Lite 슬레이브 조합 패키지 카탈로그 없음) + 적합성 2(보드 내장 VGA·7세그·버튼, 프레임버퍼 불필요, MBV 동결 맵 적용 가능 — 내 판단) + 완결성 2(VGA FSM+7세그 FSM+AXI4-Lite 레지스터+MBV C 드라이버 범위 명확) = 6점 → vetted. 보강 필요: 근거 카드 rechecked_at 1건, MBV 소프트웨어 환경 필요성 확인(I-108 먼저 패키지화 권장).
 
 ## I-110 RISC-V 어셈블리 → C 이식 비교: MMIO VGA+7세그 드라이버 계층 설계 (S7 어려운 단계)
-- 상태: raw
+- 상태: dropped
+- 사유: 범위 과다 + ISA 불일치. RISC-V 어셈블리(BYU 카드)와 MicroBlaze V는 다른 ISA라 직접 성능 비교가 어렵고, 세 가지 접근(어셈블리·C·AXI4-Lite)을 하나의 캡스톤에 담으면 범위가 T4 이상으로 커진다. I-108·I-109 먼저 패키지화 후 드라이버 계층 비교로 확장 고려.
 - 요약: 내 판단: BYU ECEN 423 Lab 10의 RISC-V 어셈블리 드라이버(`move_char.s`)에서 MMIO 패턴을 추출해, 같은 기능을 MicroBlaze V용 C + xparameters.h로 재작성하는 비교 캡스톤. 어셈블리의 레지스터 직접 접근, C의 인라인 함수 계층, AXI4-Lite 슬레이브로 감싸는 세 가지 접근을 같은 VGA+7세그 하드웨어로 성능을 비교한다. 소프트웨어 추상화 비용과 MMIO 접근 패턴 최적화 방법을 문서화한다.
 - 조합: [video-vga, 7seg-mux, AXI4-Lite, MicroBlaze V SW 드라이버]
 - 근거: [byu-ecen423-lab10-riscv-vga-7seg, argrabowski-fpga-vga-display, itsnotjiaching-ec311project]
 - 새로움의 근거: 카탈로그에 어셈블리 드라이버와 C 드라이버를 같은 하드웨어로 성능 비교하는 사례 없음. MMIO 패턴 이식 비교 연구는 T4 범위이며 교육 가치가 높다(내 판단).
 - Basys3 적합성의 근거: Basys3 VGA+7세그 보드 내장. MicroBlaze V용 C 드라이버는 Vitis/SDK 환경. 어셈블리 대 C 성능 차이는 AXI4-Lite 버스 오버헤드와 레지스터 할당 차이로 측정 가능.
 - 난이도: 4 / 단계: T4
-- 심사: (미심사)
+- 심사: 2026-11-06 /verify(20차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(근거 카드 모두 rechecked_at 없음) + 새로움 2(어셈블리→C 비교 사례 없음) + 적합성 1(RISC-V asm과 MicroBlaze V가 다른 ISA, Vitis/SDK 환경 별도 필요, 범위 과다) + 완결성 1(세 가지 접근 비교로 범위 과다, 단일 캡스톤으로 명확히 정의 어려움) = 4점 → dropped.
