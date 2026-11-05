@@ -192,3 +192,4 @@
 2026-11-05 10:37 | capstone | mmio-bldc-hall-sixstep-ip (I-023, ready→used) | 등급 S2 (CI run #41951716489, commit a92a6ab: lint pass 경고0건·sim PASS·synth pass) | fix1: fault_lat 멀티드라이버 통합, fix2: T6 홀 복원→CTRL 쓰기 순서 정정 | BLDC 6스텝 홀센서 IP: 홀 3비트 해독 FSM(양방향)·10비트 PWM·데드타임 카운터·HIN/LIN 게이트 출력·ADC 샘플 트리거·AXI4-Lite 슬레이브 6레지스터·IRQ | 아이디어 used +1 | 큐 잔여 548
 2026-11-05 12:14 | collect | VGA 더블 버퍼링 BRAM 핑퐁 [B3] · S4 제약 역전(주)+S5 비정형 출처(보조) | 카드 +3 | 아이디어 +1 | 큐 잔여 547 | blocked 0
 2026-11-05 12:32 | capstone | mmio-led-matrix-sound-tilt · S0 (iverilog·yosys 미설치, CI 대기) | I-024 used | 패키지 1건 생성 (RTL 8모듈, TB 1건, XDC, Makefile), build.py 스키마 수정 14캡스톤 (level_shift bool→str, hierarchy unwrap, signals list, howto list, author_note, bus_protocol.note/name, refs key)
+2026-11-05 13:00 | capstone | mmio-led-matrix-sound-tilt · broken (CI 3회 실패: adxl345 synth Multiple edge events, AXI decode DEAD_BEEF, tilt 코너 매핑, energy 포트 단선) | I-024 used | 패키지 broken
