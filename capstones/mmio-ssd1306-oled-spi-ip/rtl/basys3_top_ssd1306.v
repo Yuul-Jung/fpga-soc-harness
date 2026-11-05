@@ -89,5 +89,14 @@ module basys3_top_ssd1306 (
     assign led_debug[2] = irq_frame_done;
     assign led_debug[3] = 1'b0;
 
+    // CPU 없는 테스트 래퍼: AXI 응답 채널 출력을 흡수
+    // (verilator -Wall UNUSEDSIGNAL 억제)
+    /* verilator lint_off UNUSEDSIGNAL */
+    wire _unused_ok = &{1'b0,
+        s_awready, s_wready, s_bvalid, s_bresp,
+        s_arready, s_rvalid, s_rdata,  s_rresp
+    };
+    /* verilator lint_on UNUSEDSIGNAL */
+
 endmodule
 `default_nettype wire

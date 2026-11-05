@@ -342,8 +342,8 @@ module axil_ssd1306_spi #(
     // ----------------------------------------------------------------
     // AXI4-Lite 쓰기 채널
     // ----------------------------------------------------------------
-    reg [31:0] axi_waddr;
-    reg [31:0] axi_wdata;
+    reg [5:0]  axi_waddr;  // 오프셋 [5:0]만 사용
+    reg [8:0]  axi_wdata;  // 최대 BUF_ADDR [8:0]
     reg        axi_wr_pend; // 주소+데이터 모두 수신 대기
 
     always @(posedge clk) begin
@@ -360,7 +360,7 @@ module axil_ssd1306_spi #(
             // 주소 핸드셰이크
             if (s_awvalid && !axi_wr_pend) begin
                 s_awready  <= 1;
-                axi_waddr  <= s_awaddr;
+                axi_waddr  <= s_awaddr[5:0];
             end else begin
                 s_awready  <= 0;
             end
@@ -368,7 +368,7 @@ module axil_ssd1306_spi #(
             // 데이터 핸드셰이크
             if (s_wvalid && !axi_wr_pend) begin
                 s_wready   <= 1;
-                axi_wdata  <= s_wdata;
+                axi_wdata  <= s_wdata[8:0];
             end else begin
                 s_wready   <= 0;
             end
@@ -420,8 +420,6 @@ module axil_ssd1306_spi #(
     // ----------------------------------------------------------------
     // AXI4-Lite 읽기 채널
     // ----------------------------------------------------------------
-    reg [31:0] rd_data;
-
     always @(posedge clk) begin
         if (!rst_n) begin
             s_arready <= 0;
@@ -434,7 +432,7 @@ module axil_ssd1306_spi #(
                 s_rvalid  <= 1;
                 s_rresp   <= 2'b00;
                 case (s_araddr[5:0])
-                    6'h00: s_rdata <= {28'b0, r_busy, 1'b0}; // CTRL (읽기)
+                    6'h00: s_rdata <= {30'b0, r_busy, 1'b0}; // CTRL (읽기)
                     6'h04: s_rdata <= {29'b0, r_frame_done, r_init_done, r_busy};
                     6'h08: s_rdata <= {23'b0, r_buf_addr};
                     6'h0C: s_rdata <= {24'b0, fbuf[r_buf_addr]};
@@ -456,6 +454,19 @@ module axil_ssd1306_spi #(
     // 인터럽트
     // ----------------------------------------------------------------
     assign irq = r_irq_en & r_frame_done;
+
+    // ----------------------------------------------------------------
+    // AXI4-Lite 프로토콜 표준 32비트 포트의 미사용 상위 비트 흡수
+    // (verilator -Wall UNUSEDSIGNAL 억제)
+    // ----------------------------------------------------------------
+    /* verilator lint_off UNUSEDSIGNAL */
+    wire _unused_ok = &{1'b0,
+        s_awaddr[31:6],  // 오프셋 [5:0]만 디코딩
+        s_wdata[31:9],   // 최대 BUF_ADDR [8:0]
+        s_araddr[31:6],  // 오프셋 [5:0]만 디코딩
+        s_wstrb          // WSTRB 무시 (전체 바이트 쓰기만)
+    };
+    /* verilator lint_on UNUSEDSIGNAL */
 
 endmodule
 `default_nettype wire
