@@ -3,21 +3,21 @@
   "slug": "mmio-w5500-udp-tx-ip",
   "stage": "T2",
   "lint": {
-    "result": "skipped",
-    "detail": "verilator 없음"
+    "result": "pass (경고 0건)",
+    "detail": ""
   },
   "sim": {
-    "result": "skipped",
-    "detail": "iverilog 없음"
+    "result": "pass (PASS: W5500 UDP TX 11단계 검증 — IP_ID, TX_LEN/DATA/PTR, init_done, go, err==0, IRQ_STATUS, irq선, W1C)",
+    "detail": ""
   },
   "synth": {
-    "result": "skipped",
-    "detail": "yosys 없음"
+    "result": "pass (합성 성공, stat 파싱 실패로 LUT/FF 미기록)",
+    "detail": ""
   },
   "board": {
     "result": "not-tested",
     "detail": "사람이 확인한 항목만 pass. 에이전트는 pass로 쓰지 않는다(HARNESS §13.4)"
   },
   "synth_note": "yosys 추정이다. Vivado의 LUT/FF/WNS와 다를 수 있다.",
-  "recorded": "2026-11-05"
+  "recorded": ""
 }

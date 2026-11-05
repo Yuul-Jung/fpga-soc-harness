@@ -71,20 +71,55 @@
       }
     ],
     "links": [
-      {"from": "cpu",     "to": "axi_ic",   "label": "AXI4-Lite M"},
-      {"from": "axi_ic",  "to": "oled_ip",  "label": "AXI4-Lite S (0x4016_0000)"},
-      {"from": "oled_ip", "to": "pmod_oled","label": "SPI (SCK, MOSI, CS, D/C, RES, VDD_EN, VBAT_EN)"},
-      {"from": "oled_ip", "to": "cpu",      "label": "IRQ 13 (frame done)"}
+      {
+        "from": "cpu",
+        "to": "axi_ic",
+        "label": "AXI4-Lite M"
+      },
+      {
+        "from": "axi_ic",
+        "to": "oled_ip",
+        "label": "AXI4-Lite S (0x4016_0000)"
+      },
+      {
+        "from": "oled_ip",
+        "to": "pmod_oled",
+        "label": "SPI (SCK, MOSI, CS, D/C, RES, VDD_EN, VBAT_EN)"
+      },
+      {
+        "from": "oled_ip",
+        "to": "cpu",
+        "label": "IRQ 13 (frame done)"
+      }
     ]
   },
   "bus_protocol": {
     "type": "AXI4-Lite",
     "data_width": 32,
     "addr_width": 32,
-    "signals": ["AWADDR","AWVALID","AWREADY","WDATA","WSTRB","WVALID","WREADY",
-                "BRESP","BVALID","BREADY","ARADDR","ARVALID","ARREADY",
-                "RDATA","RRESP","RVALID","RREADY"],
-    "limits": ["RRESP/BRESP는 항상 OKAY(2'b00)", "단일 비트 단위 쓰기 미지원(WSTRB는 IP 내부에서 무시)"]
+    "signals": [
+      "AWADDR",
+      "AWVALID",
+      "AWREADY",
+      "WDATA",
+      "WSTRB",
+      "WVALID",
+      "WREADY",
+      "BRESP",
+      "BVALID",
+      "BREADY",
+      "ARADDR",
+      "ARVALID",
+      "ARREADY",
+      "RDATA",
+      "RRESP",
+      "RVALID",
+      "RREADY"
+    ],
+    "limits": [
+      "RRESP/BRESP는 항상 OKAY(2'b00)",
+      "단일 비트 단위 쓰기 미지원(WSTRB는 IP 내부에서 무시)"
+    ]
   },
   "integration": {
     "bus": "AXI4-Lite",
@@ -92,7 +127,13 @@
     "compat": "compatible",
     "plan": "동결 맵 슬롯 [16] (0x4016_0000, 64KB)에 배치. intc 슬롯 13 사용. 프레임 완료 IRQ를 intc 채널 13에 연결.",
     "frozen_mapping": [
-      {"block": "oled_ip", "region": "slot_16", "base": "0x4016_0000", "size": "0x10000", "irq": 13}
+      {
+        "block": "oled_ip",
+        "region": "slot_16",
+        "base": "0x4016_0000",
+        "size": "0x10000",
+        "irq": 13
+      }
     ]
   },
   "external_parts": [
@@ -128,45 +169,105 @@
       ]
     }
   ],
-  "memory_map": {
-    "base": "0x4016_0000",
-    "regions": [
-      {"base": "0x4016_0000", "size": "0x10000", "block": "oled_ip"}
-    ],
-    "registers": [
-      {"off": "0x00", "name": "CTRL",     "access": "RW",
-       "desc": "[0]=START(프레임 전송 시작, 자동 클리어), [1]=RST(소프트 리셋), [7:4]=미사용"},
-      {"off": "0x04", "name": "STATUS",   "access": "RO",
-       "desc": "[0]=BUSY(전송 중), [1]=INIT_DONE(초기화 완료), [2]=FRAME_DONE(1펄스)"},
-      {"off": "0x08", "name": "BUF_ADDR", "access": "RW",
-       "desc": "[8:0]=프레임 버퍼 바이트 주소(0~511)"},
-      {"off": "0x0C", "name": "BUF_DATA", "access": "RW",
-       "desc": "[7:0]=읽기: 현재 BUF_ADDR 위치 값, 쓰기: 해당 위치에 쓰고 BUF_ADDR 자동 증가"},
-      {"off": "0x10", "name": "CONTRAST", "access": "RW",
-       "desc": "[7:0]=SSD1306 대비(0x00~0xFF, 기본 0xFF). 다음 초기화 또는 별도 커맨드 전송 시 적용"},
-      {"off": "0x14", "name": "IRQ_EN",   "access": "RW",
-       "desc": "[0]=FRAME_DONE 인터럽트 활성화"}
-    ]
-  },
+  "memory_map": [
+    {
+      "base": "0x4016_0000",
+      "size": "0x10000",
+      "block": "oled_ip",
+      "regs": [
+        {
+          "off": "0x00",
+          "name": "CTRL",
+          "access": "RW",
+          "desc": "[0]=START(프레임 전송 시작, 자동 클리어), [1]=RST(소프트 리셋), [7:4]=미사용"
+        },
+        {
+          "off": "0x04",
+          "name": "STATUS",
+          "access": "RO",
+          "desc": "[0]=BUSY(전송 중), [1]=INIT_DONE(초기화 완료), [2]=FRAME_DONE(1펄스)"
+        },
+        {
+          "off": "0x08",
+          "name": "BUF_ADDR",
+          "access": "RW",
+          "desc": "[8:0]=프레임 버퍼 바이트 주소(0~511)"
+        },
+        {
+          "off": "0x0C",
+          "name": "BUF_DATA",
+          "access": "RW",
+          "desc": "[7:0]=읽기: 현재 BUF_ADDR 위치 값, 쓰기: 해당 위치에 쓰고 BUF_ADDR 자동 증가"
+        },
+        {
+          "off": "0x10",
+          "name": "CONTRAST",
+          "access": "RW",
+          "desc": "[7:0]=SSD1306 대비(0x00~0xFF, 기본 0xFF). 다음 초기화 또는 별도 커맨드 전송 시 적용"
+        },
+        {
+          "off": "0x14",
+          "name": "IRQ_EN",
+          "access": "RW",
+          "desc": "[0]=FRAME_DONE 인터럽트 활성화"
+        }
+      ]
+    }
+  ],
   "roadmap": [
-    {"stage": "T1", "state": "done",    "title": "UART + GPIO MMIO 골격", "refs": []},
-    {"stage": "T2", "state": "current", "title": "SSD1306 SPI OLED IP (이 패키지)", "refs": ["digilent-pmod-oled-reference-manual"]},
-    {"stage": "T3", "state": "planned", "title": "폰트 ROM + 텍스트 레이어 추가 (소프트웨어 드라이버)", "refs": []}
+    {
+      "stage": "T1",
+      "state": "done",
+      "title": "UART + GPIO MMIO 골격",
+      "refs": []
+    },
+    {
+      "stage": "T2",
+      "state": "current",
+      "title": "SSD1306 SPI OLED IP (이 패키지)",
+      "refs": [
+        "digilent-pmod-oled-reference-manual"
+      ]
+    },
+    {
+      "stage": "T3",
+      "state": "planned",
+      "title": "폰트 ROM + 텍스트 레이어 추가 (소프트웨어 드라이버)",
+      "refs": []
+    }
   ],
   "references": [
-    {"name": "digilent-pmod-oled-reference-manual", "reason": "Pmod OLED 핀맵, SSD1306 SPI 초기화 시퀀스 근거"},
-    {"name": "lushaylabs-tang-nano-9k-ssd1306-oled",  "reason": "SSD1306 초기화 커맨드 바이트 순서 대조"},
-    {"name": "masterplayer-lcd-st7789-sv",             "reason": "SPI FSM 패턴 참고 (자체 RTL 작성)"}
+    {
+      "name": "digilent-pmod-oled-reference-manual",
+      "reason": "Pmod OLED 핀맵, SSD1306 SPI 초기화 시퀀스 근거"
+    },
+    {
+      "name": "lushaylabs-tang-nano-9k-ssd1306-oled",
+      "reason": "SSD1306 초기화 커맨드 바이트 순서 대조"
+    },
+    {
+      "name": "masterplayer-lcd-st7789-sv",
+      "reason": "SPI FSM 패턴 참고 (자체 RTL 작성)"
+    }
   ],
   "sources": {
-    "rtl":         ["rtl/axil_ssd1306_spi.v", "rtl/basys3_top_ssd1306.v"],
-    "tb":          ["tb/tb_ssd1306_spi.v"],
-    "constraints": ["constr/basys3_ssd1306.xdc"],
-    "build":       ["Makefile"]
+    "rtl": [
+      "rtl/axil_ssd1306_spi.v",
+      "rtl/basys3_top_ssd1306.v"
+    ],
+    "tb": [
+      "tb/tb_ssd1306_spi.v"
+    ],
+    "constraints": [
+      "constr/basys3_ssd1306.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
   },
   "howto": {
-    "sim":   "make sim   # iverilog -g2001 -o build/sim.vvp rtl/axil_ssd1306_spi.v tb/tb_ssd1306_spi.v && vvp build/sim.vvp",
-    "lint":  "make lint  # verilator --lint-only -Wall --no-timing rtl/axil_ssd1306_spi.v rtl/basys3_top_ssd1306.v",
+    "sim": "make sim   # iverilog -g2001 -o build/sim.vvp rtl/axil_ssd1306_spi.v tb/tb_ssd1306_spi.v && vvp build/sim.vvp",
+    "lint": "make lint  # verilator --lint-only -Wall --no-timing rtl/axil_ssd1306_spi.v rtl/basys3_top_ssd1306.v",
     "synth": "make synth # yosys -p 'synth_xilinx -flatten -top axil_ssd1306_spi' rtl/axil_ssd1306_spi.v"
   },
   "verification": {
