@@ -183,3 +183,4 @@
 2026-11-05 10:16 | verify | 재열람 0 (CI 버그 수정 집중 사이클) | 수정 1 (axil_i2c_nmea_hub.v: irq_status 이중 always 블록 → 단일 블록 통합, STATUS 비트폭 24'd0, fifo_dout_latch [31:0], FIFO_HI/LO 읽기 로직, verilator lint_off) | 불일치 1 (irq_status 이중 드라이버 → T4 FAIL 원인) | 승격 L2→L3 0 | ready +0
 
 2026-11-05 10:24 | verify | 재열람 0 (lint 버그 수정 연속) | 수정 1 (i2c_cycle_fsm.v:316 dev_type <= {5'd0,dev_idx} → {6'd0,dev_idx}, WIDTHEXPAND 7→8비트 fix) | 불일치 1 (dev_type 7비트 → verilator -Wall WIDTHEXPAND 오류) | 승격 L2→L3 0 | ready +0
+2026-11-05 10:28 | collect | UART 프레이밍 프로토콜 [B3] · S3 빈틈 추적(주)+S7 난이도 사다리(보조) | 카드 +3 (opencores-auto-baud L3, codeshaa-16-bit-hdlc L3, xtrinch-icestick-uart L3) | 아이디어 +3 (I-101~103) | 큐 잔여 532 | blocked 2 (ZipCPU/wbuart32, WangXuan95/FPGA-UART — PROVENANCE_REQUIRED)

@@ -1353,3 +1353,45 @@
 - 난이도: 3
 - 단계: T2
 - 상태: raw
+
+---
+## I-101: AXI4-Lite UART 프레이밍 IP (길이+타입+CRC16)
+
+내 판단: S3 빈틈 추적 — T2 통신 주변장치 갭 중 "하드웨어에서 패킷 경계를 처리하는 UART 슬레이브 IP"가 카탈로그에 없다. xtrinch의 길이 접두어 방식(1바이트 길이+1바이트 타입)과 CRC16(codeshaa HDLC 참고)을 조합하면 소프트웨어 부담 없이 패킷을 수신할 수 있는 AXI4-Lite IP가 된다.
+
+- 조합: [UART TX/RX 코어, 길이 카운터 FSM, 타입 레지스터, CRC16 모듈, AXI4-Lite 슬레이브 래퍼, MicroBlaze V 인터럽트 라인]
+- 근거 카드: xtrinch-icestick-fpga-uart, codeshaa-16-bit-hdlc-using-vhdl, opencores-auto-baud
+- 근거 URL: https://github.com/xtrinch/icestick-fpga-uart, https://github.com/codeshaa/16-bit-HDLC-using-VHDL
+- 새로움 근거: 카탈로그에 "하드웨어 패킷 프레이머+CRC 검증"을 단일 AXI4-Lite IP로 묶은 카드 없음 — 내 판단.
+- Basys3 적합성 근거: LUT 약 300~500개(UART TX/RX + FSM + CRC16), AXI4-Lite 슬롯 1개, Pmod JA UART 핀 사용 가능 — 내 판단.
+- 난이도: 3
+- 단계: T2
+- 상태: raw
+
+---
+## I-102: UART 슬립 디텍트 FSM (웨이크업 패턴 하드웨어 감지)
+
+내 판단: S3 빈틈 추적 — UART 프레이밍 주제에서 "슬립 감지(sleep detect)"는 저전력 MCU→FPGA 통신의 공백 구간을 하드웨어가 직접 처리해 인터럽트로 알리는 기능. opencores-auto-baud의 CR 감지 방식을 확장해 2바이트 웨이크업 시퀀스(예: 0xA5 0x5A)를 감지하면 된다.
+
+- 조합: [UART RX 수신기, 슬라이딩 윈도우 패턴 비교기 FSM, 인터럽트 출력(연결선), AXI4-Lite 상태·제어 레지스터]
+- 근거 카드: opencores-auto-baud, xtrinch-icestick-fpga-uart
+- 근거 URL: https://opencores.org/projects/auto_baud, https://github.com/xtrinch/icestick-fpga-uart
+- 새로움 근거: 카탈로그에 슬립/웨이크업 패턴 감지 FSM 카드 없음 — 내 판단.
+- Basys3 적합성 근거: LUT < 150개(단순 FSM+비교기), AXI4-Lite 슬롯 1개. 7세그 디스플레이로 상태 표시 추가 가능 — 내 판단.
+- 난이도: 2
+- 단계: T1
+- 상태: raw
+
+---
+## I-103: 오토보드+길이 프레이밍 통합 UART IP (CR 보레이트 감지 → 패킷 수신)
+
+내 판단: S7 난이도 사다리 — I-101(단순 프레이머)과 I-102(슬립 감지)를 조합해 한 단계 위를 목표로 하는 T2+ 아이디어. CR 수신 → 보레이트 자동 설정 → 길이 접두어 패킷 수신의 3단계 FSM을 단일 IP에 통합하면 "플러그-앤-플레이" 직렬 포트를 FPGA에서 구현할 수 있다.
+
+- 조합: [오토보드 감지 FSM(CR 기준, opencores 방식), 길이+타입 프레이머(xtrinch 방식), CRC16 검증(codeshaa 참고), AXI4-Lite 슬레이브 래퍼, MicroBlaze V 드라이버 C 함수]
+- 근거 카드: opencores-auto-baud, xtrinch-icestick-fpga-uart, codeshaa-16-bit-hdlc-using-vhdl
+- 근거 URL: https://opencores.org/projects/auto_baud, https://github.com/xtrinch/icestick-fpga-uart, https://github.com/codeshaa/16-bit-HDLC-using-VHDL
+- 새로움 근거: 오토보드 감지와 패킷 프레이밍을 단일 AXI4-Lite IP로 통합한 카드 없음 — 내 판단.
+- Basys3 적합성 근거: LUT 약 500~700개(오토보드 FSM + 프레이머 + CRC + AXI4-Lite), 1 AXI4-Lite free_slot. I-101·I-102를 먼저 만들어 단계적으로 검증 가능 — 내 판단.
+- 난이도: 4
+- 단계: T2
+- 상태: raw

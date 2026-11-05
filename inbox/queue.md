@@ -554,3 +554,15 @@
 - https://github.com/frontcover/Sequential-CRC-Generator_verilog | frontcover/Sequential-CRC-Generator_verilog: 순차 CRC 생성기 Verilog — 미열람 L1 | CRC Verilog AXI4-Lite IP checksum hardware accelerator
 - https://easyfpga-blog.pages.dev/posts/crc-calculator-guide | EasyFPGA CRC 계산기 가이드 (S5 비정형 출처) — 미열람 L1 | CRC 하드웨어 계산기 Verilog FPGA 병렬 구현 GitHub
 - https://www.aminer.org/pub/6627081313fb2c6cf655140e/a-high-speed-crc-implementation-on-fpga | "A High-Speed CRC-32 Implementation on FPGA" (aminer) — 미열람 L1 | Heng-xiu CRC-32 Verilog parallel FPGA search
+
+## UART 프레이밍 프로토콜 사이클 (2026-11-05)
+- https://github.com/ZipCPU/wbuart32 | ZipCPU 32비트 AXI4-Lite UART — WebFetch 차단(PROVENANCE_REQUIRED), L1 미열람 | uart framing AXI4-Lite MicroBlaze basys3 FPGA protocol
+- https://github.com/WangXuan95/FPGA-UART | WangXuan95 FPGA UART 프레이밍 — WebFetch 차단(PROVENANCE_REQUIRED), L1 미열람 | UART protocol FPGA Verilog packet framing length prefix
+- https://github.com/cyrozap/osdvu | cyrozap/osdvu Open-Source Double-Rate UART — xtrinch 의존 모듈, L1 미열람 | UART Verilog open-source double-rate icestorm iCE40
+- https://github.com/jorisvr/vhdl_serial | jorisvr/vhdl_serial VHDL 직렬 프로토콜 — L1 미열람 | VHDL UART serial protocol packet framing checksum
+- https://github.com/the-mba/UART_protocol | the-mba/UART_protocol — L1 미열람 | UART protocol FPGA Verilog packet header payload
+- https://opencores.org/projects/uart_ahb | OpenCores UART AHB 컨트롤러 (오토보드+FIFO) — L1 미열람 | UART autobaud FPGA Verilog AHB framing
+- https://github.com/spartan-s/uart-framing | spartan-s/uart-framing — L1 미열람 | UART framing Verilog header length payload checksum FPGA
+- https://github.com/dpretet/axi-lite-uart | dpretet/axi-lite-uart AXI4-Lite UART — L1 미열람 | AXI4-Lite UART Verilog FPGA packet protocol wrapper
+- https://hackaday.io/project/166882-uart-packet-protocol-for-fpga | Hackaday UART 패킷 프로토콜 FPGA 프로젝트 (S5 비정형 출처) — L1 미열람 | UART packet protocol FPGA framing length header checksum
+- https://github.com/hdl-util/uart | hdl-util/uart 고속 UART IP — L1 미열람 | UART Verilog SystemVerilog FPGA framing AXI protocol
