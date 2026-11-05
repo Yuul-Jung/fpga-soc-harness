@@ -243,3 +243,6 @@
 | [maplesilicon-mapleled-core](vendor-neutral/maplesilicon-mapleled-core.md) | L2 | T1 | iCEBreaker / iCE40 UP5K (Basys3 needs-port) | 2026-11-05 |
 | [olivier-le-sage-camera-filters](vendor-neutral/olivier-le-sage-camera-filters.md) | L3 | T4 | Spartan Edge Accelerator XC7S50 (Basys3 needs-port) | 2026-11-05 |
 | [mit-6205-rgb-pwm-week01](papers/mit-6205-rgb-pwm-week01.md) | L2 | T1 | Urbana FPGA (Basys3 needs-port) | 2026-11-05 |
+| [argrabowski-fpga-vga-display](amd/argrabowski-fpga-vga-display.md) | L2 | T2 | Basys3 | 2026-11-05 |
+| [itsnotjiaching-ec311project](amd/itsnotjiaching-ec311project.md) | L2 | T2 | Basys3 (추정) | 2026-11-05 |
+| [byu-ecen423-lab10-riscv-vga-7seg](amd/byu-ecen423-lab10-riscv-vga-7seg.md) | L2 | T4 | Basys3 | 2026-11-05 |

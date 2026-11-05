@@ -596,3 +596,13 @@
 - https://www.fpga4fun.com/PWM.html | fpga4fun.com PWM 기초 아티클 — 미열람(L1), 주변장치 패턴 참고 | FPGA PWM tutorial fpga4fun 질의
 - https://github.com/projf/projf-explore | Project F: LED 색상 혼합·VGA 효과 포함 (MIT) — 미열람(L1), /verify 열람 대상 | FPGA LED colour mixing projf 질의
 - https://github.com/georgeyhere/fpga-rgb | FPGA RGB LED Verilog 구현 — 미열람(L1), /verify 열람 대상 | FPGA RGB LED Verilog GitHub 질의
+- https://github.com/argrabowski/fpga-vga-display | card-converted → argrabowski-fpga-vga-display.md (L2, T2, Basys3, VGA 패턴+7세그 hex 동시 표시) | Basys3 VGA 7seg simultaneous 질의
+- https://github.com/ItsNotJiaching/ec311project | card-converted → itsnotjiaching-ec311project.md (L2, T2, Basys3 추정, 퐁 게임 VGA+7세그 점수) | BU EC311 Pong VGA 7seg Verilog 질의
+- https://byu-cpe.github.io/ecen423/labs/lab-10 | card-converted → byu-ecen423-lab10-riscv-vga-7seg.md (L2, T4, Basys3, RISC-V+MMIO VGA 텍스트+7세그) | BYU ECEN 423 RISC-V VGA 7seg 질의
+- https://github.com/muhammadaldacher/FPGA-Design-of-a-Digital-Analog-Clock-Display-using-Digilent-Basys3-Artix-7 | blocked: client_error (이번 사이클 2회 실패), Basys3 디지털-아날로그 시계 7세그+VGA — /verify에서 재시도 | Basys3 7seg VGA clock display 질의
+- https://github.com/rfotino/verilog-tetris | Verilog 테트리스, Basys3 추정, VGA+7세그 점수 — 미열람(L1), /verify 열람 대상 | Verilog Tetris VGA 7seg 질의
+- https://github.com/choyiny/fpganotatsujin | FPGA 음악 게임(EE488), VGA+7세그+버튼 — 미열람(L1), /verify 열람 대상 | FPGA game VGA 7-segment score display 질의
+- https://github.com/bizkiwi/verilog-fpga-pingpong-game | Verilog 핑퐁 게임, VGA+7세그 점수(실제 열람: 최상위·컨트롤러 확인), Basys3 추정 — L2, /verify에서 L3 승격 대상 | Verilog FPGA ping pong VGA 7seg 질의
+- https://github.com/tahirzia-1/digital-clock-verilog | Basys3 디지털 시계 Verilog, 7세그 주요(VGA 미확인) — 미열람(L1), /verify 열람 대상 | Basys3 digital clock Verilog 7seg 질의
+- https://github.com/CynicalApe/BASYS3-PONG | blocked: client_error (이번 사이클), Basys3 퐁 VGA+7세그 점수 — /verify에서 재시도 | Basys3 Pong VGA score 7seg Verilog 질의
+- https://github.com/projf/projf-explore | Project F: VGA 그래픽 + LED/7세그 조합 모듈 포함 (MIT) — 미열람(L1), /verify 열람 대상 | FPGA VGA 7-segment simultaneous display projf 질의

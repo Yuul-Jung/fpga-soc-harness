@@ -1466,3 +1466,33 @@
 - Basys3 적합성의 근거: 각 단계가 Basys3 기본 자원 범위 내(I-105·I-106 참조). 단계별로 Makefile 타겟 분리 → CI에서 단계별 검증 가능.
 - 난이도: 3 / 단계: T1→T2
 - 심사: (미심사)
+
+## I-108 VGA 텍스트 오버레이 + 7세그 동기화 AXI4-Lite IP (S2 조합)
+- 상태: raw
+- 요약: 내 판단: BYU ECEN 423 Lab 10의 MMIO 패턴을 착안해, 80×30 문자 버퍼와 7세그 카운터를 단일 AXI4-Lite 슬레이브 IP 안에서 공통 타임스탬프로 묶는 IP. VGA 텍스트 출력이 활성 비디오 선에만 작동하고, 수직 귀선 기간에 7세그 디지트를 순환 갱신한다. 두 디스플레이가 같은 프레임 경계에 동기화되는 패턴을 명세화하고 Basys3에서 검증한다.
+- 조합: [video-vga(텍스트 컨트롤러), 7seg-mux, AXI4-Lite, BRAM(문자 버퍼)]
+- 근거: [byu-ecen423-lab10-riscv-vga-7seg, argrabowski-fpga-vga-display, itsnotjiaching-ec311project]
+- 새로움의 근거: 카탈로그에 VGA와 7세그를 단일 AXI4-Lite IP로 통합해 VSync 기준으로 동기화하는 패키지 없음. 개별 IP 두 개를 합치는 것보다 같은 클럭 도메인 안에서 공통 타임스탬프를 갖는 구조가 차별점(내 판단).
+- Basys3 적합성의 근거: Basys3 VGA 12비트 DAC + 4자리 공통-양극 7세그 모두 보드 내장. 80×30 문자 버퍼 = 2400 바이트 → BRAM 1개 미만. AXI4-Lite free_slot 1개. 25MHz VGA 픽셀 클럭은 100MHz 분주.
+- 난이도: 3 / 단계: T2
+- 심사: (미심사)
+
+## I-109 Pong 게임 VGA+7세그 SoC 패키지: MicroBlaze V C 드라이버로 게임 상태 관리 (S7 중간 단계)
+- 상태: raw
+- 요약: 내 판단: itsnotjiaching-ec311project의 Pong 게임 구조를 MicroBlaze V SoC로 이식. 공·패들 위치를 AXI4-Lite 레지스터로 노출하고, MicroBlaze V C 드라이버가 게임 루프(패들 이동, 충돌 판정, 점수 갱신)를 소프트웨어로 처리. VGA 렌더링과 7세그 점수 표시는 FSM이 담당. FPGA가 렌더링만, 소프트웨어가 로직만 맡는 역할 분리 패턴을 T3 사례로 만든다.
+- 조합: [video-vga(렌더링 FSM), 7seg-mux, AXI4-Lite, MicroBlaze V, hid-btn/hid-sw]
+- 근거: [itsnotjiaching-ec311project, argrabowski-fpga-vga-display, byu-ecen423-lab10-riscv-vga-7seg]
+- 새로움의 근거: 카탈로그의 게임 카드들은 FSM 단독 처리(sdcarlson-fpga-snake는 MicroBlaze이나 하드웨어 미포함). 게임 로직을 MicroBlaze V C 드라이버로 올리고 VGA+7세그를 AXI4-Lite 슬레이브로 묶는 조합 패키지는 없음.
+- Basys3 적합성의 근거: Basys3 VGA, 7세그, 버튼 모두 보드 내장. MicroBlaze V는 동결 맵 기반, 게임 로직 소프트웨어화는 AXI-UART Lite 불필요(순수 메모리 맵 접근). BRAM 프레임버퍼 불필요(픽셀 렌더링은 FSM이 실시간 계산).
+- 난이도: 3 / 단계: T3
+- 심사: (미심사)
+
+## I-110 RISC-V 어셈블리 → C 이식 비교: MMIO VGA+7세그 드라이버 계층 설계 (S7 어려운 단계)
+- 상태: raw
+- 요약: 내 판단: BYU ECEN 423 Lab 10의 RISC-V 어셈블리 드라이버(`move_char.s`)에서 MMIO 패턴을 추출해, 같은 기능을 MicroBlaze V용 C + xparameters.h로 재작성하는 비교 캡스톤. 어셈블리의 레지스터 직접 접근, C의 인라인 함수 계층, AXI4-Lite 슬레이브로 감싸는 세 가지 접근을 같은 VGA+7세그 하드웨어로 성능을 비교한다. 소프트웨어 추상화 비용과 MMIO 접근 패턴 최적화 방법을 문서화한다.
+- 조합: [video-vga, 7seg-mux, AXI4-Lite, MicroBlaze V SW 드라이버]
+- 근거: [byu-ecen423-lab10-riscv-vga-7seg, argrabowski-fpga-vga-display, itsnotjiaching-ec311project]
+- 새로움의 근거: 카탈로그에 어셈블리 드라이버와 C 드라이버를 같은 하드웨어로 성능 비교하는 사례 없음. MMIO 패턴 이식 비교 연구는 T4 범위이며 교육 가치가 높다(내 판단).
+- Basys3 적합성의 근거: Basys3 VGA+7세그 보드 내장. MicroBlaze V용 C 드라이버는 Vitis/SDK 환경. 어셈블리 대 C 성능 차이는 AXI4-Lite 버스 오버헤드와 레지스터 할당 차이로 측정 가능.
+- 난이도: 4 / 단계: T4
+- 심사: (미심사)
