@@ -2,6 +2,7 @@
 // 하네스 원본 (외부 코드 포함 없음)
 // IP 표준 rev1 준수: 관리 오프셋 FFF0~FFFC, ID=0x4A535356, VER=0x01010000
 // BASE = 0x401F_0000, 창 크기 0x10000
+`timescale 1ns/1ps
 `default_nettype none
 
 module jstk2_servo_ip #(

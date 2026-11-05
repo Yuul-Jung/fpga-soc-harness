@@ -3,6 +3,7 @@
 // Basys3 XC7A35T, 100 MHz 온보드 클럭
 // Pmod JA: JSTK2 SPI (JA1=CS#, JA2=MOSI, JA3=MISO, JA4=SCLK)
 // Pmod JB: 서보 (JB1=SERVO_A, JB2=SERVO_B)
+`timescale 1ns/1ps
 `default_nettype none
 
 module basys3_jstk2_servo_top (

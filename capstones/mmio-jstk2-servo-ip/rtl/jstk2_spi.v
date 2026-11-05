@@ -3,6 +3,7 @@
 // SPI Mode 0 (CPOL=0, CPHA=0), 클럭 100 MHz → 50 클럭 토글 → 1 MHz SCLK
 // 5바이트 TX: {0x01, 0x00, 0x00, 0x00, 0x00}  RX: {X_L, X_H, Y_L, Y_H, BTN}
 // sample_period: 100 ms 샘플링 주기 (파라미터)
+`timescale 1ns/1ps
 `default_nettype none
 
 module jstk2_spi #(

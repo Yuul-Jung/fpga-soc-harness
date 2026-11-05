@@ -2,6 +2,7 @@
 // 하네스 원본 (외부 코드 포함 없음)
 // 50 Hz 주기: 2,000,000 클럭 @ 100 MHz
 // 펄스 폭: 1,000,000~2,000,000 클럭 (1 ms~2 ms), 클램프 적용
+`timescale 1ns/1ps
 `default_nettype none
 
 module servo_pwm #(
