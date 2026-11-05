@@ -77,10 +77,12 @@ module frame_buf #(
                         // 에너지 → 높이 (상위 3비트, 0~7)
                         // 열 2개를 한 대역에 사용 (16열 / 8대역)
                         begin : bar_draw
-                            reg [2:0] bar_h;
+                            reg [3:0] bar_h;  // 0~8: 행 수 (상위3비트 + 반올림비트)
                             integer   row_idx, col_l, col_r;
-                            // energy_flat을 직접 참조: energy[] NBA가 같은 클럭에서 아직 반영 안 됨
-                            bar_h = energy_flat[(b+1)*ENERGY_W - 1 -: 3];
+                            // 에너지 → 행 수: 상위3비트 + 4번째비트(반올림)
+                            // 예) 0xFFFF_FFFF → 7+1=8행(전체), 0x40000000 → 2+0=2행
+                            bar_h = {1'b0, energy_flat[(b+1)*ENERGY_W - 1 -: 3]}
+                                  + {3'b0, energy_flat[(b+1)*ENERGY_W - 4]};
                             col_l = b * 2;
                             col_r = b * 2 + 1;
                             for (row_idx=0; row_idx<ROWS; row_idx=row_idx+1) begin

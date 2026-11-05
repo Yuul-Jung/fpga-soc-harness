@@ -49,7 +49,7 @@ module adxl345_spi_reader #(
     reg [55:0] rx_shift;   // 7바이트 수신 (주소1 + 데이터6)
     reg [23:0] read_period; // 읽기 주기 카운터 (~10ms)
 
-    always @(posedge clk or negedge rst_n) begin
+    always @(posedge clk) begin
         if (!rst_n) begin
             state     <= S_RESET;
             wait_cnt  <= 0;
