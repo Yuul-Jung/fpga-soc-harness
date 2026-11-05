@@ -246,3 +246,6 @@
 | [argrabowski-fpga-vga-display](amd/argrabowski-fpga-vga-display.md) | L2 | T2 | Basys3 | 2026-11-05 |
 | [itsnotjiaching-ec311project](amd/itsnotjiaching-ec311project.md) | L2 | T2 | Basys3 (추정) | 2026-11-05 |
 | [byu-ecen423-lab10-riscv-vga-7seg](amd/byu-ecen423-lab10-riscv-vga-7seg.md) | L2 | T4 | Basys3 | 2026-11-05 |
+| [zipcpu-icontrol](vendor-neutral/zipcpu-icontrol.md) | L3 | T2 | 없음 (Basys3 needs-port) | 2026-11-06 |
+| [amd-axi-intc-pg099](papers/amd-axi-intc-pg099.md) | L3 | T3 | Artix-7 / Basys3 (yes) | 2026-11-06 |
+| [realisshoon-axi4-lite-multi-peripheral-soc](amd/realisshoon-axi4-lite-multi-peripheral-soc.md) | L2 | T3 | Basys3 (yes) | 2026-11-06 |

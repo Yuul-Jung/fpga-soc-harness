@@ -606,3 +606,15 @@
 - https://github.com/tahirzia-1/digital-clock-verilog | Basys3 디지털 시계 Verilog, 7세그 주요(VGA 미확인) — 미열람(L1), /verify 열람 대상 | Basys3 digital clock Verilog 7seg 질의
 - https://github.com/CynicalApe/BASYS3-PONG | blocked: client_error (이번 사이클), Basys3 퐁 VGA+7세그 점수 — /verify에서 재시도 | Basys3 Pong VGA score 7seg Verilog 질의
 - https://github.com/projf/projf-explore | Project F: VGA 그래픽 + LED/7세그 조합 모듈 포함 (MIT) — 미열람(L1), /verify 열람 대상 | FPGA VGA 7-segment simultaneous display projf 질의
+
+## 2026-11-06 인터럽트 컨트롤러 IP (S7+S1)
+- https://github.com/ZipCPU/zipcpu/blob/master/rtl/peripherals/icontrol.v | ZipCPU icontrol.v 소스 직접 열람 — blocked: PROVENANCE_REQUIRED, 카드 zipcpu-icontrol에 블로그 L3로 처리 | interrupt controller Verilog Wishbone ZipCPU
+- https://opencores.org/project,simple_pic | OpenCores simple_pic 원본 — 미열람(L1), AllAboutCircuits 설명 L2 확인, 코드는 Debian 미러도 JS 차단 | simple interrupt controller Verilog FPGA OpenCores
+- https://github.com/adibis/Interrupt_Controller | 8입력 Verilog PIC, polling/custom priority 2모드, GPL-3.0, testbench 있음 — README L2 열람 완료 | Verilog interrupt controller GitHub
+- https://docs.amd.com/api/khub/documents/b~exOUJ~X7abZ5h_~RhwrQ/content | AMD AXI INTC v2.00a PG (DS747 이전 버전) — 미열람(L1) | AXI INTC AMD MicroBlaze Verilog
+- https://users.ece.utexas.edu/~mcdermot/arch/articles/Zynq/pg099-axi-intc-2.pdf | AXI INTC v4.1 PG099 PDF — 미열람(L1), 최신 버전 자원 수치 확인용 | AXI INTC AMD FPGA
+- https://github.com/kimdh315/soc_axi_microblaze | MicroBlaze SoC AXI 주변장치 한국어 — 미열람(L1) | MicroBlaze Basys3 AXI SoC Korean
+- https://github.com/taeseong-dev/axi4-lite-custom-peripherals | AXI4-Lite 커스텀 주변장치 (I2C+SPI+MicroBlaze) 한국어 — 미열람(L1) | AXI4-Lite MicroBlaze custom peripheral Korean GitHub
+- https://github.com/balbal1/Programmable-Interrupt-Controller | PIC Verilog GitHub — 미열람(L1), 미러에서 본 URL | Verilog interrupt controller priority FPGA GitHub
+- https://mpb.li/git/uhd/plain/fpga/usrp2/control_lib/pic.v?h=lea-m8f | UHD 프로젝트 control_lib/pic.v — 미열람(L1) | Verilog PIC interrupt controller mask register
+- https://rangvest.tistory.com/entry/Harman-%EC%84%B8%EB%AF%B8%EC%BD%98-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8-98%EC%9D%BC%EC%B0%A8-SoC-Verilog-VitisAXI-SystemVerilog%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-Simulation-button-Interrupt-switch-Interrupt | 한국어 블로그: Harman 아카데미 MicroBlaze AXI 인터럽트 시뮬레이션 — L3 열람 완료, 소규모, 카드화는 보류(단순 학습 로그) | Korean MicroBlaze AXI interrupt controller simulation

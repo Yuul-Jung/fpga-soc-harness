@@ -199,3 +199,4 @@
 2026-11-05 13:00 | capstone | mmio-led-matrix-sound-tilt · broken (CI 3회 실패: adxl345 synth Multiple edge events, AXI decode DEAD_BEEF, tilt 코너 매핑, energy 포트 단선) | I-024 used | 패키지 broken
 2026-11-05 13:40 | collect | PWM RGB LED 감마보정·HSV변환 하드웨어 · S6(주)+S7(보조) | 카드 +3 | 아이디어 +3 | 큐 잔여 10 | blocked 2(birdybro/rgb_conv_verilog, pawel2000pl/VerilogLedDriver — PROVENANCE_REQUIRED)
 2026-11-06 01:47 | verify | 재열람 0 (WebFetch PROVENANCE_REQUIRED 전면 차단 20차 연속) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +2 (I-030 차단조건재심사 9점, I-031 차단조건재심사 9점) | vetted +2 (I-108 7점 raw→vetted, I-109 6점 raw→vetted) | dropped +1 (I-110 4점) | atlas video-vga.md 신규·soc-map +9카드
+2026-11-06 01:08 | collect | 인터럽트 컨트롤러 IP [B3] · S7 난이도 사다리(주)+S1 인접 도메인 이식(보조) | 카드 +3 (zipcpu-icontrol L3, amd-axi-intc-pg099 L3, realisshoon-axi4-lite L2) | 아이디어 +3 (I-111~113) | 큐 잔여 577 | blocked 2 (ZipCPU icontrol.v GitHub — PROVENANCE_REQUIRED, Debian simple_pic.v — JS 차단)
