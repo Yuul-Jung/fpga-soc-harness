@@ -618,3 +618,11 @@
 - https://github.com/balbal1/Programmable-Interrupt-Controller | PIC Verilog GitHub — 미열람(L1), 미러에서 본 URL | Verilog interrupt controller priority FPGA GitHub
 - https://mpb.li/git/uhd/plain/fpga/usrp2/control_lib/pic.v?h=lea-m8f | UHD 프로젝트 control_lib/pic.v — 미열람(L1) | Verilog PIC interrupt controller mask register
 - https://rangvest.tistory.com/entry/Harman-%EC%84%B8%EB%AF%B8%EC%BD%98-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8-98%EC%9D%BC%EC%B0%A8-SoC-Verilog-VitisAXI-SystemVerilog%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-Simulation-button-Interrupt-switch-Interrupt | 한국어 블로그: Harman 아카데미 MicroBlaze AXI 인터럽트 시뮬레이션 — L3 열람 완료, 소규모, 카드화는 보류(단순 학습 로그) | Korean MicroBlaze AXI interrupt controller simulation
+- https://github.com/ZipCPU/wb2axip/blob/master/rtl/easyaxil.v | ZipCPU easyaxil.v Verilog 소스 — blocked: PROVENANCE_REQUIRED | ZipCPU AXI4-Lite slave Verilog easyaxil
+- https://github.com/esynr3z/corsair | Corsair: Python AXI4-Lite/Wishbone 레지스터 생성기 (MIT, Verilog/VHDL/SV 출력) — blocked: PROVENANCE_REQUIRED | Python register generator AXI4-Lite VHDL Verilog
+- https://github.com/bugratufan/axion-hdl | axion-hdl GitHub 소스 — blocked: PROVENANCE_REQUIRED (PyPI+readthedocs에서 L3 취득) | axion-hdl VHDL AXI4-Lite register generator Python
+- https://zipcpu.com/zipcpu/2021/04/17/axilops.html | ZipCPU AXI-Lite 메모리 오퍼레이션 컨트롤러 블로그 — 미열람(L1) | ZipCPU AXI-Lite memory controller Verilog
+- https://zipcpu.com/blog/2021/05/22/vhdlaxil.html | ZipCPU VHDL AXI-Lite 패턴 블로그 — 미열람(L1) | ZipCPU VHDL AXI4-Lite slave design pattern
+- https://sean-galloway.github.io/RTLDesignSherpa-DV/components/axil4/ | RTLDesignSherpa AXIL4 MIT CocoTB 버전 — 미열람(L1) | AXI4-Lite CocoTB SystemVerilog MIT
+- https://tinytapeout.com/chips/ttsky26b/294 | TinyTapeout AXI4-Lite 레지스터 데모 — 미열람(L1) | TinyTapeout AXI4-Lite register bank demo
+- https://github.com/juneonii/FPGA_EX | jhcha2004 AXI4-Lite ILA 디버그 한국어 — blocked: PROVENANCE_REQUIRED | AXI4-Lite ILA debug Basys3 Korean FPGA

@@ -249,3 +249,6 @@
 | [zipcpu-icontrol](vendor-neutral/zipcpu-icontrol.md) | L3 | T2 | 없음 (Basys3 needs-port) | 2026-11-06 |
 | [amd-axi-intc-pg099](papers/amd-axi-intc-pg099.md) | L3 | T3 | Artix-7 / Basys3 (yes) | 2026-11-06 |
 | [realisshoon-axi4-lite-multi-peripheral-soc](amd/realisshoon-axi4-lite-multi-peripheral-soc.md) | L2 | T3 | Basys3 (yes) | 2026-11-06 |
+| [zipcpu-wb2axip-easyaxil](vendor-neutral/zipcpu-wb2axip-easyaxil.md) | L3 | T2 | 없음 (Basys3 needs-port) | 2026-11-06 |
+| [chclau-magellan-basys3-axil-regs](amd/chclau-magellan-basys3-axil-regs.md) | L3 | T2 | Basys3 | 2026-11-06 |
+| [bugratufan-axion-hdl](vendor-neutral/bugratufan-axion-hdl.md) | L3 | T2 | 없음 (Basys3 needs-port) | 2026-11-06 |

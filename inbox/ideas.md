@@ -1,3 +1,4 @@
+# 캡스톤 아이디어 큐
 
 상태: `raw` → `vetted` → `ready` → `used` 또는 `dropped`. 지우지 않고 상태와 사유만 바꾼다. (HARNESS.md §12.8, §14.2)
 아이디어는 사실이 아니라 판단이다. 각 항목은 "내 판단:"으로 시작한다.
@@ -1546,3 +1547,39 @@
 - 상태: raw
 - 심사: (미심사)
 - 심사: 2026-11-06 /verify(20차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(근거 카드 모두 rechecked_at 없음) + 새로움 2(어셈블리→C 비교 사례 없음) + 적합성 1(RISC-V asm과 MicroBlaze V가 다른 ISA, Vitis/SDK 환경 별도 필요, 범위 과다) + 완결성 1(세 가지 접근 비교로 범위 과다, 단일 캡스톤으로 명확히 정의 어려움) = 4점 → dropped.
+
+## I-114
+- 제목: AXI4-Lite 슬레이브 레지스터 파일 자동화 IP (WSTRB + $clog2 디코더 + 형식 검증)
+- 한 줄 요약: ZipCPU easyaxil의 `apply_wstrb()` 함수와 `$clog2(DATA_WIDTH)-3` 주소 디코더를 MicroBlaze V IP 표준 래퍼에 통합한 Verilog-2001 레지스터 파일 IP
+- 조합(주변장치): AXI4-Lite 슬레이브 레지스터 뱅크 + WSTRB 처리 함수 + $clog2 주소 디코더 + faxil_slave.v 형식 검증
+- 근거 카드: [zipcpu-wb2axip-easyaxil, chclau-magellan-basys3-axil-regs, bugratufan-axion-hdl]
+- 새로움의 근거: 카탈로그에 MicroBlaze V IP 표준을 준수하는 Verilog-2001 AXI4-Lite 슬레이브 레지스터 파일 IP 없음. WSTRB + 형식 검증 조합은 카드 중 zipcpu만이 갖추나 IP 표준 래퍼는 미작성
+- 내 판단: 모든 커스텀 IP의 기반 부품이므로 T2 필수 블록. library/rtl/axil_regs.v가 연습용이고 IP 표준 래퍼가 없어 프로젝트 IP로 쓸 수 없음. 이 아이디어가 그 공백을 채운다
+- Basys3 적합성의 근거: AXI4-Lite 슬레이브만으로 XC7A35T 자원 50 LUT 미만 추정. 추가 외부 부품 없음
+- 난이도: 2 / 단계: T2
+- 상태: raw
+- 심사: (미심사)
+
+## I-115
+- 제목: Basys3 JTAG-to-AXI 마스터 활용 디버그 패턴 (소프트웨어 없이 레지스터 직접 접근)
+- 한 줄 요약: chclau Magellan 패턴을 32비트 레지스터 뱅크로 확장하고, JTAG-to-AXI 마스터로 커스텀 IP의 레지스터를 TCL 명령으로 직접 읽고 쓰는 Basys3 디버그 하네스
+- 조합(주변장치): Xilinx JTAG-to-AXI 마스터 IP + AXI4-Lite 슬레이브 레지스터 뱅크 (I-114) + AXI Interconnect
+- 근거 카드: [chclau-magellan-basys3-axil-regs, zipcpu-wb2axip-easyaxil, amd-axi-intc-pg099]
+- 새로움의 근거: JTAG-to-AXI 마스터를 MicroBlaze V 없이 쓰는 디버그 하네스 사례가 카탈로그에 없음. 소프트웨어 드라이버 없이 IP 초기 검증을 하는 패턴으로 T2 선행 디버그에 활용 가능
+- 내 판단: 새 IP 개발 시 소프트웨어 준비 전에 레지스터 동작을 먼저 확인하는 용도. CPU 비종속이므로 MicroBlaze V로 교체 후에도 같은 TCL 패턴 재사용 가능
+- Basys3 적합성의 근거: Xilinx JTAG-to-AXI IP는 Vivado에 내장. Basys3 Artix-7에서 Vivado Hardware Manager로 TCL 접근 가능 (chclau Magellan 사례 L3 확인)
+- 난이도: 2 / 단계: T2
+- 상태: raw
+- 심사: (미심사)
+
+## I-116
+- 제목: AXI4-Lite 슬레이브 IP 개발 사다리 (단순 레지스터 → CDC 동기화기 → 인터럽트 연동)
+- 한 줄 요약: T2 단계에서 T2+ 단계로 이어지는 AXI4-Lite 슬레이브 IP 사다리: (1) 단순 RW 레지스터 뱅크 → (2) 클럭 도메인 교차 CDC 토글 동기화기 추가 → (3) wr_strobe 인터럽트 소스 연동
+- 조합(주변장치): AXI4-Lite 슬레이브 레지스터 뱅크 + CDC 토글 동기화기 + 인터럽트 소스 wr_strobe + zipcpu-icontrol INTC 연결
+- 근거 카드: [zipcpu-wb2axip-easyaxil, bugratufan-axion-hdl, zipcpu-icontrol]
+- 새로움의 근거: 단계적으로 복잡도를 올리는 AXI4-Lite 슬레이브 사다리가 카탈로그에 없음. axion-hdl의 CDC 옵션과 ZipCPU icontrol의 인터럽트 패턴을 조합한 커리큘럼으로 활용 가능
+- 내 판단: S7(난이도 사다리) 전략에 맞는 아이디어. 각 단계가 독립 패키지로 §13.5 단계 체인을 구성할 수 있음
+- Basys3 적합성의 근거: 각 단계 XC7A35T 자원 범위 내. CDC 동기화기는 LUT 10개 미만, 인터럽트 연동은 별도 wire 연결만 추가
+- 난이도: 2(1단계)/3(2단계)/3(3단계) / 단계: T2
+- 상태: raw
+- 심사: (미심사)
