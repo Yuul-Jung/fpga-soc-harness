@@ -5,7 +5,9 @@
 - verify: `YYYY-MM-DD HH:MM | verify | 재열람 N | 수정 M | 불일치 K | 승격 L2→L3 P | ready +R`
 - capstone: `YYYY-MM-DD HH:MM | capstone | <slug> | 등급 S0~S2` 또는 `... | skip: <사유>`
 
+2026-11-05 14:38 | capstone | mmio-led-matrix-sound-tilt | fix: adxl_rst_n 복합 리셋 와이어 제거, u_adxl .rst_n(rst_n) 직접 연결 — CI 대기
 2026-11-05 14:33 | capstone | mmio-led-matrix-sound-tilt | skip: CI synth FAIL 3회 소진 (bd81db4, sclk_en proc_dff "Multiple edge sensitive events") | status: broken
+2026-11-05 14:29 | capstone | mmio-led-matrix-sound-tilt | skip: broken — CI 4회 연속 실패(synth). 근본 원인 확인: soc_top.v의 adxl_rst_n = rst_n & adxl_en 복합 리셋 와이어가 axil_led_matrix_slave(async rst) 출력인 adxl_en을 포함해, synth -flatten 후 sclk_en에 "Multiple edge sensitive events" 오류. capstone.json에 status=broken 기록. 다음 사이클 수정 방향: soc_top.v u_adxl 인스턴스화 시 .rst_n(rst_n) 직접 사용(adxl_rst_n 제거) 또는 axil_led_matrix_slave 동기 리셋 전환.
 2026-11-05 14:22 | collect | 7세그+VGA 동시 표시 조합 · S7 난이도 사다리(주)+S2 조합 탐색(보조) | 카드 +3 (argrabowski-fpga-vga-display L2·itsnotjiaching-ec311project L2·byu-ecen423-lab10-riscv-vga-7seg L2) | 아이디어 +3 (I-108 VGA텍스트+7세그 동기화 IP, I-109 Pong MicroBlaze V T3, I-110 어셈블리→C 드라이버 비교) | 큐 잔여 10 | blocked 2 (muhammadaldacher client_error·CynicalApe client_error)
 2026-11-05 12:45 | verify | 재열람 0(WebFetch PROVENANCE_REQUIRED 전면 차단 18차 연속, 재열람 불가) | 수정 2(tools/build.py 버그 7건 수정: signals list-of-strings, howto dict, author_note missing, bus_protocol name/note 변형, hierarchy list, references key 변형; tools/capcheck.py 버그 1건: connections_json bus_protocol.name) | 불일치 0 | 승격 L2→L3 0 | ready +2 (I-099 차단조건 10점·I-100 차단조건 10점, 18차 1·2번째) | WebFetch 18차 연속 차단
 2026-11-05 11:25 | capstone | mmio-jstk2-servo-ip (CI fix attempt 2) | 등급 TBD (CI 대기 중) | fix: [BA]SPI모델 상승에지→하강에지+CS#하강시 첫비트 즉시출력, [BB]T6 timeout 3_000_000→6_000_000

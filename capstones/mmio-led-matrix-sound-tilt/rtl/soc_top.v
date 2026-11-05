@@ -75,7 +75,10 @@ module led_matrix_sound_tilt_soc (
     // 단일 신호의 negedge로 인식할 수 있도록 명시적 wire로 분리한다.
     wire pdm_rst_n  = rst_n & pdm_clk_en;
     wire iir_rst_n  = rst_n & ctrl_en;
-    wire adxl_rst_n = rst_n & adxl_en;
+    // adxl_rst_n 제거: rst_n & adxl_en 복합 와이어가 synth -flatten 후
+    // proc_dff에게 "Multiple edge sensitive events" 오류를 유발한다.
+    // adxl345_spi_reader는 always @(posedge clk) 단일 블록이므로
+    // 전역 rst_n을 직접 연결하면 동기 리셋 DFF로 올바르게 추론된다.
 
     // 에너지 언팩
     assign e0 = energy_flat[0*32+:32];
@@ -123,7 +126,7 @@ module led_matrix_sound_tilt_soc (
 
     // ADXL345 SPI 판독기
     adxl345_spi_reader #(.CLK_DIV(50)) u_adxl (
-        .clk(clk), .rst_n(adxl_rst_n),
+        .clk(clk), .rst_n(rst_n),
         .spi_sclk(adxl_sclk), .spi_mosi(adxl_mosi),
         .spi_miso(adxl_miso), .spi_cs_n(adxl_cs_n),
         .x_tilt(x_tilt), .y_tilt(y_tilt), .data_valid(adxl_valid)
