@@ -178,3 +178,4 @@
 2026-11-05 08:15 | collect | I2C 멀티마스터·중재 로직 [B3] · S2 조합 탐색(주)+S7 난이도 사다리(보조) | 카드 +3 (alexforencich-verilog-i2c L2, hdl-util-i2c L2, tom-urkin-i2c L2) | 아이디어 +2 (I-097 멀티마스터+7세그 버스 모니터, I-098 버스 충돌 주입 테스트벤치) | 큐 잔여 535 | blocked 0 (WebFetch PROVENANCE_REQUIRED 차단, 카드 전량 L2)
 
 2026-11-05 08:41 | capstone | mmio-7seg-adv-ip (I-072, ready→used) | 등급 S0 (로컬 iverilog·yosys 없음, CI 대기) | AXI4-Lite 7세그 고급 IP: DATA+CTRL 2레지스터, blank[3:0]·dp[3:0]·16단계 PWM 밝기, 1kHz 멀티플렉서 FSM 포함 | schema 수정: mmio-relay-autotune-ip capstone.json 오류 6종 해결(signals 형식·integration compat·howto 형식·author_note·bus_protocol.note·module="-") | 큐 잔여 548
+- 2026-11-05 09:14 | collect | CRC 체크섬 하드웨어 계산기 [B3] · S1 인접 도메인 이식(주)+S3 빈틈 추적(보조) | 카드 +3 (L2) | 아이디어 +2 (I-099, I-100) | 큐 잔여 522 | blocked 0

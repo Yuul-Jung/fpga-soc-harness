@@ -1327,3 +1327,29 @@
 - 난이도: 2 / 단계: T1 / 상태: vetted
 - 심사: 2026-11-05 /harvest(S7), 근거 0+새로움 2+적합성 2+완결성 2 = 6점. 보강: 근거 카드 rechecked_at 1건 이상.
 - 2026-11-05 /verify(16차) 확인: 첫 raw→vetted 심사는 /harvest에서 완료(차단조건재심사 불적용. §14.2). 6점 → vetted. 보강: 근거 카드 rechecked_at 1건 이상(WebFetch 차단 중).
+
+## I-099 AXI4-Lite CRC-32 데이터 체크섬 IP — 병렬 XOR 트리 엔진 + 슬레이브 래퍼 (T2 SoC 접착)
+
+내 판단: S1 인접 도메인 이식 — mbuesch/crcgen 도구가 생성한 병렬 CRC-32 Verilog 로직(소프트웨어 명세 → 하드웨어)을 AXI4-Lite 슬레이브 래퍼로 감싸 MicroBlaze V SoC의 메모리맵에 연결. UART 프레이밍 프로토콜(I-095 SPI 슬레이브 카드 선례)에서 데이터 무결성 검증 용도. I-071(메모리 무결성 CRC)과 달리 스트리밍 데이터 체크섬 계산 전용.
+
+- 조합: [CRC-32 조합 XOR 코어(crc32_core.v, T2 embedded), AXI4-Lite 슬레이브 래퍼(crc32_axil.v), MicroBlaze V 소프트웨어 드라이버(C), AXI4-Lite 버스(동결 맵 free_slot)]
+- 근거 카드: mbuesch-crcgen(embedded/), heng-xiu-implement-crc-32-verilog(embedded/), mdpi-parallel-crc-fpga-electronics-2021(papers/)
+- 근거 URL: https://github.com/mbuesch/crcgen, https://bues.ch/h/crcgen
+- 새로움 근거: 카탈로그에 CRC 체크섬 AXI4-Lite IP 카드 없음. mbuesch-crcgen으로 다항식 교체가 용이한 파라메트릭 IP는 카탈로그에 없음 — 내 판단.
+- Basys3 적합성 근거: 병렬 CRC-32 XOR 트리는 LUT 약 100개 미만(XC7A35T 20800 LUT 중 < 0.5%). AXI4-Lite 슬레이브는 FF 약 40개 추가. 동결 맵 free_slots 중 1 슬롯(64KB) 배정 가능 — 내 판단.
+- 난이도: 2
+- 단계: T2
+- 상태: raw
+
+## I-100 멀티-CRC (CRC-8/16/32) 선택 IP — MODE 레지스터로 다항식 런타임 선택 (T2 S2 조합)
+
+내 판단: S2 조합 탐색 — CRC-8(MAXIM/Dallas DS18B20용), CRC-16-CCITT(UART/MODBUS), CRC-32(이더넷/ZIP)를 하나의 AXI4-Lite IP에서 MODE 레지스터 1비트로 선택. mbuesch-crcgen으로 세 다항식 Verilog를 각각 생성해 MUX로 선택. UART 프레이밍 프로토콜 카드(다음 주제 `[B3] UART 프레이밍 프로토콜`)와 조합하면 T2 완성도 높은 통신 데이터 무결성 블록 구성 가능.
+
+- 조합: [CRC-8 XOR 코어, CRC-16 XOR 코어, CRC-32 XOR 코어(각각 crcgen 생성), MODE 레지스터 MUX(T2 glue), AXI4-Lite 슬레이브 래퍼, MicroBlaze V 드라이버]
+- 근거 카드: mbuesch-crcgen(embedded/), heng-xiu-implement-crc-32-verilog(embedded/), mdpi-parallel-crc-fpga-electronics-2021(papers/)
+- 근거 URL: https://bues.ch/h/crcgen, https://opencores.org/projects/parallelcrcgen
+- 새로움 근거: 카탈로그에 멀티-CRC 선택 AXI IP 없음. CRC-8/16/32 세 가지를 단일 IP에서 런타임 선택하는 카드 없음 — 내 판단.
+- Basys3 적합성 근거: LUT 약 200~300개(세 XOR 트리 + MUX). AXI4-Lite 슬레이브 1 슬롯. I-099 단일 CRC-32 IP의 확장 — 내 판단.
+- 난이도: 3
+- 단계: T2
+- 상태: raw

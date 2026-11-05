@@ -228,3 +228,6 @@
 | [alexforencich-verilog-i2c](vendor-neutral/alexforencich-verilog-i2c.md) | L2 | T1 | 없음 (Basys3 needs-port) | 2026-11-05 |
 | [hdl-util-i2c](vendor-neutral/hdl-util-i2c.md) | L2 | T1 | 없음 (Basys3 needs-port) | 2026-11-05 |
 | [tom-urkin-i2c](vendor-neutral/tom-urkin-i2c.md) | L2 | T1 | 없음 (Basys3 needs-port) | 2026-11-05 |
+| [mbuesch-crcgen](embedded/mbuesch-crcgen.md) | L2 | T2 | 없음 (범용 도구) | 2026-11-05 |
+| [heng-xiu-implement-crc-32-verilog](embedded/heng-xiu-implement-crc-32-verilog.md) | L2 | T1 | 없음 (Basys3 needs-port) | 2026-11-05 |
+| [mdpi-parallel-crc-fpga-electronics-2021](papers/mdpi-parallel-crc-fpga-electronics-2021.md) | L2 | T2 | 없음 (논문) | 2026-11-05 |

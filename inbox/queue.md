@@ -543,3 +543,14 @@
 - https://github.com/tom-urkin/I2C | SystemVerilog I2C: 멀티마스터 중재·클럭 스트레칭·NACK 처리 포함, Basys3 미검증(L1) | I2C multi-master arbitration FPGA Verilog clock stretching AXI4-Lite GitHub
 - https://github.com/trondd/oc-i2c | OpenCores I2C Verilog 포트: 멀티마스터 중재 FSM 포함, 보드 미지정(L1) | I2C multi-master arbitration FPGA Verilog GitHub
 - https://byu-cpe.github.io/ecen320/labs/multi-segment | BYU ECEN 320 7세그 멀티플렉서 고급 실습(blank, dp_in, REFRESH_RATE), Basys3(L1) | BYU ECEN 320 seven segment display Verilog blank dp REFRESH_RATE Basys3
+
+- https://github.com/mbuesch/crcgen | mbuesch/crcgen: Python 도구, 임의 CRC 다항식에서 Verilog/VHDL/MyHDL 합성 가능 코드 생성 (MIT) — 카드 완료 | CRC Verilog generator HDL crcgen
+- https://github.com/Heng-xiu/implement-CRC-32-in-Verilog | Heng-xiu: FCU 통신 프로토콜 과목, CRC-32 병렬·직렬 Verilog 비교 구현 — 카드 완료 | CRC-32 Verilog hardware parallel FPGA GitHub
+- https://mdpi.com/2079-9292/10/7/866 | MDPI Electronics 2021 "Parallel Computation of CRC-Code on an FPGA Platform for High Data Throughput" — 카드 완료 | parallel CRC hardware FPGA Artix-7 Xilinx table lookup
+- https://opencores.org/projects/parallelcrcgen | OpenCores parallelcrcgen: 병렬 CRC 생성기 IP — 미열람 L1, 라이선스 확인 필요 | opencores parallel CRC generator Verilog VHDL license
+- https://opencores.org/projects/fast-crc | OpenCores fast-crc: 고속 CRC IP — 미열람 L1, 라이선스 확인 필요 | opencores parallel CRC generator Verilog VHDL license
+- https://digitalcommons.usf.edu/esb_facpub/66 | "Generalized Parallel CRC Computation on FPGA" (USF Kennedy&Kermani) — 미열람 L1, 학술 논문 | parallel CRC hardware FPGA Artix-7 Xilinx table lookup
+- https://industrialmonitordirect.com/blogs/knowledgebase/modbus-rtu-crc-16-parallel-vhdl-implementation-for-fpga | Modbus RTU CRC-16 병렬 VHDL FPGA 구현 블로그 (S5 비정형 출처) — 미열람 L1 | CRC-16 CRC-8 Verilog FPGA checksum hardware accelerator AXI4-Lite
+- https://github.com/frontcover/Sequential-CRC-Generator_verilog | frontcover/Sequential-CRC-Generator_verilog: 순차 CRC 생성기 Verilog — 미열람 L1 | CRC Verilog AXI4-Lite IP checksum hardware accelerator
+- https://easyfpga-blog.pages.dev/posts/crc-calculator-guide | EasyFPGA CRC 계산기 가이드 (S5 비정형 출처) — 미열람 L1 | CRC 하드웨어 계산기 Verilog FPGA 병렬 구현 GitHub
+- https://www.aminer.org/pub/6627081313fb2c6cf655140e/a-high-speed-crc-implementation-on-fpga | "A High-Speed CRC-32 Implementation on FPGA" (aminer) — 미열람 L1 | Heng-xiu CRC-32 Verilog parallel FPGA search
