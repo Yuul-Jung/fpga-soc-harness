@@ -165,10 +165,12 @@ module tb_sccb_tx;
         $finish;
     end
 
-    // 타임아웃 가드 (전체 50000 클럭)
+    // 타임아웃 가드 (전체 200000 클럭)
+    // CLK_HZ=10MHz, SCCB_KHZ=10 → HALF_CNT=500, 4회 전송 × ~28000클럭 ≈ 112000 클럭
+    // 여유를 두어 200000으로 설정
     initial begin
-        #(CLK_P * 50000);
-        $display("FAIL: 전체 테스트 타임아웃 (50000 클럭 초과)");
+        #(CLK_P * 200000);
+        $display("FAIL: 전체 테스트 타임아웃 (200000 클럭 초과)");
         $finish;
     end
 

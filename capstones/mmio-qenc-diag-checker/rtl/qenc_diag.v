@@ -108,6 +108,7 @@ module qenc_diag #(
             win_timer <= 0;
             win_acc   <= 0;
             win_tick  <= 0;
+            velocity  <= 0;
         end else if (!window_en) begin
             win_timer <= 0;
             win_acc   <= 0;
@@ -124,8 +125,10 @@ module qenc_diag #(
             if (trans_valid && en && (curr_ab !== prev_ab))
                 win_acc <= win_acc + 1;
             // 창 완료 시 velocity 갱신, 누산 초기화
+            // win_tick=1일 때 velocity는 현재 win_acc를 캡처하고, 다음 클럭에 win_acc를 초기화
             if (win_tick) begin
-                win_acc <= 0;
+                velocity <= win_acc;
+                win_acc  <= 0;
             end
         end
     end
@@ -134,7 +137,6 @@ module qenc_diag #(
     always @(posedge clk) begin
         if (rst || srst) begin
             position  <= 0;
-            velocity  <= 0;
             dir       <= 0;
             ovfl      <= 0;
             err_latch <= 0;
@@ -157,10 +159,6 @@ module qenc_diag #(
                 if (error_cnt != 16'hFFFF)
                     error_cnt <= error_cnt + 1;
             end
-
-            // 창 속도 갱신
-            if (win_tick)
-                velocity <= win_acc;
         end
     end
 
