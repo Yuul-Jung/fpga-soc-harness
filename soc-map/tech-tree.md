@@ -1,6 +1,6 @@
 # SoC 기술 트리 (단계별 카드 연결)
 
-갱신: 2026-11-06 (/verify 20차). 카드 244건 기준. 비 FPGA 도메인(STM32 18건·ESP32 14건·RPi·Arduino·임베디드·전자기술 14건·papers 포함). 10차: 전자기술 도메인 14건 추가(SPWM 인버터·게이트 드라이버·전원 설계·XADC 아날로그 프런트엔드). 13차: I-082·I-083 ready 승격(PCB 설계 체크리스트), 감사 경고 수정 3건(라이선스 주석 추가). 20차: VGA·7세그·프레임버퍼·카메라·LED·PWM 카드 9건 추가(video-vga 그룹 6건+camera 1건+pwm-rgb 2건). atlas/video-vga.md 신규 작성.
+갱신: 2026-11-06 (/verify 22차). 카드 253건 기준. 비 FPGA 도메인(STM32 18건·ESP32 14건·RPi·Arduino·임베디드·전자기술 14건·papers 포함). 10차: 전자기술 도메인 14건 추가(SPWM 인버터·게이트 드라이버·전원 설계·XADC 아날로그 프런트엔드). 13차: I-082·I-083 ready 승격(PCB 설계 체크리스트), 감사 경고 수정 3건(라이선스 주석 추가). 20차: VGA·7세그·프레임버퍼·카메라·LED·PWM 카드 9건 추가(video-vga 그룹 6건+camera 1건+pwm-rgb 2건). atlas/video-vga.md 신규 작성. 22차: AXI4-Lite INTC 3건·WDT 3건·AXI4-Lite 레지스터 템플릿 3건(총 9건) 추가. I-111·I-113 ready 승격. atlas/axil-peripheral-ip.md 신규 작성.
 
 ---
 
@@ -10,7 +10,7 @@
 |---|---|---|
 | T0 | zipcpu-pmodamp2-project-ladder (T0-T2) | 핀 확인과 단음 단계 |
 | T1 | wangxuan95-fpga-sdcard-file, element14-security-camera-2-sd-card-interfacing | CPU 없이 FSM으로 SD·카메라 |
-| T2 | digilent-forum-pmodamp3-basys3-i2s, zipcpu-sdspi, zipcpu-pmodamp2-project-ladder, argrabowski-fpga-vga-display, itsnotjiaching-ec311project | I2S 송신, Wishbone 주변장치, VGA+7세그 동시 표시 |
+| T2 | digilent-forum-pmodamp3-basys3-i2s, zipcpu-sdspi, zipcpu-pmodamp2-project-ladder, argrabowski-fpga-vga-display, itsnotjiaching-ec311project, chclau-magellan-basys3-axil-regs | I2S 송신, Wishbone 주변장치, VGA+7세그 동시 표시, JTAG-to-AXI 슬레이브 레지스터 패턴 |
 | T3 | (FPGA 카드 없음) | gap: 프레임워크 기반 SoC에 주변장치를 붙인 Basys3 사례 미확보 |
 | T4 | columbia-4840-audio-visualizer, byu-ecen423-lab10-riscv-vga-7seg | DE1-SoC HPS 기반·BYU RISC-V VGA 텍스트+7세그 (소스 비공개) |
 | T5 | (카드 없음) | gap: DRAM 보드 필요, 현 카탈로그 범위 밖 |
@@ -107,8 +107,10 @@ FreeRTOS·Zephyr 비교 카드는 MicroBlaze V + AXI INTC RTOS 설계에 개조 
 - gap T2: MODBUS RTU AXI4-Lite 슬레이브 IP 카드 없음; isluckyhui-fpga-modbus-rtu(FC 0x03 슬레이브)가 기초, AXI 래퍼 신규 작성 필요(I-065 vetted).
 - gap T2: CAN FD 파서 FPGA Verilog 카드 없음; wangxuan95-fpga-can(CAN 2.0)에서 FDF 분기 추가 경로(I-064 vetted).
 - gap T3: EtherCAT 소프트 슬레이브 Basys3 MicroBlaze V 사례 없음; egerobotics-esp32s3-ethercat-soes 개조 경로 있으나 사이클 타임 미검증(I-066 dropped, 재등록 조건 필요).
-- gap T1: Basys3 MicroBlaze V에 연결된 AXI4-Lite 워치독 IP 카드 없음; rtime-cvut-openmsp430-watchdog 개조 경로 있음(I-070 vetted, 7점).
+- gap T1: Basys3 MicroBlaze V에 연결된 AXI4-Lite 워치독 IP 카드 없음; amd-axi-timebase-wdt-pg083(L2)·amoghvarsh-axi4-lite-timer-wdt(L2)·mij001-axil-timer(L3) 카드 추가됨 — AMD IP 직접 연결(yes) 또는 MIT 타이머 개조(needs-port) 경로 확보; I-070(vetted) + I-117~I-119(vetted) 아이디어 있음.
+- gap T2: Basys3 MicroBlaze V에 연결된 AXI4-Lite INTC IP 오픈소스 카드 없음(AMD IP(PG099)는 Xilinx EULA로 묶임); amd-axi-intc-pg099(L3)·zipcpu-icontrol(L3, Wishbone)·realisshoon-axi4-lite-multi-peripheral-soc(L2) 카드 추가됨 — PG099 호환 오픈소스 Verilog IP 아직 없음; I-111(ready)·I-113(ready) 아이디어가 채울 예정.
 - gap T2: Basys3 BRAM 명령 메모리 CRC 검사 AXI IP 카드 없음(I-071 vetted, 5점, I-070 선행 필요).
+- gap T2: MicroBlaze V IP 표준을 준수하는 AXI4-Lite 슬레이브 레지스터 파일 Verilog-2001 IP 카드 없음; zipcpu-wb2axip-easyaxil(L3)·chclau-magellan-basys3-axil-regs(L3)·bugratufan-axion-hdl(L3) 패턴 카드 추가됨; I-114(vetted)가 채울 예정. 상세 비교: atlas/axil-peripheral-ip.md.
 - gap T2: 전자기술 도메인에 SPWM·XADC 카드가 14건 추가되었으나, Basys3+MicroBlaze V AXI4-Lite SPWM IP 카드 없음 — I-077(ready 후보)이 채울 예정.
 - gap T2: XADC 전원 모니터 AXI-Lite IP 카드 없음 — I-075(ready)가 채울 예정.
 
@@ -150,3 +152,21 @@ SPWM·게이트 드라이버·XADC 아날로그 프런트엔드 카드는 MicroB
 | T2 | ema-eda-fpga-pcb-design-guide (electronics) | 3W 규칙·차동 쌍·via-in-pad → Pmod 확장 보드 PCB 설계 체크리스트 (I-082 ready) |
 | T2 | rfessentials-split-ground-plane-emi (electronics) | 스타 접지·GND 분리 → H-브리지-FPGA 경계 PCB 설계 체크리스트 (I-082, I-083 ready) |
 | T2 | jlcpcb-decoupling-capacitor-guide (electronics) | 디커플링 계층(100nF/1µF/10µF) → Pmod·모터 드라이버 PCB (I-082, I-083, I-084 vetted) |
+
+---
+
+## AXI4-Lite 주변장치 IP 도메인 단계 연결 (INTC·타이머/WDT·레지스터 파일, 개조 참고)
+
+AXI4-Lite 슬레이브 IP 패턴 카드는 MicroBlaze V의 `free_slots` 배정·IP 표준 래퍼 개발에 개조 경로가 있다. 상세는 `atlas/axil-peripheral-ip.md` 참조.
+
+| 단계 | 카드 | 개조 대상 |
+|---|---|---|
+| T3 | amd-axi-intc-pg099 (papers, L3) | PG099 ISR·IER·IAR·IVR·MER 레지스터 맵 → 오픈소스 Verilog INTC IP 작성 (I-111 ready, XIntc 드라이버 호환) |
+| T2 | zipcpu-icontrol (vendor-neutral, L3) | pending 래칭·MIE 2세대 버그 수정 패턴 → AXI4-Lite INTC 로직 참조 (Wishbone→AXI4-Lite 버스 변환 필요, GPL-3.0 주의) |
+| T3 | realisshoon-axi4-lite-multi-peripheral-soc (amd, L2) | Basys3 MicroBlaze + AXI INTC 주소 0x4120_0000 사례 → 동결 맵 INT_CTRL 슬롯 적합성 근거 |
+| T2 | amd-axi-timebase-wdt-pg083 (amd, L2) | 기본·윈도우 WDT + WDTOUT 하트비트 → I-117~I-119 아이디어 근거, Basys3 Pmod 연결 (I-119 ready 후보) |
+| T2 | amoghvarsh-axi4-lite-timer-wdt (vendor-neutral, L2) | 범용타이머+WDT 겸용, OKAY/SLVERR/DECERR 셀프체킹 TB → 하네스 CI 패턴 참조 |
+| T2 | mij001-axil-timer (vendor-neutral, L3) | 주기·원샷·카운트다운+IRQ, SVA+Python UVM TB, MIT → 근거 카드로 INTC 아이디어(I-111~I-113) 뒷받침 |
+| T2 | zipcpu-wb2axip-easyaxil (vendor-neutral, L3) | WSTRB apply_wstrb()·$clog2 디코더·axi_arready 버그 수정 → IP 표준 Verilog-2001 AXI4-Lite 슬레이브 기초 (I-114 vetted) |
+| T2 | chclau-magellan-basys3-axil-regs (amd, L3) | Basys3 JTAG-to-AXI 마스터 TCL 접근 패턴 → 소프트웨어 없는 IP 초기 디버그 하네스 (I-115 vetted) |
+| T2 | bugratufan-axion-hdl (vendor-neutral, L3) | @axion 주석 → VHDL/SV 레지스터 파일 자동 생성, CDC 토글 동기화기 옵션, C 헤더 자동 출력 → 반복 IP 개발 도구 체인 참조 (I-116 vetted) |
