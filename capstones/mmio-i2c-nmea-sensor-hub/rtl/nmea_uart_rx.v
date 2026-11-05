@@ -72,7 +72,7 @@ module nmea_uart_rx (
                 RS_START: begin
                     // Wait half-bit to sample in center of start bit
                     rx_baud_cnt <= rx_baud_cnt + 1'b1;
-                    if (rx_baud_cnt >= (baud_div >> 1)) begin
+                    if (rx_baud_cnt >= (baud_div >> 1) - 1'b1) begin
                         rx_baud_cnt <= 16'd0;
                         if (!rx_s2) begin
                             rx_state <= RS_DATA;
@@ -84,7 +84,7 @@ module nmea_uart_rx (
 
                 RS_DATA: begin
                     rx_baud_cnt <= rx_baud_cnt + 1'b1;
-                    if (rx_baud_cnt >= baud_div) begin
+                    if (rx_baud_cnt >= baud_div - 1'b1) begin
                         rx_baud_cnt <= 16'd0;
                         rx_shift    <= {rx_s2, rx_shift[7:1]}; // LSB first
                         rx_bit_cnt  <= rx_bit_cnt + 1'b1;
@@ -96,7 +96,7 @@ module nmea_uart_rx (
 
                 RS_STOP: begin
                     rx_baud_cnt <= rx_baud_cnt + 1'b1;
-                    if (rx_baud_cnt >= baud_div) begin
+                    if (rx_baud_cnt >= baud_div - 1'b1) begin
                         rx_baud_cnt  <= 16'd0;
                         rx_state     <= RS_IDLE;
                         if (rx_s2) begin // valid stop bit
