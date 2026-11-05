@@ -119,7 +119,6 @@ module tb_i2c_nmea_hub;
 
             // Wait for data accept
             while (!wready) @(posedge clk);
-            @(posedge clk);
             wvalid = 1'b0;
 
             // Wait for response

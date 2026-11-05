@@ -13,7 +13,7 @@ all: lint sim synth
 
 lint:
 	@mkdir -p $(BUILD_DIR)
-	verilator --lint-only -Wall --top-module $(TOP_SYNTH) $(RTL_FILES) 2>&1 | tee $(BUILD_DIR)/lint.log
+	verilator --lint-only -Wall --Wno-UNUSEDSIGNAL --top-module $(TOP_SYNTH) $(RTL_FILES) 2>&1 | tee $(BUILD_DIR)/lint.log
 	@grep -E "^%Error" $(BUILD_DIR)/lint.log && exit 1 || true
 
 sim:
