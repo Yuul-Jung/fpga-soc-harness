@@ -26,17 +26,8 @@ module adxl345_spi_reader #(
     // [0] POWER_CTL (0x2D) = 0x08 (측정 모드)
     // [1] DATA_FORMAT (0x31) = 0x00 (±2g, right-justified)
     // [2] BW_RATE (0x2C) = 0x0A (100 Hz 출력)
-    // initial 블록 없이 함수형 조합 ROM — yosys 합성 호환 (initial+always 충돌 방지)
+    // initial 블록·함수 없이 S_INIT case 직접 인라인 — yosys 합성 호환
     localparam INIT_CNT = 3;
-    function [15:0] init_cmd_rom;
-        input [1:0] idx;
-        case (idx)
-            2'd0: init_cmd_rom = {8'h2D, 8'h08};  // POWER_CTL = Measure
-            2'd1: init_cmd_rom = {8'h31, 8'h00};  // DATA_FORMAT
-            2'd2: init_cmd_rom = {8'h2C, 8'h0A};  // BW_RATE = 100Hz
-            default: init_cmd_rom = 16'h0000;
-        endcase
-    endfunction
 
     // 상태 머신
     localparam S_RESET   = 4'd0;
@@ -103,7 +94,13 @@ module adxl345_spi_reader #(
                         // 간단 구현: bit-bang 없이 FSM 단순화
                         // 실제는 별도 SPI 전송 서브루틴 필요 — 여기서는 단일 클럭으로 근사
                         spi_cs_n  <= 0;
-                        spi_shift <= init_cmd_rom(init_idx[1:0]);
+                        // 인라인 ROM — yosys 합성 호환 (함수·initial 없음)
+                        case (init_idx[1:0])
+                            2'd0: spi_shift <= {8'h2D, 8'h08}; // POWER_CTL = Measure
+                            2'd1: spi_shift <= {8'h31, 8'h00}; // DATA_FORMAT ±2g
+                            2'd2: spi_shift <= {8'h2C, 8'h0A}; // BW_RATE 100Hz
+                            default: spi_shift <= 16'h0000;
+                        endcase
                         bit_cnt   <= 0;
                         sclk_en   <= 1;
                         state     <= S_INIT;

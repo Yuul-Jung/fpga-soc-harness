@@ -112,6 +112,10 @@ module axil_led_matrix_slave #(
                 s_arready <= 1;
                 s_rvalid  <= 1;
                 s_rresp   <= 2'b00;
+                // 주소 범위 가드: [5:2] 4비트만 보면 ≥0x40이 wrap-around
+                if (s_araddr[ADDR_W-1:6] != 0) begin
+                    s_rdata <= 32'hDEAD_BEEF;
+                end else
                 case (s_araddr[5:2])
                     4'h0: s_rdata <= {28'b0, ctrl_adxl_en, ctrl_pdm_clk_en, 1'b0, ctrl_en};
                     4'h1: s_rdata <= {24'b0, iir_busy, 6'b0, adxl_valid_in, pdm_valid}; // STATUS

@@ -79,7 +79,8 @@ module frame_buf #(
                         begin : bar_draw
                             reg [2:0] bar_h;
                             integer   row_idx, col_l, col_r;
-                            bar_h = energy[b][ENERGY_W-1:ENERGY_W-3];
+                            // energy_flat을 직접 참조: energy[] NBA가 같은 클럭에서 아직 반영 안 됨
+                            bar_h = energy_flat[(b+1)*ENERGY_W - 1 -: 3];
                             col_l = b * 2;
                             col_r = b * 2 + 1;
                             for (row_idx=0; row_idx<ROWS; row_idx=row_idx+1) begin
