@@ -48,8 +48,8 @@ header.top .brand{font-weight:700;color:var(--text);text-decoration:none}
 </style></head><body><header class="top"><a class="brand" href="../hub.html">FPGA SoC 하네스</a><a href="../hub.html">메인</a><a href="../hub.html#capstones">캡스톤</a><a href="../soc-map/tech-tree.html">기술 트리</a><a href="../catalog/index.html">카탈로그</a><a href="../inbox/ideas.html">아이디어</a><a href="../harness.html">지침</a><a href="https://github.com/Yuul-Jung/fpga-soc-harness">GitHub</a></header><main>
 <p class="muted">캡스톤 패키지 · Basys3 · 단계 T2</p>
 <h1>OV7670 SCCB 설정 + RGB565 캡처 프런트엔드</h1><p>OV7670 카메라 모듈을 SCCB(I2C 호환 2선 직렬)로 초기화하고, PCLK 도메인에서 RGB565 픽셀을 캡처해 MMIO 슬레이브로 노출하는 T2 SoC 주변장치 패키지.</p>
-<div class="badges"><span class="badge b-skipped">린트: 건너뜀 (verilator 없음)</span><span class="badge b-skipped">시뮬레이션: 건너뜀 (iverilog 없음)</span><span class="badge b-skipped">합성: 건너뜀 (yosys 없음)</span><span class="badge b-not-tested">보드: not-tested</span></div>
-<p class="muted">검증 상태는 실행 기록이 있을 때만 표시한다 · 기준 2026-11-04. 기록이 없으면 '미실행'이다.</p>
+<div class="badges"><span class="badge b-not-run">린트: 미실행</span><span class="badge b-not-run">시뮬레이션: 미실행</span><span class="badge b-not-run">합성: 미실행</span><span class="badge b-not-tested">보드: not-tested</span></div>
+<p class="muted">검증 상태는 실행 기록이 있을 때만 표시한다. 기록이 없으면 '미실행'이다.</p>
 <nav><a href="#goal">목표</a><a href="#arch">계통도</a><a href="#hier">모듈 계층</a><a href="#map">메모리맵</a><a href="#ext">외부 부품·전기</a><a href="#road">기술 트리</a><a href="#src">실행 소스</a><a href="#verify">검증</a><a href="#ref">참고·위험</a></nav>
 <h2 id="goal">1. 목표와 범위</h2><h3>목표</h3><ul><li>SCCB 마스터 FSM으로 OV7670 설정 ROM(10 엔트리) 전송 완료</li><li>OV7670의 VSYNC·HREF·PCLK 타이밍에 맞춰 RGB565 2바이트를 한 픽셀로 결합</li><li>PCLK ↔ 시스템 클럭 도메인 교차(2-FF 토글 동기화기)</li><li>MMIO 슬레이브 레지스터(CTRL/STATUS/PIXEL/FRAME/ID_VER)로 소프트웨어 접근 제공</li><li>iverilog 시뮬레이션 PASS, yosys 합성 성공(S2)</li></ul><h3>범위 밖</h3><ul><li>프레임 버퍼 (Basys3 BRAM 한계, 약 76 KB로 QVGA 한 장 불가)</li><li>VGA 출력 직결 (별도 패키지 T3로 확장 예정)</li><li>자동 노출·화이트밸런스 등 고급 카메라 제어</li><li>JPEG/YUV 출력 (RGB565 고정)</li><li>MicroBlaze V 연결 (이 패키지는 단독 시뮬레이션용 mmio-lite 버스 사용)</li></ul><p class="muted">I-006 아이디어(ready 상태, 9점). 선택 경로: §13.7 자동 과제화, ready 직접 선택.</p>
 <h2 id="arch">2. 계통도</h2><p>클럭: 100 MHz 시스템 (Basys3 W5) + 24 MHz cam_pclk (OV7670 PCLK, Pmod JA7, 비동기 도메인)</p><div class="panel"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 974 618" role="img" aria-label="블록 다이어그램">
@@ -730,7 +730,7 @@ module basys3_top (
     assign led[3] = 1&#x27;b0;
 endmodule
 `default_nettype wire
-</pre></details><details><summary><code>tb/tb_sccb_tx.v</code> <span class="muted">180줄</span></summary><pre>// tb_sccb_tx.v — sccb_tx 모듈 자체 점검 테스트벤치
+</pre></details><details><summary><code>tb/tb_sccb_tx.v</code> <span class="muted">183줄</span></summary><pre>// tb_sccb_tx.v — sccb_tx 모듈 자체 점검 테스트벤치
 // SCCB 슬레이브 모델: 각 NA 비트에서 1(don&#x27;t-care) 응답
 // 3회 전송(3바이트 패킷)을 발행해 타이밍과 done/na_err을 검증한다.
 // 통과: &quot;PASS: ...&quot; , 실패: &quot;FAIL: ...&quot; 로 시작하는 줄 출력 후 $finish
@@ -795,9 +795,10 @@ module tb_sccb_tx;
             start = 1&#x27;b1;
             @(posedge clk); #1;
             start = 1&#x27;b0;
-            // done 대기 (최대 10000 클럭)
+            // done 대기 (최대 50000 클럭)
+            // CLK_HZ=10MHz, SCCB_KHZ=10 → HALF_CNT=500, 3바이트×18×500≈27000 클럭 필요
             got_done = 0;
-            timeout  = 10000;
+            timeout  = 50000;
             while (!got_done &amp;&amp; timeout &gt; 0) begin
                 @(posedge clk); #1;
                 if (done) got_done = 1;
@@ -896,10 +897,12 @@ module tb_sccb_tx;
         $finish;
     end
 
-    // 타임아웃 가드 (전체 50000 클럭)
+    // 타임아웃 가드 (전체 200000 클럭)
+    // CLK_HZ=10MHz, SCCB_KHZ=10 → HALF_CNT=500, 4회 전송 × ~28000클럭 ≈ 112000 클럭
+    // 여유를 두어 200000으로 설정
     initial begin
-        #(CLK_P * 50000);
-        $display(&quot;FAIL: 전체 테스트 타임아웃 (50000 클럭 초과)&quot;);
+        #(CLK_P * 200000);
+        $display(&quot;FAIL: 전체 테스트 타임아웃 (200000 클럭 초과)&quot;);
         $finish;
     end
 
@@ -1300,7 +1303,7 @@ clean:
 	rm -f *.vcd tb_sccb_tx.vcd tb_ov7670_capture.vcd
 </pre></details><h3>시뮬레이션 (iverilog)</h3><ol><li>make -C capstones/mmio-ov7670-sccb-capture lint</li><li>make -C capstones/mmio-ov7670-sccb-capture sim_sccb   # 기대: PASS: sccb_tx — 4회 전송 완료</li><li>make -C capstones/mmio-ov7670-sccb-capture sim_capture # 기대: PASS: ov7670_capture — 픽셀 8개</li><li>make -C capstones/mmio-ov7670-sccb-capture sim         # 전체 시뮬레이션</li></ol><h3>합성 추정 (yosys)</h3><ol><li>make -C capstones/mmio-ov7670-sccb-capture synth</li><li>build/synth.log에서 셀 수와 LUT 추정 확인</li><li>주의: yosys 추정이므로 Vivado 실제 자원과 차이 있음</li></ol><h3>Vivado 빌드 (Basys3)</h3><ol><li>새 RTL 프로젝트, 파트 xc7a35tcpg236-1</li><li>rtl/*.v 추가 (tb/ 제외), constr/basys3.xdc 추가, 최상위 basys3_top</li><li>Run Synthesis → Run Implementation → Generate Bitstream</li><li>OV7670 모듈: VCC=3.3V, GND 공통, SIO_C→Pmod JA1, SIO_D↔Pmod JA2</li><li>PCLK→JA7, VSYNC→JA8, HREF→JA9, D[7]→JA10, D[6:3]→JB1~JB4, D[2:0]→JC1~JC3</li><li>SW[0] ON 후 btnc 한 번 → SCCB ROM 10 엔트리 전송 → LED[0] 점등 (CFG_DONE)</li><li>SW[1] ON 후 btnc 한 번 → 캡처 활성 → LED[1] 프레임 완료 시 점등</li></ol>
 <h2 id="verify">8. 검증</h2><div class="panel"><table><tr><th>단계</th><th>결과</th><th>내용</th></tr>
-<tr><td>린트(verilator)</td><td>건너뜀</td><td>verilator 없음</td></tr><tr><td>시뮬레이션(iverilog)</td><td>건너뜀</td><td>iverilog 없음</td></tr><tr><td>합성 추정(yosys)</td><td>건너뜀</td><td>yosys 없음</td></tr><tr><td>보드 동작</td><td>not-tested</td><td></td></tr>
+<tr><td>린트(verilator)</td><td>미실행</td><td></td></tr><tr><td>시뮬레이션(iverilog)</td><td>미실행</td><td></td></tr><tr><td>합성 추정(yosys)</td><td>미실행</td><td></td></tr><tr><td>보드 동작</td><td>not-tested</td><td></td></tr>
 </table></div><p>S3(보드 동작)는 에이전트가 올리지 않는다. 사람이 직접 확인 필요.</p>
 <h2 id="ref">9. 참고 카드와 위험</h2><h3>참고 카드</h3><ul><li><code>kwondo99-fpga-vga-photobooth-project</code> — OV7670→VGA 파이프라인 구조 참고 (SCCB 초기화, PCLK 캡처, Basys3 Pmod VGA 연결) <span class="muted">(카드 미작성)</span></li><li><code>pkt-gif-custom-vending-machine</code> — mmio-lite 버스 패턴, MMIO 슬레이브 레지스터 설계 참고 <span class="muted">(카드 미작성)</span></li></ul><h3>위험·한계</h3><ul><li>PCLK 비동기 리셋: ov7670_capture의 prst는 시스템 리셋 신호를 그대로 받는다. PCLK 도메인에서 리셋 메타스태빌리티 위험 — 이식 시 2-FF 동기화 추가 필요</li><li>sync_pulse 조건: src 펄스 간격 &gt; 2 dst 클럭 주기 보장 필요. pixel_valid는 PCLK 주기마다 가능하여, 24 MHz PCLK에서 2×(1/100 MHz)=20 ns 미충족 위험. 픽셀마다 pixel_valid를 올리는 현재 설계는 고속 환경에서 CDC 누락 가능 — 고속 전송 시 BRAM FIFO + handshake로 교체 권장</li><li>설정 ROM 크기: 10 엔트리만 포함 (실제 OV7670 RGB565 초기화는 약 50+ 레지스터). 나머지 레지스터는 기본값 의존</li><li>na_err: OV7670 SCCB는 NA(don&#x27;t-care)이므로 na_err=1이어도 정상 동작 가능. 에러 처리 없이 래치만 함</li><li>IO 전압: Pmod 3.3V, OV7670 모듈 IO 3.3V. 직접 연결 가능하나 모듈 종류에 따라 5V VCC 공급 필요한 경우가 있으므로 모듈 사양 확인 필수</li></ul>
 </main></body></html>

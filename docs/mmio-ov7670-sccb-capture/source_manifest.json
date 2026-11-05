@@ -40,8 +40,8 @@
     {
       "group": "tb",
       "path": "tb/tb_sccb_tx.v",
-      "sha256": "c68c6b83aebdb91549d925d8a43202a99774af212bc4e690bfdc237ecec4b3fd",
-      "lines": 180,
+      "sha256": "eb5ab5014c2f9bbb333add7ee2963192db90971b1349361691cdaf757e27b112",
+      "lines": 183,
       "origin": "first_party"
     },
     {
