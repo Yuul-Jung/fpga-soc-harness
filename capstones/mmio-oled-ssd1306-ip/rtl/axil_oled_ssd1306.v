@@ -301,7 +301,7 @@ module axil_oled_ssd1306 #(
     // 6. AXI4-Lite 슬레이브
     // ═══════════════════════════════════════════════════
     // 쓰기 주소 래치
-    reg [7:0] aw_addr_lat;
+    reg [1:0] aw_addr_lat;
     reg       aw_lat_v;
 
     // 단일 사이클 비동기 슬레이브 — 쓰기
@@ -311,7 +311,7 @@ module axil_oled_ssd1306 #(
             s_wready       <= 1'b0;
             s_bresp        <= 2'b00;
             s_bvalid       <= 1'b0;
-            aw_addr_lat    <= 8'd0;
+            aw_addr_lat    <= 2'd0;
             aw_lat_v       <= 1'b0;
             reg_en_refresh <= 1'b0;
         end else begin
@@ -321,7 +321,7 @@ module axil_oled_ssd1306 #(
             // 주소 채널
             if (s_awvalid && !aw_lat_v) begin
                 s_awready   <= 1'b1;
-                aw_addr_lat <= s_awaddr;
+                aw_addr_lat <= s_awaddr[3:2];
                 aw_lat_v    <= 1'b1;
             end
 
@@ -329,7 +329,7 @@ module axil_oled_ssd1306 #(
             if (s_wvalid && aw_lat_v) begin
                 s_wready <= 1'b1;
                 aw_lat_v <= 1'b0;
-                case (aw_addr_lat[3:2])
+                case (aw_addr_lat)
                     2'd0: begin // CTRL
                         reg_en_refresh <= s_wdata[0];
                         if (s_wdata[1]) force_init_r <= 1'b1; // force_init 펄스

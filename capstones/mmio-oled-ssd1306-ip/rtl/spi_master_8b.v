@@ -17,7 +17,7 @@ module spi_master_8b #(
     output reg        done,        // 1-clock 완료 펄스
     // SPI 버스 (CS·DC는 상위 모듈이 제어)
     output reg        sck,
-    output reg        mosi
+    output wire       mosi
 );
 
     // ── 분주 카운터 ──────────────────────────────────────
@@ -31,14 +31,15 @@ module spi_master_8b #(
 
     // ── 시프트 레지스터 ───────────────────────────────────
     reg [7:0] shreg;
+    // MOSI는 시프트 레지스터 MSB에서 조합 출력 (shreg[7] 항상 유효)
+    assign mosi = shreg[7];
 
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             busy     <= 1'b0;
             done     <= 1'b0;
             sck      <= 1'b0;
-            mosi     <= 1'b0;
-            div_cnt  <= '0;
+            div_cnt  <= 0;
             edge_cnt <= 5'd0;
             shreg    <= 8'd0;
         end else begin
@@ -46,20 +47,18 @@ module spi_master_8b #(
 
             if (!busy) begin
                 sck     <= 1'b0;
-                mosi    <= 1'b0;
-                div_cnt <= '0;
+                div_cnt <= 0;
                 if (start) begin
-                    shreg    <= byte_data;
+                    shreg    <= byte_data;    // shreg[7]=byte_data[7]: CPHA=0 MSB 미리 출력 (wire mosi)
                     edge_cnt <= 5'd0;
                     busy     <= 1'b1;
-                    mosi     <= byte_data[7];  // CPHA=0: MSB 미리 출력
                 end
             end else begin
                 // 분주
                 if (!div_tick) begin
                     div_cnt <= div_cnt + 1'b1;
                 end else begin
-                    div_cnt <= '0;
+                    div_cnt <= 0;
                     if (edge_cnt[0] == 1'b0) begin
                         // 짝수 → SCK 상승 엣지 (슬레이브가 샘플)
                         sck <= 1'b1;
@@ -67,15 +66,13 @@ module spi_master_8b #(
                         // 홀수 → SCK 하강 엣지
                         sck <= 1'b0;
                         if (edge_cnt < 5'd15) begin
-                            // 다음 비트 출력: 비트 순서 [7→6→5→…→0]
-                            // 하강 엣지 번호 = edge_cnt>>1 = 0..6 → 비트 [6..0]
+                            // 다음 비트를 MSB로 올림: shreg[7]이 mosi (wire)
                             shreg <= {shreg[6:0], 1'b0};
-                            mosi  <= shreg[6];
                         end else begin
                             // 마지막 하강 (edge_cnt==15): 완료
-                            mosi <= 1'b0;
-                            busy <= 1'b0;
-                            done <= 1'b1;
+                            shreg <= 8'd0;   // mosi=wire: 0으로 정리
+                            busy  <= 1'b0;
+                            done  <= 1'b1;
                         end
                     end
                     edge_cnt <= edge_cnt + 5'd1;

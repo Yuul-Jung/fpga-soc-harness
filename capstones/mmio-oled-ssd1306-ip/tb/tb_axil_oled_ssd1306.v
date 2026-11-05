@@ -167,6 +167,9 @@ module tb_axil_oled_ssd1306;
     integer    i;
     reg        all_pass;
     integer    fail_cnt;
+    // init_check 배열과 플래그 — 모듈 레벨에 선언 (익명 블록 내 선언은 SV 전용)
+    reg [7:0]  init_check [0:23];
+    reg        init_dc_ok;
 
     initial begin
         all_pass = 1; fail_cnt = 0;
@@ -195,8 +198,6 @@ module tb_axil_oled_ssd1306;
         // 주요 확인: AE(0), 8D(8), 14(9), A4(22), AF(23)
         // 모두 명령(dc=0)
         begin
-            reg [7:0] init_check [0:23];
-            reg       init_dc_ok;
             init_dc_ok = 1;
             init_check[ 0] = 8'hAE;
             init_check[ 1] = 8'hD5;
