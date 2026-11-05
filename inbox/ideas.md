@@ -330,7 +330,7 @@
 - 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(digikey-forum-jstk2-pmod-controller-vhdl·vhdlwhiz-rc-servo-controller·shashankr-basys3-fpga-robotic-arm, rechecked_at 불문) → 차단 근거 3 + 새로움 2(JSTK2→서보 IP 없음) + 적합성 2(Pmod 2개·서보 전원 분리) + 완결성 2(JSTK2 모델+서보 펄스 비교 명확) = 9점 ≥ 7, 사이클 상한 2건 도달로 vetted 유지. 다음 사이클에서 ready 승격 가능.
 
 ## I-029 상태 표시 OLED IP: SPI 초기화 ROM + 128x32 프레임 버퍼 창, 제어 루프 값(속도·오차)을 글자로 표시, SPI 출력 바이트열 비교 테스트벤치
-- 상태: used (패키지: mmio-oled-ssd1306-ip, 2026-11-05 /capstone)
+- 상태: used (패키지: mmio-ssd1306-oled-spi-ip, 2026-11-05 /capstone)
 - 요약: 내 판단: 초기화 명령을 ROM(데이터)으로 두고 FSM은 바이트 전송만 하는 SSD1306 SPI 컨트롤러를 AXI4-Lite 레지스터(시작, 상태, 버퍼 쓰기 창, 전원 순서 대기 파라미터)로 감싼다. 소프트웨어가 엔코더·PID 값을 5x7 글자로 버퍼에 그리면 IP가 페이지 단위로 밀어낸다. 시험은 SPI 출력 바이트열을 기대값과 비교하는 자체 점검 tb.
 - 조합: [Pmod OLED(SSD1306 SPI), 엔코더·PID 값 레지스터, AXI4-Lite 레지스터, 프레임 완료 인터럽트]
 - 근거: [digilent-pmod-oled-reference-manual, lushaylabs-tang-nano-9k-ssd1306-oled, masterplayer-lcd-st7789-sv]
