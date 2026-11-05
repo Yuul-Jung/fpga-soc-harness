@@ -222,6 +222,10 @@
   },
 
   "verification": {
+    "grade": "S2",
+    "lint":  "pass (경고 0건, CI run #41951716489, commit a92a6ab)",
+    "sim":   "pass (PASS: all tests passed, CI run #41951716489)",
+    "synth": "pass (stat 파싱 실패 — yosys 추정치 미확보, 합성 성공)",
     "board": "not-tested",
     "notes": "S3(보드 동작)는 에이전트가 올리지 않음. 사람이 Basys3에서 확인 후 'pass + 날짜'로 갱신."
   },
