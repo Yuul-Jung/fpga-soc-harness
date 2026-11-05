@@ -166,6 +166,11 @@ module axil_ssd1306_spi #(
     reg        spi_active;
     reg [3:0]  spi_phase;     // 0=사이클 시작, 각 비트당 2페이즈
 
+    // 카운터 증분(+1)에서 비트폭 불일치 경고 억제:
+    // Verilog 비부호 정수 1은 32비트로 처리되어 좁은 레지스터에 대입 시
+    // WIDTHTRUNC가 발생하나, 카운터 순환 동작이 의도된 설계이므로 억제한다.
+    /* verilator lint_off WIDTHTRUNC */
+
     // SPI 송신기 (Mode 0, MSB first, CS는 외부 FSM이 제어)
     always @(posedge clk) begin
         spi_done <= 0;
@@ -455,8 +460,11 @@ module axil_ssd1306_spi #(
     // ----------------------------------------------------------------
     assign irq = r_irq_en & r_frame_done;
 
+    /* verilator lint_on WIDTHTRUNC */
+
     // ----------------------------------------------------------------
     // AXI4-Lite 프로토콜 표준 32비트 포트의 미사용 상위 비트 흡수
+    // 및 의도적으로 읽지 않는 내부 신호 흡수
     // (verilator -Wall UNUSEDSIGNAL 억제)
     // ----------------------------------------------------------------
     /* verilator lint_off UNUSEDSIGNAL */
@@ -464,7 +472,9 @@ module axil_ssd1306_spi #(
         s_awaddr[31:6],  // 오프셋 [5:0]만 디코딩
         s_wdata[31:9],   // 최대 BUF_ADDR [8:0]
         s_araddr[31:6],  // 오프셋 [5:0]만 디코딩
-        s_wstrb          // WSTRB 무시 (전체 바이트 쓰기만)
+        s_wstrb,         // WSTRB 무시 (전체 바이트 쓰기만)
+        spi_done,        // SPI FSM 완료 플래그 — 메인 FSM은 !spi_active 사용
+        spi_shift[7]     // MSB는 spi_byte[7]로 직접 전송; 시프트 레지스터는 [6:0]만 사용
     };
     /* verilator lint_on UNUSEDSIGNAL */
 
