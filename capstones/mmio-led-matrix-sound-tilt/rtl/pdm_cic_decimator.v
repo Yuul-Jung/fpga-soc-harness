@@ -28,7 +28,7 @@ module pdm_cic_decimator #(
     reg [$clog2(R)-1:0] clk_cnt;
     reg pdm_clk_r;
 
-    always @(posedge clk or negedge rst_n) begin
+    always @(posedge clk) begin
         if (!rst_n) begin
             clk_cnt   <= 0;
             pdm_clk   <= 0;
@@ -52,7 +52,7 @@ module pdm_cic_decimator #(
     reg signed [ACC_W-1:0] intg[0:STAGES-1];
 
     integer i;
-    always @(posedge clk or negedge rst_n) begin
+    always @(posedge clk) begin
         if (!rst_n) begin
             intg[0] <= 0; intg[1] <= 0; intg[2] <= 0;
         end else if (pdm_clk_rise) begin
@@ -69,7 +69,7 @@ module pdm_cic_decimator #(
     reg dec_tick;
     reg signed [ACC_W-1:0] intg2_latch;
 
-    always @(posedge clk or negedge rst_n) begin
+    always @(posedge clk) begin
         if (!rst_n) begin
             dec_cnt    <= 0;
             dec_tick   <= 0;
@@ -91,7 +91,7 @@ module pdm_cic_decimator #(
     reg signed [ACC_W-1:0] comb_d[0:STAGES];
     reg signed [ACC_W-1:0] comb_q[0:STAGES];
 
-    always @(posedge clk or negedge rst_n) begin
+    always @(posedge clk) begin
         if (!rst_n) begin
             comb_d[0] <= 0; comb_d[1] <= 0; comb_d[2] <= 0;
             comb_q[0] <= 0; comb_q[1] <= 0; comb_q[2] <= 0;

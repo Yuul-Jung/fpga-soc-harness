@@ -101,7 +101,7 @@ module iir_band_energy #(
 
     integer k;
 
-    always @(posedge clk or negedge rst_n) begin
+    always @(posedge clk) begin
         if (!rst_n) begin
             for (k=0; k<N_BANDS; k=k+1) begin
                 xd1[k] <= 0; xd2[k] <= 0;
