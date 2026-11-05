@@ -38,10 +38,7 @@ sim:
 ## ----------------------------------------------------------------
 synth:
 	@mkdir -p $(BUILD)
-	yosys -p 'read_verilog $(SYNTH_SRC); \
-	          synth_xilinx -top $(SYNTH_TOP); \
-	          stat' \
-	      > $(BUILD)/synth.log 2>&1
+	yosys -q -l $(BUILD)/synth.log -p "read_verilog $(SYNTH_SRC); synth_xilinx -top $(SYNTH_TOP) -flatten; stat"
 	@echo "--- synth done (see $(BUILD)/synth.log) ---"
 	@tail -20 $(BUILD)/synth.log
 

@@ -180,6 +180,7 @@ module axil_7seg_ip #(
             4'hD: hex_to_seg = 7'b010_0001; // d: b,c,d,e,g ON
             4'hE: hex_to_seg = 7'b000_0110; // E: a,d,e,f,g ON
             4'hF: hex_to_seg = 7'b000_1110; // F: a,e,f,g ON
+            default: hex_to_seg = 7'b111_1111; // all segments off
         endcase
     endfunction
 
@@ -216,19 +217,31 @@ module axil_7seg_ip #(
     // PWM brightness generator
     // 16 levels: duty = (bright+1)/16 of each digit period
     // bright=0: 1/16, bright=15: 16/16=100%
+    // PWM_STEP = MUX_DIV / 16 = 6250 cycles per brightness level
+    // pwm_cnt increments every PWM_STEP cycles within each digit slot
     // ---------------------------------------------------------------
     localparam PWM_BITS = 4;
+    localparam PWM_STEP = MUX_DIV >> PWM_BITS; // 6250 — no multiplier needed
+    // ceil(log2(6250)) = 13 bits for step counter
     reg [PWM_BITS-1:0] pwm_cnt;
+    reg [12:0]         pwm_step_cnt;
 
     always @(posedge aclk) begin
-        if (!aresetn)
-            pwm_cnt <= 0;
-        else if (mux_cnt == 0)   // reset PWM at digit transition
-            pwm_cnt <= 0;
-        else if (mux_cnt < (MUX_DIV >> PWM_BITS) * (pwm_cnt + 1))
-            ; // hold
-        else
-            pwm_cnt <= pwm_cnt + 1'b1;
+        if (!aresetn) begin
+            pwm_cnt      <= 4'd0;
+            pwm_step_cnt <= 13'd0;
+        end else if (mux_cnt == 0) begin
+            // Reset both counters at every digit boundary
+            pwm_cnt      <= 4'd0;
+            pwm_step_cnt <= 13'd0;
+        end else begin
+            if (pwm_step_cnt >= PWM_STEP - 1) begin
+                pwm_step_cnt <= 13'd0;
+                pwm_cnt      <= pwm_cnt + 1'b1;
+            end else begin
+                pwm_step_cnt <= pwm_step_cnt + 13'd1;
+            end
+        end
     end
 
     // PWM gate: HIGH when pwm_cnt <= bright (duty cycle)
