@@ -217,7 +217,18 @@
   ],
   "verification": {
     "board": "not-tested",
-    "notes": "시뮬레이션(S1): iverilog tb 자체 점검. 합성(S2): yosys 추정. 보드(S3): 미검증 — 사람이 확인해야 함."
+    "lint": "pass",
+    "lint_warnings": 12,
+    "sim": "pass",
+    "synth": "pass",
+    "synth_lut": 162,
+    "synth_ff": 168,
+    "synth_tool": "yosys 0.52 (추정)",
+    "grade": "S2",
+    "ci_commit": "46f25bf631600da96488cac61e6fe4b9cb5bed9a",
+    "ci_run": "41939194653",
+    "ci_date": "2026-11-05",
+    "notes": "S2 달성 (2026-11-05 CI #278). lint PASS(경고 12건), sim PASS(T1-T6 전체), synth PASS (LUT 162, FF 168, yosys 추정). 보드(S3): 미검증 — 사람이 확인해야 함."
   },
   "risks": [
     "PWM 밝기 최저(bright=1)에서 1/16 듀티, 100 MHz 클럭에서 주기 약 1 ms/16=62.5 µs: 눈에 띄는 깜빡임 가능성 (내 판단, 측정 필요)",
