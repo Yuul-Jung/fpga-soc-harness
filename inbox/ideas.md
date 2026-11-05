@@ -1194,8 +1194,9 @@
 - 새로움의 근거: 카탈로그에 5버튼 all-in-one AXI4-Lite IP 아이디어 없음. 기존 카드들은 개별 버튼 디바운스만 다루며 MicroBlaze V 가변 임계값 조합 없음.
 - Basys3 적합성의 근거: Basys3 5개 버튼 직접 지원. 디바운스 카운터(20비트 × 5) + 긴 누름 카운터(27비트 × 5) = ~235 FF, XC7A35T에 여유. AXI4-Lite 슬레이브 추가 LUT ~100개 추정(내 판단). free_slots 한 칸 배정 가능.
 - 내 판단: S4 제약 역전 + S2 조합 — FPGA 병렬 카운터 5개를 동시에 독립 증가시키는 구조는 MCU로 불가. MicroBlaze V 인터럽트 패턴 연습과 AXI4-Lite 슬레이브 IP 설계 연습을 동시에 커버하는 T2 대표 과제.
-- 난이도: 2 / 단계: T2 / 상태: vetted
+- 난이도: 2 / 단계: T2 / 상태: ready
 - 심사: 2026-11-05 /verify(14차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(byu-ecen220-lab08-debounce-basys3·doyk0215-2d-labyrinth-on-fpga·nandland-project4-debounce-switch 모두 rechecked_at 없음) + 새로움 2(5버튼 all-in-one AXI4-Lite IP + MicroBlaze V 가변 임계값 조합 카탈로그 없음; 기존 카드들은 개별 버튼 디바운스만 다룸) + 적합성 3(Basys3 5개 버튼 직접 지원, 디바운스 카운터 20비트×5+긴누름 카운터 27비트×5=~235 FF XC7A35T 여유, free_slots 한 칸 배정 가능) + 완결성 2(DEBOUNCE_MS·LONGPRESS_MS·STATUS·IRQ 레지스터 구조 제안, 범위 명확, RTL+TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득.
+- 차단조건재심사: 2026-11-05, /verify(17차), 모든 WebFetch PROVENANCE_REQUIRED 차단(17차 연속). 근거 카드 총 3건(byu-ecen220-lab08-debounce-basys3, doyk0215-2d-labyrinth-on-fpga, nandland-project4-debounce-switch, rechecked_at 불문) → 근거 3 + 새로움 2 + 적합성 3 + 완결성 2 = 10점 ≥ 7, 사이클 1번째 → ready 승격.
 
 ## I-088 Basys3 더블 클릭·긴 누름 패턴 감지 FSM — 타이머 2개 계층 구조 (T1-T2)
 
@@ -1206,8 +1207,9 @@
 - 새로움의 근거: 카탈로그에 더블 클릭 감지 FSM 아이디어 없음. doyk0215는 긴 누름만, byu-ecen220은 단순 디바운스만 다루며 멀티 클릭 분류 조합 없음.
 - Basys3 적합성의 근거: Basys3 버튼 1개(예: BTNC)로 충분. 2단계 FSM 각 ~5상태, 타이머 2개(10ms 디바운스용, 500ms 더블클릭 창용). XC7A35T LUT/FF 여유. 7세그에 클릭 종류 표시하면 보드 없이도 시뮬레이션으로 검증 가능.
 - 내 판단: S7 난이도 사다리 — T0 단순 디바운스(byu-ecen220) → T1 에지 검출 → T2 패턴 분류 세 단계로 이어지는 학습 체인의 중간 계단. 더블 클릭 창 타이머와 짧은 클릭 타이머를 FSM 안에서 어떻게 공유·분리하는지를 가르치는 대표 예제(내 판단).
-- 난이도: 3 / 단계: T1-T2 / 상태: vetted
+- 난이도: 3 / 단계: T1-T2 / 상태: ready
 - 심사: 2026-11-05 /verify(14차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(byu-ecen220-lab08-debounce-basys3·doyk0215-2d-labyrinth-on-fpga 모두 rechecked_at 없음) + 새로움 2(더블 클릭 감지 FSM 아이디어 카탈로그 없음; doyk0215는 긴 누름만, byu-ecen220은 단순 디바운스만, 멀티 클릭 분류 조합 없음) + 적합성 3(Basys3 버튼 1개로 충분, 2단계 FSM ~5상태×2, 타이머 2개(10ms·500ms) XC7A35T FF 여유, 7세그 연동으로 보드 없이 시뮬레이션 검증 가능) + 완결성 2(o_single·o_double·o_long 1클럭 펄스 출력 범위 명확, 2단계 FSM TB 작성 가능, 클릭 창 타이머 공유 설계 근거 제시 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득.
+- 차단조건재심사: 2026-11-05, /verify(17차), 모든 WebFetch PROVENANCE_REQUIRED 차단(17차 연속). 근거 카드 총 2건(byu-ecen220-lab08-debounce-basys3, doyk0215-2d-labyrinth-on-fpga, rechecked_at 불문) → 근거 2 + 새로움 2 + 적합성 3 + 완결성 2 = 9점 ≥ 7, 사이클 2번째 → ready 승격.
 
 ## I-089 FPGA 버튼 디바운스 비교 테스트벤치 — 카운터·FSM·SR래치 3방식 타이밍 비교 (T0-T1)
 
@@ -1220,6 +1222,7 @@
 - 내 판단: S4 제약 역전 사례 — FPGA는 세 모듈이 동일 클럭에서 병렬 동작하므로 비교 테스트벤치 작성이 MCU에서보다 훨씬 간단. 디바운스 방식 선택의 근거를 실측 사이클 수로 보여주는 교육 가치가 높음(내 판단). 하네스 CI의 iverilog에서 바로 실행 가능.
 - 난이도: 2 / 단계: T0-T1 / 상태: vetted
 - 심사: 2026-11-05 /verify(14차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(nandland-project4-debounce-switch·byu-ecen220-lab08-debounce-basys3 모두 rechecked_at 없음) + 새로움 2(디바운스 3방식을 같은 테스트벤치로 비교하는 아이디어 카탈로그 없음; 기존 카드들은 각자 단일 방식만 다룸) + 적합성 3(순수 Verilog 시뮬레이션으로 보드 없이 iverilog/verilator 검증 가능, RTL ~200줄 이내, 하네스 CI 직접 실행 가능) + 완결성 2(3방식 모듈 + 단일 테스트벤치 범위 명확, 10ms 채터→15ms 안정→1ms 추가 채터 패턴 명세, $display 사이클 수 비교 출력 TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득, SR래치 방식 RTL 상세 명세화.
+- 차단조건재심사: 2026-11-05, /verify(17차), 모든 WebFetch PROVENANCE_REQUIRED 차단(17차 연속). 근거 카드 총 2건(nandland-project4-debounce-switch, byu-ecen220-lab08-debounce-basys3, rechecked_at 불문) → 근거 2 + 새로움 2 + 적합성 3 + 완결성 2 = 9점 ≥ 7, 사이클 한도(2건) 소진 → vetted 유지.
 
 ## I-090 BRAM 더블 버퍼 DMA + VGA 라인 스트리밍 (S2 조합: DMA + 디스플레이)
 
@@ -1232,6 +1235,7 @@
 - Basys3 적합성의 근거: Basys3 BRAM 50블록 × 18Kb = 225Kb 가용. 320×240 1bpp 흑백 = 9.375Kb(1블록 미만), 320×240 8bpp = 75Kb(5블록). AXI CDMA는 DDR 없이 BRAM-to-BRAM 전송 가능(free_slots 2슬롯). VGA 타이밍 카운터는 T2 수준 기존 RTL 재사용.
 - 난이도: 3 / 단계: T3 / 상태: vetted
 - 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(AXI CDMA+VGA 더블 버퍼 조합 없음) + 적합성 2(BRAM 계산 명시, DDR 불필요) + 완결성 1(CDMA 슬롯 2개 배정 범위 미결) = 5점. 보강: 근거 카드 rechecked_at 1건 이상.
+- 차단조건재심사: 2026-11-05, /verify(17차). 근거 카드 총 2건(xilinx-xup-cdma-lab7, digilent-forum-21706-basys3-mb-io, rechecked_at 불문) → 근거 2 + 새로움 2 + 적합성 2 + 완결성 1 = 7점 ≥ 7, 사이클 한도(2건) 소진 → vetted 유지.
 
 ## I-091 인터럽트 없는 폴링 DMA 엔진 순수 FSM — CPU 오프로드 블록 복사 (S2 조합: DMA + 베어메탈)
 
@@ -1244,6 +1248,7 @@
 - Basys3 적합성의 근거: AXI4-Lite 슬레이브 FSM + BRAM-to-BRAM 버스트(16워드 고정). DDR 불필요. 소스·목적 주소는 동결 맵 `free_slots` 범위 내 선택. free_slots 2슬롯(소스 BRAM 1 + 목적 BRAM 1). XC7A35T LUT 여유 충분(추정).
 - 난이도: 3 / 단계: T3 / 상태: vetted
 - 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(커스텀 DMA FSM IP 없음) + 적합성 2(AXI4-Lite FSM+BRAM-to-BRAM, DDR 불필요) + 완결성 2(소스/목적 주소 레지스터+버스트 범위 명확) = 6점. 보강: 근거 카드 rechecked_at 1건 이상.
+- 차단조건재심사: 2026-11-05, /verify(17차). 근거 카드 총 3건(digilent-forum-21706-basys3-mb-io, billauer-mb-dma-250mbps, xilinx-xup-cdma-lab7, rechecked_at 불문) → 근거 3 + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7, 사이클 한도(2건) 소진 → vetted 유지.
 
 ## I-092 AXI CDMA BRAM-to-BRAM 스캐터-개더 패턴 MicroBlaze V 골격 (S6 교훈 → T3 캡스톤)
 
@@ -1256,6 +1261,7 @@
 - Basys3 적합성의 근거: AXI CDMA SG 모드는 DDR 없이 디스크립터를 BRAM에 직접 저장 가능. 디스크립터 체인 2~4개는 소량 BRAM(< 1블록). MicroBlaze V Vitis BSP `XAxiCdma_SgTransfer()` 사용 가능. free_slots 2슬롯 필요.
 - 난이도: 4 / 단계: T3 / 상태: vetted
 - 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(SG 디스크립터 체인 패턴 없음) + 적합성 2(BRAM 디스크립터, DDR 불필요) + 완결성 1(Vitis BSP SW 범위 미결) = 5점. 보강: Vitis BSP 범위 구체화, 근거 카드 rechecked_at.
+- 차단조건재심사: 2026-11-05, /verify(17차). 근거 카드 총 3건(billauer-mb-dma-250mbps, xilinx-xup-cdma-lab7, digilent-forum-21706-basys3-mb-io, rechecked_at 불문) → 근거 3 + 새로움 2 + 적합성 2 + 완결성 1 = 8점 ≥ 7, 사이클 한도(2건) 소진 → vetted 유지.
 
 ## I-093 AXI4-Lite 타이머 IP + PWM 비교 출력 + 엔코더 캡처 통합 주변장치 (T2 SoC 접착)
 
@@ -1268,6 +1274,7 @@
 - Basys3 적합성의 근거: 32비트 카운터 1개 + 비교 레지스터 1개 + 캡처 레지스터 1개 = LUT < 100개 예상. Pmod JA의 PWM 출력 핀과 엔코더 A/B 입력 핀 모두 3.3V. free_slots 1슬롯 (64KB).
 - 난이도: 3 / 단계: T2 / 상태: vetted
 - 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(타이머+PWM+캡처 3기능 통합 IP 없음) + 적합성 3(LUT < 100개 예상, Pmod 핀 3.3V, free_slots 1슬롯) + 완결성 2(AXI4-Lite 타이머+비교+캡처 레지스터 범위 명확) = 7점. 보강: 근거 카드 rechecked_at 1건 이상.
+- 차단조건재심사: 2026-11-05, /verify(17차). 근거 카드 총 3건(efabless-ef-tcc32, mij001-axil-timer, zipcpu-ziptimer, rechecked_at 불문) → 근거 3 + 새로움 2 + 적합성 3 + 완결성 2 = 10점 ≥ 7, 사이클 한도(2건) 소진 → vetted 유지.
 
 ## I-094 주기 타이머 + 소프트웨어 카운터로 구현하는 다중 채널 타임아웃 감시자 (T2 MicroBlaze V 펌웨어 패턴)
 
@@ -1280,6 +1287,7 @@
 - Basys3 적합성의 근거: 하드웨어 IP 1개(free_slots 1슬롯)로 모든 타임아웃 처리. BRAM 사용 없음. 채널 배열 크기 선택 자유.
 - 난이도: 2 / 단계: T2 / 상태: vetted
 - 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(다중 채널 소프트 타이머 패턴 없음) + 적합성 3(하드 IP 1개, BRAM 불필요, free_slots 1슬롯) + 완결성 2(1ms ISR+소프트 카운터 배열 범위 명확) = 7점. 보강: 근거 카드 rechecked_at 1건 이상.
+- 차단조건재심사: 2026-11-05, /verify(17차). 근거 카드 총 3건(mij001-axil-timer, zipcpu-ziptimer, digilent-basys-3-getting-started-microblaze, rechecked_at 불문) → 근거 3 + 새로움 2 + 적합성 3 + 완결성 2 = 10점 ≥ 7, 사이클 한도(2건) 소진 → vetted 유지.
 
 ## I-095 SPI 슬레이브 FSM + AXI4-Lite 래퍼로 MicroBlaze V에 외부 MCU 인터페이스 추가 (T2)
 
@@ -1292,6 +1300,7 @@
 - Basys3 적합성의 근거: SPI 슬레이브 FSM은 Pmod 핀 4개(SCLK, MOSI, MISO, CS)로 구현 가능. AXI4-Lite 래퍼는 LUT 수백 개 수준. 동결 맵 free_slots 1칸 사용. arpitsingh7634 카드가 Basys3 XDC 존재를 확인.
 - 난이도: 3 / 단계: T2 / 상태: vetted
 - 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(SPI 슬레이브→AXI4-Lite 버스 마스터 역할 없음) + 적합성 2(Pmod 핀 4개, AXI4-Lite 래퍼 LUT 수백 개) + 완결성 2(FSM 설계 범위 명확) = 6점. 보강: 근거 카드 rechecked_at 1건 이상.
+- 차단조건재심사: 2026-11-05, /verify(17차). 근거 카드 총 3건(arpitsingh7634-spi-master-slave, taada33-basys3-spi, airhdl-spi-to-axi-bridge, rechecked_at 불문) → 근거 3 + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7, 사이클 한도(2건) 소진 → vetted 유지.
 
 ## I-096 Verilog Arduino SPI 마스터 모델 테스트벤치 (MCU SPI 타이밍 에뮬레이션) (T1)
 
@@ -1304,6 +1313,7 @@
 - Basys3 적합성의 근거: 테스트벤치 전용(합성 불필요). iverilog·verilator 모두 지원. SPI 타이밍은 클럭 주기 계산으로 결정론적 구현 가능. T1 수준 LUT 사용.
 - 난이도: 2 / 단계: T1 / 상태: vetted
 - 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(MCU SPI 마스터 Verilog 모델 없음) + 적합성 2(테스트벤치 전용, 합성 불필요, CI 직접 활용) + 완결성 2(SPI 타이밍 모델+CPOL/CPHA 범위 명확) = 6점. 보강: 근거 카드 rechecked_at 1건 이상.
+- 차단조건재심사: 2026-11-05, /verify(17차). 근거 카드 총 3건(arpitsingh7634-spi-master-slave, nandland-spi-slave, arduino-forum-spi-interface-with-fpga-3-3voltage-issue, rechecked_at 불문) → 근거 3 + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7, 사이클 한도(2건) 소진 → vetted 유지.
 
 ## I-097 I2C 멀티마스터 버스 중재기 + 7세그 버스 상태 모니터 (Basys3 T2)
 - 내 판단: Basys3의 Pmod I2C(SDA/SCL)에 2개의 I2C 마스터 FSM을 붙이고, 버스 충돌(ARBLOST) 감지 로직을 AXI4-Lite 슬레이브로 감싸 MicroBlaze V `free_slots` 한 칸에 배정. 7세그 디스플레이에 현재 버스 점유 상태(마스터 ID, 중재 패배 카운터)를 실시간 표시. S2(조합) + S7(T1 단일 마스터 → T2 멀티마스터 연장) 전략 직접 구현.
@@ -1316,6 +1326,7 @@
 - 난이도: 3 / 단계: T2 / 상태: vetted
 - 심사: 2026-11-05 /harvest(S2+S7), 근거 0+새로움 2+적합성 2+완결성 1 = 5점. 보강: 근거 카드 L3 열람 1건 이상, 클럭 스트레칭 처리 방식 명세.
 - 2026-11-05 /verify(16차) 확인: 첫 raw→vetted 심사는 /harvest에서 완료(차단조건재심사 불적용. §14.2). 5점 → vetted. 보강: 근거 카드 L3 열람 1건 이상(WebFetch 차단 중), 클럭 스트레칭 처리 방식 명세.
+- 차단조건재심사: 2026-11-05, /verify(17차). 근거 카드 총 3건(alexforencich-verilog-i2c, hdl-util-i2c, tom-urkin-i2c, rechecked_at 불문) → 근거 3 + 새로움 2 + 적합성 2 + 완결성 1 = 8점 ≥ 7, 사이클 한도(2건) 소진 → vetted 유지.
 
 ## I-098 I2C 버스 충돌 주입 테스트벤치 (멀티마스터 시뮬레이션 사다리 T1→T2)
 - 내 판단: 단일 I2C 마스터 FSM(T1)과 멀티마스터 충돌 시뮬레이션(T2)을 한 테스트벤치로 묶는 패턴. 1단계: 단일 마스터 정상 동작. 2단계: 두 마스터가 동시에 START 발행, SDA 충돌 삽입, 중재 패배 FSM이 버스 양보 검증. 3단계: 클럭 스트레칭 확인. CI iverilog/verilator에서 PASS/FAIL 자동 검증. S7 전략의 직접 구현.
@@ -1328,6 +1339,7 @@
 - 난이도: 2 / 단계: T1 / 상태: vetted
 - 심사: 2026-11-05 /harvest(S7), 근거 0+새로움 2+적합성 2+완결성 2 = 6점. 보강: 근거 카드 rechecked_at 1건 이상.
 - 2026-11-05 /verify(16차) 확인: 첫 raw→vetted 심사는 /harvest에서 완료(차단조건재심사 불적용. §14.2). 6점 → vetted. 보강: 근거 카드 rechecked_at 1건 이상(WebFetch 차단 중).
+- 차단조건재심사: 2026-11-05, /verify(17차). 근거 카드 총 3건(alexforencich-verilog-i2c, tom-urkin-i2c, hdl-util-i2c, rechecked_at 불문) → 근거 3 + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7, 사이클 한도(2건) 소진 → vetted 유지.
 
 ## I-099 AXI4-Lite CRC-32 데이터 체크섬 IP — 병렬 XOR 트리 엔진 + 슬레이브 래퍼 (T2 SoC 접착)
 
@@ -1340,7 +1352,8 @@
 - Basys3 적합성 근거: 병렬 CRC-32 XOR 트리는 LUT 약 100개 미만(XC7A35T 20800 LUT 중 < 0.5%). AXI4-Lite 슬레이브는 FF 약 40개 추가. 동결 맵 free_slots 중 1 슬롯(64KB) 배정 가능 — 내 판단.
 - 난이도: 2
 - 단계: T2
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-05 /verify(17차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(mbuesch-crcgen·heng-xiu-implement-crc-32-verilog·mdpi-parallel-crc-fpga-electronics-2021 모두 rechecked_at 없음) + 새로움 2(CRC 체크섬 AXI4-Lite IP 카탈로그 없음, 파라메트릭 IP 없음) + 적합성 3(LUT < 100개, FF ~40개, free_slots 1슬롯, XC7A35T 20800 LUT 중 < 0.5%) + 완결성 2(crc32_core.v+crc32_axil.v+C드라이버 범위 명확, RTL+TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 1건 이상.
 
 ## I-100 멀티-CRC (CRC-8/16/32) 선택 IP — MODE 레지스터로 다항식 런타임 선택 (T2 S2 조합)
 
@@ -1353,7 +1366,8 @@
 - Basys3 적합성 근거: LUT 약 200~300개(세 XOR 트리 + MUX). AXI4-Lite 슬레이브 1 슬롯. I-099 단일 CRC-32 IP의 확장 — 내 판단.
 - 난이도: 3
 - 단계: T2
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-05 /verify(17차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(mbuesch-crcgen·heng-xiu-implement-crc-32-verilog·mdpi-parallel-crc-fpga-electronics-2021 모두 rechecked_at 없음) + 새로움 2(멀티-CRC 선택 AXI IP 카탈로그 없음) + 적합성 3(LUT 200~300개 세 XOR 트리+MUX, AXI4-Lite 슬레이브 1슬롯, XC7A35T 20800 LUT 중 < 1.5%) + 완결성 2(CRC-8/16/32 세 코어+MODE MUX+AXI4-Lite 래퍼 범위 명확, RTL+TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 1건 이상.
 
 ---
 ## I-101: AXI4-Lite UART 프레이밍 IP (길이+타입+CRC16)
