@@ -1438,34 +1438,34 @@
 - 차단조건재심사: 2026-11-05 13:49, 점수 10. 근거 3(fcayci-xilinx-vga-framebuffer-ip-core·projf-projf-explore·talsania-fpga-image-buffer 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 3 + 완결성 2 = 10점 ≥ 7 → ready 승격(사이클 1번째). WebFetch PROVENANCE_REQUIRED 18차 연속 차단(§14.2 차단 조건 적용).
 
 ## I-105 글리치 없는 AXI4-Lite RGB PWM IP (래치-at-reset + 감마 보정 LUT)
-- 상태: raw
+- 상태: vetted
 - 요약: 내 판단: PWM 카운터 리셋 시점에만 듀티 사이클을 래치하는 글리치 방지 FSM과, BRAM 초기화($readmemh) 기반 감마 보정 LUT(256×8b, 1 BRAM36)를 하나의 AXI4-Lite 슬레이브 IP로 구성. R/G/B 채널 개별 PWM + 감마 테이블 활성화 레지스터 포함. MIT 6.205의 S6 실패 사례와 MapleLED-Core의 감마 LUT 아이디어를 조합.
 - 조합: [pwm-rgb, gamma-lut-bram, axi4-lite]
 - 근거: [mit-6205-rgb-pwm-week01, maplesilicon-mapleled-core]
 - 새로움의 근거: 카탈로그에 래치-at-reset 패턴을 명시한 AXI4-Lite RGB PWM IP 없음. 감마 LUT BRAM 조합도 없음. 두 패턴을 동일 IP 안에 통합하는 것이 새로움.
 - Basys3 적합성의 근거: 8비트 PWM 카운터·BRAM36 1개·AXI4-Lite는 Basys3(XC7A35T) 기본 자원 범위 내. 동결 맵 free_slots에서 64KB 1슬롯 배정 가능. RGB LED Pmod 핀 xdc만 추가.
 - 난이도: 2 / 단계: T1→T2
-- 심사: (미심사)
+- 심사: 2026-11-05 /verify(19차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(mit-6205-rgb-pwm-week01·maplesilicon-mapleled-core 모두 rechecked_at 없음) + 새로움 2(래치-at-reset+감마LUT 조합 AXI4-Lite IP 카탈로그 없음) + 적합성 2(BRAM36 1개·AXI4-Lite free_slot·Basys3 기본 자원 범위 내 — 내 판단) + 완결성 2(AXI4-Lite 슬레이브+PWM FSM+감마LUT 래퍼 범위 명확, RTL+TB 작성 가능) = 6점 → vetted. 보강: 근거 카드 rechecked_at 1건 이상.
 
 ## I-106 HSV 색상환 → RGB PWM Pmod 드라이버 (하드웨어 FSM, 소수점 없음)
-- 상태: raw
+- 상태: vetted
 - 요약: 내 판단: Hue 0~359도를 6개 구간(60도씩)으로 나눠 선형 보간으로 R/G/B를 계산하는 순수 정수·시프트 연산 조합 FSM. S 및 V 채널을 곱셈기 없이 시프트+가산으로 처리(olivier-le-sage 패턴 착안). 출력은 8비트 R/G/B 듀티 사이클로 I-105 PWM IP에 연결 또는 직접 Pmod RGB LED 드라이브.
 - 조합: [hsv-rgb-fsm, pwm-rgb, axi4-lite]
 - 근거: [maplesilicon-mapleled-core, olivier-le-sage-camera-filters]
 - 새로움의 근거: 카탈로그에 HSV→RGB 변환 하드웨어 FSM 카드 없음. 카탈로그 카드 3건 모두 "HSV→RGB 변환 없음"을 한계로 명시 — 직접 이 공백을 채우는 조합.
 - Basys3 적합성의 근거: 순수 FSM, 곱셈기·BRAM 없음. 목표 LUT < 300. 색상환 주기를 Basys3 스위치 16개(HSV 입력) 또는 AXI4-Lite 레지스터로 제어.
 - 난이도: 3 / 단계: T2
-- 심사: (미심사)
+- 심사: 2026-11-05 /verify(19차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(maplesilicon-mapleled-core·olivier-le-sage-camera-filters 모두 rechecked_at 없음) + 새로움 2(HSV→RGB 변환 하드웨어 FSM 카탈로그 없음, 카드 3건이 한계로 명시) + 적합성 2(순수 FSM, 곱셈기·BRAM 없음, LUT<300 목표, Basys3 스위치 직결 가능 — 내 판단) + 완결성 2(6구간 선형보간 FSM 범위 명확, RTL+TB 작성 가능) = 6점 → vetted. 보강: 근거 카드 rechecked_at 1건, HSV 출력을 I-105에 연결하는 범위 확정.
 
 ## I-107 RGB LED 난이도 사다리 패키지 (기초 PWM → 감마 → HSV → 호흡 → 무지개)
-- 상태: raw
+- 상태: vetted
 - 요약: 내 판단: S7 전략으로, 동일 Basys3 대상에서 (a) 단순 8비트 PWM→(b) 감마 보정 LUT→(c) HSV 색상환 소프트 제어→(d) LED 호흡 FSM→(e) 무지개 사이클까지 5단계를 각각 독립 RTL 모듈로 구성하고, 단계별 cocotb 테스트벤치를 갖추는 종합 T1~T2 난이도 사다리 패키지.
 - 조합: [pwm-rgb, gamma-lut-bram, hsv-rgb-fsm, led-breathing, axi4-lite]
 - 근거: [mit-6205-rgb-pwm-week01, maplesilicon-mapleled-core, olivier-le-sage-camera-filters]
 - 새로움의 근거: 카탈로그에 RGB LED 주제로 T1~T2를 단계적으로 연결한 사다리 패키지 없음. I-105·I-106을 하위 모듈로 포함하는 상위 조합.
 - Basys3 적합성의 근거: 각 단계가 Basys3 기본 자원 범위 내(I-105·I-106 참조). 단계별로 Makefile 타겟 분리 → CI에서 단계별 검증 가능.
 - 난이도: 3 / 단계: T1→T2
-- 심사: (미심사)
+- 심사: 2026-11-05 /verify(19차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(mit-6205-rgb-pwm-week01·maplesilicon-mapleled-core·olivier-le-sage-camera-filters 모두 rechecked_at 없음) + 새로움 2(T1~T2 RGB LED 사다리 패키지 카탈로그 없음) + 적합성 2(I-105·I-106 Basys3 적합성 확인, 단계별 Makefile 타겟 분리 가능 — 내 판단) + 완결성 2(5단계 각각 독립 RTL+TB, 단계별 Makefile 타겟 명확) = 6점 → vetted. 보강: 근거 카드 rechecked_at 1건, I-105·I-106 먼저 패키지화 후 통합.
 
 ## I-108 VGA 텍스트 오버레이 + 7세그 동기화 AXI4-Lite IP (S2 조합)
 - 상태: raw
