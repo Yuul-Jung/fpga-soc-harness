@@ -70,7 +70,9 @@ module hcsr04_drv (
                 S_WAIT: begin
                     // ECHO 상승 엣지를 기다린다
                     if (echo_s2) begin
-                        cnt   <= 22'd0;
+                        // 상승을 감지한 이 클럭도 ECHO HIGH 1클럭이므로 1부터 센다
+                        // (0부터 세면 항상 1클럭 적게 측정해 5800클럭이 0 cm로 나온다)
+                        cnt   <= 22'd1;
                         state <= S_MEAS;
                     end else if (cnt == TIMEOUT_CYC - 1) begin
                         dist_cm <= 10'h3FF;  // 타임아웃

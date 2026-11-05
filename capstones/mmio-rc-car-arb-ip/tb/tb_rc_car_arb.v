@@ -132,8 +132,11 @@ module tb_rc_car_arb;
             @(negedge trig);            // TRIG 하강 (1000 클럭 후)
             $display("DBG: trig[%0d] low, sending echo", i);
             repeat(5) @(posedge clk);   // 짧은 대기
+            // echo 는 negedge 에서만 바꿔 DUT 의 posedge 샘플링과 경합하지 않게 한다.
+            // 5800 negedge 동안 HIGH = DUT 가 정확히 5800 클럭 HIGH 를 샘플링한다.
+            @(negedge clk);
             echo = 1;
-            repeat(5800) @(posedge clk);// 1 cm = 5800 클럭
+            repeat(5800) @(negedge clk);// 1 cm = 5800 클럭
             echo = 0;
             $display("DBG: echo[%0d] done at %0t", i, $time);
             repeat(20) @(posedge clk);  // 측정 완료 여유

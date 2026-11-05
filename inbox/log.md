@@ -218,3 +218,4 @@
 2026-11-06 06:42 | verify | 재열람 0 (WebFetch PROVENANCE_REQUIRED 전면 차단 24차 연속) | 수정 1 (ssd1306 capstone memory_map dict→list 형식 수정) | 불일치 1 | 승격 L2→L3 0 | ready +2 (I-115 차단조건재심사 9점, I-116 차단조건재심사 10점) | 차단조건재심사 추가 (I-119 9점·I-120 9점·I-121 9점·I-122 9점·I-056 7점·I-057 8점 한도소진 유지) | 중복상태 정리 (I-055 raw중복 제거, I-113 raw+미심사 중복 제거)
 2026-11-06 07:16 | capstone | mmio-rc-car-arb-ip | CI retry 2/3 | fix: verilator -g2001 제거, hcsr04_drv cnt 21→22비트, timescale 추가, TB DBG print 추가 | 등급 보류(CI 대기)
 2026-11-06 07:24 | collect | AXI IP 동시 구동 타이밍 분석 · S4 제약 역전(주)+S5 비정형 출처(보조) | 카드 +3 | 아이디어 +2 | 큐 잔여 595 | blocked 0
+2026-11-06 08:06 | capstone | mmio-rc-car-arb-ip | 사용자 지시로 수동 수정(예약 작업 아님, CI retry 카운트 외) | 원인: hcsr04_drv가 ECHO 상승 감지 클럭을 세지 않아 5800클럭을 5799로 측정(0 cm), TB는 posedge에서 echo를 바꿔 샘플링 경합 | fix: S_WAIT→S_MEAS 진입 시 cnt<=1, TB echo를 negedge 구동 | 로컬 시뮬레이터 없음, 파이썬 사이클 모델로 5800→1 cm 확인, CI 대기 | 등급 S0 보류
