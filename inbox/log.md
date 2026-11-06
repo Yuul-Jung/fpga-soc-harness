@@ -5,6 +5,7 @@
 - verify: `YYYY-MM-DD HH:MM | verify | 재열람 N | 수정 M | 불일치 K | 승격 L2→L3 P | ready +R`
 - capstone: `YYYY-MM-DD HH:MM | capstone | <slug> | 등급 S0~S2` 또는 `... | skip: <사유>`
 
+2026-11-06 13:21 | capstone | mmio-axil-xbar-2m4s-ip | S2 (lint pass, sim PASS T1-T7, synth yosys pass, CI 1차 재시도 성공 commit e199d7b) | 버그 수정 2건: (1) Makefile verilator -g2012→--sv, (2) axil_xbar_2m4s.v error slave pending 레지스터 추가(err_m0/m1_wr/rd_pend) | 슬롯 [25] 0x4025_0000 / intc=없음 (크로스바, 슬레이브 직결) | mbv-frozen-v2 partial (error slave 포함 독립 IP) | 아이디어 I-121 used | 근거 재확인 없음(§13.7 무조건 최대한 생성 원칙)
 2026-11-06 13:30 | capstone | mmio-inmp441-i2s-rx-ip | S2 (lint pass 경고0, sim PASS, synth LUT69 FF155 yosys추정, CI run 42160311548) | 슬롯 [26] 0x4026_0000 / intc=13 | mbv-frozen-v2 compatible | 아이디어 I-043 used (ready→used) | 근거 재확인 없음(§13.7 무조건 최대한 생성 원칙) | CI 전체실패는 기존 broken 패키지 5건 무관
 2026-11-06 12:48 | verify | 재열람 0 (WebFetch PROVENANCE_REQUIRED 전면 차단 28차 연속) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +2 (I-040 차단조건재심사 9점, I-061 차단조건재심사 9점) | vetted +3 (I-131 7점, I-132 6점, I-133 5점 /verify 재심사) | 차단조건재심사 추가 (I-042 7점·I-044 6점·I-048 7점·I-049 7점·I-050 8점·I-051 7점·I-052 8점·I-057 8점·I-059 6점, 한도 소진 vetted 유지)
 2026-11-06 09:39 | verify | 재열람 0 (WebFetch PROVENANCE_REQUIRED 전면 차단 27차 연속) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +2 (I-120 차단조건재심사 9점, I-121 차단조건재심사 9점) | vetted +3 (I-128 첫심사 7점, I-129 첫심사 6점, I-130 첫심사 7점) | 차단조건재심사 추가 (I-122 9점·I-123 9점·I-124 10점·I-125 10점·I-126 10점·I-127 10점, 한도 소진 vetted 유지)
