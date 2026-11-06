@@ -275,8 +275,35 @@ module axil_xbar_2m4s #(
   wire err_awvalid_in = err_m0_wr ? m0_awvalid : (err_m1_wr ? m1_awvalid : 1'b0);
   wire err_wvalid_in  = err_m0_wr ? m0_wvalid  : (err_m1_wr ? m1_wvalid  : 1'b0);
   wire err_arvalid_in = err_m0_rd ? m0_arvalid : (err_m1_rd ? m1_arvalid : 1'b0);
-  wire err_bready_in  = err_m0_wr ? m0_bready  : m1_bready;
-  wire err_rready_in  = err_m0_rd ? m0_rready  : m1_rready;
+  // ─── Error slave pending: track master awaiting B/R after handshake ─────────
+  // awready/wready/arready in axil_error_slave are registered (1-cycle pulse).
+  // After handshake, master de-asserts valid; err_m0_wr/rd becomes 0.
+  // These registers hold "which master is waiting for the response" across cycles.
+  reg m0_err_wr_pend, m1_err_wr_pend; // write pending: AW+W done, waiting B
+  reg m0_err_rd_pend, m1_err_rd_pend; // read pending: AR done, waiting R
+
+  always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+      m0_err_wr_pend<=1'b0; m1_err_wr_pend<=1'b0;
+      m0_err_rd_pend<=1'b0; m1_err_rd_pend<=1'b0;
+    end else begin
+      // Write pend: set when AW+W handshake occurs; clear when B handshake completes
+      if (err_m0_wr && err_awready && err_wready)           m0_err_wr_pend <= 1'b1;
+      if (m0_err_wr_pend && err_bvalid && m0_bready)        m0_err_wr_pend <= 1'b0;
+      if (!err_m0_wr && !m0_err_wr_pend &&
+          err_m1_wr && err_awready && err_wready)            m1_err_wr_pend <= 1'b1;
+      if (m1_err_wr_pend && err_bvalid && m1_bready)        m1_err_wr_pend <= 1'b0;
+      // Read pend: set when AR handshake occurs; clear when R handshake completes
+      if (err_m0_rd && err_arready)                          m0_err_rd_pend <= 1'b1;
+      if (m0_err_rd_pend && err_rvalid && m0_rready)        m0_err_rd_pend <= 1'b0;
+      if (!err_m0_rd && !m0_err_rd_pend &&
+          err_m1_rd && err_arready)                          m1_err_rd_pend <= 1'b1;
+      if (m1_err_rd_pend && err_rvalid && m1_rready)        m1_err_rd_pend <= 1'b0;
+    end
+  end
+
+  wire err_bready_in  = (m0_err_wr_pend || err_m0_wr) ? m0_bready  : m1_bready;
+  wire err_rready_in  = (m0_err_rd_pend || err_m0_rd) ? m0_rready  : m1_rready;
 
   wire       err_awready, err_wready, err_bvalid, err_arready, err_rvalid;
   wire [1:0] err_bresp, err_rresp;
@@ -306,7 +333,7 @@ module axil_xbar_2m4s #(
                       (err_m0_wr   ? err_wready  : 1'b0);
   assign m0_bvalid  = (wgnt[0]==2'd1 && s0_bvalid) || (wgnt[1]==2'd1 && s1_bvalid) ||
                       (wgnt[2]==2'd1 && s2_bvalid) || (wgnt[3]==2'd1 && s3_bvalid) ||
-                      (err_m0_wr   && err_bvalid);
+                      (m0_err_wr_pend && err_bvalid);
   assign m0_bresp   = (wgnt[0]==2'd1) ? s0_bresp :
                       (wgnt[1]==2'd1) ? s1_bresp :
                       (wgnt[2]==2'd1) ? s2_bresp :
@@ -319,7 +346,7 @@ module axil_xbar_2m4s #(
                       (err_m0_rd   ? err_arready : 1'b0);
   assign m0_rvalid  = (rgnt[0]==2'd1 && s0_rvalid) || (rgnt[1]==2'd1 && s1_rvalid) ||
                       (rgnt[2]==2'd1 && s2_rvalid) || (rgnt[3]==2'd1 && s3_rvalid) ||
-                      (err_m0_rd   && err_rvalid);
+                      (m0_err_rd_pend && err_rvalid);
   assign m0_rdata   = (rgnt[0]==2'd1) ? s0_rdata :
                       (rgnt[1]==2'd1) ? s1_rdata :
                       (rgnt[2]==2'd1) ? s2_rdata :
@@ -342,7 +369,7 @@ module axil_xbar_2m4s #(
                       (!err_m0_wr && err_m1_wr ? err_wready  : 1'b0);
   assign m1_bvalid  = (wgnt[0]==2'd2 && s0_bvalid) || (wgnt[1]==2'd2 && s1_bvalid) ||
                       (wgnt[2]==2'd2 && s2_bvalid) || (wgnt[3]==2'd2 && s3_bvalid) ||
-                      (!err_m0_wr && err_m1_wr && err_bvalid);
+                      (m1_err_wr_pend && err_bvalid);
   assign m1_bresp   = (wgnt[0]==2'd2) ? s0_bresp :
                       (wgnt[1]==2'd2) ? s1_bresp :
                       (wgnt[2]==2'd2) ? s2_bresp :
@@ -355,7 +382,7 @@ module axil_xbar_2m4s #(
                       (!err_m0_rd && err_m1_rd ? err_arready : 1'b0);
   assign m1_rvalid  = (rgnt[0]==2'd2 && s0_rvalid) || (rgnt[1]==2'd2 && s1_rvalid) ||
                       (rgnt[2]==2'd2 && s2_rvalid) || (rgnt[3]==2'd2 && s3_rvalid) ||
-                      (!err_m0_rd && err_m1_rd && err_rvalid);
+                      (m1_err_rd_pend && err_rvalid);
   assign m1_rdata   = (rgnt[0]==2'd2) ? s0_rdata :
                       (rgnt[1]==2'd2) ? s1_rdata :
                       (rgnt[2]==2'd2) ? s2_rdata :

@@ -16,7 +16,7 @@ all: lint sim
 
 ## ─── Lint ─────────────────────────────────────────────────────────────────
 lint:
-	verilator --lint-only -g2012 -DSIMULATION \
+	verilator --lint-only --sv -DSIMULATION \
 	  $(ERR_FILE) $(TOP_FILE)
 	@echo "lint: OK"
 
