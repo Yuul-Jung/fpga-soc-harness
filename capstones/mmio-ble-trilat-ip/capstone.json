@@ -1,0 +1,271 @@
+{
+  "slug": "mmio-ble-trilat-ip",
+  "title": "BLE 비콘 삼변측량 IP: ESP32 BLE 스캐너 + FPGA 고정점 위치 계산 (Basys3)",
+  "summary": "ESP32가 BLE iBeacon RSSI 값을 스캔해 UART로 Basys3에 전달하고, Basys3 커스텀 IP가 가중 중심법(Weighted Centroid)으로 2D 위치를 계산한다. 세 앵커 거리를 8바이트 프레임으로 수신, AXI4-Lite 레지스터로 결과(x,y cm)를 노출한다.",
+  "board": "Digilent Basys3 (XC7A35T)",
+  "stage": "T3",
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 Verilog-2001 원본이며 외부 코드를 포함하지 않는다. 아이디어 I-040 차단조건재심사 9점(§14.2)으로 생성됨 (2026-11-06). S0으로 시작, CI 통과 시 S2.",
+  "goals": [
+    "IP 표준 Rev.1 관리 레지스터(0xFFF0~FFFC)를 갖는 BLE 삼변측량 IP 설계: UART RX 엔진, 8바이트 프레임 파서, 가중 중심법 계산 FSM",
+    "동결 맵 슬롯 [16](0x4016_0000, intc 13) 사용. compat=compatible",
+    "앵커 3점 고정(A1=(0,0), A2=(400,0), A3=(200,346) cm), 거리 레지스터 D1~D3 쓰면 수동 트리거 가능",
+    "테스트벤치 PASS/FAIL 자체 점검형: 3개 거리 → x/y 결과 범위 검증",
+    "iverilog 시뮬레이션 PASS, yosys synth_xilinx 성공(S2)"
+  ],
+  "non_goals": [
+    "실제 ESP32 BLE 스캔 펌웨어(참고 카드 rcaelers-esp32-beacon-scanner 구조로 직접 작성 필요)",
+    "Newton-Raphson 반복 삼변측량(가중 중심법으로 단순화)",
+    "UART 115200 bps 이상의 고속 통신",
+    "GPS 연동, 3D 위치(z축), 동적 앵커 설정",
+    "보드 동작 확인(S3은 사람이 한다)"
+  ],
+  "architecture": {
+    "clock": "100 MHz (clk, Basys3 W5), 동기 리셋 rst active-high",
+    "reset": "btnC(T17) → 2단 동기화 → rst",
+    "blocks": [
+      {
+        "id": "top",
+        "name": "basys3_top",
+        "kind": "board-wrapper",
+        "module": "basys3_top",
+        "file": "rtl/basys3_top.v",
+        "desc": "Basys3 최상위 래퍼. 클럭 버퍼, 리셋 2단 동기화, Pmod JA 핀 배선",
+        "short": "Board wrapper",
+        "side": "top"
+      },
+      {
+        "id": "soc",
+        "name": "soc_top",
+        "kind": "soc-core",
+        "module": "soc_top",
+        "file": "rtl/soc_top.v",
+        "desc": "SoC 코어. AXI4-Lite 버스 디코더와 ble_trilat_ip 슬레이브 연결. 마스터 포트 노출(CPU 교체 지점)",
+        "short": "SoC core",
+        "side": "core"
+      },
+      {
+        "id": "ip",
+        "name": "ble_trilat_ip",
+        "kind": "peripheral",
+        "module": "ble_trilat_ip",
+        "file": "rtl/ble_trilat_ip.v",
+        "desc": "BLE 삼변측량 IP. UART RX(115200 8N1) + 8바이트 프레임 파서 + 가중 중심법 계산 FSM + AXI4-Lite 슬레이브. 슬롯[16]=0x4016_0000, intc 13",
+        "short": "BLE Trilat IP",
+        "side": "peripheral"
+      },
+      {
+        "id": "div",
+        "name": "div32",
+        "kind": "util",
+        "module": "div32",
+        "file": "rtl/div32.v",
+        "desc": "32비트 비부호 반복 나누기(복원 알고리즘, 32 클럭). ble_trilat_ip 내부에서 인스턴스화",
+        "short": "32-bit divider",
+        "side": "core"
+      },
+      {
+        "id": "master",
+        "name": "demo_master",
+        "kind": "sim-master",
+        "module": "demo_master",
+        "file": "rtl/demo_master.v",
+        "desc": "시뮬레이션용 AXI4-Lite 마스터 FSM. D1~D3 레지스터 쓰기 → TRIG → 결과 읽기 시퀀스",
+        "short": "Demo AXI master",
+        "side": "sim"
+      },
+      {
+        "id": "x_esp32",
+        "name": "ESP32 (BLE 스캐너)",
+        "kind": "external",
+        "module": "-",
+        "desc": "BLE iBeacon RSSI 스캔 → 거리 변환 → UART 8바이트 프레임 전송. 3.3V UART TX만 연결",
+        "short": "ESP32 BLE scanner",
+        "side": "in"
+      },
+      {
+        "id": "x_uart",
+        "name": "JA1 (UART RX 핀)",
+        "kind": "external",
+        "module": "-",
+        "desc": "Pmod JA 핀1(J2): ESP32 TX → FPGA RX. 3.3V 직결(레벨 변환 불필요)",
+        "short": "Pmod JA1 UART RX",
+        "side": "in"
+      },
+      {
+        "id": "x_led",
+        "name": "LED[7:0]",
+        "kind": "external",
+        "module": "-",
+        "desc": "X 위치 하위 8비트 표시(100cm 단위로 클리핑). 계산 완료 시 갱신",
+        "short": "LED x_pos display",
+        "side": "out"
+      }
+    ],
+    "links": [
+      {"from": "x_esp32", "to": "x_uart", "label": "UART 115200 8N1"},
+      {"from": "x_uart", "to": "top", "label": "uart_rx_pin"},
+      {"from": "top", "to": "soc", "label": "clk/rst/io"},
+      {"from": "soc", "to": "ip", "label": "AXI4-Lite [16]"},
+      {"from": "ip", "to": "div", "label": "divider req/ack"},
+      {"from": "master", "to": "soc", "label": "AXI4-Lite master"},
+      {"from": "soc", "to": "x_led", "label": "led[7:0]"}
+    ]
+  },
+  "bus_protocol": {
+    "name": "AXI4-Lite",
+    "data_width": 32,
+    "addr_width": 32,
+    "signals": ["AWADDR","AWVALID","AWREADY","WDATA","WSTRB","WVALID","WREADY",
+                "BRESP","BVALID","BREADY","ARADDR","ARVALID","ARREADY",
+                "RDATA","RRESP","RVALID","RREADY"],
+    "limits": "AWVALID+WVALID 동시 처리(단순화). BRESP/RRESP 항상 OKAY(2'b00). 범위 밖 주소는 0 반환."
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "mbv-frozen-v2",
+    "compat": "compatible",
+    "plan": "동결 맵 free_slots 첫 번째 [16](0x4016_0000)에 ble_trilat_ip 배정. intc 13(첫 번째 빈 인터럽트 입력). 동결 슬롯([00]~[15])은 변경하지 않는다.",
+    "frozen_mapping": [
+      {
+        "block": "ip",
+        "region": "free_slot_16",
+        "base": "0x4016_0000",
+        "size": "0x10000",
+        "intc": 13,
+        "note": "mbv-frozen-v2 free_slots 첫 번째. 제안이며 프로젝트 인덱스 표가 동결한다."
+      }
+    ]
+  },
+  "external_parts": [
+    {
+      "id": "esp32_dev",
+      "name": "ESP32 개발보드 (3.3V UART TX 출력)",
+      "block": "x_esp32",
+      "interface": "UART TX 1핀 (Pmod JA1 연결). BLE 비콘 스캐너 펌웨어 사전 탑재 필요",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": 3.3,
+      "level_shift": false,
+      "power_note": "ESP32 개발보드 자체 USB 전원 사용. Basys3 Pmod 3.3V는 사용하지 않는다.",
+      "arduino_compatible": true,
+      "notes": "ESP32-WROOM-32 계열. 3.3V IO 직결 가능. GND 공통 연결 필수. 최소 연결: ESP32 TX → Pmod JA1(J2 핀1), GND 공통."
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "디지털 연결만 있음(UART 1핀+GND). 전기 회로도 불필요."
+  },
+  "hierarchy": [
+    {
+      "module": "basys3_top",
+      "file": "rtl/basys3_top.v",
+      "children": [
+        {
+          "module": "soc_top",
+          "file": "rtl/soc_top.v",
+          "children": [
+            {
+              "module": "ble_trilat_ip",
+              "file": "rtl/ble_trilat_ip.v",
+              "children": [
+                {"module": "div32", "file": "rtl/div32.v"}
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "memory_map": [
+    {
+      "base": "0x4016_0000",
+      "size": "0x10000",
+      "block": "ip",
+      "desc": "BLE 삼변측량 IP 레지스터 공간 (free_slot [16])",
+      "regs": [
+        {"off": "0x00", "name": "CTRL",       "access": "RW",  "desc": "[0] auto_trig — UART 프레임 수신 완료 시 자동 계산 시작"},
+        {"off": "0x04", "name": "STATUS",     "access": "RO",  "desc": "[0] uart_rx_busy, [1] calc_done, [2] calc_err(분모=0)"},
+        {"off": "0x08", "name": "D1_REG",     "access": "RW",  "desc": "[15:0] 앵커1 거리 cm (A1=0,0 기준)"},
+        {"off": "0x0C", "name": "D2_REG",     "access": "RW",  "desc": "[15:0] 앵커2 거리 cm (A2=400,0 기준)"},
+        {"off": "0x10", "name": "D3_REG",     "access": "RW",  "desc": "[15:0] 앵커3 거리 cm (A3=200,346 기준)"},
+        {"off": "0x14", "name": "TRIG",       "access": "WO",  "desc": "[0] write-1-to-start (자동 소거) — 수동 계산 시작"},
+        {"off": "0x18", "name": "X_POS",      "access": "RO",  "desc": "[15:0] x 위치 cm (가중 중심법 결과)"},
+        {"off": "0x1C", "name": "Y_POS",      "access": "RO",  "desc": "[15:0] y 위치 cm (가중 중심법 결과)"},
+        {"off": "0xFFF0", "name": "ID",       "access": "RO",  "desc": "0x544C524C ('TLRL' — Tri-Lateral)"},
+        {"off": "0xFFF4", "name": "VER",      "access": "RO",  "desc": "0x01000001 (std rev 1, major 0, minor 1)"},
+        {"off": "0xFFF8", "name": "IRQ_STATUS","access": "RW", "desc": "[0] calc_done (W1C)"},
+        {"off": "0xFFFC", "name": "IRQ_ENABLE","access": "RW", "desc": "[0] calc_done IRQ 활성화"}
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T1",
+      "state": "done",
+      "title": "MMIO 뼈대 SoC: GPIO + UART",
+      "refs": ["mmio-uart-gpio-skeleton"]
+    },
+    {
+      "stage": "T2",
+      "state": "done",
+      "title": "UART-AXI4-Lite 브리지 (다중 슬레이브)",
+      "refs": ["mmio-uart-axilite-bridge"]
+    },
+    {
+      "stage": "T3",
+      "state": "current",
+      "title": "BLE 비콘 삼변측량 IP (UART + 위치 계산)",
+      "refs": ["mmio-ble-trilat-ip"]
+    },
+    {
+      "stage": "T4",
+      "state": "planned",
+      "title": "IMU + 위치 융합 (칼만 필터 가속기)",
+      "refs": ["mmio-imu-cf-ip"]
+    }
+  ],
+  "references": [
+    {"name": "rcaelers-esp32-beacon-scanner", "reason": "ESP32 BLE iBeacon RSSI 스캔 구조 참고"},
+    {"name": "espressif-idf-gatt-server-walkthrough", "reason": "ESP32 BLE 스택 초기화 절차 참고"},
+    {"name": "mmio-uart-axilite-bridge", "reason": "AXI4-Lite 슬레이브 패턴 참고 (동일 저장소 캡스톤)"},
+    {"name": "mmio-bt-hc05-bridge", "reason": "UART RX 엔진·프레임 파서 패턴 참고 (동일 저장소 캡스톤)"}
+  ],
+  "sources": {
+    "rtl": [
+      "rtl/basys3_top.v",
+      "rtl/soc_top.v",
+      "rtl/ble_trilat_ip.v",
+      "rtl/div32.v",
+      "rtl/demo_master.v"
+    ],
+    "tb": [
+      "tb/tb_ble_trilat_ip.v"
+    ],
+    "constraints": [
+      "constr/basys3.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
+  },
+  "howto": {
+    "sim": "make sim  # iverilog + vvp, PASS/FAIL 자체 점검",
+    "lint": "make lint # iverilog -Wall -g2001 린트",
+    "synth": "make synth # yosys synth_xilinx (자원 추정)",
+    "vivado": "Vivado 2024.2: 새 프로젝트 → RTL 파일 추가 → constr/basys3.xdc → Generate Bitstream. 보드 동작 확인은 사람이 한다(S3)."
+  },
+  "verification": {
+    "lint": "pending",
+    "sim": "pending",
+    "synth": "pending",
+    "board": "not-done",
+    "notes": "CI에서 lint+sim+synth 실행 예정. S0으로 시작."
+  },
+  "risks": [
+    "가중 중심법은 앵커 배치와 환경에 따라 오차가 크다. 교육용 개념 증명 수준.",
+    "UART 프레임 동기화: 0xBB 헤더가 데이터 바이트와 충돌할 경우 재동기화 오버헤드가 없음(단순 FSM). 실제 운용은 CRC 추가 권장.",
+    "분모=0(세 앵커 모두 1000cm 초과): calc_err=1 세팅, x=y=0 반환.",
+    "Basys3 XC7A35T에서 yosys synth_xilinx 추정치가 Vivado 결과와 다를 수 있음."
+  ]
+}

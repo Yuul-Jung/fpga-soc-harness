@@ -460,7 +460,7 @@
 - 심사: 2026-11-04 /verify, 근거 1(pinkfluffyunic0rn-stm32flight) + 새로움 2(하드웨어 지터 측정 IP 없음) + 적합성 3(내부 신호만, 핀·BRAM 불필요, 1 kHz 100K 클럭 계산 명확) + 완결성 2(min/max/오버런 테스트벤치 범위 명확) = 8점. 근거<3이라 ready 미달 → vetted. 보강: 근거 카드 2건 추가. 차단조건재심사: 2026-11-04 /verify(12:37), 모든 WebFetch PROVENANCE_REQUIRED, 근거 카드 총 2건 → 차단 근거 2 + 새로움 2 + 적합성 3 + 완결성 2 = 9점 ≥ 7 → ready 승격.
 
 ## I-040 BLE 비콘→UART→FPGA 삼변측량 IP: ESP32 비콘 RSSI 수신 + AXI4-Lite 고정소수점 삼변측량 가속기
-- 상태: ready
+- 상태: used (패키지: mmio-ble-trilat-ip, 2026-11-06, 무조건 최대한 생성 원칙 적용)
 - 요약: 내 판단: ESP32가 BLE 비콘(iBeacon) RSSI 값을 수동 스캔해 UART로 Basys3에 전달하고, Basys3의 고정소수점 DSP IP가 삼변측량(적어도 3개 앵커 기준 거리 역산)을 수행하는 T3 패키지. ESP32는 기존 `rcaelers-esp32-beacon-scanner` 구조를 참고 설계로 삼고, AXI4-Lite 슬레이브 IP는 거리 레지스터 3~4개와 계산 트리거 비트·결과 레지스터로 구성한다.
 - 조합: [BLE-scanner(ESP32), comm-uart, sensor, accelerator(FPGA 고정소수점)]
 - 근거: [rcaelers-esp32-beacon-scanner, espressif-idf-gatt-server-walkthrough]
