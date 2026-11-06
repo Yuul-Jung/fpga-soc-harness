@@ -287,3 +287,7 @@
 | [adityapusalkar-fpga-neural-network](amd/adityapusalkar-fpga-neural-network.md) | L3 | T4 | Basys3 | 2026-11-06 |
 | [xie-2020-tvlsi-twofold-lut-tanh](papers/xie-2020-tvlsi-twofold-lut-tanh.md) | L2 | T4 | 없음 (논문) | 2026-11-06 |
 | [arxiv-1810-08650-activation-dse](papers/arxiv-1810-08650-activation-dse.md) | L2 | T4 | 없음 (논문) | 2026-11-06 |
+
+| [chang-2015-rnn-fpga](papers/chang-2015-rnn-fpga.md) | L3 | T4 | ZedBoard | 2026-11-07 |
+| [ahirsharan-lstm](vendor-neutral/ahirsharan-lstm.md) | L2 | T4 | 미지정 | 2026-11-07 |
+| [qian-2023-lstm-spartan7](papers/qian-2023-lstm-spartan7.md) | L3 | T4 | Spartan-7 | 2026-11-07 |

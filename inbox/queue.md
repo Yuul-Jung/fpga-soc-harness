@@ -725,3 +725,13 @@
 - https://www.mdpi.com/2079-9292/14/12/2337 | Kim 2025 MDPI Electronics: LN+Softmax Newton-Raphson, Q5.26, VU37P — 카드 작성 완료(L2) | FPGA layer normalization Newton-Raphson Q5.26 2025
 - https://github.com/ansh07verma/fpga-mini-npu | ansh07verma fpga-mini-npu: Basys3/NexysA7 INT8 MAC 시스톨릭 어레이, MIT 라이선스, BN/LN 없음 — 미열람(L1→L2 확인 완료), 별도 주제 큐 가능 | FPGA mini NPU INT8 Basys3 Verilog
 - https://arxiv.org/abs/2308.13922 | Liu 2023 Swin Transformer FPGA 가속기(LN→BN 치환 제안) — 초록만(L1), RTL/보드 미상 | FPGA Swin Transformer accelerator layer normalization batch normalization
+
+## [B3] RNN 셀 하드웨어 (2026-11-07 수집)
+- https://arxiv.org/abs/1511.05552 | Chang 2015 Purdue: ZedBoard Zynq Q8.8 LSTM, 13-구간 PLA sigmoid/tanh, DSP24개, 21× 속도향상 — 카드 작성 완료(L3) | FPGA LSTM inference fixed-point piecewise-linear sigmoid ZedBoard
+- https://github.com/ahirsharan/LSTM | ahirsharan: MIT Verilog 단일 LSTM 셀, ConcatMultAdd + sigmoid/tanh 근사 + Test.v 테스트벤치 — 카드 작성 완료(L2), 비트폭 미확인 | FPGA LSTM Verilog MIT license single cell
+- https://arxiv.org/abs/2310.16842 | Qian 2023 FAU: Spartan-7 XC7S15 VHDL LSTM, elastic-ai.creator, 4+1 병렬 ALU, 16-bit Q8, LUT 활성화, 860 사이클/타임스텝 — 카드 작성 완료(L3) | FPGA LSTM VHDL Spartan-7 elastic-ai parallel gate ALU
+- https://github.com/Arquimedez/LSTM_FPGA | Arquimedez LSTM_FPGA: Verilog LSTM 추론(세부 미열람, L1) | FPGA LSTM Verilog GitHub
+- https://arxiv.org/abs/1710.02958 | Rybalkin 2017 LSTM FPGA (FAU): Xilinx Zynq, 16-bit fixed-point, unrolled architecture — 초록만(L1), 정밀 Basys3 적합성 미확인 | FPGA LSTM unrolled architecture Zynq fixed-point
+- https://ieeexplore.ieee.org/document/8657578 | Ferreira 2019 ISQED: LSTM FPGA INT8 에너지 효율 — 초록만(L1) | FPGA LSTM INT8 energy efficiency
+- https://github.com/HarshithaMunukoti/LSTM-FPGA | HarshithaMunukoti LSTM-FPGA: 세부 미열람(L1) | FPGA LSTM Verilog GitHub
+- https://arxiv.org/abs/2208.01745 | Scherer 2022 TinyML: 소형 LSTM FPGA 에지 추론 비교 — 초록만(L1) | FPGA LSTM TinyML edge inference

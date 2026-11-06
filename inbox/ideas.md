@@ -1988,3 +1988,36 @@
 - Basys3 적합성의 근거: RMS 계산은 제곱합+나눗셈 없이 역제곱근 LUT로 대체 가능. Artix-7 DSP 최소 사용(추정 1 DSP/채널). BRAM 1개 LUT 적재.
 - 난이도: 3 / 단계: T4 / 상태: raw
 - 심사: (미심사)
+
+## I-146 단순 RNN 셀 타임스텝 루프 — 이진 덧셈기 수준부터 시작하는 최소 순환 네트워크 (T3, S7 사다리 1단계)
+
+- 내 판단: S7 난이도 사다리의 첫 단계. h_t = tanh(W_hh·h_{t-1} + W_hx·x_t + b) 한 줄 계산을 Verilog 단일 MAC + LUT tanh로 구현. LSTM보다 훨씬 단순해 순환 하드웨어 개념(상태 레지스터, 타임스텝 FSM, 고정소수점 MAC) 학습용으로 최적. Basys3에서 LUT 200개 이내 추정.
+- 조합: [fixed-point, BRAM, accelerator]
+- 근거 카드: [chang-2015-rnn-fpga, ahirsharan-lstm]
+- 근거 URL: [https://arxiv.org/abs/1511.05552, https://github.com/ahirsharan/LSTM]
+- 새로움의 근거: 카탈로그에 단순 RNN(LSTM 없는 순수 h_t 순환 셀) FPGA 구현 카드 없음. LSTM 사다리의 필수 사전 단계이므로 독립 패키지 가치 있음.
+- Basys3 적합성의 근거: MAC 1개 + 상태 레지스터 1개 + LUT tanh(256-entry BRAM). 추정 LUT < 200, BRAM 1, DSP 1. XC7A35T 여유 충분.
+- 난이도: 2 / 단계: T3 / 상태: raw
+- 심사: (미심사)
+
+## I-147 LSTM 셀 단일 타임스텝 가속기 — 4+1 병렬 ALU, Q8.8, Basys3 AXI4-Lite 슬레이브 (T4, S7 사다리 2단계)
+
+- 내 판단: S7 사다리 2단계. 단순 RNN(I-146) 위에 forget/input/candidate/output 4게이트 + h_t ALU를 추가. Qian 2023의 4+1 병렬 ALU 아키텍처를 Verilog-2001로 재작성, Q8.8 고정소수점, sigmoid/tanh는 13-구간 PLA(Chang 2015 방식). AXI4-Lite 슬레이브로 감싸 MicroBlaze V에서 가중치 로드. 단일 타임스텝 처리 후 FSM이 c_t/h_t 레지스터를 다음 호출로 전달.
+- 조합: [fixed-point, BRAM, accelerator, AXI4-Lite]
+- 근거 카드: [chang-2015-rnn-fpga, ahirsharan-lstm, qian-2023-lstm-spartan7]
+- 근거 URL: [https://arxiv.org/abs/1511.05552, https://arxiv.org/abs/2310.16842, https://github.com/ahirsharan/LSTM]
+- 새로움의 근거: 카탈로그에 Basys3 대상 LSTM 셀 AXI4-Lite 슬레이브 카드 없음. Chang 2015 PLA + Qian 2023 병렬 ALU 조합은 기존 카드와 다른 조합.
+- Basys3 적합성의 근거: Qian 2023이 LUT 400개짜리 XC7S15에서 동작 → Basys3(20,800 LUT)에 여유. 추정 LUT 1,500, BRAM 2(가중치 2×), DSP 4(게이트당 1). free_slots 1슬롯(64KB).
+- 난이도: 3 / 단계: T4 / 상태: raw
+- 심사: (미심사)
+
+## I-148 타임스텝 루프 LSTM 시퀀스 추론 — 가속기 위에 FSM 루프 추가, 멀티 스텝 시계열 처리 (T4, S7 사다리 3단계)
+
+- 내 판단: S7 사다리 3단계. LSTM 셀 IP(I-147) 위에 타임스텝 루프 컨트롤러(FSM)를 추가. 입력 시퀀스 x_0…x_{T-1}을 BRAM에서 읽고, 셀을 T회 호출, 최종 h_T를 분류 레이어(단순 선형)로 넘기는 완결 추론 경로 구현. MicroBlaze V 소프트웨어와 협업: 가중치 사전 적재 → CTRL_START 신호 → STATUS_DONE 폴링 → 결과 읽기. 시계열 이상 감지(온도·진동 센서 10 타임스텝) 데모 가능.
+- 조합: [fixed-point, BRAM, accelerator, AXI4-Lite, sensor]
+- 근거 카드: [chang-2015-rnn-fpga, qian-2023-lstm-spartan7, ahirsharan-lstm]
+- 근거 URL: [https://arxiv.org/abs/1511.05552, https://arxiv.org/abs/2310.16842]
+- 새로움의 근거: 카탈로그에 Basys3 멀티-타임스텝 LSTM 시퀀스 추론 패키지 없음. I-147 단일 셀 위에 루프 컨트롤러를 얹는 조합은 사다리 완성이며 독립 패키지.
+- Basys3 적합성의 근거: I-147 대비 추가 자원은 루프 FSM(LUT 100개 이하) + 입력 시퀀스 BRAM(T×I 크기, T=10 I=4 → 40 entries, 최소). XC7A35T 여유 충분.
+- 난이도: 4 / 단계: T4 / 상태: raw
+- 심사: (미심사)

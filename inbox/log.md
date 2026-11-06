@@ -239,3 +239,4 @@
 2026-11-06 16:52 | verify | 재열람 0 (WebFetch PROVENANCE_REQUIRED 전면 차단 29차 연속) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +2 (I-122 차단조건재심사 9점·I-123 차단조건재심사 9점) | vetted +6 (I-134~I-139 첫 raw→vetted 심사, 5~7점) | atlas/ml-accelerator.md 신규·soc-map +5gap·카드 283건
 2026-11-06 18:40 | collect | [B3] 활성화 함수 하드웨어 · S1 인접 도메인 이식(주)+S4 제약 역전(보조) | 카드 +3 (adityapusalkar-fpga-neural-network L3, xie-2020-tvlsi-twofold-lut-tanh L2, arxiv-1810-08650-activation-dse L2) | 아이디어 +3 (I-140 LUT-only tanh raw, I-141 Twofold LUT raw, I-142 3단계 비교 테스트벤치 raw) | 큐 +5 | blocked 1 (crambl/fpga-neuralnetwork PROVENANCE_REQUIRED)
 2026-11-06 21:20 | collect | 배치 정규화·층 정규화 하드웨어 근사 · S5(주)+S1(보조) | 카드 +3 | 아이디어 +3 | 큐 잔여 多 | blocked 0
+2026-11-07 00:25 | collect | [B3] RNN 셀 하드웨어 · S7 난이도 사다리(주)+S1 인접 도메인 이식(보조) | 카드 +3 (chang-2015-rnn-fpga L3, qian-2023-lstm-spartan7 L3, ahirsharan-lstm L2) | 아이디어 +3 (I-146 단순 RNN, I-147 LSTM 셀 IP, I-148 타임스텝 루프) | 큐 잔여 8건 | blocked 0
