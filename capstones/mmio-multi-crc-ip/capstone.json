@@ -1,0 +1,193 @@
+{
+  "slug": "mmio-multi-crc-ip",
+  "title": "MMIO 멀티-CRC IP (CRC-8/16/32)",
+  "summary": "AXI4-Lite 슬레이브로 CRC-8/Dallas-Maxim, CRC-16-CCITT, CRC-32/Ethernet 세 종류를 선택해 쓸 수 있는 단일 IP. MODE 레지스터로 알고리즘을 고르고, DATA_IN에 바이트를 쓰면 1사이클 후 누산 CRC가 CRC_OUT에 나타난다. CTRL INIT으로 각 알고리즘의 초기값(0xFF/0xFFFF/0xFFFFFFFF)으로 동시 리셋한다.",
+  "author_note": "자동 생성: 2시간 완결 캡스톤 파이프라인 (2026-11-06). 근거 재확인(게이트3)·체인 연결(게이트4) 건너뜀 (사용자 운영 방침 2026-11-06). 검증 등급 S0.",
+  "board": "Basys3 (XC7A35T-1CPG236C)",
+  "stage": "T2",
+  "goals": [
+    "AXI4-Lite 슬레이브 레지스터 4개로 세 가지 CRC 알고리즘 선택·누산·리셋 제공",
+    "iverilog 시뮬레이션에서 알려진 테스트 벡터(CRC-8:0x00, CRC-16:0xFF00, CRC-32:0x00FFFFFF) 통과",
+    "동결 맵 슬롯 [27] (0x4027_0000) 사용, MicroBlaze V 드라이버와 연동 가능"
+  ],
+  "non_goals": [
+    "DMA·스트리밍(AXI4-Stream) 없음 — 바이트 단위 MMIO만",
+    "CRC 최종값의 XorOut(0xFFFFFFFF) 적용은 소프트웨어 드라이버 담당",
+    "보드 동작 확인(S3)은 사람이 직접 한다 — 에이전트 올리지 않음"
+  ],
+  "architecture": {
+    "clock": "100 MHz 단일 클럭 (s_axi_aclk, W5), 비동기 리셋-해제 (s_axi_aresetn = ~btnC active-low)",
+    "blocks": [
+      {
+        "id": "axil",
+        "name": "멀티-CRC AXI4-Lite 슬레이브",
+        "kind": "peripheral",
+        "module": "multi_crc_axil",
+        "file": "rtl/multi_crc_axil.v",
+        "desc": "MODE/DATA_IN/CRC_OUT/CTRL 레지스터. crc8/16/32_core를 인스턴스화. 인터럽트 없음(ip2intc_irpt=0).",
+        "short": "CRC AXI slave",
+        "side": "left"
+      },
+      {
+        "id": "crc8",
+        "name": "CRC-8/Dallas-Maxim 코어",
+        "kind": "submodule",
+        "module": "crc8_core",
+        "file": "rtl/crc8_core.v",
+        "desc": "poly=0x31(반사 0x8C), refin=true, refout=true, init=0xFF. 8-step 직렬 LFSR 전개.",
+        "short": "CRC-8 core",
+        "side": "left"
+      },
+      {
+        "id": "crc16",
+        "name": "CRC-16-CCITT 코어",
+        "kind": "submodule",
+        "module": "crc16_core",
+        "file": "rtl/crc16_core.v",
+        "desc": "poly=0x1021, refin=false, refout=false, init=0xFFFF. MSB-first 8-step LFSR 전개.",
+        "short": "CRC-16 core",
+        "side": "left"
+      },
+      {
+        "id": "crc32",
+        "name": "CRC-32/Ethernet 코어",
+        "kind": "submodule",
+        "module": "crc32_core",
+        "file": "rtl/crc32_core.v",
+        "desc": "poly=0x04C11DB7(반사 0xEDB88320), refin=true, refout=true, init=0xFFFFFFFF. 8-step 직렬 LFSR 전개.",
+        "short": "CRC-32 core",
+        "side": "right"
+      }
+    ],
+    "links": [
+      {"from": "axil", "to": "crc8",  "label": "crc8_in/data/crc8_out"},
+      {"from": "axil", "to": "crc16", "label": "crc16_in/data/crc16_out"},
+      {"from": "axil", "to": "crc32", "label": "crc32_in/data/crc32_out"}
+    ]
+  },
+  "bus_protocol": {
+    "name": "AXI4-Lite",
+    "data_width": 32,
+    "addr_width": 4,
+    "signals": [
+      "AWADDR", "AWPROT", "AWVALID", "AWREADY",
+      "WDATA", "WSTRB", "WVALID", "WREADY",
+      "BRESP", "BVALID", "BREADY",
+      "ARADDR", "ARPROT", "ARVALID", "ARREADY",
+      "RDATA", "RRESP", "RVALID", "RREADY"
+    ],
+    "limits": "AW+W 동시 핸드쉐이크 패턴(MicroBlaze V 호환). 단일 마스터 가정. 버스트 없음. BRESP/RRESP 항상 2'b00(OKAY). ARPROT/AWPROT 미사용."
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "mbv-frozen-v2",
+    "compat": "compatible",
+    "plan": "동결 맵 슬롯 [27] (0x4027_0000) 제안 배정. 인터럽트 없음(ip2intc_irpt 상수 0). 다음 IP는 슬롯 [28]부터.",
+    "frozen_mapping": {
+      "axil": "slot_27 (0x4027_0000, 64KB)"
+    }
+  },
+  "external_parts": [],
+  "schematic": {
+    "state": "not-written",
+    "note": "외부 부품 없음(보드 내부 로직만). 전기 회로도 불필요."
+  },
+  "hierarchy": [
+    {
+      "module": "multi_crc_axil",
+      "file": "rtl/multi_crc_axil.v",
+      "children": [
+        {"module": "crc8_core",  "file": "rtl/crc8_core.v"},
+        {"module": "crc16_core", "file": "rtl/crc16_core.v"},
+        {"module": "crc32_core", "file": "rtl/crc32_core.v"}
+      ]
+    }
+  ],
+  "memory_map": [
+    {
+      "base": "0x4027_0000",
+      "size": "0x10000",
+      "block": "axil",
+      "desc": "멀티-CRC IP 레지스터 공간 (동결 맵 슬롯 [27])",
+      "regs": [
+        {
+          "off": "0x00",
+          "name": "MODE",
+          "access": "RW",
+          "desc": "알고리즘 선택. bit[1:0]: 00=CRC-8/Dallas, 01=CRC-16-CCITT, 10=CRC-32/Ethernet."
+        },
+        {
+          "off": "0x04",
+          "name": "DATA_IN",
+          "access": "W",
+          "desc": "입력 바이트. bit[7:0] 쓰기 → 1사이클 후 선택된 알고리즘 누산기 갱신. 읽기값 0."
+        },
+        {
+          "off": "0x08",
+          "name": "CRC_OUT",
+          "access": "R",
+          "desc": "현재 CRC 누산값. CRC-8: [7:0], CRC-16: [15:0], CRC-32: [31:0]. 상위는 0 패딩."
+        },
+        {
+          "off": "0x0C",
+          "name": "CTRL",
+          "access": "W",
+          "desc": "bit[0] INIT 펄스: 1을 쓰면 crc8=0xFF, crc16=0xFFFF, crc32=0xFFFFFFFF로 동시 리셋. 읽기값 0."
+        }
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T2",
+      "state": "current",
+      "title": "멀티-CRC MMIO IP (CRC-8/16/32) — 단일 슬레이브",
+      "refs": []
+    },
+    {
+      "stage": "T3",
+      "state": "planned",
+      "title": "CRC 스트리밍 IP (AXI4-Stream + DMA 연동)",
+      "refs": []
+    }
+  ],
+  "references": [
+    {
+      "name": "pkt-gif-custom-vending-machine",
+      "reason": "AXI4-Lite FSM 슬레이브 패턴 참조 (CPU 없이 AXI4-Lite)"
+    }
+  ],
+  "sources": {
+    "rtl": [
+      "rtl/crc8_core.v",
+      "rtl/crc16_core.v",
+      "rtl/crc32_core.v",
+      "rtl/multi_crc_axil.v"
+    ],
+    "tb": [
+      "tb/tb_multi_crc_axil.v"
+    ],
+    "constraints": [
+      "constr/basys3.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
+  },
+  "howto": {
+    "sim": "cd capstones/mmio-multi-crc-ip && make sim",
+    "lint": "cd capstones/mmio-multi-crc-ip && make lint",
+    "synth": "cd capstones/mmio-multi-crc-ip && make synth",
+    "vivado": "Vivado에서 multi_crc_axil을 최상위로 추가하고 constr/basys3.xdc를 적용. 주소 0x4027_0000를 AXI4-Lite 슬레이브로 배정. XorOut(0xFFFFFFFF) 적용은 소프트웨어 드라이버 담당."
+  },
+  "verification": {
+    "board": "not-tested",
+    "notes": "자동 생성(S0) — CI 미실행. lint/sim/synth는 CI가 기록(목표 S1). S3(보드 확인)은 사람이 직접 올린다. 근거 재확인(게이트3) 건너뜀(사용자 운영 방침 2026-11-06)."
+  },
+  "risks": [
+    "CRC-32 XorOut(0xFFFFFFFF)이 IP에 없음 — 소프트웨어 드라이버가 최종값에 XOR해야 함",
+    "AXI4-Lite 동시 AW+W 핸드쉐이크만 지원 — 순차(AW→W) 마스터와는 타이밍 주의",
+    "DATA_IN 쓰기 후 1사이클 레이턴시 — 연속 쓰기 시 CRC_OUT 읽기 타이밍 주의",
+    "CRC-16 refin=false(MSB first) — 일부 변형(CRC-16-IBM, refin=true)과 다름"
+  ]
+}
