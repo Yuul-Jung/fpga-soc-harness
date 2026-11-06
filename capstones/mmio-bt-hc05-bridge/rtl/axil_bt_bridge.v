@@ -210,42 +210,44 @@ module axil_bt_bridge #(
                     end
                 end
                 FS_B0: begin
-                    if (!tx_busy) begin
+                    // tx_start 가드: tx_start=1인 동안은 전환 금지(uart_tx가 아직 busy=1로
+                    // 올리기 전에 같은 사이클에 다음 상태로 넘어가 바이트를 덮어쓰는 것 방지)
+                    if (!tx_busy && !tx_start) begin
                         tx_byte   <= frame_data_latch[15:8];  // speed[15:8]
                         tx_start  <= 1'b1;
                         fsm_state <= FS_B1;
                     end
                 end
                 FS_B1: begin
-                    if (!tx_busy) begin
+                    if (!tx_busy && !tx_start) begin
                         tx_byte   <= frame_data_latch[7:0];   // speed[7:0]
                         tx_start  <= 1'b1;
                         fsm_state <= FS_B2;
                     end
                 end
                 FS_B2: begin
-                    if (!tx_busy) begin
+                    if (!tx_busy && !tx_start) begin
                         tx_byte   <= frame_data_latch[31:24]; // angle[15:8]
                         tx_start  <= 1'b1;
                         fsm_state <= FS_B3;
                     end
                 end
                 FS_B3: begin
-                    if (!tx_busy) begin
+                    if (!tx_busy && !tx_start) begin
                         tx_byte   <= frame_data_latch[23:16]; // angle[7:0]
                         tx_start  <= 1'b1;
                         fsm_state <= FS_B4;
                     end
                 end
                 FS_B4: begin
-                    if (!tx_busy) begin
+                    if (!tx_busy && !tx_start) begin
                         tx_byte   <= 8'h55;
                         tx_start  <= 1'b1;
                         fsm_state <= FS_B5;
                     end
                 end
                 FS_B5: begin
-                    if (!tx_busy)
+                    if (!tx_busy && !tx_start)
                         fsm_state <= FS_IDLE;
                 end
                 default: fsm_state <= FS_IDLE;
