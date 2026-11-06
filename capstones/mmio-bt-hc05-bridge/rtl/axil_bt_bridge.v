@@ -210,44 +210,42 @@ module axil_bt_bridge #(
                     end
                 end
                 FS_B0: begin
-                    // tx_start 가드: tx_start=1인 동안은 전환 금지(uart_tx가 아직 busy=1로
-                    // 올리기 전에 같은 사이클에 다음 상태로 넘어가 바이트를 덮어쓰는 것 방지)
-                    if (!tx_busy && !tx_start) begin
+                    if (tx_done_w) begin
                         tx_byte   <= frame_data_latch[15:8];  // speed[15:8]
                         tx_start  <= 1'b1;
                         fsm_state <= FS_B1;
                     end
                 end
                 FS_B1: begin
-                    if (!tx_busy && !tx_start) begin
+                    if (tx_done_w) begin
                         tx_byte   <= frame_data_latch[7:0];   // speed[7:0]
                         tx_start  <= 1'b1;
                         fsm_state <= FS_B2;
                     end
                 end
                 FS_B2: begin
-                    if (!tx_busy && !tx_start) begin
+                    if (tx_done_w) begin
                         tx_byte   <= frame_data_latch[31:24]; // angle[15:8]
                         tx_start  <= 1'b1;
                         fsm_state <= FS_B3;
                     end
                 end
                 FS_B3: begin
-                    if (!tx_busy && !tx_start) begin
+                    if (tx_done_w) begin
                         tx_byte   <= frame_data_latch[23:16]; // angle[7:0]
                         tx_start  <= 1'b1;
                         fsm_state <= FS_B4;
                     end
                 end
                 FS_B4: begin
-                    if (!tx_busy && !tx_start) begin
+                    if (tx_done_w) begin
                         tx_byte   <= 8'h55;
                         tx_start  <= 1'b1;
                         fsm_state <= FS_B5;
                     end
                 end
                 FS_B5: begin
-                    if (!tx_busy && !tx_start)
+                    if (tx_done_w)
                         fsm_state <= FS_IDLE;
                 end
                 default: fsm_state <= FS_IDLE;
@@ -264,6 +262,17 @@ module axil_bt_bridge #(
         .tx    (bt_tx),
         .busy  (tx_busy)
     );
+
+    // tx_done_w: tx_busy의 하강 엣지 (바이트 전송 완료 신호)
+    // FSM이 tx_start=1을 보낸 직후 tx_busy는 아직 0이다(uart_tx가 다음 클럭에 1로 올린다).
+    // 따라서 !tx_busy 조건만으로는 FSM이 연속 2상태를 한 클럭에 건너뛰는 오류가 생긴다.
+    // 직전 클럭에 tx_busy=1이었다가 현재 0인 순간만 써야 올바른 완료 감지가 된다.
+    reg tx_busy_d;
+    always @(posedge s_axi_aclk or negedge s_axi_aresetn) begin
+        if (!s_axi_aresetn) tx_busy_d <= 1'b0;
+        else                 tx_busy_d <= tx_busy;
+    end
+    wire tx_done_w = tx_busy_d & ~tx_busy;
 
     // ── UART RX 인스턴스 ──────────────────────────────────────────────
     wire [7:0] rx_data_w;

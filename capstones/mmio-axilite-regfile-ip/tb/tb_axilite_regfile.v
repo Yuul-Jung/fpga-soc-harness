@@ -245,15 +245,15 @@ module tb_axilite_regfile;
         // ---- T6: WSTRB partial write (bytes 0 and 2 only) ----------
         // Clear CTRL first
         axil_write(4'h0, 32'h0000_0000, 4'hF);
-        // Write bytes 0 and 2: strb=4'b0101, data=0xAACCBBDD
-        //   byte0 (bits[7:0]):   strb[0]=1 -> 0xDD  (wdata[7:0]   = 0xDD)
+        // Write bytes 0 and 2: strb=4'b0101, data=0xAABBCCDD
+        //   byte0 (bits[7:0]):   strb[0]=1 -> 0xDD  (wdata[7:0])
         //   byte1 (bits[15:8]):  strb[1]=0 -> 0x00  (unchanged)
-        //   byte2 (bits[23:16]): strb[2]=1 -> 0xCC  (wdata[23:16] = 0xCC)
+        //   byte2 (bits[23:16]): strb[2]=1 -> 0xBB  (wdata[23:16], not 0xCC)
         //   byte3 (bits[31:24]): strb[3]=0 -> 0x00  (unchanged)
-        // Expected: 0x00CC00DD
-        axil_write(4'h0, 32'hAACC_BBDD, 4'b0101);
+        // Expected: 0x00BB00DD
+        axil_write(4'h0, 32'hAABB_CCDD, 4'b0101);
         axil_read(4'h0, rd_data);
-        check_eq("T6 WSTRB partial (strb=0101)", rd_data, 32'h00CC_00DD);
+        check_eq("T6 WSTRB partial (strb=0101)", rd_data, 32'h00BB_00DD);
 
         // ---- BRESP and RRESP must be OKAY (2'b00) ------------------
         axil_write(4'h0, 32'h0, 4'hF);
