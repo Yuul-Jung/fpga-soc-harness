@@ -60,9 +60,21 @@
       }
     ],
     "links": [
-      {"from": "axil", "to": "crc8",  "label": "crc8_in/data/crc8_out"},
-      {"from": "axil", "to": "crc16", "label": "crc16_in/data/crc16_out"},
-      {"from": "axil", "to": "crc32", "label": "crc32_in/data/crc32_out"}
+      {
+        "from": "axil",
+        "to": "crc8",
+        "label": "crc8_in/data/crc8_out"
+      },
+      {
+        "from": "axil",
+        "to": "crc16",
+        "label": "crc16_in/data/crc16_out"
+      },
+      {
+        "from": "axil",
+        "to": "crc32",
+        "label": "crc32_in/data/crc32_out"
+      }
     ]
   },
   "bus_protocol": {
@@ -70,11 +82,25 @@
     "data_width": 32,
     "addr_width": 4,
     "signals": [
-      "AWADDR", "AWPROT", "AWVALID", "AWREADY",
-      "WDATA", "WSTRB", "WVALID", "WREADY",
-      "BRESP", "BVALID", "BREADY",
-      "ARADDR", "ARPROT", "ARVALID", "ARREADY",
-      "RDATA", "RRESP", "RVALID", "RREADY"
+      "AWADDR",
+      "AWPROT",
+      "AWVALID",
+      "AWREADY",
+      "WDATA",
+      "WSTRB",
+      "WVALID",
+      "WREADY",
+      "BRESP",
+      "BVALID",
+      "BREADY",
+      "ARADDR",
+      "ARPROT",
+      "ARVALID",
+      "ARREADY",
+      "RDATA",
+      "RRESP",
+      "RVALID",
+      "RREADY"
     ],
     "limits": "AW+W 동시 핸드쉐이크 패턴(MicroBlaze V 호환). 단일 마스터 가정. 버스트 없음. BRESP/RRESP 항상 2'b00(OKAY). ARPROT/AWPROT 미사용."
   },
@@ -97,9 +123,18 @@
       "module": "multi_crc_axil",
       "file": "rtl/multi_crc_axil.v",
       "children": [
-        {"module": "crc8_core",  "file": "rtl/crc8_core.v"},
-        {"module": "crc16_core", "file": "rtl/crc16_core.v"},
-        {"module": "crc32_core", "file": "rtl/crc32_core.v"}
+        {
+          "module": "crc8_core",
+          "file": "rtl/crc8_core.v"
+        },
+        {
+          "module": "crc16_core",
+          "file": "rtl/crc16_core.v"
+        },
+        {
+          "module": "crc32_core",
+          "file": "rtl/crc32_core.v"
+        }
       ]
     }
   ],
@@ -182,7 +217,14 @@
   },
   "verification": {
     "board": "not-tested",
-    "notes": "자동 생성(S0) — CI 미실행. lint/sim/synth는 CI가 기록(목표 S1). S3(보드 확인)은 사람이 직접 올린다. 근거 재확인(게이트3) 건너뜀(사용자 운영 방침 2026-11-06)."
+    "lint": "pass",
+    "sim": "pass",
+    "synth": "pass",
+    "grade": "S2",
+    "ci_run": 42196783391,
+    "ci_commit": "6abc77fa",
+    "ci_date": "2026-11-06",
+    "notes": "시뮬레이션 통과, 합성 가능(yosys 추정). S2. CI verify #393(run 42196783391) 성공. 2시간 완결 캡스톤 파이프라인(2026-11-06). TB 핸드쉐이크 데드락 수정(bready/rready 사전 활성 제거) 후 통과. S3(보드 확인)은 사람이 직접 올린다. 근거 재확인(게이트3) 건너뜀(사용자 운영 방침 2026-11-06)."
   },
   "risks": [
     "CRC-32 XorOut(0xFFFFFFFF)이 IP에 없음 — 소프트웨어 드라이버가 최종값에 XOR해야 함",
