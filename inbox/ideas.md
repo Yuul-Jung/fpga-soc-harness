@@ -482,7 +482,7 @@
 - Basys3 적합성 근거: Basys3 Pmod SPI 슬레이브 IP([[hideakitai-esp32spislave]], needs-port)가 이미 카탈로그에 있고, AXI4-Lite SPI 슬레이브는 free_slot에 배정 가능.
 - 난이도: 3
 - 단계: T2
-- 상태: ready
+- 상태: used (패키지: mmio-spi-slave-telemetry-ip, 2026-11-06 /capstone, 무조건 최대한 생성 원칙, 게이트 3·4 건너뜀)
 - 심사: 2026-11-04 /verify(12:37), 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(듀얼코어 역할 분리+Ring Buffer+FPGA SPI 슬레이브 조합 없음) + 적합성 2(Basys3 Pmod SPI 슬레이브 가능, AXI4-Lite free_slot 배정) + 완결성 2(Core1=SPI poll, Ring Buffer IPC, Core0=MQTT 흐름 명확) = 6점. 보강: 근거 카드 rechecked_at 추가. 차단조건재심사: 2026-11-04 /verify(12:37), 모든 WebFetch PROVENANCE_REQUIRED, 근거 카드 총 3건 → 차단 근거 3 + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7 → ready 승격.
 
 ## I-042 ESP32-CAM → Basys3 단일 프레임 UART 브릿지: JPEG 캡처→전송→VGA 썸네일

@@ -1,0 +1,201 @@
+{
+  "slug": "mmio-spi-slave-telemetry-ip",
+  "title": "AXI4-Lite SPI 슬레이브 IP — ESP32 멀티코어 텔레메트리 허브 (I-041)",
+  "summary": "ESP32 Core1이 SPI 마스터로 Basys3 Pmod에 연결해 센서 레지스터를 폴링하는 AXI4-Lite SPI 슬레이브 IP. 모드0 SPI(CPOL=0 CPHA=0) 8비트 프레임 프로토콜로 주소[7:0]+데이터[7:0] 2바이트 R/W를 지원한다. MicroBlaze V는 AXI4-Lite로 송신 큐(TX_DATA) 4개·수신 큐(RX_DATA) 4개·상태(STATUS)를 읽는다.",
+  "board": "Basys3",
+  "stage": "T2",
+  "goals": [
+    "ESP32 SPI 마스터와 통신하는 AXI4-Lite SPI 슬레이브 IP 구현",
+    "주소 기반 R/W(8비트 주소 + 8비트 데이터) 프로토콜 지원",
+    "TX FIFO 4엔트리 / RX FIFO 4엔트리 AXI4-Lite 접근",
+    "iverilog 테스트벤치 PASS 검증 (SPI 마스터 모델 사용)"
+  ],
+  "non_goals": [
+    "SPI 모드 1/2/3 지원",
+    "DMA 버스트 전송",
+    "Wi-Fi / MQTT 펌웨어 (ESP32 측)",
+    "Basys3 보드 실동작 검증(S3)"
+  ],
+  "architecture": {
+    "clock": "100 MHz (Basys3 시스템 클럭), SPI SCLK 최대 10 MHz (ESP32 측 설정)",
+    "blocks": [
+      {
+        "id": "top",
+        "name": "basys3_top",
+        "kind": "wrapper",
+        "module": "basys3_top",
+        "file": "rtl/basys3_top.v",
+        "desc": "Basys3 최상위 래퍼 — 클럭, 리셋, Pmod JA 핀 연결",
+        "short": "보드 래퍼",
+        "side": "top"
+      },
+      {
+        "id": "soc",
+        "name": "soc_top",
+        "kind": "soc",
+        "module": "soc_top",
+        "file": "rtl/soc_top.v",
+        "desc": "SoC 코어 — AXI4-Lite 버스 마스터 포트 노출, SPI 슬레이브 IP 인스턴스",
+        "short": "SoC 코어",
+        "side": "left"
+      },
+      {
+        "id": "axil_spi_slave",
+        "name": "axil_spi_slave",
+        "kind": "peripheral",
+        "module": "axil_spi_slave",
+        "file": "rtl/axil_spi_slave.v",
+        "desc": "AXI4-Lite SPI 슬레이브 IP — SPI 수신 FSM, TX/RX FIFO 4엔트리, 상태 레지스터",
+        "short": "SPI 슬레이브 IP",
+        "side": "right"
+      },
+      {
+        "id": "esp32",
+        "name": "ESP32 (외부)",
+        "kind": "external",
+        "module": null,
+        "file": null,
+        "desc": "ESP32 듀얼코어 텔레메트리 허브 (외부 MCU). Core1=SPI 마스터 폴링, Core0=Wi-Fi MQTT 전송.",
+        "short": "ESP32 MCU",
+        "side": "right"
+      }
+    ],
+    "links": [
+      {"from": "top", "to": "soc", "label": "clk/rst/pmod"},
+      {"from": "soc", "to": "axil_spi_slave", "label": "AXI4-Lite"},
+      {"from": "esp32", "to": "axil_spi_slave", "label": "SPI(SCLK/MOSI/MISO/CS_N)"}
+    ]
+  },
+  "bus_protocol": {
+    "type": "AXI4-Lite",
+    "data_width": 32,
+    "addr_width": 8,
+    "signals": ["AWADDR","AWVALID","AWREADY","WDATA","WSTRB","WVALID","WREADY","BRESP","BVALID","BREADY","ARADDR","ARVALID","ARREADY","RDATA","RRESP","RVALID","RREADY"],
+    "note": "SPI 외부 인터페이스: SCLK(입력), MOSI(입력), MISO(출력), CS_N(액티브 로우 입력). 최대 10 MHz SCLK."
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "mbv-frozen-v2",
+    "compat": "compatible",
+    "plan": "동결 맵 슬롯 [1A] (0x401A_0000) 제안 배정 — free_slot 첫 번째 비어있는 항목. 인터럽트: ip2intc_irpt 미사용(상태 레지스터 폴링). 다음 IP는 슬롯 [1B]부터.",
+    "frozen_mapping": {
+      "axil_spi_slave": "slot_1A (0x401A_0000, 64KB)"
+    }
+  },
+  "external_parts": [
+    {
+      "id": "esp32_dev",
+      "name": "ESP32 DevKit (또는 ESP32-S3)",
+      "block": "esp32",
+      "interface": "SPI (Pmod JA)",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": 3.3,
+      "level_shift": false,
+      "power_note": "ESP32 IO는 3.3V. Basys3 Pmod 3.3V 직결 가능. 별도 5V 없음.",
+      "arduino_compatible": true,
+      "notes": "SCLK/MOSI/MISO/CS_N 4선 연결. SPI 모드0, 최대 10 MHz. UART(TX→RXD)는 별도 Pmod 핀."
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "디지털 계통도만 작성. 전기 회로도 미작성. Pmod JA 핀 배선은 constr/basys3.xdc에 PIN 주석으로 표기."
+  },
+  "hierarchy": [
+    {
+      "module": "basys3_top",
+      "file": "rtl/basys3_top.v",
+      "children": [
+        {
+          "module": "soc_top",
+          "file": "rtl/soc_top.v",
+          "children": [
+            {
+              "module": "axil_spi_slave",
+              "file": "rtl/axil_spi_slave.v",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "memory_map": [
+    {
+      "base": "0x401A_0000",
+      "size": "0x10000",
+      "block": "axil_spi_slave",
+      "desc": "슬롯 [1A] — SPI 슬레이브 레지스터 공간 (동결 맵 mbv-frozen-v2 제안 배정)",
+      "regs": [
+        {"off": "0x00", "name": "TX_DATA_0", "access": "RW", "desc": "TX FIFO 엔트리 0 (MicroBlaze V가 쓰면 SPI MISO로 송신 큐에 적재)", "reset": "0x00000000"},
+        {"off": "0x04", "name": "TX_DATA_1", "access": "RW", "desc": "TX FIFO 엔트리 1", "reset": "0x00000000"},
+        {"off": "0x08", "name": "TX_DATA_2", "access": "RW", "desc": "TX FIFO 엔트리 2", "reset": "0x00000000"},
+        {"off": "0x0C", "name": "TX_DATA_3", "access": "RW", "desc": "TX FIFO 엔트리 3", "reset": "0x00000000"},
+        {"off": "0x10", "name": "RX_DATA_0", "access": "RO", "desc": "RX FIFO 엔트리 0 (ESP32 MOSI로 수신한 최근 바이트 순서)", "reset": "0x00000000"},
+        {"off": "0x14", "name": "RX_DATA_1", "access": "RO", "desc": "RX FIFO 엔트리 1", "reset": "0x00000000"},
+        {"off": "0x18", "name": "RX_DATA_2", "access": "RO", "desc": "RX FIFO 엔트리 2", "reset": "0x00000000"},
+        {"off": "0x1C", "name": "RX_DATA_3", "access": "RO", "desc": "RX FIFO 엔트리 3", "reset": "0x00000000"},
+        {"off": "0x20", "name": "STATUS",    "access": "RO", "desc": "[0]=rx_valid(RX에 새 데이터), [1]=tx_full(TX FIFO 꽉 참), [2]=cs_active(현재 SPI 전송 중)", "reset": "0x00000000"},
+        {"off": "0x24", "name": "CTRL",      "access": "RW", "desc": "[0]=rx_clear(1 쓰면 RX FIFO 클리어), [1]=tx_clear(TX FIFO 클리어)", "reset": "0x00000000"}
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T1",
+      "state": "done",
+      "title": "mmio-uart-gpio-skeleton — UART + GPIO MMIO 골격",
+      "refs": ["mmio-uart-gpio-skeleton"]
+    },
+    {
+      "stage": "T2",
+      "state": "current",
+      "title": "mmio-spi-slave-telemetry-ip — AXI4-Lite SPI 슬레이브 IP (이 패키지)",
+      "refs": ["hideakitai-esp32spislave", "espressif-idf-freertos-smp-multicore"]
+    },
+    {
+      "stage": "T3",
+      "state": "planned",
+      "title": "ESP32 Wi-Fi MQTT 텔레메트리 펌웨어 + Basys3 IP 통합 검증",
+      "refs": []
+    }
+  ],
+  "references": [
+    {
+      "name": "hideakitai-esp32spislave",
+      "reason": "ESP32 SPI 슬레이브 라이브러리 — Basys3 SPI 마스터 역할 역전에 활용. 프로토콜 프레임 참고."
+    },
+    {
+      "name": "espressif-idf-freertos-smp-multicore",
+      "reason": "ESP32 xTaskCreatePinnedToCore() 듀얼코어 역할 분리 패턴. Core1 SPI 폴링 / Core0 Wi-Fi 분리 근거."
+    },
+    {
+      "name": "espressif-idf-ringbuf-ipc",
+      "reason": "FreeRTOS Ring Buffer 코어 간 IPC 패턴. Core1→Core0 센서 프레임 전달 설계 근거."
+    }
+  ],
+  "sources": {
+    "rtl": ["rtl/basys3_top.v", "rtl/soc_top.v", "rtl/axil_spi_slave.v"],
+    "tb": ["tb/tb_axil_spi_slave.v"],
+    "constraints": ["constr/basys3.xdc"],
+    "build": ["Makefile"]
+  },
+  "howto": {
+    "sim": "make sim  # iverilog + vvp; PASS 메시지 확인",
+    "lint": "make lint  # iverilog -Wall -Wno-timescale",
+    "synth": "make synth  # yosys -p 'synth_xilinx -top basys3_top'",
+    "vivado": "Vivado 2024.2: Create Project → Add Sources (rtl/*.v) → Add Constraints (constr/basys3.xdc) → Run Synthesis/Implementation → Program"
+  },
+  "verification": {
+    "board": "not-tested",
+    "notes": "S0 작성 완료. CI 린트·시뮬레이션·합성 후 S2로 갱신 예정. 보드 동작(S3)은 사람만 올릴 수 있음.",
+    "board_evidence": null
+  },
+  "risks": [
+    "SPI SCLK 도메인과 AXI4-Lite 클럭(100 MHz) 간 CDC — 더블 플립플롭 동기화 적용 필요",
+    "SCLK 최대 10 MHz 제한: ESP32 SPI 클럭 소스를 주의해야 함",
+    "TX FIFO underrun: SPI CS_N 하강 전에 MicroBlaze V가 TX_DATA를 채우지 않으면 0x00 송신",
+    "Basys3 보드 미검증(S0); Pmod JA 핀 배선은 XDC 주석 참조"
+  ]
+}
