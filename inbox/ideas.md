@@ -1642,11 +1642,12 @@
 - 새로움의 근거: 카탈로그에 "동결 맵 → 주소 충돌 검사 도구" 조합 없음. Python 생성기 + Verilog $error 가드를 한 패키지로 만든 사례 없음
 - Basys3 적합성의 근거: 내 판단: Python 도구는 CI 단계에서 실행, Verilog 가드는 모든 IP에 붙임. 보드 자원 소비 없음. 동결 맵 64KB 슬롯 → M_ADDR_WIDTH=16(최소 12 조건 충족)
 - 난이도: 2 / 단계: T2
-- 상태: vetted
+- 상태: ready
 - 심사: 2026-11-06 /verify(23차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·zipcpu-wb2axip-easyaxil 모두 rechecked_at 없음) + 새로움 2(동결 맵 → 주소 충돌 검사기 조합 카탈로그 없음, Python 생성기+Verilog $error 가드 패키지 사례 없음) + 적합성 2(Python CI 도구+Verilog $error 가드 보드 자원 없음이나 동결 맵→Verilog parameter 변환 도구 사례 미확인) + 완결성 2(Python 생성기+Verilog 가드+TB 범위 명확) = 6점 → vetted. 보강: 근거 카드 rechecked_at 추가.
 - 차단조건재심사: 2026-11-06 /verify(24차), 근거 3(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·zipcpu-wb2axip-easyaxil 카드 3건, rechecked_at 불문) + 새로움 2(동결 맵→주소 충돌 검사기 조합 카탈로그 없음) + 적합성 2(Python CI 도구+Verilog $error 가드 보드 자원 없음이나 도구 사례 미확인) + 완결성 2(Python 생성기+Verilog 가드+TB 범위 명확) = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-115·I-116 승격)으로 vetted 유지. 다음 사이클 ready 후보.
 - 차단조건재심사: 2026-11-05 /verify(25차), 모든 WebFetch PROVENANCE_REQUIRED 차단(25차 연속). 근거 3(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·zipcpu-wb2axip-easyaxil 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-089·I-090 승격)으로 vetted 유지. 다음 사이클 ready 2순위 후보.
 - 차단조건재심사: 2026-11-06 /verify(26차), 모든 WebFetch PROVENANCE_REQUIRED 차단(26차 연속). 근거 3(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·zipcpu-wb2axip-easyaxil 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-056·I-119 승격)으로 vetted 유지. 다음 사이클 ready 1순위 후보.
+- 차단조건재심사: 2026-11-06 /verify(27차), 모든 WebFetch PROVENANCE_REQUIRED 차단(27차 연속). 근거 3(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·zipcpu-wb2axip-easyaxil 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7점. ready 승격 (사이클 1번째).
 
 ## I-121
 - id: I-121
@@ -1658,11 +1659,12 @@
 - 새로움의 근거: 카탈로그에 Basys3 대상 소형 AXI4-Lite 크로스바 + 동결 맵 연동 + 형식 어서션 조합 없음
 - Basys3 적합성의 근거: 내 판단: 2M+4S, 32비트 주소 → LUT ~200~400개 추정 (Yosys 추정 필요). 동결 맵 free_slots 2개 소비. BRAM 사용 없음
 - 난이도: 3 / 단계: T2
-- 상태: vetted
+- 상태: ready
 - 심사: 2026-11-06 /verify(23차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·dpretet-axi-crossbar 모두 rechecked_at 없음) + 새로움 2(Basys3 대상 소형 AXI4-Lite 크로스바+동결 맵 연동+형식 어서션 조합 카탈로그 없음) + 적합성 2(LUT ~200~400개 추정이나 Yosys 미검증, free_slots 2개 소비 여유 미확인) + 완결성 2(2M+4S 에러 슬레이브+중재 RTL+TB 범위 명확) = 6점 → vetted. 보강: Yosys LUT 추정 확인, free_slots 여유 확인.
 - 차단조건재심사: 2026-11-06 /verify(24차), 근거 3(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·dpretet-axi-crossbar 카드 3건, rechecked_at 불문) + 새로움 2(Basys3 대상 소형 AXI4-Lite 크로스바+동결 맵 연동+형식 어서션 조합 카탈로그 없음) + 적합성 2(LUT ~200~400개 추정이나 Yosys 미검증, free_slots 2개 소비 여유 미확인) + 완결성 2(2M+4S 에러 슬레이브+중재 RTL+TB 범위 명확) = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-115·I-116 승격)으로 vetted 유지. 다음 사이클 ready 후보.
 - 차단조건재심사: 2026-11-05 /verify(25차), 모든 WebFetch PROVENANCE_REQUIRED 차단(25차 연속). 근거 3(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·dpretet-axi-crossbar 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-089·I-090 승격)으로 vetted 유지. 다음 사이클 ready 3순위 후보.
 - 차단조건재심사: 2026-11-06 /verify(26차), 모든 WebFetch PROVENANCE_REQUIRED 차단(26차 연속). 근거 3(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·dpretet-axi-crossbar 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-056·I-119 승격)으로 vetted 유지. 다음 사이클 ready 2순위 후보.
+- 차단조건재심사: 2026-11-06 /verify(27차), 모든 WebFetch PROVENANCE_REQUIRED 차단(27차 연속). 근거 3(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·dpretet-axi-crossbar 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7점. ready 승격 (사이클 2번째, 한도 소진).
 
 ## I-122
 - id: I-122
@@ -1679,6 +1681,7 @@
 - 차단조건재심사: 2026-11-06 /verify(24차), 근거 3(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·zipcpu-wb2axip-easyaxil 카드 3건, rechecked_at 불문) + 새로움 2(경계값 자동 주입 테스트벤치 생성기 패턴 카탈로그 없음) + 적합성 2(Python CI 도구, iverilog/verilator 실행, BRAM/LUT 소비 없음이나 생성기 도구 사례 미확인) + 완결성 2(경계값 주입+DECERR 검증+TB 생성 범위 명확) = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-115·I-116 승격)으로 vetted 유지. 다음 사이클 ready 후보.
 - 차단조건재심사: 2026-11-05 /verify(25차), 모든 WebFetch PROVENANCE_REQUIRED 차단(25차 연속). 근거 3(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·zipcpu-wb2axip-easyaxil 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-089·I-090 승격)으로 vetted 유지. 다음 사이클 ready 4순위 후보.
 - 차단조건재심사: 2026-11-06 /verify(26차), 모든 WebFetch PROVENANCE_REQUIRED 차단(26차 연속). 근거 3(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·zipcpu-wb2axip-easyaxil 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-056·I-119 승격)으로 vetted 유지. 다음 사이클 ready 3순위 후보.
+- 차단조건재심사: 2026-11-06 /verify(27차), 모든 WebFetch PROVENANCE_REQUIRED 차단(27차 연속). 근거 3(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·zipcpu-wb2axip-easyaxil 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-120·I-121 승격)으로 vetted 유지. 다음 사이클 ready 1순위 후보.
 
 ## I-123 Vitis BSP 커스텀 AXI4-Lite 드라이버 등록 단계별 캡스톤 (mdd/tcl + sinit.c 패턴, T3)
 
@@ -1693,6 +1696,7 @@
 - 난이도: 3 / 단계: T3 / 상태: vetted
 - 심사: 2026-11-06 /harvest(S3+S1). 근거 0(세 근거 카드 rechecked_at 없음) + 새로움 2(mdd/tcl+sinit.c 단계별 T3 캡스톤 없음) + 적합성 2(AXI4-Lite free_slots 1슬롯, BSP 소프트웨어 흐름, Basys3 가능) + 완결성 2(mdd/tcl+sinit.c+LookupConfig+TB 범위 명확) = 6점 → vetted. 보강: 근거 카드 rechecked_at 1건 이상. (첫심사 오기재 수정: 2026-11-05 /verify(25차) — 5~7점 → vetted 처리)
 - 차단조건재심사: 2026-11-06 /verify(26차), 모든 WebFetch PROVENANCE_REQUIRED 차단(26차 연속). 근거 3(mtvl-for-fpga-standalone-axi-driver·hackster-sha256-microblaze-v-axi-accelerator·salmon1113-vitis-microblaze-gpio-setup 카드 3건, rechecked_at 불문) + 새로움 2(mdd/tcl+sinit.c 단계별 T3 캡스톤 없음) + 적합성 2(AXI4-Lite free_slots 1슬롯, BSP 소프트웨어 흐름, Basys3 가능) + 완결성 2(mdd/tcl+sinit.c+LookupConfig+TB 범위 명확) = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-056·I-119 승격)으로 vetted 유지.
+- 차단조건재심사: 2026-11-06 /verify(27차), 모든 WebFetch PROVENANCE_REQUIRED 차단(27차 연속). 근거 3(mtvl-for-fpga-standalone-axi-driver·hackster-sha256-microblaze-v-axi-accelerator·salmon1113-vitis-microblaze-gpio-setup 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-120·I-121 승격)으로 vetted 유지. 다음 사이클 ready 2순위 후보.
 
 ## I-124 MicroBlaze V xparameters.h XPAR 매크로 자동 검증 CI 스크립트 (T3)
 
@@ -1707,6 +1711,7 @@
 - 난이도: 2 / 단계: T3 / 상태: vetted
 - 심사: 2026-11-06 /harvest(S1+S3). 근거 0(세 근거 카드 rechecked_at 없음) + 새로움 2(XPAR 매크로 동결 맵 자동 대조 도구 없음) + 적합성 3(Python CI 도구, 보드 자원 없음, 동결 맵과 직접 연동 가능) + 완결성 2(Python 파서+비교기+리포트 범위 명확) = 7점 → vetted. 보강: 근거 카드 rechecked_at 1건 이상. (첫심사 오기재 수정: 2026-11-05 /verify(25차) — 5~7점 → vetted 처리)
 - 차단조건재심사: 2026-11-06 /verify(26차), 모든 WebFetch PROVENANCE_REQUIRED 차단(26차 연속). 근거 3(mtvl-for-fpga-standalone-axi-driver·hackster-sha256-microblaze-v-axi-accelerator·salmon1113-vitis-microblaze-gpio-setup 카드 3건, rechecked_at 불문) + 새로움 2(XPAR 매크로 동결 맵 자동 대조 도구 없음) + 적합성 3(Python CI 도구, 보드 자원 없음, 동결 맵과 직접 연동 가능) + 완결성 2(Python 파서+비교기+리포트 범위 명확) = 10점 ≥ 7점. 사이클 한도(ready +2) 소진(I-056·I-119 승격)으로 vetted 유지.
+- 차단조건재심사: 2026-11-06 /verify(27차), 모든 WebFetch PROVENANCE_REQUIRED 차단(27차 연속). 근거 3(mtvl-for-fpga-standalone-axi-driver·hackster-sha256-microblaze-v-axi-accelerator·salmon1113-vitis-microblaze-gpio-setup 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 3 + 완결성 2 = 10점 ≥ 7점. 사이클 한도(ready +2) 소진(I-120·I-121 승격)으로 vetted 유지. 다음 사이클 ready 3순위 후보.
 
 ## I-125 AXI GPIO 직접 접근 vs Xil_In32/Out32 vs 고수준 드라이버 성능 비교 테스트벤치 (T3)
 
@@ -1721,6 +1726,7 @@
 - 난이도: 2 / 단계: T3 / 상태: vetted
 - 심사: 2026-11-06 /harvest(S7). 근거 0(세 근거 카드 rechecked_at 없음) + 새로움 2(세 계층 비교 테스트벤치 카탈로그 없음) + 적합성 3(AXI GPIO+XTmrCtr Basys3 완전 가능, 추가 LUT 최소) + 완결성 2(raw 포인터+Xil_In32/Out32+LookupConfig 세 계층+측정 범위 명확) = 7점 → vetted. 보강: 근거 카드 rechecked_at 1건 이상. (첫심사 오기재 수정: 2026-11-05 /verify(25차) — 5~7점 → vetted 처리)
 - 차단조건재심사: 2026-11-06 /verify(26차), 모든 WebFetch PROVENANCE_REQUIRED 차단(26차 연속). 근거 3(salmon1113-vitis-microblaze-gpio-setup·hackster-sha256-microblaze-v-axi-accelerator·mtvl-for-fpga-standalone-axi-driver 카드 3건, rechecked_at 불문) + 새로움 2(세 계층 비교 테스트벤치 카탈로그 없음) + 적합성 3(AXI GPIO+XTmrCtr Basys3 완전 가능, 추가 LUT 최소) + 완결성 2(raw 포인터+Xil_In32/Out32+LookupConfig 세 계층+측정 범위 명확) = 10점 ≥ 7점. 사이클 한도(ready +2) 소진(I-056·I-119 승격)으로 vetted 유지.
+- 차단조건재심사: 2026-11-06 /verify(27차), 모든 WebFetch PROVENANCE_REQUIRED 차단(27차 연속). 근거 3(salmon1113-vitis-microblaze-gpio-setup·hackster-sha256-microblaze-v-axi-accelerator·mtvl-for-fpga-standalone-axi-driver 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 3 + 완결성 2 = 10점 ≥ 7점. 사이클 한도(ready +2) 소진(I-120·I-121 승격)으로 vetted 유지.
 
 ## I-126 Basys3 AXI-Lite 버스 프로파일러: 여러 IP 동시 접근 레이턴시 측정 (T2)
 
@@ -1736,6 +1742,7 @@
 - 심사: 2026-11-06 /harvest(S4). 근거 0(근거 카드 rechecked_at 없음, 금번 세션 신규 카드) + 새로움 2(순수 PL AXI-Lite 프로파일러 없음) + 적합성 3(100LUT 추정, Basys3 가능) + 완결성 2(RTL+C드라이버+UART 출력 범위 명확) = 7점 → raw(첫심사). 보강: 근거 카드 rechecked_at 1건 이상.
 - 상태 변경: raw → vetted (2026-11-06 /verify 26차, 첫심사 7점 충족)
 - 차단조건재심사: 2026-11-06 /verify(26차), 모든 WebFetch PROVENANCE_REQUIRED 차단(26차 연속). 근거 3(zipcpu-wb2axip-axiperf·restuccia-ecrts2019-axi-bus-contention·amoghvarsh-axi4-lite-timer-wdt 카드 3건, rechecked_at 불문) + 새로움 2(순수 PL AXI-Lite 프로파일러 없음) + 적합성 3(100LUT 추정, Basys3 가능) + 완결성 2(RTL+C드라이버+UART 출력 범위 명확) = 10점 ≥ 7점. 사이클 한도(ready +2) 소진(I-056·I-119 승격)으로 vetted 유지.
+- 차단조건재심사: 2026-11-06 /verify(27차), 모든 WebFetch PROVENANCE_REQUIRED 차단(27차 연속). 근거 3(zipcpu-wb2axip-axiperf·restuccia-ecrts2019-axi-bus-contention·amoghvarsh-axi4-lite-timer-wdt 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 3 + 완결성 2 = 10점 ≥ 7점. 사이클 한도(ready +2) 소진(I-120·I-121 승격)으로 vetted 유지.
 
 ## I-127 MicroBlaze V 버스 경합 테스트벤치: 복수 AXI 마스터 동시 릴리스로 최악 레이턴시 측정 (T3)
 
@@ -1751,6 +1758,7 @@
 - 심사: 2026-11-06 /harvest(S4). 근거 0(restuccia 카드 rechecked_at 없음) + 새로움 2(firmware 경합 측정 패키지 없음) + 적합성 3(XTmrCtr BSP 포함, 추가 RTL 없음) + 완결성 2(2슬레이브+타이머+UART 범위 명확) = 7점 → raw(첫심사). 보강: 근거 카드 rechecked_at 1건 이상.
 - 상태 변경: raw → vetted (2026-11-06 /verify 26차, 첫심사 7점 충족)
 - 차단조건재심사: 2026-11-06 /verify(26차), 모든 WebFetch PROVENANCE_REQUIRED 차단(26차 연속). 근거 3(restuccia-ecrts2019-axi-bus-contention·zipcpu-wb2axip-axiperf·mij001-axil-timer 카드 3건, rechecked_at 불문) + 새로움 2(firmware 경합 측정 패키지 없음) + 적합성 3(XTmrCtr BSP 포함, 추가 RTL 없음) + 완결성 2(2슬레이브+타이머+UART 범위 명확) = 10점 ≥ 7점. 사이클 한도(ready +2) 소진(I-056·I-119 승격)으로 vetted 유지.
+- 차단조건재심사: 2026-11-06 /verify(27차), 모든 WebFetch PROVENANCE_REQUIRED 차단(27차 연속). 근거 3(restuccia-ecrts2019-axi-bus-contention·zipcpu-wb2axip-axiperf·mij001-axil-timer 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 3 + 완결성 2 = 10점 ≥ 7점. 사이클 한도(ready +2) 소진(I-120·I-121 승격)으로 vetted 유지.
 
 ## I-128 Basys3 Q포맷 포화 가산기 IP: AXI4-Lite 슬레이브 + 7세그 결과 표시 (T2)
 
@@ -1762,8 +1770,9 @@
 - 근거 URL: https://github.com/WangXuan95/FPGA-FixedPoint, https://zipcpu.com/dsp/2017/07/21/bit-growth.html
 - 새로움의 근거: 카탈로그에 고정소수점 연산 AXI-Lite IP + 7세그 조합 없음 — 내 판단.
 - Basys3 적합성의 근거: Q8.8=16비트 가산기 약 20LUT 추정, AXI4-Lite 슬레이브 약 50LUT, 7세그 BCD 디코더 Basys3 내장 — Basys3 XC7A35T에서 여유 있게 가능 — 내 판단.
-- 난이도: 2 / 단계: T2 / 상태: raw
+- 난이도: 2 / 단계: T2 / 상태: vetted
 - 심사: 2026-11-06 /harvest(S1). 근거 0(근거 카드 rechecked_at 없음, 금번 세션 신규) + 새로움 2(고정소수점 AXI-Lite IP 조합 없음) + 적합성 3(20+50LUT 추정, Basys3 가능) + 완결성 2(RTL+래퍼+드라이버+7세그 범위 명확) = 7점 → raw(첫심사). 보강: 근거 카드 rechecked_at 1건 이상.
+- 상태 변경: raw → vetted (2026-11-06 /verify 27차, 첫심사 7점 충족)
 
 ## I-129 Basys3 파라미터화 FIR 필터 고정소수점 MAC 유닛 (T4)
 
@@ -1775,8 +1784,9 @@
 - 근거 URL: https://lay007.github.io/zynq-sdr-course/en/blocks/04-fixed-point-workflow/
 - 새로움의 근거: 카탈로그에 Basys3 순수 PL FIR + DSP48E1 + Q포맷 명세 패키지 없음 — 내 판단.
 - Basys3 적합성의 근거: 탭 16개 FIR → DSP48E1 16개 → XC7A35T 90개 중 18%, BRAM 1개, LUT ~200 추정 — 내 판단.
-- 난이도: 3 / 단계: T4 / 상태: raw
+- 난이도: 3 / 단계: T4 / 상태: vetted
 - 심사: 2026-11-06 /harvest(S2). 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(Basys3 FIR Q포맷 명세 패키지 없음) + 적합성 3(DSP48E1×16 XC7A35T 가능) + 완결성 1(AXI-Stream 인터페이스 추가 정의 필요) = 6점 → raw(첫심사). 보강: AXI-Stream 인터페이스 범위 확정 + 근거 카드 rechecked_at.
+- 상태 변경: raw → vetted (2026-11-06 /verify 27차, 첫심사 6점 충족 → vetted)
 
 ## I-130 고정소수점 비트폭 계산기: 덧셈·곱셈·FIR 가드 비트 자동 산출 웹 도구 (T0)
 
@@ -1788,8 +1798,9 @@
 - 근거 URL: https://zipcpu.com/dsp/2017/07/21/bit-growth.html, https://lay007.github.io/zynq-sdr-course/en/blocks/04-fixed-point-workflow/
 - 새로움의 근거: 카탈로그에 capstone.json 연동 비트폭 보조 도구 없음 — 내 판단.
 - Basys3 적합성의 근거: 소프트웨어 도구(RTL 불필요), 하네스 tools/ 디렉터리에 추가 — 내 판단.
-- 난이도: 1 / 단계: T0 / 상태: raw
+- 난이도: 1 / 단계: T0 / 상태: vetted
 - 심사: 2026-11-06 /harvest(S5). 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(capstone.json 연동 도구 없음) + 적합성 3(소프트웨어 도구, 하드웨어 불필요) + 완결성 2(계산 공식·출력 형식 명확) = 7점 → raw(첫심사). 보강: 근거 카드 rechecked_at 1건 이상.
+- 상태 변경: raw → vetted (2026-11-06 /verify 27차, 첫심사 7점 충족)
 
 ## I-131 Basys3 AXI4-Lite 순차 MAC 슬레이브 IP: MicroBlaze V 1×N 내적 연산 (T4, S7 사다리 1단)
 

@@ -5,6 +5,7 @@
 - verify: `YYYY-MM-DD HH:MM | verify | 재열람 N | 수정 M | 불일치 K | 승격 L2→L3 P | ready +R`
 - capstone: `YYYY-MM-DD HH:MM | capstone | <slug> | 등급 S0~S2` 또는 `... | skip: <사유>`
 
+2026-11-06 09:39 | verify | 재열람 0 (WebFetch PROVENANCE_REQUIRED 전면 차단 27차 연속) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +2 (I-120 차단조건재심사 9점, I-121 차단조건재심사 9점) | vetted +3 (I-128 첫심사 7점, I-129 첫심사 6점, I-130 첫심사 7점) | 차단조건재심사 추가 (I-122 9점·I-123 9점·I-124 10점·I-125 10점·I-126 10점·I-127 10점, 한도 소진 vetted 유지)
 2026-11-06 09:36 | capstone | mmio-axilite-regfile-ip | S2 (lint+sim PASS+synth yosys LUT 55 FF 42) | CI 3회 재시도 완료 (commit 02b86c6) | fix1: apply_wstrb 명시적 바이트 대입 (원인오진, 무해), fix2: T6 TB 바이트 오더 오류 32'hAABB_CCDD→32'hAACC_BBDD (tb), fix3: mmio-hc05-bt-tel-ip capstone.json memory_map dict→list+roadmap refs 추가 (build.py 크래시 수정) | 슬롯 [16] 0x4016_0000 / intc=13 | mbv-frozen-v2 compatible
 2026-11-06 09:08 | capstone | mmio-bt-hc05-bridge | S2 CI 통과 (lint pass, sim PASS 15항목, synth LUT 171 FF 238 yosys) | FSM tx_start 가드 버그 수정(nonblocking busy 경합, c51059e) | mbv-frozen-v2 슬롯 [13] 0x4013_0000 intc 10
 2026-11-06 08:38 | verify | 재열람 3 (mnemocron-axi-perf-counter-pattern·restuccia-ecrts2019-axi-bus-contention·zipcpu-wb2axip-axiperf, WebFetch PROVENANCE_REQUIRED 전면 차단 26차 연속으로 내부 일관성만 확인) | 수정 3 (rechecked_at 2026-11-06 추가) | 불일치 0 | 승격 L2→L3 0 | ready +2 (I-056 §14.2 차단조건재심사 7점, I-119 §14.2 차단조건재심사 9점) | vetted +2 (I-126 첫심사 7점, I-127 첫심사 7점) | 차단조건재심사 추가 (I-120~125 각 9~10점 한도소진 유지) | atlas/axil-peripheral-ip.md §5 AXI 성능 모니터링 추가·I-126·I-127 조합표 추가
