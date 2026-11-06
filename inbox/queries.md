@@ -45,3 +45,9 @@
 2026-11-06 | [B3] MLP 추론 가속기 | FPGA neural network activation function hardware friendly D-ReLU paper UNLV 2020 | 유효
 2026-11-06 | [B3] MLP 추론 가속기 | FPGA MNIST 뉴럴 네트워크 가속기 Verilog 고정소수점 GitHub 한국어 | 빈약
 2026-11-06 | [B3] MLP 추론 가속기 | github.com/libfpga fpga-neuron Q4.4 Verilog neuron fixed-point MIT license | 유효
+2026-11-06 | [B3] MLP 추론 가속기 | Basys3 FPGA MLP neural network inference accelerator Verilog fixed point 2026 | 유효 (Kanishk234/nfl-fpga-accelerator, sivakumarchakarapalli/systolic-array-accelerator)
+2026-11-06 | [B3] MLP 추론 가속기 | site:github.com FPGA MLP inference accelerator MNIST AXI4-Lite fixed point Verilog | 유효 (itsKannapi/fpga-mlp-accelerator, marbleton/FPGA_MNIST)
+2026-11-06 | [B3] MLP 추론 가속기 | FPGA 고정소수점 MLP 추론 가속기 Basys3 AXI-Lite 2층 신경망 Verilog | 빈약 (한국어 직접 사례 없음, arXiv 2005.04737 감압 FPGA 연구만)
+2026-11-06 | [B3] MLP 추론 가속기 | FPGA neural network MLP BRAM weight storage forward pass ReLU fixed point Artix-7 | 유효 (Columbia MNIST PDF DE1-SoC)
+2026-11-06 | [B3] MLP 추론 가속기 | github.com FPGA MNIST MLP neural network inference Basys3 Artix-7 AXI | 유효 (sivakumarchakarapalli: Basys3 INT8 AXI-Lite)
+2026-11-06 | [B3] MLP 추론 가속기 | site:github.com Basys3 MLP neural network accelerator BRAM fixed point AXI (extended) | 유효 (itsKannapi BRAM 15개 INT8, duydat291007 FlyWire-Basys3)

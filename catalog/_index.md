@@ -276,3 +276,5 @@
 | [libfpga-fpga-neuron](vendor-neutral/libfpga-fpga-neuron.md) | L3 | T0-T1 | 없음 (Basys3 needs-port) | 2026-11-06 |
 | [erwanregy-neural-network-fpga](vendor-neutral/erwanregy-neural-network-fpga.md) | L3 | T2-T3 | Zynq-7000 (Basys3 needs-port) | 2026-11-06 |
 | [unlv-si-harris-drelu-fpga-mlp](papers/unlv-si-harris-drelu-fpga-mlp.md) | L3 | T2 | 없음 (논문) | 2026-11-06 |
+| [sivakumarchakarapalli-systolic-array-accelerator](vendor-neutral/sivakumarchakarapalli-systolic-array-accelerator.md) | L3 | T2 | Basys3 | 2026-11-06 |
+| [itskannapi-fpga-mlp-accelerator](vendor-neutral/itskannapi-fpga-mlp-accelerator.md) | L3 | T4 | Basys3 | 2026-11-06 |
