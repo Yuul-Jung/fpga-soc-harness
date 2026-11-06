@@ -132,7 +132,7 @@
 
 ### 입문: 수치 기초
 - [x] [B3] 고정소수점 수 체계: Q포맷(Q8.8, Q4.12), 포화 연산, 반올림 모드, Verilog 구현 패턴 — 2026-11-06 카드 6건(wangxuan95-fpga-fixedpoint L3, lay007-zynq-sdr-course-block04 L3, gisselquist-zipcpu-bit-growth L3, wangxuan95-verilog-fixedpoint L2, pyadav1992-rtl-fixedpoint-arithmetics L2, opencores-verilog-fixed-point-math L2)
-- [ ] [B3] 행렬·벡터 내적 하드웨어 (MAC 어레이 1×N, 파이프라인 레이턴시, BRAM 가중치 적재)
+- [x] [B3] 행렬·벡터 내적 하드웨어 (MAC 어레이 1×N, 파이프라인 레이턴시, BRAM 가중치 적재)
 
 ### 중급: 기본 추론 블록
 - [ ] [B3] MLP 추론 가속기: 완전연결층 순전파, ReLU/Sigmoid 근사, 2층 고정소수점 네트워크 (Basys3 LUT·BRAM 범위 내)

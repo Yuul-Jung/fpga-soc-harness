@@ -224,3 +224,4 @@
 2026-11-06 08:24 | collect | [B3] 고정소수점 Q포맷·비트성장·포화·반올림 (S1 인접도메인+S5 비정형출처) | 카드 +3 | 아이디어 +3 | 큐 잔여 10건 추가 | blocked 3(dsprelated PROVENANCE_REQUIRED, OpenCores 504, AMD docs 405)
 2026-11-06 08:44 | capstone | mmio-axilite-regfile-ip | 아이디어 I-114 used | 단계 T2 | memory_map dict→list 형식 수정, address_map mbv-frozen-v1→mbv-frozen-v2 수정 | check.py 0오류, build.py 0오류 | 근거 재확인 없음(무조건 최대한 생성 방침) | 등급 S0 (시뮬레이터 미설치, CI에서 S1/S2 예정)
 2026-11-06 08:50 | capstone | mmio-hc05-bt-tel-ip (I-031 병렬 2바이트 버전) | 게이트 3·4 건너뜀(무조건 최대한 생성) | I-031 mmio-bt-hc05-bridge 선점 → 병렬 구현으로 추가 | S0 | 소스 4+1+Makefile | check.py 경고 0 오류 0
+2026-11-06 09:11 | collect | [B3] 행렬·벡터 내적 하드웨어 · S7 난이도 사다리(주)+S4 제약 역전(보조), 영어·한국어·일본어·중국어 질의, GitHub+arXiv+비정형 | 카드 +3 | 아이디어 +3 | 큐 잔여 10건 추가 | blocked 25+(WebFetch PROVENANCE_REQUIRED·GitHub MCP 범위 외)

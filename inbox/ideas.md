@@ -1790,3 +1790,42 @@
 - Basys3 적합성의 근거: 소프트웨어 도구(RTL 불필요), 하네스 tools/ 디렉터리에 추가 — 내 판단.
 - 난이도: 1 / 단계: T0 / 상태: raw
 - 심사: 2026-11-06 /harvest(S5). 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(capstone.json 연동 도구 없음) + 적합성 3(소프트웨어 도구, 하드웨어 불필요) + 완결성 2(계산 공식·출력 형식 명확) = 7점 → raw(첫심사). 보강: 근거 카드 rechecked_at 1건 이상.
+
+## I-131 Basys3 AXI4-Lite 순차 MAC 슬레이브 IP: MicroBlaze V 1×N 내적 연산 (T4, S7 사다리 1단)
+
+내 판단: S7 난이도 사다리 1단 — antoinelecalvez05-ml-dot-product-accelerator의 sequential(1-MAC) 아키텍처를 AXI4-Lite 슬레이브로 감싸, MicroBlaze V가 INT8 벡터 쌍을 쓰면 N클럭 후 내적 결과를 읽는 최소 IP. 동결 맵 free_slots 1슬롯 사용, cocotb 패턴으로 TB 작성 가능.
+
+- id: I-131
+- 조합: [signed-int8 순차 MAC(1클럭/연산), AXI4-Lite 슬레이브 래퍼, MicroBlaze V C 드라이버, Basys3 7세그 결과 표시]
+- 근거 카드: antoinelecalvez05-ml-dot-product-accelerator, wangxuan95-fpga-fixedpoint, gisselquist-zipcpu-bit-growth
+- 근거 URL: https://github.com/Antoinelecalvez05/ml-dot-product-accelerator
+- 새로움의 근거: 카탈로그에 Basys3 int8 순차 MAC AXI-Lite IP 패키지 없음. antoinelecalvez05 카드는 FSM 단독이며 AXI4-Lite 래퍼 없음 — 내 판단.
+- Basys3 적합성의 근거: 순차 MAC 약 20LUT + DSP48×1 + AXI래퍼 약 50LUT — XC7A35T 가능. 동결 맵 free_slots 1슬롯. antoinelecalvez05 카드가 Basys3 데모 확인(fit_basys3: yes) — 내 판단.
+- 난이도: 2 / 단계: T4 / 상태: raw
+- 심사: 2026-11-06 /harvest(S7). 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(int8 순차 MAC AXI-Lite IP 없음) + 적합성 3(Basys3 데모 확인 카드, DSP48×1) + 완결성 2(MAC FSM+AXI래퍼+드라이버+7세그 범위 명확) = 7점 → raw(첫심사). 보강: 근거 카드 rechecked_at 추가.
+
+## I-132 Basys3 4×4 시스톨릭 어레이 행렬 곱셈 AXI-Lite IP (T4, S7 사다리 2단)
+
+내 판단: S7 난이도 사다리 2단 — ethanflorendo-fpga-systolic-array-matrix-multiplier의 4×4 시스톨릭 어레이 구조를 근거로, Basys3에 맞게 xdc·클럭을 포팅하고 AXI4-Lite 슬레이브로 감싸 MicroBlaze V가 행렬 주소·실행 명령을 쓰면 결과를 읽는 IP. BRAM 가중치 적재 패턴 적용.
+
+- id: I-132
+- 조합: [4×4 시스톨릭 PE 어레이(자체 RTL), BRAM 입출력 행렬 저장, AXI4-Lite 슬레이브, MicroBlaze V C 드라이버]
+- 근거 카드: ethanflorendo-fpga-systolic-array-matrix-multiplier, antoinelecalvez05-ml-dot-product-accelerator, wangxuan95-fpga-fixedpoint
+- 근거 URL: https://github.com/EthanFlorendo/FPGA-Systolic-Array-Matrix-Multiplier
+- 새로움의 근거: 카탈로그에 Basys3 4×4 시스톨릭 어레이 + AXI4-Lite 슬레이브 조합 패키지 없음. I-131(순차 MAC)보다 단계가 높아 사다리 연속성 있음 — 내 판단.
+- Basys3 적합성의 근거: 4×4=16 PE, DSP48 추정 최대 16개(XC7A35T 90개 중 18%), BRAM 1~2개. 시스톨릭 어레이 타이밍 클로저 위험 있으나 가능 범위 — 내 판단.
+- 난이도: 3 / 단계: T4 / 상태: raw
+- 심사: 2026-11-06 /harvest(S7). 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(4×4 시스톨릭 AXI-Lite 패키지 없음) + 적합성 2(DSP48×16 가능 추정, 타이밍 위험 있음) + 완결성 2(PE·BRAM·AXI·드라이버 범위 명확) = 6점 → raw(첫심사). 보강: DSP48 타이밍 실측, 근거 카드 rechecked_at.
+
+## I-133 Basys3 Compute-in-BRAM MAC IP: BRAMAC 아이디어 Artix-7 이식 (T4, S7+S4 사다리 3단)
+
+내 판단: S7 난이도 사다리 3단 + S4 제약 역전 — arxiv-2304.03974-bramac 논문의 BRAM-내-계산 아이디어를 XC7A35T BRAM36(SDP 모드, 2×18kb 포트)에 맞게 RTL 새 작성. BRAM을 가중치 저장과 MAC 계산을 동시에 수행하는 단위로 활용, DSP48 절약을 목표로 함. AXI4-Lite 슬레이브로 감싸 MicroBlaze V 연결.
+
+- id: I-133
+- 조합: [BRAM36 SDP 모드 compute-in-BRAM MAC(자체 RTL), AXI4-Lite 슬레이브, MicroBlaze V C 드라이버, int8 가중치 적재]
+- 근거 카드: arxiv-2304.03974-bramac, ethanflorendo-fpga-systolic-array-matrix-multiplier, antoinelecalvez05-ml-dot-product-accelerator
+- 근거 URL: https://arxiv.org/abs/2304.03974
+- 새로움의 근거: 카탈로그에 BRAM을 계산 패브릭으로 쓰는 MAC IP 패키지 없음. I-132(시스톨릭 어레이)에서 한 단계 더 나아가 S4 제약 역전 적용 — 내 판단.
+- Basys3 적합성의 근거: XC7A35T BRAM36 50블록. BRAMAC는 BRAM 포트 타이밍을 직접 활용해 DSP48 대신 BRAM을 적산에 씀. RTL은 논문 내용을 근거로 새로 작성 필요(소스 복사 불가). BRAM SDP 모드 포트 사양 확인 선행 필요 — 내 판단.
+- 난이도: 5 / 단계: T4 / 상태: raw
+- 심사: 2026-11-06 /harvest(S7+S4). 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(BRAM 계산 패브릭 IP 없음) + 적합성 1(BRAM SDP 사양 확인 필요, 불확실) + 완결성 1(BRAM SDP 포트 조작 방식 미확인, RTL 설계 복잡도 높음) = 4점 → raw(첫심사). 보강: BRAM36 SDP 포트 사양 확인, 논문 L3 열람.

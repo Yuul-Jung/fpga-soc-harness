@@ -21,3 +21,18 @@
 2026-11-06 | 고정소수점 수 체계 | "WangXuan95 Verilog-FixedPoint GitHub fixed point multiplication saturation" | 유효 (저장소 존재 확인)
 2026-11-06 | 고정소수점 수 체계 | "pyadav1992 RTL FixedPoint Arithmetics MathematicalFunctions GitHub Basys3 Verilog saturation" | 유효 (저장소 존재 확인)
 2026-11-06 | 고정소수점 수 체계 | "FPGA fixed point Q8.8 format DSP MAC accumulator Basys3 Artix-7 neural network" | 유효 (NN 가속기 사례 발견)
+2026-11-06 | [B3] MAC 어레이·행렬 내적 | FPGA Verilog dot product accelerator int8 signed 8-bit Basys3 GitHub | 유효
+2026-11-06 | [B3] MAC 어레이·행렬 내적 | FPGA systolic array matrix multiplier 4x4 Verilog BRAM PE GitHub | 유효
+2026-11-06 | [B3] MAC 어레이·행렬 내적 | compute-in-BRAM FPGA MAC architecture multiply-accumulate arXiv 2023 | 유효
+2026-11-06 | [B3] MAC 어레이·행렬 내적 | FPGA 행렬 벡터 곱셈 MAC 어레이 Verilog 가속기 GitHub 한국어 | 빈약
+2026-11-06 | [B3] MAC 어레이·행렬 내적 | FPGA MAC array 1xN pipeline latency BRAM weight loading neural network | 유효
+2026-11-06 | [B3] MAC 어레이·행렬 내적 | github.com/topics/systolic-array FPGA Verilog matrix | 유효
+2026-11-06 | [B3] MAC 어레이·행렬 내적 | FPGA dot product signed integer cocotb testbench Basys3 Artix-7 | 유효
+2026-11-06 | [B3] MAC 어레이·행렬 내적 | BRAMAC compute in memory BRAM MAC FPGA Xilinx weight storage | 유효
+2026-11-06 | [B3] MAC 어레이·행렬 내적 | FPGA systolic array matrix multiplier simulation resource utilization LUT DSP48 | 유효
+2026-11-06 | [B3] MAC 어레이·행렬 내적 | FPGA ベクトル内積 乗算累積 Verilog システォリックアレイ GitHub (일본어) | 빈약
+2026-11-06 | [B3] MAC 어레이·행렬 내적 | FPGA 乘法累加器 脉动阵列 矩阵乘法 Verilog GitHub (중국어) | 빈약
+2026-11-06 | [B3] MAC 어레이·행렬 내적 | site:hackaday.com OR site:hackaday.io FPGA systolic array matrix multiplier accelerator | 빈약
+2026-11-06 | [B3] MAC 어레이·행렬 내적 | NYCU AAML 2024 systolic array lab FPGA Verilog weight stationary | 유효
+2026-11-06 | [B3] MAC 어레이·행렬 내적 | site:github.com mac array fpga accelerator neural network int8 AXI-Lite slave | 유효
+2026-11-06 | [B3] MAC 어레이·행렬 내적 | FPGA mini NPU MAC accumulate weight BRAM DSP48 Basys3 Artix-7 AXI | 유효

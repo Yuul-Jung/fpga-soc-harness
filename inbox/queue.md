@@ -683,3 +683,14 @@
 - https://github.com/pyadav1992/RTL-FixedPoint-Arithmetics-MathematicalFunctions | RTL 고정소수점 산술 및 수학함수 라이브러리 (Verilog) — 미열람(L2 검색 기준), 카드 작성(pyadav1992-rtl-fixedpoint-arithmetics) | FPGA fixed point arithmetic Verilog saturation rounding RTL implementation
 - https://github.com/tacari/nn-accelerator | FPGA 신경망 가속기 (고정소수점 MAC 사용) — 미열람(L1) | FPGA fixed point Q8.8 format DSP MAC accumulator Basys3 Artix-7 neural network
 - https://github.com/ansh07verma/fpga-mini-npu | FPGA 미니 NPU (고정소수점 양자화) — 미열람(L1) | FPGA fixed point Q8.8 format DSP MAC accumulator Basys3 Artix-7 neural network
+
+- https://github.com/0xCapy/Vector-multiplier | Wallace Tree 기반 int8 2/4/8/16 병렬 MAC(언어 미확인, 보드 미명시) — 미열람(L1), S7 사다리 병렬 MAC 보완 | FPGA Verilog parallel MAC array integer 8-bit vector multiplier GitHub
+- https://github.com/Yohands123/Matrix-Vector-Multiplication-Engine | 행렬-벡터 곱셈 엔진(언어·라이선스 미확인) — 미열람(L1), MAC 어레이 아이디어 근거 보완 | FPGA matrix vector multiplication engine Verilog GitHub
+- https://github.com/ducnguyen-git/EE5427---4x4-Multiply-Accumulate | EE5427 과제 파이프라인 4×4 MAC(SystemVerilog) — 미열람(L1), S7 중급 사다리 후보 | FPGA systolic array MAC pipeline EE5427 SystemVerilog
+- https://github.com/vemunderoe/fpga-math | 원소별 곱셈 + 내적 연산(언어 미확인) — 미열람(L1), 소규모 MAC 사례 | FPGA element-wise multiplication dot product Verilog GitHub
+- https://github.com/ansh07verma/fpga-mini-npu | 미니 NPU(언어·라이선스 미확인) — 미열람(L1), MAC 어레이 → NPU 단계 연결 | FPGA mini NPU accelerator Verilog GitHub
+- https://github.com/fuzzy41316/MAC-FIFO | MAC FIFO(언어 미확인) — 미열람(L1), FIFO 기반 MAC 적산 패턴 | FPGA MAC FIFO accumulator Verilog GitHub
+- https://hackmd.io/@ampheo/how-to-do-systolic-architecture-on-fpga-with-verilog | 시스톨릭 아키텍처 Verilog 튜토리얼(비정형 출처, S5) — 미열람(L1), 설계 방법론 보완 | FPGA systolic array architecture Verilog tutorial 2024
+- https://nycu-caslab.github.io/AAML2024/labs/lab_3.html | NYCU AAML 2024 Lab 3 시스톨릭 어레이(과제형, S5) — 미열람(L1), 교육 커리큘럼 근거 | NYCU AAML 2024 systolic array lab FPGA
+- https://ieee.l2.nitk.ac.in/virtual_expo/report/179 | MAC-Forge 시스톨릭 어레이 AI 가속기(NITK IEEE) — 미열람(L1), 학회 포스터 비정형 출처(S5) | IEEE NITK systolic array AI accelerator MAC-Forge
+- https://weenslab.gitbook.io/pages/fpga-tutorials/zynq-fpga-tutorial/part-8-hardware-accelerator-for-neural-networks | Zynq NN 하드웨어 가속기 튜토리얼(S5 비정형) — 미열람(L1), AXI 연결 패턴 근거 | Zynq FPGA neural network hardware accelerator AXI tutorial
