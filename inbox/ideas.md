@@ -513,8 +513,9 @@
 - Basys3 적합성 근거: INMP441은 3.3V 직접 연결(레벨 변환 불필요), 신호 3개는 Pmod 범위. 16kHz 샘플에서 BCLK=512kHz(내 계산: 16000×32), Basys3 100MHz 분주 가능. BRAM 불필요(스트리밍 처리). 실측 없음.
 - 난이도: 3
 - 단계: T2
-- 상태: ready
-- 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(INMP441 I2S RX AXI IP 없음) + 적합성 2(INMP441 3.3V 직결, 신호 3개 Pmod 범위, BRAM 불필요) + 완결성 2(I2S 마스터 클럭 발생기 모델 테스트벤치 범위 명확) = 6점. 보강: 근거 카드 rechecked_at 추가. 차단조건재심사: 2026-11-04 15:40 /verify, 모든 WebFetch PROVENANCE_REQUIRED, 근거 카드 총 2건(randomnerdtutorials-esp32-inmp441-i2s·digilent-forum-pmodamp3-basys3-i2s) → 차단 근거 2 + 새로움 2 + 적합성 2 + 완결성 2 = 8점 ≥ 7 → ready 승격.
+- 상태: used
+- 패키지: mmio-inmp441-i2s-rx-ip
+- 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(INMP441 I2S RX AXI IP 없음) + 적합성 2(INMP441 3.3V 직결, 신호 3개 Pmod 범위, BRAM 불필요) + 완결성 2(I2S 마스터 클럭 발생기 모델 테스트벤치 범위 명확) = 6점. 보강: 근거 카드 rechecked_at 추가. 차단조건재심사: 2026-11-04 15:40 /verify, 모든 WebFetch PROVENANCE_REQUIRED, 근거 카드 총 2건(randomnerdtutorials-esp32-inmp441-i2s·digilent-forum-pmodamp3-basys3-i2s) → 차단 근거 2 + 새로움 2 + 적합성 2 + 완결성 2 = 8점 ≥ 7 → ready 승격. 과제화: 2026-11-06 /capstone, 무조건 최대한 생성 원칙.
 
 ## I-044 OV2640 직접 SCCB 초기화 + QQVGA AXI-Stream 캡처 IP (ESP32 드라이버 레지스터 테이블 참고)
 

@@ -1,0 +1,174 @@
+{
+  "slug": "mmio-inmp441-i2s-rx-ip",
+  "title": "INMP441 I2S 마이크 AXI4-Lite RX IP + LED 볼륨 미터",
+  "summary": "INMP441 I2S MEMS 마이크(3.3V, Pmod 3핀)에서 32비트 I2S 프레임을 수신해 24비트 PCM을 추출하는 커스텀 AXI4-Lite I2S RX IP. MicroBlaze V에서 peak 계산 후 Basys3 10개 LED로 볼륨 미터를 표시한다.",
+  "board": "Basys3",
+  "stage": "T2",
+  "source_note": "근거 재확인 없음(2026-11-06 §13.7 무조건 최대한 생성 원칙 적용). S0 패키지.",
+
+  "goals": [
+    "INMP441 I2S 마스터(BCLK·LRCLK 출력, DOUT 입력) IP를 순수 Verilog-2001로 작성",
+    "AXI4-Lite 슬레이브 레지스터 4개(DATA_L, DATA_R, STATUS, CTRL) + 관리 영역(ID, VER, IRQ_STATUS, IRQ_ENABLE)",
+    "자체 점검 테스트벤치(I2S 마스터 모델 → AXI-Lite 읽기 검증, PASS/FAIL 출력)",
+    "iverilog 린트 및 시뮬레이션 통과 확인"
+  ],
+  "non_goals": [
+    "MicroBlaze V 드라이버 C 코드 작성(설계 계획만)",
+    "Vivado IP-XACT 패키징",
+    "오디오 압축·FFT 처리",
+    "LED 볼륨 미터 RTL(SW 처리로 대체)",
+    "보드 실측(S3)"
+  ],
+
+  "architecture": {
+    "clock": "CLK100MHZ 100 MHz (W5), 동기 리셋 (btnC, U18). 내부 BCLK ≈ 1.042 MHz (CLK_DIV=48, 100/(2×48)), LRCLK ≈ 16.3 kHz (BCLK/64).",
+    "blocks": [
+      {"id": "clkgen",  "name": "I2S 클럭 발생기",    "kind": "rtl",      "module": "i2s_rx_axil",  "file": "rtl/i2s_rx_axil.v",   "desc": "BCLK·LRCLK 발생 (CLK_DIV=48, 100MHz 분주)", "short": "clkgen",  "side": "left"},
+      {"id": "shift",   "name": "I2S RX 시프트 레지스터", "kind": "rtl", "module": "i2s_rx_axil",  "file": "rtl/i2s_rx_axil.v",   "desc": "BCLK 상승 엣지에서 DOUT 직렬 수신, 32비트 → 24비트 PCM 추출", "short": "shift",   "side": "left"},
+      {"id": "axil",    "name": "AXI4-Lite 슬레이브", "kind": "rtl",      "module": "i2s_rx_axil",  "file": "rtl/i2s_rx_axil.v",   "desc": "레지스터 4개 + IP 표준 관리 영역(ID/VER/IRQ)", "short": "AXI-L",   "side": "center"},
+      {"id": "top",     "name": "Basys3 최상위",       "kind": "rtl",      "module": "basys3_i2s_rx_top", "file": "rtl/basys3_i2s_rx_top.v", "desc": "핀 할당, 클럭 버퍼, led[9:0] 볼륨 미터 연결", "short": "top",     "side": "right"},
+      {"id": "mic",     "name": "INMP441 마이크",      "kind": "external", "module": null,           "file": null,                  "desc": "I2S MEMS 마이크, 3.3V, Pmod JA 3핀", "short": "INMP441", "side": "left"},
+      {"id": "cpu",     "name": "MicroBlaze V",        "kind": "cpu",      "module": null,           "file": null,                  "desc": "AXI4-Lite 마스터, 볼륨 미터 계산 및 LED 출력", "short": "MB-V",    "side": "right"}
+    ],
+    "links": [
+      {"from": "mic",  "to": "shift", "label": "DOUT (직렬 PCM)"},
+      {"from": "clkgen","to": "mic",  "label": "BCLK, LRCLK (I2S 마스터)"},
+      {"from": "shift", "to": "axil", "label": "pcm_l[23:0], pcm_r[23:0], data_valid"},
+      {"from": "cpu",   "to": "axil", "label": "AXI4-Lite (R/W 레지스터)"},
+      {"from": "axil",  "to": "cpu",  "label": "irq (data_valid)"},
+      {"from": "axil",  "to": "top",  "label": "bclk_out, lrclk_out, led[9:0]"},
+      {"from": "top",   "to": "mic",  "label": "Pmod JA (BCLK, LRCLK, DOUT)"}
+    ]
+  },
+
+  "bus_protocol": {
+    "type": "AXI4-Lite",
+    "data_width": 32,
+    "addr_width": 16,
+    "signals": ["AWADDR","AWVALID","AWREADY","WDATA","WSTRB","WVALID","WREADY","BRESP","BVALID","BREADY","ARADDR","ARVALID","ARREADY","RDATA","RRESP","RVALID","RREADY"],
+    "note": "한 번에 하나의 트랜잭션. WSTRB 무시(32비트 전체 쓰기만)"
+  },
+
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "mbv-frozen-v2",
+    "compat": "compatible",
+    "plan": "동결 맵 슬롯 [26] = 0x4026_0000 (64KB) 배정 제안. IRQ 입력 13번(intc_free 첫 번호) 제안. 프로젝트 인덱스 표가 동결한다.",
+    "frozen_mapping": [
+      {"block": "axil", "region": "free_slot_26", "base": "0x4026_0000", "size": "0x10000", "intc": 13}
+    ]
+  },
+
+  "external_parts": [
+    {
+      "id": "mic0",
+      "name": "INMP441 I2S MEMS 마이크 모듈",
+      "block": "mic",
+      "interface": "I2S (3-wire: BCLK, LRCLK, DOUT)",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": 3.3,
+      "level_shift": false,
+      "power_note": "Basys3 Pmod 3.3V 직결. 별도 전원 불필요.",
+      "arduino_compatible": false,
+      "notes": "SD(채널 선택) 핀을 GND에 연결 → 왼쪽 채널 출력. VDD=1.8~3.3V, 3.3V 직결 가능."
+    }
+  ],
+
+  "schematic": {
+    "state": "not-written",
+    "note": "INMP441 VDD→3.3V, GND→GND, BCLK→JA1, LRCLK→JA2, DOUT→JA3, SD→GND (왼쪽 채널 고정). 회로도 미작성."
+  },
+
+  "hierarchy": [
+    {
+      "module": "basys3_i2s_rx_top",
+      "file": "rtl/basys3_i2s_rx_top.v",
+      "children": [
+        {
+          "module": "i2s_rx_axil",
+          "file": "rtl/i2s_rx_axil.v",
+          "children": []
+        }
+      ]
+    }
+  ],
+
+  "memory_map": [
+    {
+      "base": "0x4026_0000",
+      "size": "0x10000",
+      "block": "axil",
+      "note": "슬롯 [26], 제안. 프로젝트 인덱스 표가 동결한다.",
+      "regs": [
+        {"off": "0x0000", "name": "DATA_L",     "access": "R",     "desc": "왼쪽 채널 24비트 PCM, 부호 확장 32비트. 읽을 때 data_valid 자동 클리어."},
+        {"off": "0x0004", "name": "DATA_R",     "access": "R",     "desc": "오른쪽 채널 24비트 PCM (INMP441 모노이므로 0)."},
+        {"off": "0x0008", "name": "STATUS",     "access": "R/W1C", "desc": "bit0: data_valid (새 샘플 준비), bit1: overflow (STATUS 미읽은 채 덮어씀)"},
+        {"off": "0x000C", "name": "CTRL",       "access": "R/W",   "desc": "bit0: enable (I2S 마스터 클럭 발생 허용)"},
+        {"off": "0xFFF0", "name": "ID",         "access": "R",     "desc": "0x49325358 (ASCII 'I2SX')"},
+        {"off": "0xFFF4", "name": "VER",        "access": "R",     "desc": "0x01000100 (std_rev=1, major=1, minor=0)"},
+        {"off": "0xFFF8", "name": "IRQ_STATUS", "access": "R/W1C", "desc": "bit0: data_valid IRQ 원인 (STATUS.data_valid와 동일 소스)"},
+        {"off": "0xFFFC", "name": "IRQ_ENABLE", "access": "R/W",   "desc": "bit0: data_valid IRQ 활성화"}
+      ]
+    }
+  ],
+
+  "roadmap": [
+    {"stage": "T2", "state": "current", "title": "INMP441 I2S RX AXI IP + LED 볼륨 미터", "refs": ["randomnerdtutorials-esp32-inmp441-i2s", "digilent-forum-pmodamp3-basys3-i2s"]},
+    {"stage": "T3", "state": "planned", "title": "I2S TX + RX 루프백: Pmod AMP3 스피커 출력 연동", "refs": ["digilent-forum-pmodamp3-basys3-i2s"]},
+    {"stage": "T4", "state": "planned", "title": "실시간 FFT 가속기: I2S RX → AXI-Stream → Cooley-Tukey FFT IP", "refs": []}
+  ],
+
+  "references": [
+    {"name": "randomnerdtutorials-esp32-inmp441-i2s", "reason": "INMP441 I2S 프로토콜, 타이밍, 채널 선택(SD 핀) 근거"},
+    {"name": "digilent-forum-pmodamp3-basys3-i2s",   "reason": "Basys3 Pmod I2S 연결 사례, Pmod 핀 배치 근거"}
+  ],
+
+  "sources": {
+    "rtl": ["rtl/i2s_rx_axil.v", "rtl/basys3_i2s_rx_top.v"],
+    "tb":  ["tb/tb_i2s_rx_axil.v"],
+    "constraints": ["constr/basys3_i2s_rx.xdc"],
+    "build": ["Makefile"]
+  },
+
+  "howto": {
+    "sim": [
+      "iverilog -g2001 -Wall -o build/tb_i2s_rx_axil rtl/i2s_rx_axil.v tb/tb_i2s_rx_axil.v",
+      "vvp build/tb_i2s_rx_axil",
+      "PASS로 시작하는 줄이 출력되면 시뮬레이션 통과"
+    ],
+    "synth_yosys": [
+      "yosys -p 'synth_xilinx -top basys3_i2s_rx_top -flatten; stat' rtl/i2s_rx_axil.v rtl/basys3_i2s_rx_top.v"
+    ],
+    "vivado": [
+      "1. Vivado 2024.2에서 Basys3(xc7a35tcpg236-1) 프로젝트 생성",
+      "2. rtl/*.v, constr/basys3_i2s_rx.xdc 추가",
+      "3. i2s_rx_axil을 AXI4-Lite IP로 블록 디자인에 삽입 (기존 MicroBlaze V SoC에 연결)",
+      "4. 주소 에디터에서 0x4026_0000 슬롯 배정, INTC 13번 연결",
+      "5. Generate Bitstream → 프로그래밍"
+    ],
+    "driver_plan": [
+      "SOC_I2SRX_BASE = 0x4026_0000",
+      "void i2srx_enable(void)  { MBV_WRITE32(SOC_I2SRX_BASE+0x0C, 1); }",
+      "int  i2srx_read_l(void)  { return (int)MBV_READ32(SOC_I2SRX_BASE); }",
+      "LED 볼륨 미터: abs(sample) >> 17 → 7개 LED 임계값 비교",
+      "IRQ 핸들러: IRQ_STATUS 클리어(W1C) → 샘플 읽기"
+    ]
+  },
+
+  "verification": {
+    "lint":  "not-run",
+    "sim":   "not-run",
+    "synth": "not-run",
+    "board": "not-run",
+    "notes": "S0 패키지. 근거 재확인 없음(§13.7 무조건 최대한 생성 원칙 2026-11-06 적용). lint·sim·synth는 CI가 채운다. 보드 동작 확인(S3)은 사람만 올릴 수 있다."
+  },
+
+  "risks": [
+    "INMP441 타이밍: SD→GND 왼쪽 채널 고정 여부 실물 미검증",
+    "BCLK 주파수: 100MHz/(2×48)=1.042MHz는 INMP441 허용 범위(0.8~4.8MHz)이나 실측 없음",
+    "레벨 변환: INMP441 VDD=3.3V에서 I/O 직접 연결 가능하나 Pmod 시리즈 저항(100Ω) 주의",
+    "IRQ 충돌: INTC 13번이 다른 capstone에서도 제안됨 — 프로젝트 인덱스 표가 최종 결정"
+  ]
+}
