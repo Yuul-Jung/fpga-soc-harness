@@ -135,7 +135,7 @@
 - [x] [B3] 행렬·벡터 내적 하드웨어 (MAC 어레이 1×N, 파이프라인 레이턴시, BRAM 가중치 적재)
 
 ### 중급: 기본 추론 블록
-- [ ] [B3] MLP 추론 가속기: 완전연결층 순전파, ReLU/Sigmoid 근사, 2층 고정소수점 네트워크 (Basys3 LUT·BRAM 범위 내)
+- [x] [B3] MLP 추론 가속기: 완전연결층 순전파, ReLU/Sigmoid 근사, 2층 고정소수점 네트워크 (Basys3 LUT·BRAM 범위 내) — 2026-11-06 카드 3건(libfpga-fpga-neuron L3, erwanregy-neural-network-fpga L3, unlv-si-harris-drelu-fpga-mlp L3)
 - [ ] [B3] CNN 컨볼루션 엔진: 3×3 커널 슬라이딩 윈도우, 라인 버퍼, MaxPooling (소형 특징 맵 기준)
 - [ ] [B3] 활성화 함수 하드웨어: ReLU·LeakyReLU·GELU·Sigmoid·Tanh 근사 비교 (룩업 테이블 vs 다항식)
 - [ ] [B3] 배치 정규화·층 정규화 하드웨어 근사 (스케일·오프셋 고정소수점 적용)

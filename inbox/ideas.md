@@ -1840,3 +1840,33 @@
 - Basys3 적합성의 근거: XC7A35T BRAM36 50블록. BRAMAC는 BRAM 포트 타이밍을 직접 활용해 DSP48 대신 BRAM을 적산에 씀. RTL은 논문 내용을 근거로 새로 작성 필요(소스 복사 불가). BRAM SDP 모드 포트 사양 확인 선행 필요 — 내 판단.
 - 난이도: 5 / 단계: T4 / 상태: raw
 - 심사: 2026-11-06 /harvest(S7+S4). 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(BRAM 계산 패브릭 IP 없음) + 적합성 1(BRAM SDP 사양 확인 필요, 불확실) + 완결성 1(BRAM SDP 포트 조작 방식 미확인, RTL 설계 복잡도 높음) = 4점 → raw(첫심사). 보강: BRAM36 SDP 포트 사양 확인, 논문 L3 열람.
+
+## I-134 Basys3 2층 MLP MNIST 추론 가속기 AXI4-Lite IP (T4)
+- 상태: raw
+- 요약: 내 판단: libfpga-fpga-neuron의 Q4.4 MAC 커널과 erwanregy-neural-network-fpga의 파라메트릭 FSM 패턴을 결합하고, UNLV 논문의 D-ReLU 활성화(부호 비트 검사+비트 시프트)를 적용한 2층 MLP를 AXI4-Lite 슬레이브로 구현하는 T4 패키지. MNIST 가중치는 Python 훈련 후 `$readmemh`로 BRAM에 올린다.
+- 조합: [MLP, Q4.4-fixed-point, D-ReLU, BRAM, AXI4-Lite]
+- 근거: [libfpga-fpga-neuron, erwanregy-neural-network-fpga, unlv-si-harris-drelu-fpga-mlp]
+- 새로움의 근거: 카탈로그에 MLP 추론 AXI-Lite IP 패키지 없음. 세 카드를 조합해 Q4.4 + D-ReLU + BRAM 가중치 패턴을 한 캡스톤으로 통합하는 사례는 아직 없다.
+- Basys3 적합성의 근거: 내 판단: 2층 MLP(예: 784→64→10)의 Q4.4 MAC은 DSP48 없이 LUT로 구현 가능. libfpga 단일 뉴런(832 LUT4)을 근거로 64뉴런 × 2층은 LUT 약 2000~4000 추정(Basys3 20800 LUT 이내). BRAM은 가중치 저장에 1~2블록(Basys3 50블록 이내). 실측 없어 추정.
+- 난이도: 4 / 단계: T4
+- 심사: (미심사, raw)
+
+## I-135 Basys3 D-ReLU vs Sigmoid 면적 비교 검증 패키지 (T2)
+- 상태: raw
+- 요약: 내 판단: UNLV 논문(unlv-si-harris-drelu-fpga-mlp)에서 보고한 D-ReLU 24~41% 면적 감소를 Basys3에서 재현한다. 같은 뉴런 구조에 D-ReLU와 sigmoid(LUT 테이블)를 각각 합성해 LUT/FF 사용량을 Vivado/yosys 추정으로 비교하고, 논문 결과를 독립 검증한다.
+- 조합: [D-ReLU, sigmoid-LUT, Q4.4, 비교 합성 TB]
+- 근거: [unlv-si-harris-drelu-fpga-mlp, libfpga-fpga-neuron]
+- 새로움의 근거: 카탈로그에 활성화 함수 면적 비교 패키지 없음. 논문 결과를 하네스 CI(yosys)로 독립 재현하는 경우도 없다.
+- Basys3 적합성의 근거: 내 판단: 단일 뉴런 단위 비교는 LUT 수백 수준. yosys synth로 LUT/FF 차이를 비교할 수 있다. 실측은 사람이 Vivado로 확인해야 한다.
+- 난이도: 2 / 단계: T2
+- 심사: (미심사, raw)
+
+## I-136 Basys3 Q4.4 단일 뉴런 AXI4-Lite 슬레이브 IP (T1 MLP 사다리 1단)
+- 상태: raw
+- 요약: 내 판단: libfpga-fpga-neuron의 Q4.4 조합 MAC 커널을 Verilog-2001로 재작성하고 AXI4-Lite 슬레이브로 감싼 단일 뉴런 IP. MicroBlaze V에서 가중치를 레지스터로 쓰고 입력을 넣어 출력을 읽는 1단 패키지. I-134(2층 MLP) 사다리의 T1 기초 단계.
+- 조합: [Q4.4, single-neuron, AXI4-Lite, MicroBlaze-V]
+- 근거: [libfpga-fpga-neuron, unlv-si-harris-drelu-fpga-mlp]
+- 새로움의 근거: 카탈로그에 단일 뉴런 AXI-Lite IP 패키지 없음. I-134 사다리의 첫 단계로 T1 범위 내에서 독립적으로 작동한다.
+- Basys3 적합성의 근거: 내 판단: 단일 뉴런 Q4.4 MAC은 LUT 수백 미만. libfpga 사례(832 LUT4, 가중치 포함)가 근거. AXI4-Lite 슬레이브 추가해도 Basys3 20800 LUT 한참 이내.
+- 난이도: 2 / 단계: T1
+- 심사: (미심사, raw)

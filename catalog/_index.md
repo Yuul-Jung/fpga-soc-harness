@@ -273,3 +273,6 @@
 | [antoinelecalvez05-ml-dot-product-accelerator](vendor-neutral/antoinelecalvez05-ml-dot-product-accelerator.md) | L2 | T4 | Basys3 (yes) | 2026-11-06 |
 | [ethanflorendo-fpga-systolic-array-matrix-multiplier](vendor-neutral/ethanflorendo-fpga-systolic-array-matrix-multiplier.md) | L2 | T4 | 없음 (Basys3 needs-port) | 2026-11-06 |
 | [arxiv-2304.03974-bramac](papers/arxiv-2304.03974-bramac.md) | L2 | T4 | 없음 (Basys3 needs-port) | 2026-11-06 |
+| [libfpga-fpga-neuron](vendor-neutral/libfpga-fpga-neuron.md) | L3 | T0-T1 | 없음 (Basys3 needs-port) | 2026-11-06 |
+| [erwanregy-neural-network-fpga](vendor-neutral/erwanregy-neural-network-fpga.md) | L3 | T2-T3 | Zynq-7000 (Basys3 needs-port) | 2026-11-06 |
+| [unlv-si-harris-drelu-fpga-mlp](papers/unlv-si-harris-drelu-fpga-mlp.md) | L3 | T2 | 없음 (논문) | 2026-11-06 |

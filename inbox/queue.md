@@ -694,3 +694,12 @@
 - https://nycu-caslab.github.io/AAML2024/labs/lab_3.html | NYCU AAML 2024 Lab 3 시스톨릭 어레이(과제형, S5) — 미열람(L1), 교육 커리큘럼 근거 | NYCU AAML 2024 systolic array lab FPGA
 - https://ieee.l2.nitk.ac.in/virtual_expo/report/179 | MAC-Forge 시스톨릭 어레이 AI 가속기(NITK IEEE) — 미열람(L1), 학회 포스터 비정형 출처(S5) | IEEE NITK systolic array AI accelerator MAC-Forge
 - https://weenslab.gitbook.io/pages/fpga-tutorials/zynq-fpga-tutorial/part-8-hardware-accelerator-for-neural-networks | Zynq NN 하드웨어 가속기 튜토리얼(S5 비정형) — 미열람(L1), AXI 연결 패턴 근거 | Zynq FPGA neural network hardware accelerator AXI tutorial
+
+## 2026-11-06 12:30 — MLP 추론 가속기 사이클 (S1 인접 도메인 이식+S5 비정형 출처)
+
+- blocked: https://github.com/tacari/nn-accelerator | PROVENANCE_REQUIRED 차단 (MLP 추론 가속기, 열람 불가)
+- blocked: https://github.com/ansh07verma/fpga-mini-npu | PROVENANCE_REQUIRED 차단 (FPGA mini NPU, 열람 불가)
+- https://github.com/Shreyasilver22/Neural-Accelerator | Shreyasilver22/Neural-Accelerator: FPGA 신경망 가속기 — 미열람(L1) | FPGA neural network accelerator Verilog
+- https://github.com/ZFTurbo/Verilog-Generator-of-Neural-Net-Digit-Detector | ZFTurbo/Verilog-Generator-of-Neural-Net-Digit-Detector: Python으로 Verilog 신경망 숫자 인식기 자동 생성 — 미열람(L1) | Verilog generator neural network digit detector MNIST
+- https://www.mdpi.com/2079-9292/9/6/1004 | MDPI Electronics 2020: FPGA 기반 신경망 추론 가속기 설계 — 미열람(L1) | FPGA neural network inference accelerator MDPI Electronics 2020
+- https://www.preprints.org/manuscript/202210.0462/v1 | Preprints.org: FPGA MLP 고정소수점 추론 가속기(2022) — 미열람(L1) | FPGA MLP fixed-point inference accelerator preprints 2022

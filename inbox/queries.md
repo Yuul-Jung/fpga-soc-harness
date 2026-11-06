@@ -36,3 +36,12 @@
 2026-11-06 | [B3] MAC 어레이·행렬 내적 | NYCU AAML 2024 systolic array lab FPGA Verilog weight stationary | 유효
 2026-11-06 | [B3] MAC 어레이·행렬 내적 | site:github.com mac array fpga accelerator neural network int8 AXI-Lite slave | 유효
 2026-11-06 | [B3] MAC 어레이·행렬 내적 | FPGA mini NPU MAC accumulate weight BRAM DSP48 Basys3 Artix-7 AXI | 유효
+
+2026-11-06 | [B3] MLP 추론 가속기 | FPGA MLP inference accelerator fixed-point Verilog GitHub fully-connected ReLU | 유효
+2026-11-06 | [B3] MLP 추론 가속기 | FPGA neural network RTL Verilog fixed-point Q4.4 saturation inference accelerator | 유효
+2026-11-06 | [B3] MLP 추론 가속기 | "neural network FPGA" Verilog SystemVerilog "fixed point" ReLU sigmoid parameterized GitHub | 유효
+2026-11-06 | [B3] MLP 추론 가속기 | FPGA MLP MNIST accelerator Basys3 Artix-7 Verilog LUT BRAM 2-layer | 유효
+2026-11-06 | [B3] MLP 추론 가속기 | "hardware friendly activation function" FPGA ReLU sigmoid area reduction site:scholar.google.com OR site:dl.acm.org OR site:ieeexplore.ieee.org | 차단
+2026-11-06 | [B3] MLP 추론 가속기 | FPGA neural network activation function hardware friendly D-ReLU paper UNLV 2020 | 유효
+2026-11-06 | [B3] MLP 추론 가속기 | FPGA MNIST 뉴럴 네트워크 가속기 Verilog 고정소수점 GitHub 한국어 | 빈약
+2026-11-06 | [B3] MLP 추론 가속기 | github.com/libfpga fpga-neuron Q4.4 Verilog neuron fixed-point MIT license | 유효
