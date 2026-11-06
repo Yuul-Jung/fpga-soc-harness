@@ -239,11 +239,8 @@
 2026-11-06 16:52 | verify | 재열람 0 (WebFetch PROVENANCE_REQUIRED 전면 차단 29차 연속) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +2 (I-122 차단조건재심사 9점·I-123 차단조건재심사 9점) | vetted +6 (I-134~I-139 첫 raw→vetted 심사, 5~7점) | atlas/ml-accelerator.md 신규·soc-map +5gap·카드 283건
 2026-11-06 18:40 | collect | [B3] 활성화 함수 하드웨어 · S1 인접 도메인 이식(주)+S4 제약 역전(보조) | 카드 +3 (adityapusalkar-fpga-neural-network L3, xie-2020-tvlsi-twofold-lut-tanh L2, arxiv-1810-08650-activation-dse L2) | 아이디어 +3 (I-140 LUT-only tanh raw, I-141 Twofold LUT raw, I-142 3단계 비교 테스트벤치 raw) | 큐 +5 | blocked 1 (crambl/fpga-neuralnetwork PROVENANCE_REQUIRED)
 2026-11-06 21:20 | collect | 배치 정규화·층 정규화 하드웨어 근사 · S5(주)+S1(보조) | 카드 +3 | 아이디어 +3 | 큐 잔여 多 | blocked 0
-<<<<<<< Updated upstream
-2026-11-07 00:25 | collect | [B3] RNN 셀 하드웨어 · S7 난이도 사다리(주)+S1 인접 도메인 이식(보조) | 카드 +3 (chang-2015-rnn-fpga L3, qian-2023-lstm-spartan7 L3, ahirsharan-lstm L2) | 아이디어 +3 (I-146 단순 RNN, I-147 LSTM 셀 IP, I-148 타임스텝 루프) | 큐 잔여 8건 | blocked 0
-
-2026-11-07 00:50 | verify | 재열람 0 (WebFetch PROVENANCE_REQUIRED 31차 연속 차단) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +2 (I-101·I-103) | 차단조건재심사: I-128·I-131·I-132·I-133·I-140·I-141·I-142(한도소진) | raw→vetted: I-143~I-148(6점) | atlas §5·§6 추가 | soc-map 31차 갱신
-=======
 2026-11-06 23:30 | collect | [B3] RNN 셀 하드웨어 · S5 비정형 출처(주)+S3 빈틈 추적(보조) | 카드 +1 (arxiv-1511-05552-rnn-fpga L2 Elman RNN VHDL) | 아이디어 +0 | 큐 잔여 多 | blocked 多 (WebFetch PROVENANCE_REQUIRED 전면 차단)
+2026-11-07 00:25 | collect | [B3] RNN 셀 하드웨어 · S7 난이도 사다리(주)+S1 인접 도메인 이식(보조) | 카드 +3 (chang-2015-rnn-fpga L3, qian-2023-lstm-spartan7 L3, ahirsharan-lstm L2) | 아이디어 +3 (I-146 단순 RNN, I-147 LSTM 셀 IP, I-148 타임스텝 루프) | 큐 잔여 8건 | blocked 0
+2026-11-07 00:50 | verify | 재열람 0 (WebFetch PROVENANCE_REQUIRED 31차 연속 차단) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +2 (I-101·I-103) | 차단조건재심사: I-128·I-131·I-132·I-133·I-140·I-141·I-142(한도소진) | raw→vetted: I-143~I-148(6점) | atlas §5·§6 추가 | soc-map 31차 갱신
 2026-11-07 00:56 | capstone | mmio-vga-doublebuf-ip | 아이디어 I-104 (BRAM 핑퐁 더블 버퍼 VGA) used | S0 (도구 없음 all skipped) | 근거 재확인 없음(§13.7 무조건 최대한 생성 원칙) | build.py 오류 없음, 경고 2 (카드 미작성 expected)
->>>>>>> Stashed changes
+2026-11-07 01:02 | capstone | mmio-vga-text-7seg-sync-ip | S0(도구 skipped: iverilog/verilator/yosys 없음) | I-108 VGA 텍스트 오버레이+7세그 동기화 AXI4-Lite IP · ready→used | 무조건 최대한 생성 원칙 §13.7, 게이트 3·4 건너뜀 | 슬롯 [28] 0x4028_0000 / mbv-frozen-v2 partial | 소스: axil_vga_text_7seg_ip.v + basys3_top_vga_text_7seg.v + TB(10TC) + XDC + Makefile | 근거 재확인 없음(§13.7 사용자 운영 방침)

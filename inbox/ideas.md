@@ -1496,7 +1496,7 @@
 - 심사: 2026-11-05 /verify(19차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(mit-6205-rgb-pwm-week01·maplesilicon-mapleled-core·olivier-le-sage-camera-filters 모두 rechecked_at 없음) + 새로움 2(T1~T2 RGB LED 사다리 패키지 카탈로그 없음) + 적합성 2(I-105·I-106 Basys3 적합성 확인, 단계별 Makefile 타겟 분리 가능 — 내 판단) + 완결성 2(5단계 각각 독립 RTL+TB, 단계별 Makefile 타겟 명확) = 6점 → vetted. 보강: 근거 카드 rechecked_at 1건, I-105·I-106 먼저 패키지화 후 통합.
 
 ## I-108 VGA 텍스트 오버레이 + 7세그 동기화 AXI4-Lite IP (S2 조합)
-- 상태: ready
+- 상태: used (패키지: mmio-vga-text-7seg-sync-ip, 2026-11-06, 무조건 최대한 생성 원칙 §13.7)
 - 요약: 내 판단: BYU ECEN 423 Lab 10의 MMIO 패턴을 착안해, 80×30 문자 버퍼와 7세그 카운터를 단일 AXI4-Lite 슬레이브 IP 안에서 공통 타임스탬프로 묶는 IP. VGA 텍스트 출력이 활성 비디오 선에만 작동하고, 수직 귀선 기간에 7세그 디지트를 순환 갱신한다. 두 디스플레이가 같은 프레임 경계에 동기화되는 패턴을 명세화하고 Basys3에서 검증한다.
 - 조합: [video-vga(텍스트 컨트롤러), 7seg-mux, AXI4-Lite, BRAM(문자 버퍼)]
 - 근거: [byu-ecen423-lab10-riscv-vga-7seg, argrabowski-fpga-vga-display, itsnotjiaching-ec311project]

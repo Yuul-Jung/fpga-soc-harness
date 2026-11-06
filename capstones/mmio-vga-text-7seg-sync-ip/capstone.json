@@ -1,0 +1,155 @@
+{
+  "slug": "mmio-vga-text-7seg-sync-ip",
+  "title": "VGA 텍스트 오버레이 + 7세그 동기화 AXI4-Lite IP",
+  "summary": "80×30 문자 버퍼 VGA 텍스트 출력과 4자리 7세그 표시를 단일 AXI4-Lite 슬레이브 IP로 통합. 수직 귀선(VBlank) 기간에 7세그 디지트 갱신을 동기화해 두 출력이 동일한 프레임 경계를 공유하는 설계 패턴을 구현한다.",
+  "board": "Basys3",
+  "stage": "T2",
+  "goals": [
+    "80×30 ASCII 문자 버퍼를 BRAM으로 구현하고 AXI4-Lite write로 갱신",
+    "VGA 640×480@60Hz 텍스트 렌더러: 8×16 픽셀 고정 폰트, 4비트 전경색·배경색",
+    "4자리 공통-양극 7세그 멀티플렉서를 VBlank 기간에 갱신(프레임 동기화)",
+    "단일 AXI4-Lite 슬레이브 레지스터 맵으로 두 출력 제어",
+    "iverilog 시뮬레이션 PASS, yosys 합성 성공(S2 목표)"
+  ],
+  "non_goals": [
+    "컬러 비트맵/픽셀 버퍼 (문자 모드만)",
+    "MicroBlaze V C 드라이버 (레지스터 직접 접근으로 충분)",
+    "비례폰트·유니코드 (ASCII 전용)",
+    "보드 동작 확인 S3 (사람만 올릴 수 있음)"
+  ],
+  "architecture": {
+    "clock": "100MHz W5 오실레이터 → 2비트 카운터 4분주 → 25MHz 픽셀 클럭(clk_25m). 7세그 dig_sel 갱신은 VBlank(frame_end, ~60Hz)에 동기화.",
+    "blocks": [
+      {"id": "TOP",   "name": "basys3_top_vga_text_7seg",  "kind": "top",        "module": "basys3_top_vga_text_7seg",  "file": "rtl/basys3_top_vga_text_7seg.v", "desc": "보드 최상위. 100MHz→25MHz 분주, 핀 매핑", "short": "TOP",  "side": "external"},
+      {"id": "IP",    "name": "axil_vga_text_7seg_ip",     "kind": "ip",         "module": "axil_vga_text_7seg_ip",     "file": "rtl/axil_vga_text_7seg_ip.v",    "desc": "AXI4-Lite 슬레이브 + VGA 텍스트 컨트롤러 + 7세그 FSM 통합 IP", "short": "IP",   "side": "left"},
+      {"id": "VGAT",  "name": "VGA 텍스트 렌더러",          "kind": "submodule",  "module": null, "file": null, "desc": "h_count/v_count → 문자·픽셀 좌표 → BRAM 조회 → RGB 출력 (axil_vga_text_7seg_ip 내부)", "short": "VGAT", "side": "left"},
+      {"id": "BRAM",  "name": "문자 버퍼 BRAM",             "kind": "bram",       "module": null, "file": null, "desc": "80×30=2400 항목, [15:8]=color, [7:0]=ASCII. Xilinx BRAM 추론 (axil_vga_text_7seg_ip 내부)", "short": "BRAM", "side": "left"},
+      {"id": "FONT",  "name": "폰트 ROM",                   "kind": "rom",        "module": null, "file": null, "desc": "128자 × 16행 = 2048 비트. BRAM 추론 (axil_vga_text_7seg_ip 내부)", "short": "FONT", "side": "left"},
+      {"id": "SEG7",  "name": "7세그 MUX FSM",              "kind": "submodule",  "module": null, "file": null, "desc": "VBlank 기간 dig_sel 순환, 공통양극 세그먼트 디코더 (axil_vga_text_7seg_ip 내부)", "short": "SEG7", "side": "right"},
+      {"id": "AXILS", "name": "AXI4-Lite 슬레이브",         "kind": "submodule",  "module": null, "file": null, "desc": "레지스터 R/W 처리, BRAM 포트 A(CPU 쓰기)로 연결 (axil_vga_text_7seg_ip 내부)", "short": "AXILS","side": "left"},
+      {"id": "VGA_HW","name": "VGA 커넥터",                 "kind": "external",   "module": null,                          "file": null,                            "desc": "Basys3 내장 VGA 커넥터 (12비트 DAC)", "short": "VGA",  "side": "right"},
+      {"id": "SEG_HW","name": "4자리 7세그",                "kind": "external",   "module": null,                          "file": null,                            "desc": "Basys3 내장 공통양극 7세그 × 4", "short": "7SEG", "side": "right"}
+    ],
+    "links": [
+      {"from": "TOP",   "to": "IP",     "label": "s_axil / clk_25m / rst"},
+      {"from": "IP",    "to": "VGAT",   "label": "h_count, v_count, active"},
+      {"from": "IP",    "to": "AXILS",  "label": "AXI4-Lite write channel"},
+      {"from": "AXILS", "to": "BRAM",   "label": "port-A (CPU write)"},
+      {"from": "VGAT",  "to": "BRAM",   "label": "port-B (read, char+color)"},
+      {"from": "VGAT",  "to": "FONT",   "label": "font_addr → font_row"},
+      {"from": "VGAT",  "to": "VGA_HW", "label": "vga_r[3:0], vga_g[3:0], vga_b[3:0], hsync, vsync"},
+      {"from": "IP",    "to": "SEG7",   "label": "frame_end(VBlank) → dig_sel 순환"},
+      {"from": "SEG7",  "to": "SEG_HW", "label": "seg[6:0], an[3:0]"}
+    ]
+  },
+  "bus_protocol": {
+    "type": "AXI4-Lite",
+    "data_width": 32,
+    "addr_width": 8,
+    "signals": ["s_axil_awaddr","s_axil_awvalid","s_axil_awready",
+                "s_axil_wdata","s_axil_wstrb","s_axil_wvalid","s_axil_wready",
+                "s_axil_bresp","s_axil_bvalid","s_axil_bready",
+                "s_axil_araddr","s_axil_arvalid","s_axil_arready",
+                "s_axil_rdata","s_axil_rresp","s_axil_rvalid","s_axil_rready"],
+    "limits": ["단일 비트스트림(B) 채널만 구현", "WSTRB 완전 지원(바이트 마스크 무시)"]
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "mbv-frozen-v2",
+    "compat": "partial",
+    "plan": "동결 맵 free_slot[28]=0x4028_0000 사용. CTRL·STATUS·CHAR_ADDR·CHAR_DATA·SEG7_DATA·SEG7_CTRL 6개 레지스터 + BRAM 창 접근. VGA와 7세그가 별도 IP 슬롯이 아닌 단일 슬롯에 통합됨을 integration.compat=partial로 표시(기존 vga@0x400A_0000, seg7@0x4006_0000와 중복되지 않음).",
+    "frozen_mapping": {
+      "IP": "free_slot[28]=0x4028_0000 (64KB)"
+    }
+  },
+  "external_parts": [
+    {
+      "id": "VGA_CONN",
+      "name": "VGA 커넥터 (Basys3 내장)",
+      "block": "VGA_HW",
+      "interface": "VGA",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": true,
+      "notes": "Basys3 내장 VGA DA 출력. FPGA I/O는 3.3V LVCMOS"
+    },
+    {
+      "id": "SEG7_DISP",
+      "name": "4자리 7세그 (Basys3 내장)",
+      "block": "SEG_HW",
+      "interface": "7seg",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": true,
+      "notes": "공통양극. Basys3 내장. FPGA I/O는 3.3V LVCMOS"
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "외부 부품 없음. 모든 연결은 Basys3 내장 회로. 별도 회로도 불필요."
+  },
+  "hierarchy": [
+    {
+      "module": "basys3_top_vga_text_7seg",
+      "file": "rtl/basys3_top_vga_text_7seg.v",
+      "children": [
+        {
+          "module": "axil_vga_text_7seg_ip",
+          "file": "rtl/axil_vga_text_7seg_ip.v",
+          "children": []
+        }
+      ]
+    }
+  ],
+  "memory_map": [
+    {
+      "base": "0x4028_0000",
+      "size": "0x10000",
+      "block": "IP",
+      "desc": "VGA 텍스트+7세그 IP 레지스터·BRAM 창 (free_slot[28], mbv-frozen-v1 기반)",
+      "regs": [
+        {"off": "0x000", "name": "ID",        "access": "RO", "reset": "0x56545337", "desc": "'VTS7' 판별자"},
+        {"off": "0x004", "name": "VER",       "access": "RO", "reset": "0x00000100", "desc": "버전 1.0"},
+        {"off": "0x008", "name": "CTRL",      "access": "RW", "reset": "0x00000001", "desc": "[0]=disp_en(VGA 출력 활성화), [1]=seg_en(7세그 활성화)"},
+        {"off": "0x00C", "name": "STATUS",    "access": "RO", "reset": "0x00000000", "desc": "[0]=vblank(현재 귀선 중), [15:8]=vsync_count[7:0](0~255 순환)"},
+        {"off": "0x010", "name": "CHAR_ADDR", "access": "RW", "reset": "0x00000000", "desc": "[11:0]=문자 버퍼 주소 (0~2399, col+row*80)"},
+        {"off": "0x014", "name": "CHAR_DATA", "access": "RW", "reset": "0x00000720", "desc": "[7:0]=ASCII, [11:8]=전경색 nibble, [15:12]=배경색 nibble. 쓰면 CHAR_ADDR 위치에 저장"},
+        {"off": "0x018", "name": "SEG7_DATA", "access": "RW", "reset": "0x00000000", "desc": "[15:12]=d3, [11:8]=d2, [7:4]=d1, [3:0]=d0 (hex BCD 각 4비트)"},
+        {"off": "0x01C", "name": "SEG7_CTRL", "access": "RW", "reset": "0x00000000", "desc": "[3:0]=blank(1=해당 자리 소등), [7:4]=dp(소수점), [11:8]=brightness(미구현, 예약)"}
+      ]
+    }
+  ],
+  "roadmap": [
+    {"stage": "T1", "state": "done",    "title": "MMIO UART+GPIO skeleton",        "refs": ["armmyc-holysocrv32"]},
+    {"stage": "T2", "state": "current", "title": "VGA 텍스트+7세그 동기화 AXI4-Lite IP", "refs": ["byu-ecen423-lab10-riscv-vga-7seg", "argrabowski-fpga-vga-display", "itsnotjiaching-ec311project"]},
+    {"stage": "T3", "state": "planned", "title": "MicroBlaze V C 드라이버 + Pong 게임 (I-109)", "refs": []}
+  ],
+  "references": [
+    {"name": "byu-ecen423-lab10-riscv-vga-7seg",  "reason": "MMIO 패턴, VGA 텍스트+7세그 조합 착안"},
+    {"name": "argrabowski-fpga-vga-display",       "reason": "VGA 텍스트 렌더러 구조 참고"},
+    {"name": "itsnotjiaching-ec311project",        "reason": "7세그+VGA 동시 출력 실증"}
+  ],
+  "sources": {
+    "rtl": ["rtl/axil_vga_text_7seg_ip.v", "rtl/basys3_top_vga_text_7seg.v"],
+    "tb":  ["tb/tb_axil_vga_text_7seg.v"],
+    "constraints": ["constr/basys3_vga_text_7seg.xdc"],
+    "build": ["Makefile"]
+  },
+  "howto": {
+    "sim": "make sim  # iverilog + vvp; PASS 메시지 확인",
+    "lint": "make lint # verilator --lint-only",
+    "synth": "make synth # yosys -p 'synth_xilinx -top basys3_top_vga_text_7seg'",
+    "vivado": "Vivado 2024.2: 새 프로젝트 → XC7A35T-1CPG236C → rtl/ + constr/ 추가 → Generate Bitstream"
+  },
+  "verification": {
+    "grade": "S0",
+    "board": "pending",
+    "notes": "무조건 최대한 생성 원칙(§13.7 사용자 운영 방침). Gate 3·4 건너뜀. 근거 카드 rechecked_at 미확인. CI 통과 시 S2로 갱신."
+  },
+  "risks": [
+    "BRAM 추론: Verilog-2001 reg 배열이 Xilinx BRAM이 아닌 LUT-RAM으로 합성될 수 있음. attribute BRAM_STYLE 명시 권장.",
+    "폰트 ROM: 128×16 하드코딩. 작은 BRAM 1개 사용 예상. 용량 여유 있음.",
+    "7세그 VBlank 동기화: VGA 프레임 주기(~16.7ms)에 7세그 갱신을 묶으면 dig_sel 순환이 60Hz × 4 = 240Hz. 사람 눈에 충분히 빠름.",
+    "AXI4-Lite 타이밍: WREADY/BVALID 단순 구현. 버스트 없음. CPU 단순 폴링 가정."
+  ]
+}
