@@ -1,7 +1,7 @@
-# ML 추론 가속기: 고정소수점 연산·MAC 행렬·MLP·CNN·GRU/LSTM
+# ML 추론 가속기: 고정소수점 연산·MAC 행렬·MLP·CNN·GRU/LSTM·어텐션 메커니즘
 
-갱신: 2026-11-07 (/verify 32차). 카드 31건 기반 (Q포맷 4건, MAC/행렬 4건, MLP 뉴런 5건, 활성화 함수 4건, CNN 엔진 3건, BN/LN 정규화 3건, RNN/LSTM 가속기 3건, GRU/LSTM 비교 3건, 논문 2건).
-고정소수점 Q포맷 산술, MAC 배열 가속기, MLP/CNN 추론 IP, BN/LN 정규화 하드웨어, RNN/LSTM 가속기의 Basys3 적용 가능성을 정리한다.
+갱신: 2026-11-07 (/verify 33차). 카드 34건 기반 (Q포맷 4건, MAC/행렬 4건, MLP 뉴런 5건, 활성화 함수 4건, CNN 엔진 3건, BN/LN 정규화 3건, RNN/LSTM 가속기 3건, GRU/LSTM 비교 3건, 논문 2건, 어텐션/Transformer 가속기 3건).
+고정소수점 Q포맷 산술, MAC 배열 가속기, MLP/CNN 추론 IP, BN/LN 정규화 하드웨어, RNN/LSTM 가속기, 어텐션 메커니즘 하드웨어의 Basys3 적용 가능성을 정리한다.
 MicroBlaze V SoC의 `free_slots`에서 AXI4-Lite 가속기 IP로 연결하는 경로를 중심으로 분석한다.
 
 ---
@@ -225,6 +225,37 @@ kim-2025의 Q5.26 → Basys3용은 Q4.12(16비트 총폭)로 비트 폭을 줄�
 - I-149: GRU 셀 AXI4-Lite 가속기 IP (vetted, T4, 5점)
 - I-150: GRU·LSTM 비교 테스트벤치 모듈 (vetted, T3, 7점)
 - I-151: 초소형 GRU 추론 엔진 — 은닉 8노드 (vetted, T4, 7점)
+
+---
+
+## 8. 어텐션 메커니즘 하드웨어 (신규 2026-11-07)
+
+| 항목 | wang-2020-mha-fpga-accelerator | ftrans-2020-transformer-fpga-piecewise-softmax | richielee-2025-tiled-matmul-attention-kv260 |
+|---|---|---|---|
+| 카드 | [wang-2020-mha-fpga-accelerator](../catalog/papers/wang-2020-mha-fpga-accelerator.md) | [ftrans-2020-transformer-fpga-piecewise-softmax](../catalog/papers/ftrans-2020-transformer-fpga-piecewise-softmax.md) | [richielee-2025-tiled-matmul-attention-kv260](../catalog/papers/richielee-2025-tiled-matmul-attention-kv260.md) |
+| 보드 | Xilinx xcvu13p (UltraScale+) | Xilinx VCU118 (UltraScale+) | Xilinx KV260 SoM (Zynq UltraScale+) |
+| 언어 | Verilog | HLS (C++) | HLS (C/C++) |
+| 아키텍처 | 64×64 시스톨릭 어레이 MHA+FFN, 소프트맥스 4단계 파이프라인 | BCM 압축+구간 선형 exp 근사, Transformer 풀 추론 | INT8 타일 행렬 곱(TMMA), Q/K/V 선형 투영만 가속 |
+| 양자화 | INT8 | 16비트 고정소수점 | INT8 대칭 |
+| 소프트맥스 구현 | 로그-합-지수 4단계 (최댓값→선형 exp→합산→선형 ln) | 구간 선형 exp 근사 (piecewise-linear) | 미구현 (future work) |
+| 소프트맥스 LUT/FF | 21,190 / 32,623 (xcvu13p 기준) | 미보고 | 해당 없음 |
+| 전체 자원 (원문) | LUT 471,563 / FF 217,859 / BRAM 498 / DSP 129 | LUT 268,933~451,073 / FF 304,012~506,612 / DSP 5,647~6,531 | LUT 71,050 / FF 102,741 / BRAM 126 / DSP 1,040 |
+| 클럭 | 200 MHz | 미보고 | 100 MHz |
+| 소스 | 미공개 | 미공개 | GitHub 공개 (HLS) |
+| 등급 | L3 | L3 | L3 |
+| Basys3 적합성 | needs-port | no | needs-port |
+
+**규모 비교 (내 판단):**
+세 설계 모두 대형 디바이스(xcvu13p, VCU118, KV260) 대상이며 Basys3(XC7A35T)에 직접 올리기 불가능하다. wang-2020의 소프트맥스 단독 자원(LUT 21,190/FF 32,623)이 이미 XC7A35T(LUT 20,800)를 초과한다. ftrans-2020의 Shallow Transformer는 LUT 13×, DSP 63×로 더욱 초과한다. richielee-2025의 KV260는 Basys3 대비 LUT 약 6×, BRAM 약 10×이므로 타일 크기를 극단적으로 줄이면 이식 가능성은 있으나 소프트맥스를 미구현한 상태이다.
+
+**Basys3 소형 이식 경로 (내 판단):**
+- **소프트맥스 FSM 단독 이식**: wang-2020의 로그-합-지수 4단계 파이프라인을 d_k=16 단일 행으로 축소하면 LUT≤2,000 목표가 가능하다. 직렬 처리(16사이클/행)로 시스톨릭 어레이를 없애고 단일 INT8 MAC 1개로 대체. 이 아이디어가 I-152.
+- **구간 선형 exp 대안**: ftrans-2020의 piecewise-linear exp 아이디어는 입력 범위를 −8~0으로 제한한 뒤 32~64 항목 LUT + 가산기만으로 구현한다. BRAM 1/4블록, DSP 불필요. 이 아이디어가 I-153.
+- **Q/K/V MatMul 타일**: richielee-2025의 INT8 타일 MatMul 패턴은 타일 크기 8×8로 줄이면 Basys3 BRAM 한도 내에서 선형 투영 가속 가능. HLS 소스 공개(MIT 미확인, L3)이므로 포트 추출 후 Verilog-2001로 재작성 필요.
+
+**아이디어 연결:**
+- I-152: 소형 단일 헤드 어텐션 AXI4-Lite IP — 로그-합-지수 Softmax + d_k=16 내적 (vetted, T4, 6점)
+- I-153: 구간 선형 exp 근사 FSM — Basys3 소형 Softmax LUT + 가산기만 사용 (vetted, T3, 6점)
 
 ---
 

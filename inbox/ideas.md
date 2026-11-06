@@ -382,7 +382,7 @@
 - 차단조건재심사: 2026-11-04 /verify, 근거 3(digilent-basys-3-xadc-demo, umd-phys495-basys3-xadc-voltmeter, unilim-vahid-xadc-basys3-vhdl, shashankr-basys3-fpga-robotic-arm, 4건 rechecked_at 불문) + 새로움 2 + 적합성 3(JXADC 보드 내장) + 완결성 2 = 10점 → ready. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-033 시각·로그 IP: DS3231 시각 레지스터 + 24LC EEPROM 로그, 초 롤오버 재읽기 규칙, 두 칩 모델 테스트벤치
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: I2C 비트·바이트 제어를 하드웨어에 두고 장치 주소·레지스터 포인터를 레지스터로 노출해 DS3231(0x68)과 24LC256(0x50)을 한 IP로 다룬다. 제어 루프 값을 시각과 함께 EEPROM에 남기는 로거 응용. NACK은 STATUS 비트로 올려 EEPROM 쓰기 중 ACK 폴링을 소프트웨어가 한다.
 - 조합: [I2C(DS3231 RTC, 24LC256 EEPROM), AXI4-Lite 레지스터, 바이트 FIFO, 제어 루프 값]
 - 근거: [angelojacobo-fpga-i2c-implementation, digikey-forum-mcp79410-pmod-rtcc-vhdl, mines-eeng383-lecture25-24lc256-i2c]
@@ -393,7 +393,7 @@
 - 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(angelojacobo-fpga-i2c-implementation·digikey-forum-mcp79410-pmod-rtcc-vhdl·mines-eeng383-lecture25-24lc256-i2c, rechecked_at 불문) → 차단 근거 3 + 새로움 2(RTC+EEPROM 한 IP 없음) + 적합성 2(Pmod 1개·풀업·BRAM 불필요) + 완결성 2(DS3231+24LC256 모델 명확) = 9점 ≥ 7, 사이클 상한 2건 도달로 vetted 유지. 다음 사이클에서 ready 승격 가능.
 
 ## I-034 IR 리모컨 조종 IP: NEC 디코더(반복 코드 포함) + 명령→모터·서보 매핑 레지스터, 합성 IR 프레임 테스트벤치
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: IR 수신 모듈 출력을 NEC FSM으로 해독해 주소·명령·유효·반복 플래그를 AXI4-Lite 레지스터와 인터럽트로 노출한다. 펌웨어가 명령 코드를 모터 방향·속도, 서보 각도로 매핑한다. 테스트벤치는 정상 프레임, 반전 오류, 반복 프레임, 잘림을 합성해 PASS/FAIL로 점검.
 - 조합: [IR 수신(NEC), AXI4-Lite 레지스터, 인터럽트, DC 모터/서보 PWM]
 - 근거: [opencores-nec-ir-decoder, bcit-elex7660-infrared-communication, marph91-icestick-remote]
@@ -2066,21 +2066,21 @@
 - 심사: 2026-11-07 /verify 32차, 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(khoda-2023-hls4ml-gru-lstm·chae-2022-gru-de1soc 모두 rechecked_at 없음) + 새로움 2(Basys3 최소 자원 GRU를 명시적 목표로 삼는 패키지 없음) + 적합성 3(은닉 8노드 가중치 3.2KB·BRAM 2블록·DSP48 ≤10개 추정, Basys3 XC7A35T 범위 내) + 완결성 2(은닉 8노드+BRAM 가중치+직렬 처리+400줄 이내 범위 명확) = 7점 → vetted. 보강: 근거 카드 rechecked_at 추가, DSP48 추정 yosys 검증.
 
 ## I-152 소형 단일 헤드 어텐션 AXI4-Lite IP — 로그-합-지수 Softmax + d_k=16 내적 (T4, S3 빈틈)
-- 상태: raw
+- 상태: vetted
 - 요약: 내 판단: Basys3 XC7A35T에서 헤드 1개(d_k=16, INT8/Q1.7, 직렬 처리)의 스케일된 닷-프로덕트 어텐션을 구현한다. Wang 2020의 로그-합-지수 4단계 Softmax 파이프라인(최댓값 추출→선형 exp→누적→선형 ln 나눗셈)을 d_k=16 단일 행으로 축소 적용하고, 8×8 MAC 어레이로 QK^T·V 행렬 곱을 처리. MicroBlaze V가 AXI4-Lite로 Q/K/V 벡터를 적재하고 어텐션 출력을 읽는다.
 - 조합: [softmax-fsm, MAC-array, BRAM-weight, AXI4-Lite]
 - 근거: [wang-2020-mha-fpga-accelerator, richielee-2025-tiled-matmul-attention-kv260]
 - 새로움의 근거: 카탈로그에 Basys3급(XC7A35T) 단일 헤드 어텐션 AXI4-Lite IP 카드가 없음. wang-2020은 xcvu13p 대형 보드 전용, richielee-2025는 KV260+Softmax 미구현으로 직접 사용 불가. 소형 헤드(d_k=16)×1헤드 직렬화로 LUT 한도 내 구현을 처음 시도.
 - Basys3 적합성의 근거: wang-2020 Softmax 단독 LUT 21,190/FF 32,623은 xcvu13p 기준이므로 d_k=16 단일 행 직렬 처리로 LUT ≤2,000 목표. INT8 MAC×16 → DSP48E1 ≤8개(내 계산). BRAM 사용 최소화(Q/K/V 각 16×8비트=16B). AXI4-Lite free_slots 1칸(64KB).
 - 난이도: 4 / 단계: T4
-- 심사: (미심사, raw)
+- 심사: 2026-11-07 /verify 33차, raw→vetted 첫 심사(§14.2 표준, 차단조건재심사 불적용). 근거 0(wang-2020-mha-fpga-accelerator·richielee-2025-tiled-matmul-attention-kv260 모두 rechecked_at 없음) + 새로움 2(Basys3급 단일 헤드 어텐션 AXI4-Lite IP 카드·패키지 없음) + 적합성 2(d_k=16 직렬 처리로 LUT≤2,000 목표; xcvu13p 기준 추정이라 Basys3 직접 합성 미확인) + 완결성 2(MAC 어레이+소프트맥스 FSM+AXI4-Lite 래퍼 범위 명확, iverilog CI 가능) = 6점 → vetted. 보강: 근거 카드 rechecked_at 추가, Basys3 LUT/DSP 추정 yosys 검증 필요.
 
 ## I-153 구간 선형 exp 근사 FSM — Basys3 소형 Softmax LUT + 가산기만 사용 (T3, S5 비정형)
-- 상태: raw
+- 상태: vetted
 - 요약: 내 판단: FTRANS(ftrans-2020-transformer-fpga-piecewise-softmax)의 구간 선형 exp 근사 아이디어를 d_k=16 소형 Softmax에 적용한다. 입력 범위 −8~0으로 편이한 뒤 32~64 항목 LUT + 가산기만으로 exp를 근사. 별도 Verilog-2001 FSM 모듈(< 150줄)로 구현해 Basys3 어텐션 소형 IP의 Softmax 블록으로 활용.
 - 조합: [softmax-fsm, piecewise-linear-exp, LUT-ROM, Verilog-2001]
 - 근거: [ftrans-2020-transformer-fpga-piecewise-softmax, wang-2020-mha-fpga-accelerator]
 - 새로움의 근거: 카탈로그에 Basys3 XC7A35T에서 구간 선형 exp만을 단독 FSM으로 구현한 카드가 없음. ftrans-2020은 VCU118 전용으로 직접 이식 불가. 150줄 이하 단독 IP로 분리해 재사용 가능 라이브러리 블록 추가.
 - Basys3 적합성의 근거: 32항목 LUT(8비트 주소→16비트 계수) = 512바이트 → BRAM 1/4블록. 가산기·비교기만 사용(DSP 불필요). 직렬 처리 d_k=16 → 16사이클. CI에서 iverilog/verilator 검증 가능(S1 목표). free_slots 불필요(library/rtl/ 추가).
 - 난이도: 2 / 단계: T3
-- 심사: (미심사, raw)
+- 심사: 2026-11-07 /verify 33차, raw→vetted 첫 심사(§14.2 표준, 차단조건재심사 불적용). 근거 0(ftrans-2020-transformer-fpga-piecewise-softmax·wang-2020-mha-fpga-accelerator 모두 rechecked_at 없음) + 새로움 2(Basys3 구간 선형 exp 단독 FSM 카드·패키지 없음) + 적합성 2(32항목 LUT=512B·BRAM 1/4블록·DSP 불필요 추정 명확) + 완결성 2(150줄 이하 FSM·library/rtl/ 추가로 범위 명확, iverilog CI 가능) = 6점 → vetted. 보강: 근거 카드 rechecked_at 추가, 선형 exp 오차 한계 명시 필요.
