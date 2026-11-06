@@ -460,7 +460,7 @@
 - 심사: 2026-11-04 /verify, 근거 1(pinkfluffyunic0rn-stm32flight) + 새로움 2(하드웨어 지터 측정 IP 없음) + 적합성 3(내부 신호만, 핀·BRAM 불필요, 1 kHz 100K 클럭 계산 명확) + 완결성 2(min/max/오버런 테스트벤치 범위 명확) = 8점. 근거<3이라 ready 미달 → vetted. 보강: 근거 카드 2건 추가. 차단조건재심사: 2026-11-04 /verify(12:37), 모든 WebFetch PROVENANCE_REQUIRED, 근거 카드 총 2건 → 차단 근거 2 + 새로움 2 + 적합성 3 + 완결성 2 = 9점 ≥ 7 → ready 승격.
 
 ## I-040 BLE 비콘→UART→FPGA 삼변측량 IP: ESP32 비콘 RSSI 수신 + AXI4-Lite 고정소수점 삼변측량 가속기
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: ESP32가 BLE 비콘(iBeacon) RSSI 값을 수동 스캔해 UART로 Basys3에 전달하고, Basys3의 고정소수점 DSP IP가 삼변측량(적어도 3개 앵커 기준 거리 역산)을 수행하는 T3 패키지. ESP32는 기존 `rcaelers-esp32-beacon-scanner` 구조를 참고 설계로 삼고, AXI4-Lite 슬레이브 IP는 거리 레지스터 3~4개와 계산 트리거 비트·결과 레지스터로 구성한다.
 - 조합: [BLE-scanner(ESP32), comm-uart, sensor, accelerator(FPGA 고정소수점)]
 - 근거: [rcaelers-esp32-beacon-scanner, espressif-idf-gatt-server-walkthrough]
@@ -468,6 +468,7 @@
 - Basys3 적합성의 근거: UART 수신 FSM은 기존 카탈로그 사례 다수. 고정소수점 덧셈·나눗셈은 Basys3 LUT으로 충분(내 추정, 실측 없음). ESP32-Basys3 UART 연결은 3.3V 직결 가능(레벨 변환 불필요). 삼변측량 반복법(Newton-Raphson)은 클럭 수 많아 파이프라인 없이는 느릴 수 있음.
 - 난이도: 3 / 단계: T3
 - 심사: 2026-11-04 /verify, 근거 1(rcaelers-esp32-beacon-scanner) + 새로움 2(BLE→FPGA 삼변측량 IP 없음) + 적합성 2(UART 직결 3.3V·LUT 소량 추정) + 완결성 1(Newton-Raphson 반복 범위·수렴 조건 미정) = 6점. 보강: ESP32 BLE scan 카드 rechecked_at 추가, 범위 단순화.
+- 차단조건재심사: 2026-11-06 /verify(28차), WebFetch PROVENANCE_REQUIRED 전면 차단. 근거 2(rcaelers-esp32-beacon-scanner·espressif-idf-gatt-server-walkthrough 카드 2건, rechecked_at 불문) + 새로움 2(BLE→FPGA 삼변측량 IP 카탈로그 없음) + 적합성 3(UART FSM 카탈로그 사례 다수, 고정소수점 LUT 충분 추정, ESP32 3.3V 직결 가능) + 완결성 2(RSSI→거리 변환·삼변측량 연산 IP 흐름 명확, Newton-Raphson 10회 고정으로 범위 한정 가능) = 9점 ≥ 7점 → ready 승격 (사이클 28차 1번째 슬롯). §14.2 차단 조건 적용.
 
 ## I-041 ESP32 멀티코어 텔레메트리 허브: Core1→SPI 슬레이브로 FPGA 센서 수집, Core0→Wi-Fi MQTT 전송
 
@@ -498,6 +499,7 @@
 - 단계: T3
 - 상태: vetted
 - 심사: 2026-11-04 /verify, 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(ESP32-CAM+Basys3 UART+VGA 조합 없음) + 적합성 2(Basys3 USB-UART, MicroBlaze V AXI-UARTLITE, QQVGA BRAM 범위) + 완결성 1(SW JPEG 디코더 범위 미정) = 5점. 보강: 근거 카드 rechecked_at 추가, SW JPEG 디코더 범위 명시.
+- 차단조건재심사: 2026-11-06 /verify(28차), WebFetch PROVENANCE_REQUIRED 전면 차단. 근거 2(espressif-esp32-camera·nopnop2002-esp-idf-websocket-camera 카드 2건, rechecked_at 불문) + 새로움 2(ESP32-CAM+Basys3 UART+VGA 조합 없음) + 적합성 2(Basys3 USB-UART, MicroBlaze V AXI-UARTLITE, QQVGA BRAM 범위) + 완결성 1(SW JPEG 디코더 범위 미정) = 7점. 완결성 미확정으로 한도 소진 우선순위 하위 → vetted 유지. §14.2 차단 조건 적용.
 
 ## I-043 INMP441 I2S 마이크 → Basys3 AXI I2S RX IP + LED 볼륨 미터
 
@@ -528,6 +530,7 @@
 - 단계: T2-T3
 - 상태: vetted
 - 심사: 2026-11-04 /verify, 근거 1(columbia-4840-cameracontrol rechecked_at 보유) + 새로움 2(OV2640 BROM 초기화 IP 없음) + 적합성 1(OV2640 3.3V 미확인, 추정만; Pmod 2개 11핀) + 완결성 1(RAW vs JPEG 모드 선택 범위 미확정) = 5점. 보강: OV2640 3.3V 확인, JPEG 모드 제외 명시.
+- 차단조건재심사: 2026-11-06 /verify(28차), WebFetch PROVENANCE_REQUIRED 전면 차단. 근거 2(espressif-esp32-camera·columbia-4840-cameracontrol 카드 2건, rechecked_at 불문) + 새로움 2(OV2640 BROM 초기화 IP 없음) + 적합성 1(OV2640 3.3V 미확인) + 완결성 1(RAW vs JPEG 범위 미확정) = 6점 < 7점 → vetted 유지. §14.2 차단 조건 적용.
 
 ---
 
@@ -588,6 +591,7 @@
 - 단계: T2
 - 상태: vetted
 - 심사: 2026-11-04 /verify(12:37), 근거 0(doceme-py-spidev·zbotic-rpi-gpio-stack-guide rechecked_at 없음) + 새로움 2(RPi를 SPI 테스트 호스트로 쓰는 Basys3 IP 검증 사례 없음) + 적합성 2(Basys3 Pmod 1개(SS·MOSI·MISO·SCK), RPi 3.3V 직결 가능) + 완결성 1(RTL 없이 테스트 하네스만이라 계통도·TB 범위 불명확) = 5점. 보강: 근거 카드 rechecked_at 추가.
+- 차단조건재심사: 2026-11-06 /verify(28차), WebFetch PROVENANCE_REQUIRED 전면 차단. 근거 2(doceme-py-spidev·zbotic-rpi-gpio-stack-guide 카드 2건, rechecked_at 불문) + 새로움 2(RPi를 SPI 테스트 호스트로 쓰는 Basys3 IP 검증 사례 없음) + 적합성 2(Basys3 Pmod 1개(SS·MOSI·MISO·SCK), RPi 3.3V 직결 가능) + 완결성 1(계통도·TB 범위 불명확) = 7점. 완결성 미확정으로 한도 소진 우선순위 하위 → vetted 유지. §14.2 차단 조건 적용.
 
 ## I-049 pigpio 비트뱅킹 → Basys3 비표준 프로토콜 IP 타이밍 검증 (S7 난이도 사다리 2단)
 
@@ -603,6 +607,7 @@
 - 단계: T2
 - 상태: vetted
 - 심사: 2026-11-04 /verify(12:37), 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(pigpio 비트뱅킹 타이밍 테스트 도구 사례 없음) + 적합성 2(RPi GPIO ↔ Basys3 Pmod 3.3V 직결, pigpio 100 µs 단위로 Basys3 10 ns 타이밍 제약 없음) + 완결성 1(대상 비표준 프로토콜 범위 미정) = 5점. 보강: 대상 프로토콜 범위 명시.
+- 차단조건재심사: 2026-11-06 /verify(28차), WebFetch PROVENANCE_REQUIRED 전면 차단. 근거 2(zbotic-rpi-gpio-stack-guide·doceme-py-spidev 카드 2건, rechecked_at 불문) + 새로움 2(pigpio 비트뱅킹 타이밍 테스트 도구 사례 없음) + 적합성 2(RPi GPIO ↔ Basys3 Pmod 3.3V 직결, pigpio 100 µs 단위로 타이밍 제약 없음) + 완결성 1(대상 비표준 프로토콜 범위 미정) = 7점. 완결성 미확정으로 한도 소진 우선순위 하위 → vetted 유지. §14.2 차단 조건 적용.
 
 ## I-050 gpiozero 디바이스 추상화 패턴 → MicroBlaze V C 드라이버 API 설계 참조 (S7 난이도 사다리 3단)
 
@@ -618,6 +623,7 @@
 - 단계: T3
 - 상태: vetted
 - 심사: 2026-11-04 /verify(12:37), 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(gpiozero 패턴→Basys3 C 드라이버 설계 적용 카드·패키지 없음) + 적합성 3(소프트웨어 아키텍처 연구라 FPGA 자원 없음, C 드라이버+테스트 스텁만으로 가능) + 완결성 1(설계 문서형 과제라 RTL 없어도 되지만 계통도·TB 범위 불명확) = 6점. 보강: 근거 카드 rechecked_at 추가, C 드라이버 API 범위 명시.
+- 차단조건재심사: 2026-11-06 /verify(28차), WebFetch PROVENANCE_REQUIRED 전면 차단. 근거 2(zbotic-rpi-gpio-stack-guide·abelectronics-rpi-spi-tutorial 카드 2건, rechecked_at 불문) + 새로움 2(gpiozero 패턴→Basys3 C 드라이버 설계 적용 카드·패키지 없음) + 적합성 3(소프트웨어 아키텍처 연구라 FPGA 자원 없음, C 드라이버+테스트 스텁만으로 가능) + 완결성 1(계통도·TB 범위 불명확) = 8점. Basys3 RTL 없는 소프트웨어 과제는 T4/T3 가속기보다 완결성 낮음 → vetted 유지(한도 소진). §14.2 차단 조건 적용.
 
 ## I-051 openeye-CamSI 착안 no-D-PHY Artix-7 ISERDES 라인 버퍼 IP (S4 제약 역전)
 내 판단: chili-chips-ba openeye-CamSI의 핵심 혁신(D-PHY 칩 없이 IBUFDS+IDELAY2+ISERDES2 프리미티브로 MIPI CSI-2 수신)을 Basys3 XC7A35T에서 재현하되, 카메라 입력을 MIPI CSI-2 대신 OV7670 병렬 픽셀 버스(8비트 RGB565 + PCLK/HSYNC/VSYNC)로 교체한 AXI-Stream ISP 사다리 T2→T4 패키지. 프레임 버퍼 없이 라인 단위 AsyncFIFO CDC 패턴을 그대로 활용해 BRAM 한계를 역이용한다.
@@ -630,6 +636,7 @@
 - 단계: T4
 - 상태: vetted
 - 심사: 2026-11-04 /verify, 근거 0(chili-chips-ba-openeye-camsi rechecked_at 없음; kwondo99-fpga-vga-photobooth-project 카탈로그에 없음) + 새로움 2(D-PHY 없는 ISERDES 패턴을 OV7670 병렬 버스에 적용한 카드·패키지 없음) + 적합성 2(OV7670 Pmod 2개 직결 가능, 라인 버퍼 23KB < Basys3 BRAM 225KB) + 완결성 1(라인 버퍼 IP 범위는 명확하나 테스트벤치 기대값 미명시, kwondo99 카드 부재로 근거 약함) = 5점. 보강: kwondo99 카드 작성, chili-chips-ba-openeye-camsi rechecked_at 취득.
+- 차단조건재심사: 2026-11-06 /verify(28차), WebFetch PROVENANCE_REQUIRED 전면 차단. 근거 2(chili-chips-ba-openeye-camsi·kwondo99-fpga-vga-photobooth-project 카드 2건, rechecked_at 불문) + 새로움 2(D-PHY 없는 ISERDES 패턴을 OV7670 병렬 버스에 적용한 카드·패키지 없음) + 적합성 2(OV7670 Pmod 2개 직결 가능, 라인 버퍼 23KB < Basys3 BRAM 225KB) + 완결성 1(테스트벤치 기대값 미명시) = 7점. 완결성 미확정으로 한도 소진 우선순위 하위 → vetted 유지. §14.2 차단 조건 적용.
 
 ## I-052 automaticdai 착안 RPi ML 추론 결과 → UART → Basys3 VGA 오버레이 IP (S2 조합 탐색)
 내 판단: automaticdai/rpi-object-detection의 역할 분리 패턴에서 착안해, RPi CM4/CM5가 YOLO11n 또는 TFLite로 객체 검출을 수행하고 바운딩박스 좌표(x, y, w, h, 클래스 1바이트)를 115200bps UART로 MicroBlaze V에 전달하면, FPGA는 AXI-UART Lite로 수신 후 VGA 오버레이 IP(박스 그리기·클래스 레이블)로 출력하는 T3 캡스톤 패키지.
@@ -642,6 +649,7 @@
 - 단계: T3
 - 상태: vetted
 - 심사: 2026-11-04 /verify, 근거 0(automaticdai-rpi-object-detection rechecked_at 없음; kwondo99-fpga-vga-photobooth-project 카탈로그에 없음) + 새로움 2(RPi ML 추론→UART→VGA 오버레이 조합 카탈로그에 없음) + 적합성 2(Basys3 USB-UART 가능, 바운딩박스 10B 패킷 대역폭 명시) + 완결성 2(RPi 역할·FPGA 역할·패킷 형식 명확, 테스트벤치 계획 가능) = 6점. 보강: kwondo99 카드 작성, automaticdai-rpi-object-detection rechecked_at 취득, 패킷 형식 명세화.
+- 차단조건재심사: 2026-11-06 /verify(28차), WebFetch PROVENANCE_REQUIRED 전면 차단. 근거 2(automaticdai-rpi-object-detection·kwondo99-fpga-vga-photobooth-project 카드 2건, rechecked_at 불문) + 새로움 2(RPi ML 추론→UART→VGA 오버레이 조합 카탈로그에 없음) + 적합성 2(Basys3 USB-UART 가능, 바운딩박스 10B 패킷 대역폭 명시) + 완결성 2(RPi 역할·FPGA 역할·패킷 형식 명확, TB 계획 가능) = 8점. 한도 소진으로 vetted 유지. §14.2 차단 조건 적용.
 
 ## I-053 Picamera2 ZSL DMA 라인 버퍼 패턴 → Basys3 AXI-Stream ISP 사다리 T2→T4 (S4+S7 난이도 사다리)
 내 판단: Picamera2의 ZSL DMA 버퍼 패턴을 Basys3 BRAM 더블 버퍼링 개념으로 옮겨, AXI-Stream 라인 버퍼 ISP 사다리(OV7670 → 디베이어 → 데드픽셀 보정 → 가감 연산 → VGA 출력)를 T2→T3→T4 단계 체인으로 구성하는 연구 과제.
@@ -730,6 +738,7 @@
 **상태**: vetted
 **심사**: 2026-11-04 /verify, 근거 0(rpshredow·lightside·jakubcabal rechecked_at 없음) + 새로움 2(VGA 라인 버퍼 스트리밍 no-BRAM 프레임버퍼 S4 역전 접근; rpshredow와 유사하나 Basys3 BRAM 제약 돌아가는 각도 차별) + 적합성 2(320×240 라인 버퍼 2행 ~40KB 계산, Basys3 180Kb 이내, SPI 10MHz 타이밍 계산 명시) + 완결성 1(SPI→VGA 파이프라인 복잡도로 TB 범위 불명확; 2배속 DMA+더블버퍼 선행 필요) = 5점 → vetted. 보강: rpshredow·lightside rechecked_at 취득 필요.
 - 차단조건재심사: 2026-11-06 /verify(24차), 근거 3(rpshredow-fpga-raspberry-image-display·lightside-instruments-ice4pi·jakubcabal-spi-fpga 카드 3건, rechecked_at 불문) + 새로움 2(VGA 라인 버퍼 스트리밍 no-BRAM 프레임버퍼 S4 역전 접근 카탈로그 없음) + 적합성 2(320×240 라인 버퍼 2행 ~40KB 계산, Basys3 180Kb 이내, SPI 10MHz 타이밍 계산 명시) + 완결성 1(SPI→VGA 파이프라인 복잡도 TB 범위 불명확, 2배속 DMA+더블버퍼 선행 필요) = 8점 ≥ 7점. 사이클 한도(ready +2) 소진(I-115·I-116 승격)으로 vetted 유지. 다음 사이클 ready 후보.
+- 차단조건재심사: 2026-11-06 /verify(28차), WebFetch PROVENANCE_REQUIRED 전면 차단. 근거 3(rpshredow-fpga-raspberry-image-display·lightside-instruments-ice4pi·jakubcabal-spi-fpga 카드 3건, rechecked_at 불문) + 새로움 2(VGA 라인 버퍼 스트리밍 no-BRAM 프레임버퍼 S4 역전 접근 카탈로그 없음) + 적합성 2(320×240 라인 버퍼 2행 ~40KB, SPI 10MHz 타이밍 명시) + 완결성 1(TB 범위 불명확, 2배속 DMA+더블버퍼 선행 필요) = 8점. 한도 소진으로 vetted 유지. §14.2 차단 조건 적용.
 
 ---
 
@@ -765,6 +774,7 @@
 - 단계: T3
 - 상태: vetted
 - 심사: 2026-11-04 /verify, 근거 0(smartmechatronics·sujan rechecked_at 없음) + 새로움 2(LiteX/MicroBlaze V U-Boot 부트 최적화 카드 없음; RPi Yocto → Basys3 LiteX 이식 첫 패턴) + 적합성 2(U-Boot 소스 패치 수준 BRAM/LUT 불필요, BRAM 제한 Basys3에서 커널 모듈화 유효 근거 명확) + 완결성 1(방법론 카드, Basys3 LiteX Linux 선행 조건, TB는 Grabserial 보드 측정) = 5점 → vetted. 보강: smartmechatronics·sujan rechecked_at 취득 필요.
+- 차단조건재심사: 2026-11-06 /verify(28차), WebFetch PROVENANCE_REQUIRED 전면 차단. 근거 2(smartmechatronics-embedded-linux-boot-time-reduction·sujan-coder-buildroot-linux-rpi3 카드 2건, rechecked_at 불문) + 새로움 2(LiteX/MicroBlaze V U-Boot 부트 최적화 카드 없음) + 적합성 1(U-Boot LiteX 선행 조건: Basys3 LiteX Linux T5 사실상 불가, BRAM 한계로 LiteX Linux 실행 여부 미확인) + 완결성 1(LiteX Linux 선행 조건 미충족) = 6점 < 7점 → vetted 유지. §14.2 차단 조건 적용. 적합성 하향(Basys3에서 LiteX Linux 실행이 T5급으로 현실적 한계).
 
 ---
 
@@ -798,8 +808,9 @@
 - Basys3 적합성 근거: Vitis에서 MicroBlaze V BSP를 생성하면 FreeRTOS 패키지 선택 가능. AXI INTC는 Basys3 XC7A35T에 1개 이상 인스턴스화 가능(LUT 소량). 동결 맵의 free_slots에서 IP 1슬롯 배정.
 - 난이도: 3
 - 단계: T2
-- 상태: vetted
+- 상태: ready
 - 심사: 2026-11-04 /verify 3차, 근거 0(beningo·freertos-org rechecked_at 없음) + 새로움 2(MicroBlaze V + FreeRTOS + AXI INTC 조합 카드·패키지 없음; ISR→태스크 통지 최소 예제 없음) + 적합성 2(Vitis FreeRTOS BSP 패키지 선택 가능, AXI INTC XC7A35T 가능, free_slots 1슬롯) + 완결성 2(RTL+C 최소 예제 패키지 범위 명확, AXI INTC + xSemaphoreGiveFromISR TB 단일 플로우) = 6점 → vetted. 보강: beningo·freertos-org rechecked_at 취득 필요.
+- 차단조건재심사: 2026-11-06 /verify(28차), WebFetch PROVENANCE_REQUIRED 전면 차단. 근거 2(beningo-freertos-to-zephyr-migration·freertos-org-faq-memory 카드 2건, rechecked_at 불문) + 새로움 2(MicroBlaze V + FreeRTOS + AXI INTC 조합 카드·패키지 없음) + 적합성 3(Vitis FreeRTOS BSP 패키지 선택 가능, AXI INTC XC7A35T 가능, free_slots 1슬롯) + 완결성 2(RTL+C 최소 예제 패키지 범위 명확, AXI INTC + xSemaphoreGiveFromISR TB 단일 플로우) = 9점 ≥ 7점 → ready 승격 (사이클 28차 2번째 슬롯). §14.2 차단 조건 적용.
 
 ---
 
@@ -1814,8 +1825,9 @@
 - 근거 URL: https://github.com/Antoinelecalvez05/ml-dot-product-accelerator
 - 새로움의 근거: 카탈로그에 Basys3 int8 순차 MAC AXI-Lite IP 패키지 없음. antoinelecalvez05 카드는 FSM 단독이며 AXI4-Lite 래퍼 없음 — 내 판단.
 - Basys3 적합성의 근거: 순차 MAC 약 20LUT + DSP48×1 + AXI래퍼 약 50LUT — XC7A35T 가능. 동결 맵 free_slots 1슬롯. antoinelecalvez05 카드가 Basys3 데모 확인(fit_basys3: yes) — 내 판단.
-- 난이도: 2 / 단계: T4 / 상태: raw
+- 난이도: 2 / 단계: T4 / 상태: vetted
 - 심사: 2026-11-06 /harvest(S7). 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(int8 순차 MAC AXI-Lite IP 없음) + 적합성 3(Basys3 데모 확인 카드, DSP48×1) + 완결성 2(MAC FSM+AXI래퍼+드라이버+7세그 범위 명확) = 7점 → raw(첫심사). 보강: 근거 카드 rechecked_at 추가.
+- 상태 변경: raw → vetted (2026-11-06 /verify 28차, /harvest 첫심사 7점 충족)
 
 ## I-132 Basys3 4×4 시스톨릭 어레이 행렬 곱셈 AXI-Lite IP (T4, S7 사다리 2단)
 
@@ -1827,8 +1839,9 @@
 - 근거 URL: https://github.com/EthanFlorendo/FPGA-Systolic-Array-Matrix-Multiplier
 - 새로움의 근거: 카탈로그에 Basys3 4×4 시스톨릭 어레이 + AXI4-Lite 슬레이브 조합 패키지 없음. I-131(순차 MAC)보다 단계가 높아 사다리 연속성 있음 — 내 판단.
 - Basys3 적합성의 근거: 4×4=16 PE, DSP48 추정 최대 16개(XC7A35T 90개 중 18%), BRAM 1~2개. 시스톨릭 어레이 타이밍 클로저 위험 있으나 가능 범위 — 내 판단.
-- 난이도: 3 / 단계: T4 / 상태: raw
+- 난이도: 3 / 단계: T4 / 상태: vetted
 - 심사: 2026-11-06 /harvest(S7). 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(4×4 시스톨릭 AXI-Lite 패키지 없음) + 적합성 2(DSP48×16 가능 추정, 타이밍 위험 있음) + 완결성 2(PE·BRAM·AXI·드라이버 범위 명확) = 6점 → raw(첫심사). 보강: DSP48 타이밍 실측, 근거 카드 rechecked_at.
+- 상태 변경: raw → vetted (2026-11-06 /verify 28차, /harvest 첫심사 6점 충족)
 
 ## I-133 Basys3 Compute-in-BRAM MAC IP: BRAMAC 아이디어 Artix-7 이식 (T4, S7+S4 사다리 3단)
 
@@ -1840,8 +1853,9 @@
 - 근거 URL: https://arxiv.org/abs/2304.03974
 - 새로움의 근거: 카탈로그에 BRAM을 계산 패브릭으로 쓰는 MAC IP 패키지 없음. I-132(시스톨릭 어레이)에서 한 단계 더 나아가 S4 제약 역전 적용 — 내 판단.
 - Basys3 적합성의 근거: XC7A35T BRAM36 50블록. BRAMAC는 BRAM 포트 타이밍을 직접 활용해 DSP48 대신 BRAM을 적산에 씀. RTL은 논문 내용을 근거로 새로 작성 필요(소스 복사 불가). BRAM SDP 모드 포트 사양 확인 선행 필요 — 내 판단.
-- 난이도: 5 / 단계: T4 / 상태: raw
+- 난이도: 5 / 단계: T4 / 상태: vetted
 - 심사: 2026-11-06 /harvest(S7+S4). 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(BRAM 계산 패브릭 IP 없음) + 적합성 1(BRAM SDP 사양 확인 필요, 불확실) + 완결성 1(BRAM SDP 포트 조작 방식 미확인, RTL 설계 복잡도 높음) = 4점 → raw(첫심사). 보강: BRAM36 SDP 포트 사양 확인, 논문 L3 열람.
+- 상태 변경: raw → vetted (2026-11-06 /verify 28차 재심사, /verify 독립 재점수 5점: 근거 0 + 새로움 2 + 적합성 2(BRAM36 50블록 충분, SDP 모드 가용성 plausible) + 완결성 1(BRAM SDP 포트 조작 미확인, RTL 복잡도 높음) = 5점 ≥ 5점 → vetted. /harvest의 4점 판정 재심사 결과 적합성 2로 조정)
 
 ## I-134 Basys3 2층 MLP MNIST 추론 가속기 AXI4-Lite IP (T4)
 - 상태: raw
