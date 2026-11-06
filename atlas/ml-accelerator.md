@@ -1,6 +1,6 @@
-# ML 추론 가속기: 고정소수점 연산·MAC 행렬·MLP·CNN
+# ML 추론 가속기: 고정소수점 연산·MAC 행렬·MLP·CNN·GRU/LSTM
 
-갱신: 2026-11-07 (/verify 31차). 카드 28건 기반 (Q포맷 4건, MAC/행렬 4건, MLP 뉴런 5건, 활성화 함수 4건, CNN 엔진 3건, BN/LN 정규화 3건, RNN/LSTM 가속기 3건, 논문 2건).
+갱신: 2026-11-07 (/verify 32차). 카드 31건 기반 (Q포맷 4건, MAC/행렬 4건, MLP 뉴런 5건, 활성화 함수 4건, CNN 엔진 3건, BN/LN 정규화 3건, RNN/LSTM 가속기 3건, GRU/LSTM 비교 3건, 논문 2건).
 고정소수점 Q포맷 산술, MAC 배열 가속기, MLP/CNN 추론 IP, BN/LN 정규화 하드웨어, RNN/LSTM 가속기의 Basys3 적용 가능성을 정리한다.
 MicroBlaze V SoC의 `free_slots`에서 AXI4-Lite 가속기 IP로 연결하는 경로를 중심으로 분석한다.
 
@@ -193,6 +193,38 @@ kim-2025의 Q5.26 → Basys3용은 Q4.12(16비트 총폭)로 비트 폭을 줄�
 1. T3 단계 (I-146): 단순 RNN 셀 — MAC 1개 + LUT tanh + 상태 레지스터
 2. T4 단계 (I-147): LSTM 셀 AXI4-Lite — 4+1 ALU + Q8.8 + PLA sigmoid/tanh
 3. T4 단계 (I-148): 타임스텝 루프 — 루프 FSM + BRAM 입력 버퍼 + 멀티 스텝 추론
+
+---
+
+## 7. GRU vs LSTM 비교 (신규 2026-11-07)
+
+| 항목 | li-2019-ernn-gru-lstm | khoda-2023-hls4ml-gru-lstm | chae-2022-gru-de1soc |
+|---|---|---|---|
+| 카드 | [li-2019-ernn-gru-lstm](../catalog/papers/li-2019-ernn-gru-lstm.md) | [khoda-2023-hls4ml-gru-lstm](../catalog/papers/khoda-2023-hls4ml-gru-lstm.md) | [chae-2022-gru-de1soc](../catalog/papers/chae-2022-gru-de1soc.md) |
+| 보드 | Virtex-7 XC7VX690T / Kintex UltraScale KU060 | Kintex UltraScale xcku115 / Alveo U250 | Intel DE1-SoC (Cyclone V) |
+| GRU MVM 수 | 3회 (블록-순환) | 3회 (hls4ml, Reuse factor) | unverified (구조적 가지치기) |
+| LSTM MVM 수 | 4회 (블록-순환) | 4회 (hls4ml) | — |
+| GRU 지연 (최소) | 6.5 µs (FFT8, Virtex-7) | 1.7 µs (latency 전략) | — (GOPs 기준) |
+| LSTM 대비 GRU 절감 | ~23% 낮은 지연 / ~25% 적은 자원(MVM 수 비율) | LUT/DSP ~25% 절감 | 57× CPU / 에너지 300× CPU |
+| 고정소수점 | 12비트 (Q 포맷 미상) | PTQ, 소수부 ≥10비트 | unverified |
+| 압축 기법 | 블록-순환 행렬 (FFT8/FFT16) | Reuse factor (직렬화) | Top-k 가지치기 + 하이브리드 양자화 |
+| 소스 | github.com/lz1313/BlockCIrculantRNN (열람 차단) | github.com/fastmachinelearning/hls4ml (Apache-2.0) | 미공개 (학술 논문) |
+| 등급 | L3 | L3 | L2 |
+| Basys3 적합성 | needs-port | needs-port | needs-port |
+
+**GRU vs LSTM 핵심 비교 (내 판단):**
+세 카드 모두 "GRU가 LSTM보다 행렬-벡터 곱셈(MVM) 수가 25% 적다(3 vs 4)"는 사실에서 출발한다. 이 비율은 블록-순환 압축(E-RNN)이나 Reuse factor(hls4ml) 같은 압축 기법과 무관하게 성립하므로, 압축 없이 순수 Verilog-2001로 GRU 셀을 구현해도 같은 절감을 얻는다.
+
+**Basys3 소형 GRU 이식 경로 (내 판단):**
+- li-2019 블록-순환 압축은 FFT 하드웨어(DSP 집약)가 필요해 Basys3(90 DSP48)에서 대형 모델 구현이 어렵다. 단, MVM 3회 원리는 그대로 쓸 수 있다.
+- khoda-2023 hls4ml의 Reuse factor를 높이면 직렬 처리로 DSP 사용량을 줄일 수 있다. 단, Artix-7 타깃 HLS 프로젝트 생성이 필요하다.
+- chae-2022의 Top-k 가지치기는 추론 전 훈련 단계에서 처리하고, MicroBlaze V에서 가중치 적재 시 0-패딩 희소 행렬로 압축해 AXI4-Lite write 포트로 올리는 패턴이 Basys3에 가장 적합하다.
+- 세 카드 모두 고성능 보드(Kintex UltraScale, Cyclone V) 타깃이므로 Basys3(XC7A35T, 20,800 LUT, 90 DSP48, 225KB BRAM)에서 소형 모델(은닉 8~16 노드, 12비트 Q포맷)로 축소가 필수다.
+
+**아이디어 연결:**
+- I-149: GRU 셀 AXI4-Lite 가속기 IP (vetted, T4, 5점)
+- I-150: GRU·LSTM 비교 테스트벤치 모듈 (vetted, T3, 7점)
+- I-151: 초소형 GRU 추론 엔진 — 은닉 8노드 (vetted, T4, 7점)
 
 ---
 

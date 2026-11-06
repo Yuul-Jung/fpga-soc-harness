@@ -1809,9 +1809,10 @@
 - 근거 URL: https://lay007.github.io/zynq-sdr-course/en/blocks/04-fixed-point-workflow/
 - 새로움의 근거: 카탈로그에 Basys3 순수 PL FIR + DSP48E1 + Q포맷 명세 패키지 없음 — 내 판단.
 - Basys3 적합성의 근거: 탭 16개 FIR → DSP48E1 16개 → XC7A35T 90개 중 18%, BRAM 1개, LUT ~200 추정 — 내 판단.
-- 난이도: 3 / 단계: T4 / 상태: vetted
+- 난이도: 3 / 단계: T4 / 상태: ready
 - 심사: 2026-11-06 /harvest(S2). 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(Basys3 FIR Q포맷 명세 패키지 없음) + 적합성 3(DSP48E1×16 XC7A35T 가능) + 완결성 1(AXI-Stream 인터페이스 추가 정의 필요) = 6점 → raw(첫심사). 보강: AXI-Stream 인터페이스 범위 확정 + 근거 카드 rechecked_at.
 - 상태 변경: raw → vetted (2026-11-06 /verify 27차, 첫심사 6점 충족 → vetted)
+- 차단조건재심사: 2026-11-07 /verify 32차, 근거 3(카드 3건 rechecked_at 불문: lay007·wangxuan95·gisselquist) + 새로움 2 + 적합성 3 + 완결성 1 = 9점 → ready 승격
 
 ## I-130 고정소수점 비트폭 계산기: 덧셈·곱셈·FIR 가드 비트 자동 산출 웹 도구 (T0)
 
@@ -1823,9 +1824,10 @@
 - 근거 URL: https://zipcpu.com/dsp/2017/07/21/bit-growth.html, https://lay007.github.io/zynq-sdr-course/en/blocks/04-fixed-point-workflow/
 - 새로움의 근거: 카탈로그에 capstone.json 연동 비트폭 보조 도구 없음 — 내 판단.
 - Basys3 적합성의 근거: 소프트웨어 도구(RTL 불필요), 하네스 tools/ 디렉터리에 추가 — 내 판단.
-- 난이도: 1 / 단계: T0 / 상태: vetted
+- 난이도: 1 / 단계: T0 / 상태: ready
 - 심사: 2026-11-06 /harvest(S5). 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(capstone.json 연동 도구 없음) + 적합성 3(소프트웨어 도구, 하드웨어 불필요) + 완결성 2(계산 공식·출력 형식 명확) = 7점 → raw(첫심사). 보강: 근거 카드 rechecked_at 1건 이상.
 - 상태 변경: raw → vetted (2026-11-06 /verify 27차, 첫심사 7점 충족)
+- 차단조건재심사: 2026-11-07 /verify 32차, 근거 2(카드 2건 rechecked_at 불문: gisselquist-zipcpu-bit-growth·lay007-zynq-sdr-course-block04) + 새로움 2 + 적합성 3 + 완결성 2 = 9점 ≥ 7 → ready 승격. WebFetch PROVENANCE_REQUIRED 32차 연속 차단(§14.2 차단 조건 적용).
 
 ## I-131 Basys3 AXI4-Lite 순차 MAC 슬레이브 IP: MicroBlaze V 1×N 내적 연산 (T4, S7 사다리 1단)
 
@@ -2032,31 +2034,31 @@
 - 심사: 2026-11-07 /verify 31차, raw→vetted 첫 심사(§14.2 표준, 차단조건재심사 불적용). 근거 0(chang-2015-rnn-fpga·qian-2023-lstm-spartan7·ahirsharan-lstm 모두 rechecked_at 없음) + 새로움 2(Basys3 멀티-타임스텝 LSTM 시퀀스 추론 패키지 카탈로그 없음) + 적합성 2(I-147 대비 루프 FSM LUT<100+입력 BRAM 추가만 필요, XC7A35T 여유; 근거 카드 모두 L3이나 Basys3 직접 합성 미확인) + 완결성 2(루프 FSM+BRAM 입력버퍼+선형분류레이어 범위 명확, iverilog CI 가능) = 6점 → vetted. 보강: 근거 카드 rechecked_at 취득 필요.
 
 ## I-149 GRU 셀 AXI4-Lite 가속기 IP — 2게이트 구조, Basys3 DSP48·BRAM 절약 (T4, S1 이식)
-- 상태: raw
+- 상태: vetted
 - 요약: 내 판단: GRU의 update/reset 2게이트 구조(LSTM 4게이트 대비 MVM 3회 vs 4회)를 이용해 LSTM보다 ~25% 적은 DSP48·LUT로 Basys3에서 동작하는 추론 가속기를 구현한다. MicroBlaze V가 AXI4-Lite로 가중치를 적재하고 타임스텝 완료 인터럽트를 받는다.
 - 조합: [GRU-cell, AXI4-Lite, DSP48, BRAM-weight]
 - 근거: [li-2019-ernn-gru-lstm, khoda-2023-hls4ml-gru-lstm]
 - 새로움의 근거: 카탈로그에 GRU 전용 Basys3 AXI4-Lite 가속기 카드가 없음. LSTM 카드(qian-2023-lstm-spartan7, I-147)는 있으나 GRU 비교 구현은 없음.
 - Basys3 적합성의 근거: li-2019 자원표(GRU FFT8 Virtex-7: DSP 62.1%, BRAM 88.2%)는 고성능 보드 기준이므로 Basys3 XC7A35T(90 DSP, 225KB BRAM)에서 소형 모델(은닉 8~16 노드, 12비트 고정소수점)이면 단일 AXI 슬롯(free_slots 1칸)에 맞출 수 있다. hls4ml Reuse factor를 높이면 직렬화 가능.
 - 난이도: 3 / 단계: T4
-- 심사: (미심사)
+- 심사: 2026-11-07 /verify 32차, 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(li-2019-ernn-gru-lstm·khoda-2023-hls4ml-gru-lstm 모두 rechecked_at 없음) + 새로움 2(GRU 전용 Basys3 AXI-Lite 가속기 카드·패키지 없음) + 적합성 2(은닉 8~16 노드 소형 모델 가능 추정, 고성능 보드 기준 근거이므로 Basys3 실측 없음) + 완결성 1(AXI4-Lite 래퍼 범위 명확하나 직렬화 방법·DSP48 사용량 미확인) = 5점 → vetted. 보강: 근거 카드 rechecked_at 추가, Basys3 소형 GRU 자원 추정(yosys).
 
 ## I-150 GRU·LSTM 비교 테스트벤치 모듈 — 같은 가중치로 순전파 대조, 오차 ≤1 ULP 검증 (T3, S4 제약 역전)
-- 상태: raw
+- 상태: vetted
 - 요약: 내 판단: Verilog-2001 고정소수점 GRU 셀과 LSTM 셀을 같은 가중치·입력으로 나란히 돌려 출력 오차를 1 ULP 이하로 검증하는 자체 점검형 테스트벤치. GRU가 LSTM보다 타임스텝당 사이클이 적음을 측정하고 PASS/FAIL 출력.
 - 조합: [GRU-cell, LSTM-cell, fixed-point-MAC, Verilog-testbench]
 - 근거: [li-2019-ernn-gru-lstm, khoda-2023-hls4ml-gru-lstm]
 - 새로움의 근거: 카탈로그에 GRU/LSTM 비교 테스트벤치 카드가 없음. 단독 LSTM 테스트벤치(qian-2023)는 있으나 GRU와의 직접 비교는 없음.
 - Basys3 적합성의 근거: 테스트벤치는 보드 없이 iverilog/verilator로 돌 수 있어 CI 검증에 적합. GRU/LSTM 셀 각 400줄 이내, 가중치는 소수 파라미터(은닉 4~8 노드).
 - 난이도: 2 / 단계: T3
-- 심사: (미심사)
+- 심사: 2026-11-07 /verify 32차, 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(li-2019-ernn-gru-lstm·khoda-2023-hls4ml-gru-lstm 모두 rechecked_at 없음) + 새로움 2(GRU/LSTM 직접 비교 TB 카탈로그 없음) + 적합성 3(보드 없이 iverilog/verilator로 CI 검증 가능, 은닉 4~8 노드 소형 셀) + 완결성 2(GRU 셀·LSTM 셀 각 RTL + 비교 TB 범위 명확, PASS/FAIL 출력 정의) = 7점 → vetted. 보강: 근거 카드 rechecked_at 추가.
 
 ## I-151 초소형 GRU 추론 엔진 — 은닉 8노드, Basys3 BRAM 가중치 적재, 400줄 Verilog-2001 (T4, S4 제약 역전)
-- 상태: raw
+- 상태: vetted
 - 요약: 내 판단: Basys3 제약(BRAM·DSP 한계)을 역전시켜, 고성능 보드 대비 90% 이상 작은 모델(은닉 8노드, 12비트 고정소수점, 1 타임스텝 직렬 처리)을 순수 Verilog-2001 400줄 이내로 구현. hls4ml 대신 직접 RTL로 작성해 Vivado IP로 패키징 가능.
 - 조합: [GRU-cell, BRAM-weight, DSP48-MAC, Verilog-2001]
 - 근거: [khoda-2023-hls4ml-gru-lstm, chae-2022-gru-de1soc]
 - 새로움의 근거: S4 전략(제약 역전): 고성능 보드 대신 Basys3 최소 자원에서 돌아가는 가장 작은 GRU를 명시적 목표로 삼는 카드 없음. 기존 카드들은 모두 Basys3 이식 불가 대형 보드.
 - Basys3 적합성의 근거: 은닉 8노드 GRU: 가중치 수 = 3*8*(8+1) = 216개 → 12비트×216 = 3.2KB, Basys3 BRAM 2블록 이내. DSP48 사용량 ≤10개(내 계산). AXI4-Lite 슬레이브 래퍼 추가 시 MicroBlaze V free_slots 1칸.
 - 난이도: 3 / 단계: T4
-- 심사: (미심사)
+- 심사: 2026-11-07 /verify 32차, 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(khoda-2023-hls4ml-gru-lstm·chae-2022-gru-de1soc 모두 rechecked_at 없음) + 새로움 2(Basys3 최소 자원 GRU를 명시적 목표로 삼는 패키지 없음) + 적합성 3(은닉 8노드 가중치 3.2KB·BRAM 2블록·DSP48 ≤10개 추정, Basys3 XC7A35T 범위 내) + 완결성 2(은닉 8노드+BRAM 가중치+직렬 처리+400줄 이내 범위 명확) = 7점 → vetted. 보강: 근거 카드 rechecked_at 추가, DSP48 추정 yosys 검증.
