@@ -80,7 +80,6 @@
 2026-11-06 | [B3] 배치 정규화·층 정규화 하드웨어 | FPGA "batch norm" OR "batch normalization" folded weights Verilog fixed-point inference GitHub 2023 2024 | 유효
 2026-11-06 | [B3] 배치 정규화·층 정규화 하드웨어 | FPGA NPU CNN 배치정규화 BN folding 고정소수점 scale shift Verilog 구현 GitHub Basys3 (한국어) | 빈약
 
-<<<<<<< Updated upstream
 2026-11-07 | [B3] RNN 셀 하드웨어 | FPGA LSTM cell hardware Verilog fixed-point sigmoid tanh approximation GitHub | 유효 (arxiv 1511.05552, ahirsharan 발견)
 2026-11-07 | [B3] RNN 셀 하드웨어 | FPGA RNN LSTM inference accelerator Zynq Basys3 Q-format piecewise-linear sigmoid | 유효 (Chang 2015 Zedboard LSTM 발견)
 2026-11-07 | [B3] RNN 셀 하드웨어 | site:github.com LSTM FPGA Verilog fixed-point cell gate MAC sigmoid tanh | 유효 (ahirsharan/LSTM MIT 발견)
@@ -92,7 +91,6 @@
 2026-11-07 | [B3] RNN 셀 하드웨어 | site:github.com recurrent neural network FPGA Verilog fixed-point BRAM weight AXI | 유효
 2026-11-07 | [B3] RNN 셀 하드웨어 | FPGA LSTM RNN NN ネットワーク Verilog 固定小数点 推論 GitHub (일본어) | 빈약
 2026-11-07 | [B3] RNN 셀 하드웨어 | FPGA LSTM RNN 循环神经网络 Verilog 推理 固定点 GitHub (중국어) | 빈약
-=======
 2026-11-06 | [B3] RNN 셀 하드웨어 | FPGA RNN LSTM GRU hardware accelerator Verilog fixed-point Basys3 GitHub | 유효
 2026-11-06 | [B3] RNN 셀 하드웨어 | FPGA recurrent neural network cell hardware Verilog sigmoid tanh fixed-point | 유효
 2026-11-06 | [B3] RNN 셀 하드웨어 | site:github.com FPGA LSTM accelerator Verilog fixed-point AXI4-Lite inference | 유효
@@ -101,4 +99,14 @@
 2026-11-06 | [B3] RNN 셀 하드웨어 | FPGA RNN 순환 신경망 Verilog 고정소수점 하드웨어 가속기 GitHub 한국어 | 빈약
 2026-11-06 | [B3] RNN 셀 하드웨어 | site:github.com LSTM FPGA Basys3 Artix-7 Verilog neural network inference recurrent | 유효
 2026-11-06 | [B3] RNN 셀 하드웨어 | arxiv FPGA RNN LSTM accelerator fixed-point 16-bit cell implementation 2015 2023 | 유효
->>>>>>> Stashed changes
+2026-11-07 | [B3] GRU vs LSTM 비교 | GRU LSTM FPGA Verilog hardware comparison gate count BRAM resources fixed-point | 유효
+2026-11-07 | [B3] GRU vs LSTM 비교 | FPGA GRU cell implementation Basys3 Artix-7 inference accelerator 2022 2023 2024 | 유효
+2026-11-07 | [B3] GRU vs LSTM 비교 | GRU LSTM FPGA 비교 게이트 수 자원 사용량 Verilog 추론 가속기 한국어 | 빈약
+2026-11-07 | [B3] GRU vs LSTM 비교 | site:arxiv.org GRU FPGA accelerator hardware fixed-point inference 2018 2019 2022 2023 | 유효
+2026-11-07 | [B3] GRU vs LSTM 비교 | hls4ml GRU LSTM FPGA inference ultra-low latency recurrent neural network | 유효
+2026-11-07 | [B3] GRU vs LSTM 비교 | E-RNN block circulant matrix GRU LSTM FPGA HPCA 2019 | 유효
+2026-11-07 | [B3] GRU vs LSTM 비교 | FPGA GRU pruning quantization 가지치기 양자화 한국 논문 DE1-SoC 2022 | 유효
+2026-11-07 | [B3] GRU vs LSTM 비교 | site:github.com GRU FPGA Verilog implementation gated recurrent unit accelerator | 빈약
+2026-11-07 | [B3] GRU vs LSTM 비교 | Spartan-7 GRU LSTM inference fixed-point BRAM weight quantization 2023 | 유효
+2026-11-07 | [B3] GRU vs LSTM 비교 | FPGA GRU Versal AI Engine recurrent inference 2024 2025 | 차단(PROVENANCE_REQUIRED)
+2026-11-07 | [B3] GRU vs LSTM 비교 | GRU LSTM FPGA 추론 가속기 비교 고정소수점 자원 분석 대학 논문 | 유효

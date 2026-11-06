@@ -287,11 +287,10 @@
 | [adityapusalkar-fpga-neural-network](amd/adityapusalkar-fpga-neural-network.md) | L3 | T4 | Basys3 | 2026-11-06 |
 | [xie-2020-tvlsi-twofold-lut-tanh](papers/xie-2020-tvlsi-twofold-lut-tanh.md) | L2 | T4 | 없음 (논문) | 2026-11-06 |
 | [arxiv-1810-08650-activation-dse](papers/arxiv-1810-08650-activation-dse.md) | L2 | T4 | 없음 (논문) | 2026-11-06 |
-<<<<<<< Updated upstream
-
+| [arxiv-1511-05552-rnn-fpga](papers/arxiv-1511-05552-rnn-fpga.md) | L2 | T4 | 미명시 (needs-port) | 2026-11-06 |
 | [chang-2015-rnn-fpga](papers/chang-2015-rnn-fpga.md) | L3 | T4 | ZedBoard | 2026-11-07 |
 | [ahirsharan-lstm](vendor-neutral/ahirsharan-lstm.md) | L2 | T4 | 미지정 | 2026-11-07 |
 | [qian-2023-lstm-spartan7](papers/qian-2023-lstm-spartan7.md) | L3 | T4 | Spartan-7 | 2026-11-07 |
-=======
-| [arxiv-1511-05552-rnn-fpga](papers/arxiv-1511-05552-rnn-fpga.md) | L2 | T4 | 미명시 (needs-port) | 2026-11-06 |
->>>>>>> Stashed changes
+| [li-2019-ernn-gru-lstm](papers/li-2019-ernn-gru-lstm.md) | L3 | T4 | Virtex-7/KU060 (needs-port) | 2026-11-07 |
+| [khoda-2023-hls4ml-gru-lstm](papers/khoda-2023-hls4ml-gru-lstm.md) | L3 | T4 | Kintex UltraScale/U250 (needs-port) | 2026-11-07 |
+| [chae-2022-gru-de1soc](papers/chae-2022-gru-de1soc.md) | L2 | T4 | DE1-SoC (needs-port) | 2026-11-07 |

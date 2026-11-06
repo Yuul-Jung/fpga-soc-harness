@@ -245,3 +245,4 @@
 2026-11-07 00:50 | verify | 재열람 0 (WebFetch PROVENANCE_REQUIRED 31차 연속 차단) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +2 (I-101·I-103) | 차단조건재심사: I-128·I-131·I-132·I-133·I-140·I-141·I-142(한도소진) | raw→vetted: I-143~I-148(6점) | atlas §5·§6 추가 | soc-map 31차 갱신
 2026-11-07 00:56 | capstone | mmio-vga-doublebuf-ip | 아이디어 I-104 (BRAM 핑퐁 더블 버퍼 VGA) used | S0 (도구 없음 all skipped) | 근거 재확인 없음(§13.7 무조건 최대한 생성 원칙) | build.py 오류 없음, 경고 2 (카드 미작성 expected)
 2026-11-07 01:02 | capstone | mmio-vga-text-7seg-sync-ip | S0(도구 skipped: iverilog/verilator/yosys 없음) | I-108 VGA 텍스트 오버레이+7세그 동기화 AXI4-Lite IP · ready→used | 무조건 최대한 생성 원칙 §13.7, 게이트 3·4 건너뜀 | 슬롯 [28] 0x4028_0000 / mbv-frozen-v2 partial | 소스: axil_vga_text_7seg_ip.v + basys3_top_vga_text_7seg.v + TB(10TC) + XDC + Makefile | 근거 재확인 없음(§13.7 사용자 운영 방침)
+2026-11-07 03:29 | collect | GRU 셀 대 LSTM 셀 비교 · S1 인접 도메인(주)+S4 제약 역전(보조) | 카드 +3 | 아이디어 +3 | 큐 잔여 25 | blocked 6

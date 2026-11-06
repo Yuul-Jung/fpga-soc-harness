@@ -732,3 +732,10 @@
 - https://github.com/ribesstefano/Mapping-Multiple-LSTM-Models-on-FPGAs | 복수 LSTM 모델 FPGA 매핑(HLS 기반, 라이선스 미확인) — 미열람(L1) | LSTM FPGA mapping multiple models HLS
 - https://github.com/walkieq/RNN_HLS | RNN HLS 구현(Xilinx HLS, 라이선스 미확인) — 미열람(L1) | RNN HLS FPGA Xilinx GitHub
 - https://arxiv.org/abs/2207.00559 | FPGA RNN 추론 관련 논문 2022 — 미열람(L1, 제목만) | FPGA RNN inference accelerator 2022
+
+- https://arxiv.org/abs/2511.15626 | GRU on Versal AI Engine: ultra-low latency recurrent inference (arXiv 2025) — 차단(PROVENANCE_REQUIRED), L1, GRU Versal AI Engine 가속기 | GRU FPGA Versal AI Engine recurrent inference 2025
+- https://arxiv.org/abs/1807.04093 | FINN-L: 가변 정밀도 LSTM FPGA 가속기(arXiv 2018) — 미열람(L1), hls4ml 계열 초저지연 추론 보완 | FINN-L variable precision LSTM FPGA inference
+- https://arxiv.org/abs/2101.02667 | BRDS: 희소화 LSTM 가속기(arXiv 2021) — 미열람(L1), 구조적 가지치기+FPGA 추론 보완 | BRDS LSTM accelerator sparsification FPGA
+- https://dissem.in/p/140257494/ | Rapuano 2022: GRU FPGA 추론 가속기(Hindawi) — L2(초록 수준), GRU 셀 Verilog 구현 직접 비교 | GRU FPGA hardware accelerator fixed-point Hindawi 2022
+- https://github.com/lz1313/BlockCIrculantRNN | E-RNN 소스: 블록-순환 RNN FPGA 구현(라이선스 미확인) — 차단(PROVENANCE_REQUIRED), li-2019-ernn-gru-lstm 카드 근거 코드 | E-RNN BlockCirculantRNN GitHub
+- https://arxiv.org/abs/2207.00559 | hls4ml GRU/LSTM 논문 원본(Machine Learning: Sci & Tech) — 차단(PROVENANCE_REQUIRED), khoda-2023-hls4ml-gru-lstm 카드 보완 | hls4ml GRU LSTM FPGA inference arXiv

@@ -2030,3 +2030,33 @@
 - Basys3 적합성의 근거: I-147 대비 추가 자원은 루프 FSM(LUT 100개 이하) + 입력 시퀀스 BRAM(T×I 크기, T=10 I=4 → 40 entries, 최소). XC7A35T 여유 충분.
 - 난이도: 4 / 단계: T4 / 상태: vetted
 - 심사: 2026-11-07 /verify 31차, raw→vetted 첫 심사(§14.2 표준, 차단조건재심사 불적용). 근거 0(chang-2015-rnn-fpga·qian-2023-lstm-spartan7·ahirsharan-lstm 모두 rechecked_at 없음) + 새로움 2(Basys3 멀티-타임스텝 LSTM 시퀀스 추론 패키지 카탈로그 없음) + 적합성 2(I-147 대비 루프 FSM LUT<100+입력 BRAM 추가만 필요, XC7A35T 여유; 근거 카드 모두 L3이나 Basys3 직접 합성 미확인) + 완결성 2(루프 FSM+BRAM 입력버퍼+선형분류레이어 범위 명확, iverilog CI 가능) = 6점 → vetted. 보강: 근거 카드 rechecked_at 취득 필요.
+
+## I-149 GRU 셀 AXI4-Lite 가속기 IP — 2게이트 구조, Basys3 DSP48·BRAM 절약 (T4, S1 이식)
+- 상태: raw
+- 요약: 내 판단: GRU의 update/reset 2게이트 구조(LSTM 4게이트 대비 MVM 3회 vs 4회)를 이용해 LSTM보다 ~25% 적은 DSP48·LUT로 Basys3에서 동작하는 추론 가속기를 구현한다. MicroBlaze V가 AXI4-Lite로 가중치를 적재하고 타임스텝 완료 인터럽트를 받는다.
+- 조합: [GRU-cell, AXI4-Lite, DSP48, BRAM-weight]
+- 근거: [li-2019-ernn-gru-lstm, khoda-2023-hls4ml-gru-lstm]
+- 새로움의 근거: 카탈로그에 GRU 전용 Basys3 AXI4-Lite 가속기 카드가 없음. LSTM 카드(qian-2023-lstm-spartan7, I-147)는 있으나 GRU 비교 구현은 없음.
+- Basys3 적합성의 근거: li-2019 자원표(GRU FFT8 Virtex-7: DSP 62.1%, BRAM 88.2%)는 고성능 보드 기준이므로 Basys3 XC7A35T(90 DSP, 225KB BRAM)에서 소형 모델(은닉 8~16 노드, 12비트 고정소수점)이면 단일 AXI 슬롯(free_slots 1칸)에 맞출 수 있다. hls4ml Reuse factor를 높이면 직렬화 가능.
+- 난이도: 3 / 단계: T4
+- 심사: (미심사)
+
+## I-150 GRU·LSTM 비교 테스트벤치 모듈 — 같은 가중치로 순전파 대조, 오차 ≤1 ULP 검증 (T3, S4 제약 역전)
+- 상태: raw
+- 요약: 내 판단: Verilog-2001 고정소수점 GRU 셀과 LSTM 셀을 같은 가중치·입력으로 나란히 돌려 출력 오차를 1 ULP 이하로 검증하는 자체 점검형 테스트벤치. GRU가 LSTM보다 타임스텝당 사이클이 적음을 측정하고 PASS/FAIL 출력.
+- 조합: [GRU-cell, LSTM-cell, fixed-point-MAC, Verilog-testbench]
+- 근거: [li-2019-ernn-gru-lstm, khoda-2023-hls4ml-gru-lstm]
+- 새로움의 근거: 카탈로그에 GRU/LSTM 비교 테스트벤치 카드가 없음. 단독 LSTM 테스트벤치(qian-2023)는 있으나 GRU와의 직접 비교는 없음.
+- Basys3 적합성의 근거: 테스트벤치는 보드 없이 iverilog/verilator로 돌 수 있어 CI 검증에 적합. GRU/LSTM 셀 각 400줄 이내, 가중치는 소수 파라미터(은닉 4~8 노드).
+- 난이도: 2 / 단계: T3
+- 심사: (미심사)
+
+## I-151 초소형 GRU 추론 엔진 — 은닉 8노드, Basys3 BRAM 가중치 적재, 400줄 Verilog-2001 (T4, S4 제약 역전)
+- 상태: raw
+- 요약: 내 판단: Basys3 제약(BRAM·DSP 한계)을 역전시켜, 고성능 보드 대비 90% 이상 작은 모델(은닉 8노드, 12비트 고정소수점, 1 타임스텝 직렬 처리)을 순수 Verilog-2001 400줄 이내로 구현. hls4ml 대신 직접 RTL로 작성해 Vivado IP로 패키징 가능.
+- 조합: [GRU-cell, BRAM-weight, DSP48-MAC, Verilog-2001]
+- 근거: [khoda-2023-hls4ml-gru-lstm, chae-2022-gru-de1soc]
+- 새로움의 근거: S4 전략(제약 역전): 고성능 보드 대신 Basys3 최소 자원에서 돌아가는 가장 작은 GRU를 명시적 목표로 삼는 카드 없음. 기존 카드들은 모두 Basys3 이식 불가 대형 보드.
+- Basys3 적합성의 근거: 은닉 8노드 GRU: 가중치 수 = 3*8*(8+1) = 216개 → 12비트×216 = 3.2KB, Basys3 BRAM 2블록 이내. DSP48 사용량 ≤10개(내 계산). AXI4-Lite 슬레이브 래퍼 추가 시 MicroBlaze V free_slots 1칸.
+- 난이도: 3 / 단계: T4
+- 심사: (미심사)
