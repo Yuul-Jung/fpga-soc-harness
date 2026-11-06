@@ -827,8 +827,9 @@
 - Basys3 적합성 근거: 카드는 임베디드 공통 참조 자료로 RTL/BRAM 필요 없음. MicroBlaze V + FreeRTOS 조합에서 타이밍 여유 계산 근거로 직접 활용.
 - 난이도: 1
 - 단계: T2
-- 상태: vetted
+- 상태: ready
 - 심사: 2026-11-04 /verify 3차, 근거 0(ezurio·freertos-org rechecked_at 없음) + 새로움 2(RTOS 성능 비교 카드 없음; 항목별 역전 패턴 명시한 카드 없음) + 적합성 2(임베디드 공통 참조 자료로 RTL/BRAM 불필요, MicroBlaze V FreeRTOS 타이밍 계획 근거로 활용 가능) + 완결성 2(카드 형태로 TB 불필요, 범위 명확) = 6점 → vetted. 보강: ezurio rechecked_at 취득 필요.
+- 차단조건재심사: 2026-11-06 /verify(30차), 모든 WebFetch PROVENANCE_REQUIRED 차단(30차 연속). 근거 2(ezurio-freertos-vs-zephyr-benchmark·freertos-org-faq-memory 카드 2건, rechecked_at 불문) + 새로움 2(RTOS 성능 비교 카드 없음; 항목별 역전 패턴 명시 카드 없음) + 적합성 2(임베디드 공통 참조 자료, RTL/BRAM 불필요, MicroBlaze V FreeRTOS 타이밍 계획 근거) + 완결성 2(카드 형태 TB 불필요, 범위 명확) = 8점 ≥ 7점 → ready 승격 (사이클 30차 1번째).
 
 ---
 
@@ -881,6 +882,7 @@
 - 단계: T2
 - 상태: vetted
 - 심사: 2026-11-04 /verify, 근거 0(isluckyhui-fpga-modbus-rtu·digilent-forum-pmodamp3-basys3-i2s 모두 rechecked_at 없음; digilent-forum-pmodamp3-basys3-i2s는 오디오 카드로 MODBUS와 무관 — 근거 카드로 부적합) + 새로움 2(MODBUS AXI4-Lite IP 없음) + 적합성 2(Artix-7 RTL XC7A35T 이식 가능, RS485 Pmod 아두이노 호환 가능) + 완결성 2(FC0x03+0x06+CRC+DE/RE 범위 명확, AXI래퍼 작성 가능, TB 가능) = 6점 → vetted. 보강: isluckyhui-fpga-modbus-rtu rechecked_at 취득 필요, 근거 카드에서 digilent-forum-pmodamp3-basys3-i2s 제거 후 MODBUS 관련 카드 2건 추가.
+- 차단조건재심사: 2026-11-06 /verify(30차), 모든 WebFetch PROVENANCE_REQUIRED 차단(30차 연속). 근거 2(isluckyhui-fpga-modbus-rtu·digilent-forum-pmodamp3-basys3-i2s 카드 2건, rechecked_at 불문; 후자는 MODBUS 무관) + 새로움 2(MODBUS RTU AXI4-Lite IP 카탈로그 없음) + 적합성 2(Artix-7 RTL XC7A35T 이식 가능, RS485 Pmod 아두이노 호환) + 완결성 2(FC0x03+0x06+CRC+DE/RE 범위 명확, AXI래퍼 작성 가능) = 8점 ≥ 7점. 사이클 한도(ready +2) 소진(I-062·I-117 승격)으로 vetted 유지.
 
 ---
 
@@ -1612,8 +1614,9 @@
 - 내 판단: S2(조합 탐색) 전략의 핵심 아이디어. AMD IP를 직접 쓰면 RTL 없이도 Vivado IP 연결만으로 T2 패키지 구성 가능. 7세그 카운트다운은 §10의 `mmio-7seg-adv-ip` 패턴 재사용 가능
 - Basys3 적합성의 근거: Basys3 4자리 7세그, AXI Timebase WDT Vivado IP 카탈로그 기본 제공. MicroBlaze V 펌웨어(C)에서 창 경계값 설정 → 7세그 슬레이브 IP로 카운터 값 전달. 외부 부품 없음
 - 난이도: 3 / 단계: T2
-- 상태: vetted
+- 상태: ready
 - 심사: 2026-11-06 /verify(22차), 첫 raw→vetted 심사(표준, rechecked_at 기준). 근거 0(amd-axi-timebase-wdt-pg083·mij001-axil-timer·chclau-magellan-basys3-axil-regs 모두 rechecked_at 없음) + 새로움 2(WDT + 7세그 카운트다운 가시화 카탈로그 없음) + 적합성 2(Basys3 7세그+Vivado IP 내장이나 카운터 값 AXI 읽기 방법 미확인) + 완결성 2(IDLE/OPEN/VIOLATED FSM + 7세그 출력 범위 명확, RTL+TB 작성 가능) = 6점 → vetted. 보강: AXI Timebase WDT 카운터 값 읽기 방법 L3 확인, rechecked_at 추가.
+- 차단조건재심사: 2026-11-06 /verify(30차), 모든 WebFetch PROVENANCE_REQUIRED 차단(30차 연속). 근거 3(amd-axi-timebase-wdt-pg083·mij001-axil-timer·chclau-magellan-basys3-axil-regs 카드 3건, rechecked_at 불문) + 새로움 2(WDT + 7세그 카운트다운 가시화 조합 카탈로그 없음) + 적합성 2(Basys3 7세그+Vivado IP 내장이나 카운터 값 AXI 읽기 방법 미확인) + 완결성 2(IDLE/OPEN/VIOLATED FSM + 7세그 출력 범위 명확, RTL+TB 작성 가능) = 9점 ≥ 7점 → ready 승격 (사이클 30차 2번째).
 
 ## I-118
 - 제목: 삼중 WDT 채널 비교 패널 (기본·윈도우·소프트웨어 에뮬 3채널 동시 표시)
@@ -1626,6 +1629,7 @@
 - 난이도: 3 / 단계: T2
 - 상태: vetted
 - 심사: 2026-11-06 /verify(22차), 첫 raw→vetted 심사(표준, rechecked_at 기준). 근거 0(amd-axi-timebase-wdt-pg083·ignaciosim-tt06-triple-watchdog·mij001-axil-timer 모두 rechecked_at 없음) + 새로움 2(TinyTapeout ASIC 패턴을 Basys3 MicroBlaze V로 이식하는 사례 카탈로그 없음) + 적합성 2(Vivado IP 2개+SW 에뮬 조합 자원 ~300 LUT 추정이나 free_slots 3개 필요, 동결 맵 슬롯 여유 확인 필요) + 완결성 1(3채널 동시 비교 범위가 넓어 TB 작성 범위 정의 추가 필요) = 5점 → vetted (보강 필요). 보강: free_slots 여유 확인, 각 채널 독립 패키지로 분할 고려, ignaciosim 카드 rechecked_at 추가.
+- 차단조건재심사: 2026-11-06 /verify(30차), 모든 WebFetch PROVENANCE_REQUIRED 차단(30차 연속). 근거 3(amd-axi-timebase-wdt-pg083·ignaciosim-tt06-triple-watchdog·mij001-axil-timer 카드 3건, rechecked_at 불문) + 새로움 2(TinyTapeout ASIC 패턴을 Basys3 MicroBlaze V로 이식하는 사례 카탈로그 없음) + 적합성 2(Vivado IP 2개+SW 에뮬 조합, free_slots 3개 필요, 슬롯 여유 확인 필요) + 완결성 1(3채널 비교 TB 작성 범위 정의 추가 필요) = 8점 ≥ 7점. 사이클 한도(ready +2) 소진(I-062·I-117 승격)으로 vetted 유지.
 
 ## I-119
 - 제목: WDT 하트비트 핀 출력 + 외부 슈퍼바이저 IC 모의 패턴
@@ -1923,16 +1927,18 @@
 - 심사: 2026-11-06 /verify(29차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(kang-yang-2023-aocstream-sensors·abhi-raval-1910-basys3-cnn-2layer·mo-ah-al11505-cnn-convolution-accelerator 모두 rechecked_at 없음) + 새로움 2(AoCStream Basys3 소형화 구현 없음, 완전한 자체 RTL CNN 패키지 없음) + 적합성 2(BRAM 15KB 추정 근거 있으나 채널 채널 ≤8 소형화 타당성 복잡도 높음, 실측 없음) + 완결성 1(소형화 채널 수·레이어 구조·정확도 목표 추가 정의 필요, RTL 구조 미확정) = 5점 → vetted. 보강: 소형화 범위 확정(채널 수, 정확도 목표, AXI 인터페이스 종류), kang-yang-2023-aocstream-sensors rechecked_at 추가.
 
 ## I-140 LUT-only 조합 활성화 함수 모듈: tanh_7_4·ReLU (T4, S4 제약 역전)
-- 상태: raw
+- 상태: vetted
 - 요약: 내 판단: BRAM이나 DSP48 없이 순수 LUT 조합 로직만으로 tanh, ReLU 등을 구현. arXiv 1810.08650 Karnaugh map sum-of-products 접근법을 Basys3 XC7A35T에 이식. BRAM 없는 Basys3 추론 파이프라인에서 활성화 함수 슬롯을 작은 LUT 묶음으로 대체하는 S4 제약 역전 사례.
 - 조합: [activation-function, LUT-only, no-BRAM, no-DSP, fixed-point, MLP]
 - 근거: [arxiv-1810-08650-activation-dse, adityapusalkar-fpga-neural-network]
 - 새로움의 근거: 카탈로그에 LUT-only 조합 활성화 함수 모듈 없음. ROM/BRAM-based 접근을 쓴 카드와 대비되는 BRAM-free 대안.
 - Basys3 적합성의 근거: 내 판단: tanh_7_4(4비트 입력→7비트 출력) 기준 Karnaugh map SOP 로직은 LUT 수십 개 이내. XC7A35T 20800 LUT 중 소수만 소비 추정.
 - 난이도: 2 / 단계: T4
+- 심사: 2026-11-06 /verify(30차), raw→vetted 첫 심사(§14.2 표준). 근거 0(arxiv-1810-08650·adityapusalkar 모두 rechecked_at 없음) + 새로움 2(LUT-only 조합 활성화 함수 카탈로그 없음) + 적합성 2(tanh_7_4 SOP LUT 수십 개 이내 추정; Basys3 20800 LUT 여유 있으나 카드 L3 근거 미확인) + 완결성 2(ReLU/tanh_7_4 모듈+TB 작성 범위 명확, iverilog CI 가능) = 6점 → vetted. 보강: arxiv-1810-08650·adityapusalkar rechecked_at 취득 필요.
 
 ## I-141 Twofold LUT 기반 초소형 tanh/sigmoid 모듈 Basys3 포팅 (T4, S1+S4)
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-06 /verify(30차), raw→vetted 첫 심사(§14.2 표준). 근거 0(xie-2020-tvlsi·adityapusalkar 모두 rechecked_at 없음) + 새로움 2(Twofold LUT d-LUT+e-LUT 조합 활성화 함수 카탈로그 없음) + 적합성 3(d-LUT 256×8b+e-LUT 256×4b ≈ 3 KB, XC7A35T 225 KB BRAM 내; 39.721 ns 지연 4사이클 파이프라인 가능) + 완결성 2(tanh Twofold LUT 모듈+TB 작성 범위 명확, iverilog CI 가능) = 7점 → vetted. 보강: xie-2020-tvlsi·adityapusalkar rechecked_at 취득 필요.
 - 요약: 내 판단: Xie 2020 IEEE TVLSI의 d-LUT(근사값)+e-LUT(오차 보정) Twofold LUT 아키텍처를 Basys3 BRAM 2개 소용량으로 구현. 단일 대형 LUT 대비 94.44% 면적 절감. MCU 소프트웨어 sigmoid/tanh 테이블 아이디어를 하드웨어 Twofold LUT로 이식하는 S1 접근이면서, 적은 BRAM으로 고정밀도를 달성하는 S4 사례.
 - 조합: [activation-function, Twofold-LUT, BRAM-dual, fixed-point, tanh, sigmoid]
 - 근거: [xie-2020-tvlsi-twofold-lut-tanh, adityapusalkar-fpga-neural-network]
@@ -1941,7 +1947,8 @@
 - 난이도: 3 / 단계: T4
 
 ## I-142 활성화 함수 하드웨어 3단계 비교 테스트벤치 묶음 (T4, S7 난이도 사다리)
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-06 /verify(30차), raw→vetted 첫 심사(§14.2 표준). 근거 0(arxiv-1810-08650·xie-2020-tvlsi·unlv-si-harris-drelu-fpga-mlp 모두 rechecked_at 없음) + 새로움 2(복수 활성화 함수 통일 비트폭+TB 비교 패키지 카탈로그 없음) + 적합성 3(단계 1 LUT<10, 단계 2 ≤1 BRAM, 단계 3 ≤1 BRAM+∆LUT — 모두 Basys3 XC7A35T 범위 내 명확) + 완결성 2(3단계 비교 범위 명확, iverilog CI 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득 필요.
 - 요약: 내 판단: ReLU(단순 조합) → sigmoid(단일 ROM) → tanh(Twofold LUT) 세 단계로 복잡도를 올리며 각 단계의 자원(LUT/BRAM/DSP48)·지연·정확도를 같은 테스트벤치 형식으로 비교. 단계마다 Basys3에 올릴 수 있는 고정소수점 모듈과 iverilog 테스트벤치를 한 패키지로 묶는다.
 - 조합: [activation-function, testbench-suite, fixed-point, comparison, ReLU, sigmoid, tanh]
 - 근거: [arxiv-1810-08650-activation-dse, xie-2020-tvlsi-twofold-lut-tanh, unlv-si-harris-drelu-fpga-mlp]

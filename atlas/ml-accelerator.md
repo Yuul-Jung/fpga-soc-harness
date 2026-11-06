@@ -1,6 +1,6 @@
 # ML 추론 가속기: 고정소수점 연산·MAC 행렬·MLP·CNN
 
-갱신: 2026-11-06 (/verify 29차). 카드 15건 기반 (Q포맷 4건, MAC/행렬 4건, MLP 뉴런 3건, CNN 엔진 3건, 논문 1건).
+갱신: 2026-11-06 (/verify 30차). 카드 19건 기반 (Q포맷 4건, MAC/행렬 4건, MLP 뉴런 4건, 활성화 함수 3건, CNN 엔진 3건, 논문 1건).
 고정소수점 Q포맷 산술, MAC 배열 가속기, MLP/CNN 추론 IP의 Basys3 적용 가능성을 정리한다.
 MicroBlaze V SoC의 `free_slots`에서 AXI4-Lite 가속기 IP로 연결하는 경로를 중심으로 분석한다.
 
@@ -44,17 +44,17 @@ MicroBlaze V SoC의 `free_slots`에서 AXI4-Lite 가속기 IP로 연결하는 �
 
 ## 3. MLP 뉴런 / 추론 IP
 
-| 항목 | libfpga-fpga-neuron | erwanregy-neural-network-fpga | unlv-si-harris-drelu-fpga-mlp | itskannapi-fpga-mlp-accelerator |
-|---|---|---|---|---|
-| 카드 | [libfpga-fpga-neuron](../catalog/vendor-neutral/libfpga-fpga-neuron.md) | [erwanregy-neural-network-fpga](../catalog/vendor-neutral/erwanregy-neural-network-fpga.md) | [unlv-si-harris-drelu-fpga-mlp](../catalog/papers/unlv-si-harris-drelu-fpga-mlp.md) | [itskannapi-fpga-mlp-accelerator](../catalog/vendor-neutral/itskannapi-fpga-mlp-accelerator.md) |
-| 포맷 | Q4.4 (8비트) | 파라메트릭 SV | INT8 | 미확인 |
-| 활성화 | 없음(단일 뉴런) | sigmoid/ReLU 선택 | D-ReLU(이산 ReLU) | 미확인 |
-| 단일 뉴런 자원 | 832 LUT4, 0 FF (조합) | 미확인 | D-ReLU: Sigmoid 대비 24-41% 면적 절감 | 미확인 |
-| 테스트벤치 | 293 패턴 셀프체킹 | 미확인 | 없음(논문) | 미확인 |
-| 버스 | none(단일 뉴런) | none | none | AXI4-Lite |
-| 라이선스 | MIT | Apache-2.0 | unknown(논문) | unknown |
-| 등급 | L3 | L3 | L3 | L3 |
-| Basys3 적합성 | needs-port | needs-port | needs-port | yes |
+| 항목 | libfpga-fpga-neuron | erwanregy-neural-network-fpga | unlv-si-harris-drelu-fpga-mlp | itskannapi-fpga-mlp-accelerator | adityapusalkar-fpga-neural-network |
+|---|---|---|---|---|---|
+| 카드 | [libfpga-fpga-neuron](../catalog/vendor-neutral/libfpga-fpga-neuron.md) | [erwanregy-neural-network-fpga](../catalog/vendor-neutral/erwanregy-neural-network-fpga.md) | [unlv-si-harris-drelu-fpga-mlp](../catalog/papers/unlv-si-harris-drelu-fpga-mlp.md) | [itskannapi-fpga-mlp-accelerator](../catalog/vendor-neutral/itskannapi-fpga-mlp-accelerator.md) | [adityapusalkar-fpga-neural-network](../catalog/amd/adityapusalkar-fpga-neural-network.md) |
+| 포맷 | Q4.4 (8비트) | 파라메트릭 SV | INT8 | 미확인 | 미확인(고정소수점) |
+| 활성화 | 없음(단일 뉴런) | sigmoid/ReLU 선택 | D-ReLU(이산 ReLU) | 미확인 | ReLU |
+| 단일 뉴런 자원 | 832 LUT4, 0 FF (조합) | 미확인 | D-ReLU: Sigmoid 대비 24-41% 면적 절감 | 미확인 | 미확인 |
+| 테스트벤치 | 293 패턴 셀프체킹 | 미확인 | 없음(논문) | 미확인 | 없음(README) |
+| 버스 | none(단일 뉴런) | none | none | AXI4-Lite | none |
+| 라이선스 | MIT | Apache-2.0 | unknown(논문) | unknown | unknown |
+| 등급 | L3 | L3 | L3 | L3 | L3 |
+| Basys3 적합성 | needs-port | needs-port | needs-port | yes | yes |
 
 **D-ReLU 핵심 발견 (내 판단):** unlv-si-harris 논문의 Discrete ReLU(D-ReLU)는 부호 비트 검사 + 비트 시프트만으로 활성화를 구현해 Sigmoid보다 24-41% 면적을 절감한다. I-135(D-ReLU vs Sigmoid 비교 패키지)와 I-136(단일 뉴런 AXI4-Lite 슬레이브 IP)에 직접 적용 가능하다. libfpga-fpga-neuron의 293 테스트 벡터는 D-ReLU 적용 후에도 재사용하기 좋은 회귀 기준이다.
 
@@ -62,6 +62,33 @@ MicroBlaze V SoC의 `free_slots`에서 AXI4-Lite 가속기 IP로 연결하는 �
 - I-136 (T1 기초): libfpga Q4.4 단일 뉴런 + AXI4-Lite 슬레이브 래퍼 → `free_slots` 배정.
 - I-134 (T4 MLP): 2층 MLP(256×1 입력→64→16→10 출력) + BRAM 가중치 저장 + AXI4-Lite 슬레이브. erwanregy 파라미터 패턴 참조.
 - itskannapi는 Basys3 AXI-Lite 연결 사례이나 라이선스 미확인 → 패턴만 참조, 코드 반입 불가.
+
+---
+
+## 3.5 활성화 함수 하드웨어 (신규 2026-11-06)
+
+| 항목 | adityapusalkar-fpga-neural-network | xie-2020-tvlsi-twofold-lut-tanh | arxiv-1810-08650-activation-dse | unlv-si-harris-drelu-fpga-mlp |
+|---|---|---|---|---|
+| 카드 | [adityapusalkar-fpga-neural-network](../catalog/amd/adityapusalkar-fpga-neural-network.md) | [xie-2020-tvlsi-twofold-lut-tanh](../catalog/papers/xie-2020-tvlsi-twofold-lut-tanh.md) | [arxiv-1810-08650-activation-dse](../catalog/papers/arxiv-1810-08650-activation-dse.md) | [unlv-si-harris-drelu-fpga-mlp](../catalog/papers/unlv-si-harris-drelu-fpga-mlp.md) |
+| 활성화 종류 | ReLU | tanh, sigmoid | ReLU/sigmoid/tanh/ELU/SELU 비교 | D-ReLU(이산 ReLU) |
+| 구현 방식 | 조합(LUT) | Twofold LUT (d-LUT + e-LUT) | ROM/CORDIC/Taylor/조합 비교 | 부호 비트 + 비트 시프트 |
+| 면적 절감 | 미확인 | 단일 대형 LUT 대비 94.44% 절감 | CORDIC < Taylor < ROM 순 | Sigmoid 대비 24-41% 절감 |
+| 지연 | 미확인 | 39.721 ns (파이프라인 가능) | 미확인(논문 비교표) | 비트 연산 → 단일 사이클 추정 |
+| BRAM 소비 | 없음 | d-LUT 256×8b+e-LUT 256×4b ≈ 3 KB | ROM 방식 1~2 BRAM | 없음 |
+| 등급 | L3 | L2 | L2 | L3 |
+| Basys3 적합성 | yes | needs-port | needs-port | needs-port |
+| 출처 | GitHub (Basys3) | IEEE TVLSI 2020 | arXiv 1810.08650 | UNLV 논문 |
+
+**활성화 함수 선택 가이드 (내 판단):**
+- **자원 최소**: D-ReLU(부호 비트+시프트, LUT < 10) → 가중치 추론 IP의 기본 선택. unlv-si-harris 근거.
+- **정밀도 최대 (소 BRAM)**: Twofold LUT tanh(d-LUT+e-LUT ≈ 3 KB, 94.44% 면적 절감) → sigmoid/tanh 필요 시. xie-2020-tvlsi 근거.
+- **교육·비교용**: arxiv-1810-08650이 5가지 방식을 고정소수점 8비트 기준으로 비교한 최상의 출발점.
+- **LUT-only 조합(최소 지연)**: adityapusalkar의 Basys3 ReLU MLP가 직접 구동 가능한 유일한 L3 사례. 소스 코드 구조 참고 가능이나 라이선스 미확인.
+
+**I-140~I-142 연결 (내 판단):**
+- I-140 (LUT-only 조합 활성화 함수 모듈): D-ReLU(unlv-si-harris) + LUT SOP tanh 조합 — 카탈로그 없는 조합, 근거 보강 필요(vetted 6점)
+- I-141 (Twofold LUT tanh/sigmoid 모듈): xie-2020-tvlsi Twofold LUT 아키텍처 Basys3 포팅 — 근거 명확, 적합성 높음(vetted 7점)
+- I-142 (3단계 비교 TB 묶음): ReLU→sigmoid→tanh 단계별 TB 묶음 — S7 난이도 사다리 완성, 근거 보강 필요(vetted 7점)
 
 ---
 
@@ -100,6 +127,9 @@ MicroBlaze V SoC의 `free_slots`에서 AXI4-Lite 가속기 IP로 연결하는 �
 | I-137 Basys3 2층 CNN MNIST AXI-Lite 버전 | abhi-raval UART → AXI4-Lite 래퍼 이식 | T4 | vetted (6점) |
 | I-138 라인 버퍼 스트리밍 3×3 Conv IP | mo-ah-al11505 AXI-Stream 프리미티브 | T2 | vetted (6점) |
 | I-139 AoCStream Basys3 채널≤8 소형화 | AoCStream 논문 소형화 재현 | T4 | vetted (5점) |
+| I-140 LUT-only 조합 활성화 함수 모듈 | D-ReLU + tanh_7_4 SOP 조합, Basys3 | T4 | vetted (6점) |
+| I-141 Twofold LUT tanh/sigmoid 모듈 | xie-2020-tvlsi 아키텍처 Basys3 포팅 | T4 | vetted (7점) |
+| I-142 활성화 함수 3단계 비교 TB 묶음 | ReLU→sigmoid→tanh S7 사다리 | T4 | vetted (7점) |
 
 ---
 
