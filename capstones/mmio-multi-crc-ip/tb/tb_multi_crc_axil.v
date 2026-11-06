@@ -72,6 +72,10 @@ integer test_num;
 task axi_write;
     input [3:0] addr;
     input [31:0] data;
+    // DUT asserts awready, wready, bvalid in the SAME registered cycle.
+    // bready must NOT be pre-asserted, or DUT clears bvalid before testbench sees it.
+    // Sequence: assert awvalid+wvalid (bready=0) → wait awready && wready →
+    //           deassert awvalid+wvalid, assert bready → 1 cycle (DUT clears bvalid) → deassert bready.
     begin
         @(negedge clk);
         awaddr  = addr;
@@ -79,14 +83,15 @@ task axi_write;
         wdata   = data;
         wstrb   = 4'hF;
         wvalid  = 1'b1;
-        bready  = 1'b1;
-        @(posedge clk); // 핸드쉐이크 사이클
+        bready  = 1'b0;        // 쓰기 완료 전 bready 비활성
+        @(posedge clk);
         while (!(awready && wready)) @(posedge clk);
+        // awready=1, wready=1, bvalid=1 (동일 사이클)
         @(negedge clk);
         awvalid = 1'b0;
         wvalid  = 1'b0;
-        @(posedge clk);
-        while (!bvalid) @(posedge clk);
+        bready  = 1'b1;        // bvalid=1인 상태에서 bready 활성 → 다음 posedge에서 B 채널 완료
+        @(posedge clk);        // DUT: bvalid && bready → bvalid<=0
         @(negedge clk);
         bready  = 1'b0;
         @(posedge clk);
@@ -96,20 +101,26 @@ endtask
 task axi_read;
     input  [3:0]  addr;
     output [31:0] data;
+    // DUT asserts arready and rvalid in the SAME registered cycle.
+    // rready must NOT be pre-asserted, or DUT clears rvalid before testbench sees it.
+    // Sequence: assert arvalid (rready=0) → wait arready →
+    //           deassert arvalid, assert rready → wait rvalid → capture → deassert rready.
     begin
         @(negedge clk);
         araddr  = addr;
         arvalid = 1'b1;
-        rready  = 1'b1;
+        rready  = 1'b0;        // arready 확인 전 rready 비활성
         @(posedge clk);
         while (!arready) @(posedge clk);
+        // arready=1, rvalid=1 (동일 사이클), rready=0 → DUT holds rvalid
         @(negedge clk);
         arvalid = 1'b0;
-        @(posedge clk);
+        rready  = 1'b1;        // rvalid=1인 상태에서 rready 활성
+        @(posedge clk);        // rvalid=1 → data 캡처 가능; DUT: rvalid && rready → rvalid<=0
         while (!rvalid) @(posedge clk);
         data = rdata;
         @(negedge clk);
-        rready = 1'b0;
+        rready  = 1'b0;
         @(posedge clk);
     end
 endtask
