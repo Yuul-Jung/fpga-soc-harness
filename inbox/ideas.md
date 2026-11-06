@@ -1659,12 +1659,14 @@
 - 새로움의 근거: 카탈로그에 Basys3 대상 소형 AXI4-Lite 크로스바 + 동결 맵 연동 + 형식 어서션 조합 없음
 - Basys3 적합성의 근거: 내 판단: 2M+4S, 32비트 주소 → LUT ~200~400개 추정 (Yosys 추정 필요). 동결 맵 free_slots 2개 소비. BRAM 사용 없음
 - 난이도: 3 / 단계: T2
-- 상태: ready
+- 상태: used
 - 심사: 2026-11-06 /verify(23차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·dpretet-axi-crossbar 모두 rechecked_at 없음) + 새로움 2(Basys3 대상 소형 AXI4-Lite 크로스바+동결 맵 연동+형식 어서션 조합 카탈로그 없음) + 적합성 2(LUT ~200~400개 추정이나 Yosys 미검증, free_slots 2개 소비 여유 미확인) + 완결성 2(2M+4S 에러 슬레이브+중재 RTL+TB 범위 명확) = 6점 → vetted. 보강: Yosys LUT 추정 확인, free_slots 여유 확인.
 - 차단조건재심사: 2026-11-06 /verify(24차), 근거 3(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·dpretet-axi-crossbar 카드 3건, rechecked_at 불문) + 새로움 2(Basys3 대상 소형 AXI4-Lite 크로스바+동결 맵 연동+형식 어서션 조합 카탈로그 없음) + 적합성 2(LUT ~200~400개 추정이나 Yosys 미검증, free_slots 2개 소비 여유 미확인) + 완결성 2(2M+4S 에러 슬레이브+중재 RTL+TB 범위 명확) = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-115·I-116 승격)으로 vetted 유지. 다음 사이클 ready 후보.
 - 차단조건재심사: 2026-11-05 /verify(25차), 모든 WebFetch PROVENANCE_REQUIRED 차단(25차 연속). 근거 3(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·dpretet-axi-crossbar 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-089·I-090 승격)으로 vetted 유지. 다음 사이클 ready 3순위 후보.
 - 차단조건재심사: 2026-11-06 /verify(26차), 모든 WebFetch PROVENANCE_REQUIRED 차단(26차 연속). 근거 3(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·dpretet-axi-crossbar 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-056·I-119 승격)으로 vetted 유지. 다음 사이클 ready 2순위 후보.
 - 차단조건재심사: 2026-11-06 /verify(27차), 모든 WebFetch PROVENANCE_REQUIRED 차단(27차 연속). 근거 3(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·dpretet-axi-crossbar 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7점. ready 승격 (사이클 2번째, 한도 소진).
+- 사용: 2026-11-06 /capstone(2시간 완결). 패키지 slug: mmio-axil-xbar-2m4s-ip. 검증 등급: S0. 근거 재확인 없음(§13.7 사용자 운영 방침).
+- 상태: used
 
 ## I-122
 - id: I-122
