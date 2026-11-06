@@ -189,7 +189,7 @@
   },
   "verification": {
     "board": "not-tested",
-    "notes": "S0 작성 완료. CI 린트·시뮬레이션·합성 후 S2로 갱신 예정. 보드 동작(S3)은 사람만 올릴 수 있음.",
+    "notes": "S2 확인 완료 (2026-11-06). CI run #42214594558 (commit 81dd086) — lint·sim·synth 모두 통과. 수정 1회(1/3): rtl/axil_spi_slave.v L119 연결식 비트 인덱싱(Verilog-2001 금지) 수정, tb/ 명명 블록 6개 추가. 보드 동작(S3)은 사람만 올릴 수 있음.",
     "board_evidence": null
   },
   "risks": [
