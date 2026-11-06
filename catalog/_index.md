@@ -2,6 +2,9 @@
 
 | 이름 | 등급 | 단계 | 보드 | 갱신일 |
 |---|---|---|---|---|
+| [arxiv-2401-02721-tiny-transformer-fpga](papers/arxiv-2401-02721-tiny-transformer-fpga.md) | L2 | T4 | Artix-7 (needs-port) | 2026-11-07 |
+| [arxiv-2409-14023-famous-attention-fpga](papers/arxiv-2409-14023-famous-attention-fpga.md) | L2 | T4 | UltraScale+ (no) | 2026-11-07 |
+| [arxiv-2607-01798-approx-attention-fpga](papers/arxiv-2607-01798-approx-attention-fpga.md) | L2 | T4 | 미지정 (needs-port) | 2026-11-07 |
 | [mcdanel-2019-full-stack-cnn-bn-folding](papers/mcdanel-2019-full-stack-cnn-bn-folding.md) | L2 | T4 | VC707 (needs-port) | 2026-11-06 |
 | [khan-2024-bn-hls4ml-uw](papers/khan-2024-bn-hls4ml-uw.md) | L2 | T4 | VC709 (needs-port) | 2026-11-06 |
 | [kim-2025-layernorm-fpga](papers/kim-2025-layernorm-fpga.md) | L2 | T4 | VU37P (needs-port) | 2026-11-06 |

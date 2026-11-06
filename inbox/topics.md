@@ -144,7 +144,7 @@
 ### 고급: 시퀀스 처리
 - [x] [B3] RNN 셀 하드웨어: 단순 RNN / LSTM 셀 순전파 (상태 레지스터, 게이트 MAC, 타임스텝 루프)
 - [x] [B3] GRU 셀 대 LSTM 셀 비교 구현: 게이트 수·BRAM 사용량·정확도 트레이드오프 (Basys3 자원 제약 분석) — 2026-11-07 카드 3건(li-2019-ernn-gru-lstm L3, khoda-2023-hls4ml-gru-lstm L3, chae-2022-gru-de1soc L2), GRU 2게이트·3MVM vs LSTM 4게이트·4MVM 자원 비교 데이터 확보, S1 인접 도메인+S4 제약 역전 전략
-- [x] [B3] 어텐션 메커니즘 하드웨어 기초: Q·K·V 내적 스코어, Softmax 근사, 스케일된 닷-프로덕트 (소형 헤드 1개) — 2026-11-07 06시대 사이클: 카드 3건(wang-2020 L3, richielee-2025 L3, ftrans-2020 L3), 소스 코드 미공개 위주, Basys3 직접 사례 없음, piecewise-linear exp·log-sum-exp 패턴 추출
+- [x] [B3] 어텐션 메커니즘 하드웨어 기초: Q·K·V 내적 스코어, Softmax 근사, 스케일된 닷-프로덕트 (소형 헤드 1개) — 2026-11-07 복수 사이클: 카드 6건(wang-2020 L3, richielee-2025 L3, ftrans-2020 L3, arxiv-2401-02721 L2, arxiv-2409-14023 L2, arxiv-2607-01798 L2), piecewise-linear exp·log-sum-exp·max-shift Softmax 근사 패턴 확보
 - [ ] [B3] 트랜스포머 블록 하드웨어 슬림화: 멀티헤드 어텐션 1~2헤드, FFN 1층, Basys3 자원 한계 내 구현 가능성 분석
 
 ### 전문: NPU 시스템 통합

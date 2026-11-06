@@ -112,3 +112,10 @@
 2026-11-07 | [B3] GRU vs LSTM 비교 | GRU LSTM FPGA 추론 가속기 비교 고정소수점 자원 분석 대학 논문 | 유효
 2026-11-07 | [B3] 어텐션 메커니즘 하드웨어 기초 | FPGA Verilog single head attention hardware scaled dot-product softmax accelerator resource constrained Artix-7 2024 GitHub | 빈약
 2026-11-07 | [B3] 어텐션 메커니즘 하드웨어 기초 | FPGA transformer attention softmax hardware approximation log-sum-exp piecewise-linear arXiv 2020 2024 | 유효
+2026-11-07 | [B3] 어텐션 메커니즘 하드웨어 기초 | FPGA attention mechanism hardware implementation Verilog scaled dot product 2024 2025 | 유효
+2026-11-07 | [B3] 어텐션 메커니즘 하드웨어 기초 | attention mechanism FPGA Basys3 Artix-7 Q K V inner product hardware accelerator GitHub | 유효
+2026-11-07 | [B3] 어텐션 메커니즘 하드웨어 기초 | FPGA softmax approximation hardware fixed point Verilog implementation | 유효
+2026-11-07 | [B3] 어텐션 메커니즘 하드웨어 기초 | FPGA attention head hardware Verilog fixed-point QKV dot product GitHub site:github.com | 빈약
+2026-11-07 | [B3] 어텐션 메커니즘 하드웨어 기초 | 어텐션 메커니즘 FPGA 하드웨어 구현 Verilog Q K V 내적 소형 헤드 | 빈약
+2026-11-07 | [B3] 어텐션 메커니즘 하드웨어 기초 | tiny attention FPGA Basys3 Artix-7 single head small sequence length resource efficient | 유효
+2026-11-07 | [B3] 어텐션 메커니즘 하드웨어 기초 | FPGA attention mechanism softmax approximation max-shift linear fixed point Artix-7 | 유효

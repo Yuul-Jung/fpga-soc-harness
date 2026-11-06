@@ -1413,6 +1413,7 @@
 - 심사: 2026-11-05 13:49 /verify(18차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(xtrinch-icestick-fpga-uart·codeshaa-16-bit-hdlc-using-vhdl·opencores-auto-baud 모두 rechecked_at 없음) + 새로움 2(하드웨어 패킷 프레이머+CRC16 AXI4-Lite IP 카탈로그 없음) + 적합성 2(LUT 300~500개, AXI4-Lite 슬롯 1개, Pmod JA UART 핀 사용 가능 — 내 판단) + 완결성 2(UART TX/RX + 길이 카운터 FSM + CRC16 + AXI4-Lite 래퍼 범위 명확, RTL+TB 작성 가능) = 6점 → vetted. 보강: 근거 카드 rechecked_at 1건 이상.
 - 차단조건재심사: 2026-11-05 13:49, 점수 9. 근거 3(xtrinch-icestick-fpga-uart·codeshaa-16-bit-hdlc-using-vhdl·opencores-auto-baud 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7, 사이클 상한 2건 도달로 vetted 유지(이 사이클에서 I-104·I-029 ready 승격). 다음 사이클에서 ready 승격 가능. WebFetch PROVENANCE_REQUIRED 18차 연속 차단(§14.2 차단 조건 적용).
 - 상태 변경: vetted → ready (2026-11-07 /verify 31차, 차단조건재심사 9점, 사이클 슬롯 1번째. WebFetch PROVENANCE_REQUIRED 31차 연속 차단 §14.2 차단 조건 적용)
+- 상태: used (2026-11-07 /capstone 2시간 완결 파이프라인, slug: mmio-uart-framing-ip)
 
 ---
 ## I-102: UART 슬립 디텍트 FSM (웨이크업 패턴 하드웨어 감지)

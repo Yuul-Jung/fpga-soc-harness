@@ -1,0 +1,141 @@
+{
+  "slug": "mmio-uart-framing-ip",
+  "title": "AXI4-Lite UART 프레이밍 IP (길이+타입+CRC16)",
+  "summary": "UART 수신 스트림에서 [LEN][TYPE][PAYLOAD…][CRC_HI][CRC_LO] 패킷 경계를 하드웨어 FSM으로 감지하고, CRC-16/CCITT-FALSE를 병렬 XOR 트리로 검증한 뒤 AXI4-Lite 레지스터로 결과를 노출하는 T2 주변장치 IP.",
+  "board": "Basys3",
+  "stage": "T2",
+  "goals": [
+    "UART 8N1 수신기를 보드레이트 분주기 레지스터로 제어",
+    "[LEN][TYPE][PAYLOAD…][CRC_HI][CRC_LO] 프레임 경계를 하드웨어 FSM으로 추출",
+    "CRC-16/CCITT-FALSE(poly=0x1021, init=0xFFFF, refin=false, refout=false)를 조합 XOR 트리로 계산해 BRAM 불필요",
+    "AXI4-Lite 슬레이브 레지스터로 수신 상태, 패킷 타입·길이·첫 4바이트 페이로드, 수신 CRC, 계산 CRC 노출",
+    "MicroBlaze V 인터럽트 라인(INTC 슬롯 13번)에 PKT_DONE 이벤트 출력"
+  ],
+  "non_goals": [
+    "UART TX 송신 경로",
+    "페이로드 전체 FIFO 버퍼(최대 4바이트 페이로드 미리보기만 제공)",
+    "보드에서의 동작 확인(S3) — 에이전트는 올리지 않는다",
+    "외부 코드 복사"
+  ],
+  "architecture": {
+    "clock": "100 MHz (CLK100MHZ, 단일 도메인 — AXI·UART 공용)",
+    "blocks": [
+      {"id": "top",    "name": "basys3_top",          "kind": "top",        "module": "basys3_top",          "file": "rtl/basys3_top.v",          "desc": "보드 래퍼: CLK100MHZ, 리셋 버튼, Pmod JA UART RX 핀, 7세그 상태 출력", "short": "Basys3 래퍼", "side": "top"},
+      {"id": "soc",    "name": "soc_top",             "kind": "soc",        "module": "soc_top",             "file": "rtl/soc_top.v",             "desc": "AXI4-Lite 버스 패브릭 플레이스홀더(CPU 연결 지점)", "short": "SoC 코어", "side": "left"},
+      {"id": "framer", "name": "axil_uart_framing",   "kind": "peripheral", "module": "axil_uart_framing",   "file": "rtl/axil_uart_framing.v",   "desc": "AXI4-Lite 슬레이브 + 프레임 FSM + CRC 검증 통합 IP", "short": "UART 프레이머", "side": "right"},
+      {"id": "rx",     "name": "uart_rx",             "kind": "submodule",  "module": "uart_rx",             "file": "rtl/uart_rx.v",             "desc": "8N1 UART 수신기: 보드레이트 분주기, 오버샘플링 x16, 바이트 완료 strobe", "short": "UART RX", "side": "right"},
+      {"id": "crc",    "name": "crc16_xor",           "kind": "submodule",  "module": "crc16_xor",           "file": "rtl/crc16_xor.v",           "desc": "CRC-16/CCITT-FALSE 병렬 XOR 트리. BRAM 불필요, 조합 논리 1클럭 지연", "short": "CRC-16", "side": "right"},
+      {"id": "xhost",  "name": "USB-UART 변환기",      "kind": "external",   "module": null,                   "file": null,                        "desc": "3.3V USB-UART 변환기 (Pmod JA 핀1 연결)", "short": "UART Host", "side": "left"}
+    ],
+    "links": [
+      {"from": "xhost",  "to": "top",    "label": "UART RXD (3.3V, Pmod JA1)"},
+      {"from": "top",    "to": "soc",    "label": "CLK/RST/UART_RXD"},
+      {"from": "soc",    "to": "framer", "label": "AXI4-Lite M→S"},
+      {"from": "framer", "to": "rx",     "label": "BAUD_DIV / RX_DATA / RX_VALID"},
+      {"from": "framer", "to": "crc",    "label": "DATA_IN / CRC_IN / CRC_OUT"},
+      {"from": "framer", "to": "soc",    "label": "IRQ (PKT_DONE)"}
+    ]
+  },
+  "bus_protocol": {
+    "type": "AXI4-Lite",
+    "data_width": 32,
+    "addr_width": 8,
+    "signals": ["ACLK","ARESETn","AWADDR","AWVALID","AWREADY","WDATA","WSTRB","WVALID","WREADY","BRESP","BVALID","BREADY","ARADDR","ARVALID","ARREADY","RDATA","RRESP","RVALID","RREADY"],
+    "limits": "WSTRB는 전체 워드 쓰기(4'b1111)만 보장. 버스트 불가."
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "mbv-frozen-v2",
+    "compat": "compatible",
+    "plan": "동결 맵 free_slots[2A]=0x402A_0000에 64KB 배정. INTC 슬롯 13번(intc_free[0]) 사용.",
+    "frozen_mapping": [
+      {"block": "framer", "region": "free_slots[2A]", "base": "0x402A_0000", "size": "0x10000", "intc": 13}
+    ]
+  },
+  "external_parts": [
+    {
+      "id": "uart_host",
+      "name": "USB-UART 변환기 (3.3V)",
+      "block": "xhost",
+      "interface": "UART 1-wire RX (Pmod JA 핀1)",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": null,
+      "level_shift": false,
+      "arduino_compatible": true,
+      "notes": "3.3V 레벨 FTDI 또는 CH340 계열. 5V 모듈은 레벨 변환 필요."
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "디지털 계통도만 존재. Pmod JA 핀1(UART RX) 연결 선도는 미작성."
+  },
+  "hierarchy": [
+    {"module": "basys3_top", "file": "rtl/basys3_top.v",
+     "children": [
+       {"module": "soc_top", "file": "rtl/soc_top.v",
+        "children": [
+          {"module": "axil_uart_framing", "file": "rtl/axil_uart_framing.v",
+           "children": [
+             {"module": "uart_rx",   "file": "rtl/uart_rx.v",   "children": []},
+             {"module": "crc16_xor", "file": "rtl/crc16_xor.v", "children": []}
+           ]}
+        ]}
+     ]}
+  ],
+  "memory_map": [
+    {
+      "base": "0x402A_0000",
+      "size": "0x20",
+      "block": "framer",
+      "desc": "UART 프레이밍 IP 레지스터 블록",
+      "regs": [
+        {"off": "0x00", "name": "STATUS",       "access": "RO", "desc": "비트0=PKT_DONE, 비트1=CRC_OK, 비트2=RX_ACTIVE, 비트7=OVERFLOW"},
+        {"off": "0x04", "name": "CTRL",         "access": "RW", "desc": "비트0=IRQ_EN, 비트1=CLR_DONE (자동 클리어)"},
+        {"off": "0x08", "name": "BAUD_DIV",     "access": "RW", "desc": "보드레이트 분주기: clk_freq / (baud × 16). 115200bps@100MHz → 54"},
+        {"off": "0x0C", "name": "PKT_TYPE",     "access": "RO", "desc": "수신된 패킷 타입 바이트 (바이트 1)"},
+        {"off": "0x10", "name": "PKT_LEN",      "access": "RO", "desc": "수신된 페이로드 길이 (바이트 0, 최대 255)"},
+        {"off": "0x14", "name": "DATA_0",       "access": "RO", "desc": "페이로드 바이트 오프셋 0"},
+        {"off": "0x15", "name": "DATA_1",       "access": "RO", "desc": "페이로드 바이트 오프셋 1"},
+        {"off": "0x16", "name": "DATA_2",       "access": "RO", "desc": "페이로드 바이트 오프셋 2"},
+        {"off": "0x17", "name": "DATA_3",       "access": "RO", "desc": "페이로드 바이트 오프셋 3"},
+        {"off": "0x18", "name": "PKT_CRC",      "access": "RO", "desc": "패킷 말미에 수신된 CRC (상위 바이트 먼저)"},
+        {"off": "0x1C", "name": "PKT_CRC_CALC", "access": "RO", "desc": "LEN+TYPE+PAYLOAD에 대해 계산한 CRC-16/CCITT-FALSE"}
+      ]
+    }
+  ],
+  "roadmap": [
+    {"stage": "T1", "state": "done",    "title": "MMIO UART+GPIO 스켈레톤 (mmio-uart-gpio-skeleton)", "refs": ["mmio-uart-gpio-skeleton"]},
+    {"stage": "T2", "state": "current", "title": "UART 프레이밍 IP — 하드웨어 패킷 경계 + CRC16", "refs": []},
+    {"stage": "T2", "state": "planned", "title": "SPI/I2C 주변장치 추가 또는 TX 프레이밍 쌍 IP",  "refs": []}
+  ],
+  "references": [
+    {"name": "xtrinch-icestick-fpga-uart",         "reason": "길이 접두어 UART 프레이밍 패턴"},
+    {"name": "codeshaa-16-bit-hdlc-using-vhdl",    "reason": "CRC-16/HDLC 하드웨어 계산 참고"},
+    {"name": "opencores-auto-baud",                 "reason": "보드레이트 분주기 FSM 참고"},
+    {"name": "arxiv-2607-01798-approx-attention-fpga", "reason": "이번 수집 사이클에서 추가된 어텐션 근거 카드 (도메인 보완)"}
+  ],
+  "sources": {
+    "rtl": ["rtl/basys3_top.v", "rtl/soc_top.v", "rtl/axil_uart_framing.v", "rtl/uart_rx.v", "rtl/crc16_xor.v"],
+    "tb":  ["tb/tb_uart_framing.v"],
+    "constraints": ["constr/basys3.xdc"],
+    "build": ["Makefile"]
+  },
+  "howto": {
+    "sim": "make sim  # iverilog + vvp; stdout에서 PASS/FAIL 확인",
+    "lint": "make lint  # iverilog -Wall -Wno-timescale",
+    "synth": "make synth  # yosys -p 'synth_xilinx -top basys3_top'",
+    "vivado": "Vivado 2024.2: 프로젝트 생성 → rtl/*.v + tb/*.v 추가 → basys3.xdc → 합성·구현·비트스트림"
+  },
+  "verification": {
+    "board": "not-tested",
+    "notes": "에이전트는 S3(보드 동작)을 올리지 않는다. CI에서 S1·S2 기록."
+  },
+  "risks": [
+    "WebFetch PROVENANCE_REQUIRED 차단으로 근거 카드가 L2 수준. 본문 미검증.",
+    "페이로드 최대 255바이트 중 4바이트만 미리보기. 긴 페이로드는 소프트웨어가 직접 처리 필요.",
+    "BAUD_DIV 쓰기 중 RX 진행 중이면 현재 바이트 오류 가능. CTRL.CLR_DONE 후 설정 권장.",
+    "CRC-16 조합 논리: 타이밍 마진 확인 필요(100MHz @Artix-7, 추정 WNS > 0)."
+  ]
+}
