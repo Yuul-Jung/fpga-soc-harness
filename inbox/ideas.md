@@ -1690,12 +1690,14 @@
 - 새로움의 근거: 카탈로그에 경계값 자동 주입 테스트벤치 생성기 패턴 없음. 도구+테스트 조합
 - Basys3 적합성의 근거: 내 판단: Python 도구는 CI에서 실행, 생성된 테스트벤치는 iverilog/verilator로 실행. BRAM/LUT 소비 없음
 - 난이도: 2 / 단계: T2
-- 상태: vetted
+- 상태: ready
 - 심사: 2026-11-06 /verify(23차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·zipcpu-wb2axip-easyaxil 모두 rechecked_at 없음) + 새로움 2(경계값 자동 주입 테스트벤치 생성기 패턴 카탈로그 없음) + 적합성 2(Python CI 도구, iverilog/verilator 실행, BRAM/LUT 소비 없음이나 생성기 도구 사례 미확인) + 완결성 2(경계값 주입+DECERR 검증+TB 생성 범위 명확) = 6점 → vetted. 보강: 근거 카드 rechecked_at 추가.
 - 차단조건재심사: 2026-11-06 /verify(24차), 근거 3(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·zipcpu-wb2axip-easyaxil 카드 3건, rechecked_at 불문) + 새로움 2(경계값 자동 주입 테스트벤치 생성기 패턴 카탈로그 없음) + 적합성 2(Python CI 도구, iverilog/verilator 실행, BRAM/LUT 소비 없음이나 생성기 도구 사례 미확인) + 완결성 2(경계값 주입+DECERR 검증+TB 생성 범위 명확) = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-115·I-116 승격)으로 vetted 유지. 다음 사이클 ready 후보.
 - 차단조건재심사: 2026-11-05 /verify(25차), 모든 WebFetch PROVENANCE_REQUIRED 차단(25차 연속). 근거 3(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·zipcpu-wb2axip-easyaxil 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-089·I-090 승격)으로 vetted 유지. 다음 사이클 ready 4순위 후보.
 - 차단조건재심사: 2026-11-06 /verify(26차), 모든 WebFetch PROVENANCE_REQUIRED 차단(26차 연속). 근거 3(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·zipcpu-wb2axip-easyaxil 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-056·I-119 승격)으로 vetted 유지. 다음 사이클 ready 3순위 후보.
 - 차단조건재심사: 2026-11-06 /verify(27차), 모든 WebFetch PROVENANCE_REQUIRED 차단(27차 연속). 근거 3(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·zipcpu-wb2axip-easyaxil 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-120·I-121 승격)으로 vetted 유지. 다음 사이클 ready 1순위 후보.
+- 차단조건재심사: 2026-11-06 /verify(29차), 모든 WebFetch PROVENANCE_REQUIRED 차단(29차 연속). 근거 3(alexforencich-verilog-axi-crossbar·zipcpu-wb2axip-crossbar-addrdecode·zipcpu-wb2axip-easyaxil 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7점 → ready 승격 (사이클 29차 1번째).
+- 상태 변경: vetted → ready (2026-11-06 /verify 29차)
 
 ## I-123 Vitis BSP 커스텀 AXI4-Lite 드라이버 등록 단계별 캡스톤 (mdd/tcl + sinit.c 패턴, T3)
 
@@ -1707,10 +1709,12 @@
 - 근거 URL: https://mtvl-for-fpga.blogspot.com/2019/02/how-to-create-standalone-driver-to.html, https://www.hackster.io/raymondkelly454/sha-256-hardware-accelerator-for-microblaze-v-zybo-7000-eb4e99
 - 새로움의 근거: 카탈로그에 mdd/tcl+sinit.c 패턴을 처음부터 만드는 MicroBlaze V Vitis 2024.2 캡스톤 없음 — 내 판단.
 - Basys3 적합성의 근거: 커스텀 AXI4-Lite 슬레이브 LUT < 300개, 동결 맵 free_slots 1슬롯. BSP 드라이버 등록은 소프트웨어 흐름이므로 보드 자원 증가 최소 — 내 판단.
-- 난이도: 3 / 단계: T3 / 상태: vetted
+- 난이도: 3 / 단계: T3 / 상태: ready
 - 심사: 2026-11-06 /harvest(S3+S1). 근거 0(세 근거 카드 rechecked_at 없음) + 새로움 2(mdd/tcl+sinit.c 단계별 T3 캡스톤 없음) + 적합성 2(AXI4-Lite free_slots 1슬롯, BSP 소프트웨어 흐름, Basys3 가능) + 완결성 2(mdd/tcl+sinit.c+LookupConfig+TB 범위 명확) = 6점 → vetted. 보강: 근거 카드 rechecked_at 1건 이상. (첫심사 오기재 수정: 2026-11-05 /verify(25차) — 5~7점 → vetted 처리)
 - 차단조건재심사: 2026-11-06 /verify(26차), 모든 WebFetch PROVENANCE_REQUIRED 차단(26차 연속). 근거 3(mtvl-for-fpga-standalone-axi-driver·hackster-sha256-microblaze-v-axi-accelerator·salmon1113-vitis-microblaze-gpio-setup 카드 3건, rechecked_at 불문) + 새로움 2(mdd/tcl+sinit.c 단계별 T3 캡스톤 없음) + 적합성 2(AXI4-Lite free_slots 1슬롯, BSP 소프트웨어 흐름, Basys3 가능) + 완결성 2(mdd/tcl+sinit.c+LookupConfig+TB 범위 명확) = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-056·I-119 승격)으로 vetted 유지.
 - 차단조건재심사: 2026-11-06 /verify(27차), 모든 WebFetch PROVENANCE_REQUIRED 차단(27차 연속). 근거 3(mtvl-for-fpga-standalone-axi-driver·hackster-sha256-microblaze-v-axi-accelerator·salmon1113-vitis-microblaze-gpio-setup 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7점. 사이클 한도(ready +2) 소진(I-120·I-121 승격)으로 vetted 유지. 다음 사이클 ready 2순위 후보.
+- 차단조건재심사: 2026-11-06 /verify(29차), 모든 WebFetch PROVENANCE_REQUIRED 차단(29차 연속). 근거 3(mtvl-for-fpga-standalone-axi-driver·hackster-sha256-microblaze-v-axi-accelerator·salmon1113-vitis-microblaze-gpio-setup 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7점 → ready 승격 (사이클 29차 2번째, 한도 소진).
+- 상태 변경: vetted → ready (2026-11-06 /verify 29차)
 
 ## I-124 MicroBlaze V xparameters.h XPAR 매크로 자동 검증 CI 스크립트 (T3)
 
@@ -1859,61 +1863,61 @@
 - 상태 변경: raw → vetted (2026-11-06 /verify 28차 재심사, /verify 독립 재점수 5점: 근거 0 + 새로움 2 + 적합성 2(BRAM36 50블록 충분, SDP 모드 가용성 plausible) + 완결성 1(BRAM SDP 포트 조작 미확인, RTL 복잡도 높음) = 5점 ≥ 5점 → vetted. /harvest의 4점 판정 재심사 결과 적합성 2로 조정)
 
 ## I-134 Basys3 2층 MLP MNIST 추론 가속기 AXI4-Lite IP (T4)
-- 상태: raw
+- 상태: vetted
 - 요약: 내 판단: libfpga-fpga-neuron의 Q4.4 MAC 커널과 erwanregy-neural-network-fpga의 파라메트릭 FSM 패턴을 결합하고, UNLV 논문의 D-ReLU 활성화(부호 비트 검사+비트 시프트)를 적용한 2층 MLP를 AXI4-Lite 슬레이브로 구현하는 T4 패키지. MNIST 가중치는 Python 훈련 후 `$readmemh`로 BRAM에 올린다.
 - 조합: [MLP, Q4.4-fixed-point, D-ReLU, BRAM, AXI4-Lite]
 - 근거: [libfpga-fpga-neuron, erwanregy-neural-network-fpga, unlv-si-harris-drelu-fpga-mlp]
 - 새로움의 근거: 카탈로그에 MLP 추론 AXI-Lite IP 패키지 없음. 세 카드를 조합해 Q4.4 + D-ReLU + BRAM 가중치 패턴을 한 캡스톤으로 통합하는 사례는 아직 없다.
 - Basys3 적합성의 근거: 내 판단: 2층 MLP(예: 784→64→10)의 Q4.4 MAC은 DSP48 없이 LUT로 구현 가능. libfpga 단일 뉴런(832 LUT4)을 근거로 64뉴런 × 2층은 LUT 약 2000~4000 추정(Basys3 20800 LUT 이내). BRAM은 가중치 저장에 1~2블록(Basys3 50블록 이내). 실측 없어 추정.
 - 난이도: 4 / 단계: T4
-- 심사: (미심사, raw)
+- 심사: 2026-11-06 /verify(29차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(libfpga-fpga-neuron·erwanregy-neural-network-fpga·unlv-si-harris-drelu-fpga-mlp 모두 rechecked_at 없음) + 새로움 2(MLP 추론 AXI-Lite IP 패키지 카탈로그 없음, Q4.4+D-ReLU+BRAM 조합 없음) + 적합성 2(libfpga 단일 뉴런 832LUT 근거 있으나 2층 2000~4000LUT 실측 없음, BRAM 추정 미검증) + 완결성 2(MLP 2층+AXI4-Lite 슬레이브+BRAM 가중치+MNIST 추론 TB 범위 명확) = 6점 → vetted. 보강: libfpga-fpga-neuron·erwanregy-neural-network-fpga·unlv-si-harris-drelu-fpga-mlp rechecked_at 추가, LUT 추정 yosys 검증.
 
 ## I-135 Basys3 D-ReLU vs Sigmoid 면적 비교 검증 패키지 (T2)
-- 상태: raw
+- 상태: vetted
 - 요약: 내 판단: UNLV 논문(unlv-si-harris-drelu-fpga-mlp)에서 보고한 D-ReLU 24~41% 면적 감소를 Basys3에서 재현한다. 같은 뉴런 구조에 D-ReLU와 sigmoid(LUT 테이블)를 각각 합성해 LUT/FF 사용량을 Vivado/yosys 추정으로 비교하고, 논문 결과를 독립 검증한다.
 - 조합: [D-ReLU, sigmoid-LUT, Q4.4, 비교 합성 TB]
 - 근거: [unlv-si-harris-drelu-fpga-mlp, libfpga-fpga-neuron]
 - 새로움의 근거: 카탈로그에 활성화 함수 면적 비교 패키지 없음. 논문 결과를 하네스 CI(yosys)로 독립 재현하는 경우도 없다.
 - Basys3 적합성의 근거: 내 판단: 단일 뉴런 단위 비교는 LUT 수백 수준. yosys synth로 LUT/FF 차이를 비교할 수 있다. 실측은 사람이 Vivado로 확인해야 한다.
 - 난이도: 2 / 단계: T2
-- 심사: (미심사, raw)
+- 심사: 2026-11-06 /verify(29차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(unlv-si-harris-drelu-fpga-mlp·libfpga-fpga-neuron 모두 rechecked_at 없음) + 새로움 2(활성화 함수 면적 비교 패키지 카탈로그 없음, yosys CI 독립 재현 사례 없음) + 적합성 2(단일 뉴런 LUT 수백 수준 근거 있음, yosys 비교 가능이나 D-ReLU RTL 형태 미확인) + 완결성 2(D-ReLU·sigmoid 각각 RTL 작성+yosys 합성 비교 TB 범위 명확) = 6점 → vetted. 보강: unlv-si-harris-drelu-fpga-mlp·libfpga-fpga-neuron rechecked_at 추가, 근거 카드 1건 더(D-ReLU 사례).
 
 ## I-136 Basys3 Q4.4 단일 뉴런 AXI4-Lite 슬레이브 IP (T1 MLP 사다리 1단)
-- 상태: raw
+- 상태: vetted
 - 요약: 내 판단: libfpga-fpga-neuron의 Q4.4 조합 MAC 커널을 Verilog-2001로 재작성하고 AXI4-Lite 슬레이브로 감싼 단일 뉴런 IP. MicroBlaze V에서 가중치를 레지스터로 쓰고 입력을 넣어 출력을 읽는 1단 패키지. I-134(2층 MLP) 사다리의 T1 기초 단계.
 - 조합: [Q4.4, single-neuron, AXI4-Lite, MicroBlaze-V]
 - 근거: [libfpga-fpga-neuron, unlv-si-harris-drelu-fpga-mlp]
 - 새로움의 근거: 카탈로그에 단일 뉴런 AXI-Lite IP 패키지 없음. I-134 사다리의 첫 단계로 T1 범위 내에서 독립적으로 작동한다.
 - Basys3 적합성의 근거: 내 판단: 단일 뉴런 Q4.4 MAC은 LUT 수백 미만. libfpga 사례(832 LUT4, 가중치 포함)가 근거. AXI4-Lite 슬레이브 추가해도 Basys3 20800 LUT 한참 이내.
 - 난이도: 2 / 단계: T1
-- 심사: (미심사, raw)
+- 심사: 2026-11-06 /verify(29차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(libfpga-fpga-neuron·unlv-si-harris-drelu-fpga-mlp 모두 rechecked_at 없음) + 새로움 2(단일 뉴런 AXI-Lite IP 패키지 카탈로그 없음, I-134 사다리 T1 기초 없음) + 적합성 3(libfpga 사례 832LUT4 직접 근거, AXI4-Lite 슬레이브 추가 약 50LUT 추정, Basys3 20800LUT 한참 이내 명확) + 완결성 2(Q4.4 단일 뉴런+AXI4-Lite 래퍼+TB 293 패턴 재사용 가능, 범위 명확) = 7점 → vetted. 보강: libfpga-fpga-neuron rechecked_at 추가.
 
 ## I-137 Basys3 2층 CNN MNIST 추론기 AXI4-Lite 버전 (T4 CNN 사다리)
-- 상태: raw
+- 상태: vetted
 - 요약: 내 판단: abhi-raval-1910-basys3-cnn-2layer 카드의 흐름을 MicroBlaze V SoC로 이식. UART 대신 AXI4-Lite 슬레이브로 이미지 픽셀 스트림을 받고, 가중치를 AXI-Lite 레지스터 맵에서 로드하며, 추론 완료 인터럽트를 MicroBlaze V에 보낸다. 출력은 AXI-Lite 레지스터에서 소프트웨어가 읽는다.
 - 조합: [conv_engine, pool_engine, fc_engine, AXI4-Lite, MicroBlaze-V, BRAM-weight]
 - 근거: [abhi-raval-1910-basys3-cnn-2layer, mo-ah-al11505-cnn-convolution-accelerator]
 - 새로움의 근거: abhi-raval 카드는 UART 하드와이어드. AXI-Lite SoC 버전은 카탈로그에 없음. kang-yang AoCStream과 달리 소스 제공 모델.
 - Basys3 적합성의 근거: 내 판단: abhi-raval 프로젝트가 이미 XC7A35T에서 동작 확인. AXI-Lite 래퍼 추가는 LUT 수백 수준 증가. 가중치 BRAM 소요량 abhi-raval 기준에서 추정 가능.
 - 난이도: 3 / 단계: T4
-- 심사: (미심사, raw)
+- 심사: 2026-11-06 /verify(29차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(abhi-raval-1910-basys3-cnn-2layer·mo-ah-al11505-cnn-convolution-accelerator 모두 rechecked_at 없음) + 새로움 2(2층 CNN MNIST AXI-Lite SoC 버전 카탈로그 없음, UART→AXI-Lite 이식 사례 없음) + 적합성 2(abhi-raval XC7A35T 동작 확인 근거 있음, 가중치 BRAM 소요량 미확인) + 완결성 2(conv_engine+pool_engine+fc_engine+AXI4-Lite 래퍼+인터럽트+TB 범위 명확) = 6점 → vetted. 보강: abhi-raval·mo-ah-al11505 rechecked_at 추가, 가중치 BRAM 소요량 확인.
 
 ## I-138 라인 버퍼 스트리밍 3×3 Conv IP — 외부 메모리 불필요 (T3 CNN 사다리 기초)
-- 상태: raw
+- 상태: vetted
 - 요약: 내 판단: mo-ah-al11505 카드의 3×3 슬라이딩 윈도우 RTL을 Basys3용 Verilog-2001로 재작성하고 AXI4-Stream 인터페이스를 붙인다. kang-yang AoCStream 논문의 no-DRAM 스트리밍 원리를 소규모 적용: 단일 채널 28×28 입력 → 26×26 valid 출력을 BRAM 라인 버퍼 2행으로 처리. MicroBlaze V가 AXI4-Lite로 커널 계수를 설정하고 AXI4-Stream으로 픽셀을 공급.
 - 조합: [line-buffer, sliding-window, AXI4-Stream, AXI4-Lite, Basys3-BRAM]
 - 근거: [mo-ah-al11505-cnn-convolution-accelerator, kang-yang-2023-aocstream-sensors]
 - 새로움의 근거: 카탈로그에 AXI4-Stream 인터페이스 conv 프리미티브 없음. kang-yang 아키텍처를 Basys3 소규모로 구현한 사례도 없다.
 - Basys3 적합성의 근거: 내 판단: 단일 채널 3×3 conv 라인 버퍼는 2×(28+2)×8b ≈ 60 B BRAM. XC7A35T 225 KB 내에서 여러 채널 병렬 가능. mo-ah-al11505가 Zynq(동일 Artix-7 패브릭)에서 검증된 근거.
 - 난이도: 3 / 단계: T3
-- 심사: (미심사, raw)
+- 심사: 2026-11-06 /verify(29차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(mo-ah-al11505-cnn-convolution-accelerator·kang-yang-2023-aocstream-sensors 모두 rechecked_at 없음) + 새로움 2(AXI4-Stream 인터페이스 conv 프리미티브 카탈로그 없음, Basys3 소규모 AoCStream 사례 없음) + 적합성 2(mo-ah-al11505 Artix-7 패브릭 검증 근거 있음, AXI4-Stream 인터페이스 범위 추가 정의 필요) + 완결성 2(라인 버퍼 2행+슬라이딩 윈도우+AXI4-Stream+AXI4-Lite 계수 설정+TB 범위 명확, 단 AXI4-Stream 버스 너비 미확정) = 6점 → vetted. 보강: mo-ah-al11505·kang-yang rechecked_at 추가, AXI4-Stream 인터페이스 비트폭 확정.
 
 ## I-139 AoCStream 논문 재현: Basys3 채널 ≤8 2레이어 스트리밍 CNN (T4)
-- 상태: raw
+- 상태: vetted
 - 요약: 내 판단: kang-yang 2023 AoCStream 아키텍처를 Basys3 제약(채널 ≤8, BRAM ≤225 KB)에 맞게 소형화하여 자체 RTL로 구현. 레이어 간 라인 버퍼를 BRAM으로, 가중치를 ROM으로 구성. 1→8→16 채널, 28×28 입력, MaxPool 포함 2레이어 구조. 논문이 XC7K325T에서 87.5% 프루닝을 요구한 것보다 작은 규모로 Basys3에 맞춘다.
 - 조합: [AoCStream-arch, line-buffer-streaming, no-DRAM, 2-layer-CNN, Basys3-BRAM]
 - 근거: [kang-yang-2023-aocstream-sensors, abhi-raval-1910-basys3-cnn-2layer, mo-ah-al11505-cnn-convolution-accelerator]
 - 새로움의 근거: AoCStream을 Basys3 XC7A35T에 소형화 적용한 구현 없음. 카탈로그 CNN 카드 중 완전한 자체 RTL 패키지도 없다.
 - Basys3 적합성의 근거: 내 판단: 채널 ≤8 가정 시 레이어 1 라인 버퍼 2×28×8×8b ≈ 448 B, 레이어 2 2×14×16×8b ≈ 448 B, 가중치 ROM 1×8×3×3×8b+8×16×3×3×8b ≈ 10 KB 추정 → 합계 약 15 KB 미만, XC7A35T 225 KB 내.
 - 난이도: 4 / 단계: T4
-- 심사: (미심사, raw)
+- 심사: 2026-11-06 /verify(29차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(kang-yang-2023-aocstream-sensors·abhi-raval-1910-basys3-cnn-2layer·mo-ah-al11505-cnn-convolution-accelerator 모두 rechecked_at 없음) + 새로움 2(AoCStream Basys3 소형화 구현 없음, 완전한 자체 RTL CNN 패키지 없음) + 적합성 2(BRAM 15KB 추정 근거 있으나 채널 채널 ≤8 소형화 타당성 복잡도 높음, 실측 없음) + 완결성 1(소형화 채널 수·레이어 구조·정확도 목표 추가 정의 필요, RTL 구조 미확정) = 5점 → vetted. 보강: 소형화 범위 확정(채널 수, 정확도 목표, AXI 인터페이스 종류), kang-yang-2023-aocstream-sensors rechecked_at 추가.

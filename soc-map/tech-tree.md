@@ -1,6 +1,6 @@
 # SoC 기술 트리 (단계별 카드 연결)
 
-갱신: 2026-11-06 (/verify 22차). 카드 253건 기준. 비 FPGA 도메인(STM32 18건·ESP32 14건·RPi·Arduino·임베디드·전자기술 14건·papers 포함). 10차: 전자기술 도메인 14건 추가(SPWM 인버터·게이트 드라이버·전원 설계·XADC 아날로그 프런트엔드). 13차: I-082·I-083 ready 승격(PCB 설계 체크리스트), 감사 경고 수정 3건(라이선스 주석 추가). 20차: VGA·7세그·프레임버퍼·카메라·LED·PWM 카드 9건 추가(video-vga 그룹 6건+camera 1건+pwm-rgb 2건). atlas/video-vga.md 신규 작성. 22차: AXI4-Lite INTC 3건·WDT 3건·AXI4-Lite 레지스터 템플릿 3건(총 9건) 추가. I-111·I-113 ready 승격. atlas/axil-peripheral-ip.md 신규 작성.
+갱신: 2026-11-06 (/verify 29차). 카드 283건 기준. 비 FPGA 도메인(STM32 18건·ESP32 14건·RPi·Arduino·임베디드·전자기술 14건·papers 포함). 10차: 전자기술 도메인 14건 추가(SPWM 인버터·게이트 드라이버·전원 설계·XADC 아날로그 프런트엔드). 13차: I-082·I-083 ready 승격(PCB 설계 체크리스트), 감사 경고 수정 3건(라이선스 주석 추가). 20차: VGA·7세그·프레임버퍼·카메라·LED·PWM 카드 9건 추가(video-vga 그룹 6건+camera 1건+pwm-rgb 2건). atlas/video-vga.md 신규 작성. 22차: AXI4-Lite INTC 3건·WDT 3건·AXI4-Lite 레지스터 템플릿 3건(총 9건) 추가. I-111·I-113 ready 승격. atlas/axil-peripheral-ip.md 신규 작성. 25-26차: AXI 타이밍 분석 3건·Q포맷 고정소수점 3건 추가, atlas/axil-peripheral-ip.md §5 AXI 성능 모니터링 추가. 27-28차: MAC 행렬 가속기 5건·MLP 뉴런 3건·CNN 컨볼루션 엔진 3건(총 11건) 추가. 29차: I-134~I-139 아이디어 vetted 심사, atlas/ml-accelerator.md 신규 작성.
 
 ---
 
@@ -12,7 +12,7 @@
 | T1 | wangxuan95-fpga-sdcard-file, element14-security-camera-2-sd-card-interfacing | CPU 없이 FSM으로 SD·카메라 |
 | T2 | digilent-forum-pmodamp3-basys3-i2s, zipcpu-sdspi, zipcpu-pmodamp2-project-ladder, argrabowski-fpga-vga-display, itsnotjiaching-ec311project, chclau-magellan-basys3-axil-regs | I2S 송신, Wishbone 주변장치, VGA+7세그 동시 표시, JTAG-to-AXI 슬레이브 레지스터 패턴 |
 | T3 | (FPGA 카드 없음) | gap: 프레임워크 기반 SoC에 주변장치를 붙인 Basys3 사례 미확보 |
-| T4 | columbia-4840-audio-visualizer, byu-ecen423-lab10-riscv-vga-7seg | DE1-SoC HPS 기반·BYU RISC-V VGA 텍스트+7세그 (소스 비공개) |
+| T4 | columbia-4840-audio-visualizer, byu-ecen423-lab10-riscv-vga-7seg, abhi-raval-1910-basys3-cnn-2layer, antoinelecalvez05-ml-dot-product-accelerator, sivakumarchakarapalli-systolic-array-accelerator | DE1-SoC HPS 기반·BYU RISC-V VGA 텍스트+7세그 (소스 비공개); Basys3 2레이어 CNN MNIST(MIT, UART); 도트 프로덕트 가속기(Basys3, cocotb, L2); AXI-Lite 시스톨릭 배열(Basys3, MIT, L3) |
 | T5 | (카드 없음) | gap: DRAM 보드 필요, 현 카탈로그 범위 밖 |
 
 ---
@@ -114,6 +114,10 @@ FreeRTOS·Zephyr 비교 카드는 MicroBlaze V + AXI INTC RTOS 설계에 개조 
 - gap T2: 동결 맵과 연동되는 AXI4-Lite 소형 크로스바 / 주소 충돌 검사기 IP 카드 없음; alexforencich-verilog-axi-crossbar(L3, MIT)·dpretet-axi-crossbar(L3, MIT)·zipcpu-wb2axip-crossbar-addrdecode(L2, 라이선스 미확인) 패턴 카드 추가됨; I-120(vetted, 충돌 검사기)·I-121(vetted, 2M+4S 크로스바)·I-122(vetted, TB 생성기) 아이디어가 채울 예정. 상세 비교: atlas/axil-peripheral-ip.md §4.
 - gap T2: 전자기술 도메인에 SPWM·XADC 카드가 14건 추가되었으나, Basys3+MicroBlaze V AXI4-Lite SPWM IP 카드 없음 — I-077(ready 후보)이 채울 예정.
 - gap T2: XADC 전원 모니터 AXI-Lite IP 카드 없음 — I-075(ready)가 채울 예정.
+- gap T1: Basys3 Q4.4 단일 뉴런 AXI4-Lite 슬레이브 IP 카드 없음; libfpga-fpga-neuron(MIT, L3)이 Q4.4 기초 근거 — I-136(vetted 7점)이 채울 예정.
+- gap T2: D-ReLU vs sigmoid 면적 비교 CI 검증 사례 없음; unlv-si-harris-drelu-fpga-mlp(논문, L3)가 근거 — I-135(vetted 6점)이 채울 예정.
+- gap T4: Basys3 AXI4-Lite 버스 연결 MLP 추론 IP 카드 없음; libfpga(MIT)·erwanregy(Apache-2.0) 패턴 카드 추가됨 — I-134(vetted 6점), I-137(vetted 6점) 아이디어가 채울 예정.
+- gap T4: Basys3 3×3 Conv AXI4-Stream 프리미티브 카드 없음; mo-ah-al11505(MIT, PYNQ needs-port)가 근거 — I-138(vetted 6점)이 채울 예정.
 
 ---
 

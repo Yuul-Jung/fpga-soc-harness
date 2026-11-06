@@ -232,3 +232,4 @@
 2026-11-06 09:11 | collect | [B3] 행렬·벡터 내적 하드웨어 · S7 난이도 사다리(주)+S4 제약 역전(보조), 영어·한국어·일본어·중국어 질의, GitHub+arXiv+비정형 | 카드 +3 | 아이디어 +3 | 큐 잔여 10건 추가 | blocked 25+(WebFetch PROVENANCE_REQUIRED·GitHub MCP 범위 외)
 2026-11-06 12:30 | collect | [B3] MLP 추론 가속기 · S1 인접 도메인 이식(주)+S5 비정형 출처(보조) | 카드 +3 (libfpga-fpga-neuron L3, erwanregy-neural-network-fpga L3, unlv-si-harris-drelu-fpga-mlp L3) | 아이디어 +3 (I-134 2층MLP MNIST T4, I-135 D-ReLU vs sigmoid 비교 T2, I-136 단일뉴런 AXI-Lite T1) | 큐 잔여 651 | blocked 2 (tacari/nn-accelerator·ansh07verma/fpga-mini-npu PROVENANCE_REQUIRED)
 2026-11-06 15:21 | collect | [B3] CNN 컨볼루션 엔진 · S5 비정형 출처(주)+S4 제약 역전(보조) | 카드 +3 | 아이디어 +3 | 큐 잔여 9 | blocked 2
+2026-11-06 16:52 | verify | 재열람 0 (WebFetch PROVENANCE_REQUIRED 전면 차단 29차 연속) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +2 (I-122 차단조건재심사 9점·I-123 차단조건재심사 9점) | vetted +6 (I-134~I-139 첫 raw→vetted 심사, 5~7점) | atlas/ml-accelerator.md 신규·soc-map +5gap·카드 283건
