@@ -1450,7 +1450,7 @@
 ## I-104: BRAM 핑퐁 더블 버퍼 VGA 컨트롤러 (Basys3 T2, S4 제약 역전)
 - id: I-104
 - 제목: BRAM 핑퐁 더블 버퍼 VGA 컨트롤러
-- 상태: ready
+- 상태: used (패키지: mmio-vga-doublebuf-ip, 2026-11-06, 2시간 완결 캡스톤 파이프라인)
 - 요약: 내 판단: Basys3의 no-dram 제약을 역전해, 2개의 듀얼포트 BRAM을 핑퐁으로 운용하는 테어링 없는 VGA 프레임버퍼 컨트롤러. 비활성 버퍼에 MicroBlaze V가 AXI4-Lite로 픽셀 쓰기, 활성 버퍼를 VGA 스캔; VSync에서 버퍼 전환. 160×120×8비트 (2버퍼 ≈ 38 KB, 225 KB BRAM 예산 충분).
 - 조합: [video-vga, BRAM]
 - 근거 카드:

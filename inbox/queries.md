@@ -80,6 +80,7 @@
 2026-11-06 | [B3] 배치 정규화·층 정규화 하드웨어 | FPGA "batch norm" OR "batch normalization" folded weights Verilog fixed-point inference GitHub 2023 2024 | 유효
 2026-11-06 | [B3] 배치 정규화·층 정규화 하드웨어 | FPGA NPU CNN 배치정규화 BN folding 고정소수점 scale shift Verilog 구현 GitHub Basys3 (한국어) | 빈약
 
+<<<<<<< Updated upstream
 2026-11-07 | [B3] RNN 셀 하드웨어 | FPGA LSTM cell hardware Verilog fixed-point sigmoid tanh approximation GitHub | 유효 (arxiv 1511.05552, ahirsharan 발견)
 2026-11-07 | [B3] RNN 셀 하드웨어 | FPGA RNN LSTM inference accelerator Zynq Basys3 Q-format piecewise-linear sigmoid | 유효 (Chang 2015 Zedboard LSTM 발견)
 2026-11-07 | [B3] RNN 셀 하드웨어 | site:github.com LSTM FPGA Verilog fixed-point cell gate MAC sigmoid tanh | 유효 (ahirsharan/LSTM MIT 발견)
@@ -91,3 +92,13 @@
 2026-11-07 | [B3] RNN 셀 하드웨어 | site:github.com recurrent neural network FPGA Verilog fixed-point BRAM weight AXI | 유효
 2026-11-07 | [B3] RNN 셀 하드웨어 | FPGA LSTM RNN NN ネットワーク Verilog 固定小数点 推論 GitHub (일본어) | 빈약
 2026-11-07 | [B3] RNN 셀 하드웨어 | FPGA LSTM RNN 循环神经网络 Verilog 推理 固定点 GitHub (중국어) | 빈약
+=======
+2026-11-06 | [B3] RNN 셀 하드웨어 | FPGA RNN LSTM GRU hardware accelerator Verilog fixed-point Basys3 GitHub | 유효
+2026-11-06 | [B3] RNN 셀 하드웨어 | FPGA recurrent neural network cell hardware Verilog sigmoid tanh fixed-point | 유효
+2026-11-06 | [B3] RNN 셀 하드웨어 | site:github.com FPGA LSTM accelerator Verilog fixed-point AXI4-Lite inference | 유효
+2026-11-06 | [B3] RNN 셀 하드웨어 | FPGA Elman RNN VHDL Verilog hardware fixed-point 16bit quantization inference | 유효
+2026-11-06 | [B3] RNN 셀 하드웨어 | FPGA LSTM GRU throughput optimization weight stationary dataflow arXiv 2023 2024 | 유효
+2026-11-06 | [B3] RNN 셀 하드웨어 | FPGA RNN 순환 신경망 Verilog 고정소수점 하드웨어 가속기 GitHub 한국어 | 빈약
+2026-11-06 | [B3] RNN 셀 하드웨어 | site:github.com LSTM FPGA Basys3 Artix-7 Verilog neural network inference recurrent | 유효
+2026-11-06 | [B3] RNN 셀 하드웨어 | arxiv FPGA RNN LSTM accelerator fixed-point 16-bit cell implementation 2015 2023 | 유효
+>>>>>>> Stashed changes

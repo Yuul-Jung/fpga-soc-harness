@@ -1,0 +1,176 @@
+{
+  "slug": "mmio-vga-doublebuf-ip",
+  "title": "VGA 핑퐁 더블 버퍼 IP: 160×120 RGB332 AXI4-Lite 슬레이브",
+  "summary": "BRAM 핑퐁(ping-pong) 더블 버퍼 패턴을 사용해 Basys3 온보드 VGA 커넥터에 160×120 RGB332 화면을 출력하는 AXI4-Lite 슬레이브 IP. 외부 메모리 없이 순수 Verilog-2001로 구현한다. VGA 동결 슬롯 [0A] (0x400A_0000)을 재사용하며 mbv-frozen-v2 맵과 완전 호환된다.",
+  "board": "Basys3",
+  "stage": "T2",
+  "goals": [
+    "160×120 RGB332 화면을 VGA 640×480@60Hz로 4× 스케일 업해 출력한다",
+    "BRAM 핑퐁 더블 버퍼로 찢김(tearing) 없는 프레임 전환을 제공한다",
+    "AXI4-Lite 슬레이브로 MicroBlaze V에서 픽셀 쓰기와 버퍼 스왑을 제어한다",
+    "외부 부품 없이 Basys3 온보드 자원(BRAM, VGA 커넥터)만 사용한다",
+    "순수 Verilog-2001로 iverilog/verilator/yosys 세 도구 모두에서 검증 가능하게 한다"
+  ],
+  "non_goals": [
+    "640×480 풀 해상도 프레임 버퍼 (BRAM 초과)",
+    "RGB565/RGB888 등 넓은 색 공간",
+    "DMA 자동 전송 (CPU 쓰기만 지원)",
+    "더블 버퍼 외 멀티 버퍼",
+    "보드 동작 검증 (S3): 사람이 한다"
+  ],
+  "architecture": {
+    "clock": "100MHz 입력 → 25MHz 픽셀 클럭 (2비트 분주, clk_div[1]). 단일 도메인 단순화",
+    "blocks": [
+      {
+        "id": "top",
+        "name": "basys3_top",
+        "kind": "wrapper",
+        "module": "basys3_top",
+        "file": "rtl/basys3_top.v",
+        "desc": "100MHz→25MHz 클럭 분주 + 포트 연결 최상위 래퍼",
+        "short": "TOP",
+        "side": "left"
+      },
+      {
+        "id": "ip",
+        "name": "vga_doublebuf",
+        "kind": "ip",
+        "module": "vga_doublebuf",
+        "file": "rtl/vga_doublebuf.v",
+        "desc": "AXI4-Lite 슬레이브 + BRAM 핑퐁 버퍼 + VGA 출력 로직",
+        "short": "IP",
+        "side": "center"
+      },
+      {
+        "id": "timing",
+        "name": "vga_timing",
+        "kind": "submodule",
+        "module": "vga_timing",
+        "file": "rtl/vga_timing.v",
+        "desc": "640×480@60Hz VGA 타이밍 생성기 (h_count, v_count, hsync, vsync, active, frame_end)",
+        "short": "TIMING",
+        "side": "center"
+      },
+      {
+        "id": "ext_vga",
+        "name": "VGA 커넥터 (온보드)",
+        "kind": "external",
+        "module": null,
+        "file": null,
+        "desc": "Basys3 내장 VGA 출력 커넥터. 저항 DAC 방식, 12비트 RGB (R4G4B4)",
+        "short": "VGA",
+        "side": "right"
+      }
+    ],
+    "links": [
+      {"from": "top", "to": "ip",     "label": "s_axi_* + clk_25m + rst_n"},
+      {"from": "ip",  "to": "timing", "label": "clk_25m, rst_n → h_count, v_count, hsync, vsync, active, frame_end"},
+      {"from": "ip",  "to": "ext_vga","label": "vga_hs, vga_vs, vga_r[3:0], vga_g[3:0], vga_b[3:0]"}
+    ]
+  },
+  "bus_protocol": {
+    "name": "AXI4-Lite",
+    "data_width": 32,
+    "addr_width": 14,
+    "signals": [
+      "s_axi_awvalid/awready/awaddr[13:0]",
+      "s_axi_wvalid/wready/wdata[31:0]/wstrb[3:0]",
+      "s_axi_bvalid/bready/bresp[1:0]",
+      "s_axi_arvalid/arready/araddr[13:0]",
+      "s_axi_rvalid/rready/rdata[31:0]/rresp[1:0]"
+    ],
+    "limitations": [
+      "단일 미결 트랜잭션 (non-pipelined). AW/W 채널을 순서대로 처리한다",
+      "wstrb 무시: 32비트 전체를 씀 (픽셀 패킹 단순화)",
+      "bresp/rresp 항상 2'b00 (OKAY)"
+    ]
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "mbv-frozen-v2",
+    "compat": "compatible",
+    "plan": "동결 슬롯 VGA [0A] 0x400A_0000 (64KB)을 그대로 사용. 추가 슬롯 불필요.",
+    "frozen_mapping": [
+      {"block": "ip", "region": "[0A]", "base": "0x400A_0000", "size": "0x10000", "desc": "VGA 160x120 RGB332 더블 버퍼"}
+    ]
+  },
+  "external_parts": [
+    {
+      "id": "vga_connector",
+      "name": "VGA 커넥터 (Basys3 온보드)",
+      "block": "ext_vga",
+      "interface": "VGA R4G4B4 (저항 DAC 내장)",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": true,
+      "notes": "Basys3 내장 VGA 커넥터. 별도 조달 불필요. 핀 배정: Digilent Basys3 RM 참조"
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "외부 부품 없음. 온보드 VGA 커넥터는 Basys3 회로도(Digilent 공식)에 이미 문서화됨"
+  },
+  "hierarchy": {
+    "module": "basys3_top",
+    "file": "rtl/basys3_top.v",
+    "children": [
+      {
+        "module": "vga_doublebuf",
+        "file": "rtl/vga_doublebuf.v",
+        "children": [
+          {"module": "vga_timing", "file": "rtl/vga_timing.v", "children": []}
+        ]
+      }
+    ]
+  },
+  "memory_map": [
+    {
+      "base": "0x400A_0000",
+      "size": "0x10000",
+      "block": "ip",
+      "regs": [
+        {"off": "0x0000", "name": "BUF0_PIX[0..4799]", "access": "WO", "desc": "버퍼0 픽셀 word 배열 (160×120÷4). byte[15:2]=word 인덱스"},
+        {"off": "0x4B00", "name": "BUF1_PIX[0..4799]", "access": "WO", "desc": "버퍼1 픽셀 word 배열"},
+        {"off": "0x9600", "name": "STATUS",    "access": "RO",  "desc": "{30'b0, vsync_flag, active_buf}. vsync_flag 읽으면 클리어"},
+        {"off": "0x9604", "name": "CTRL",      "access": "RW",  "desc": "{31'b0, swap_req}. 1 쓰면 다음 frame_end에 버퍼 스왑"},
+        {"off": "0x9608", "name": "FRAME_CNT", "access": "RO",  "desc": "32비트 프레임 카운터 (frame_end마다 증가)"}
+      ],
+      "note": "슬롯 [0A] (mbv-frozen-v2). word 주소 = byte 주소[15:2]. 슬롯 오프셋은 베이스 0x400A_0000 기준"
+    }
+  ],
+  "roadmap": [
+    {"stage": "T1", "state": "done",    "title": "MMIO UART/GPIO 스켈레톤",    "refs": ["fanguoc2len-risc-v-computer"]},
+    {"stage": "T2", "state": "current", "title": "VGA 핑퐁 더블 버퍼 IP",      "refs": ["arxiv-1511-05552-rnn-fpga"]},
+    {"stage": "T2", "state": "planned", "title": "VGA 위에 도트 애니메이션 펌웨어 (MicroBlaze V C 드라이버)", "refs": []}
+  ],
+  "references": [
+    {"name": "arxiv-1511-05552-rnn-fpga",  "reason": "이번 수집 사이클 카드 — BRAM 활용 패턴 착안"},
+    {"name": "kwondo99-fpga-vga-photobooth-project", "reason": "OV7670→VGA BRAM 파이프라인, 듀얼포트 BRAM 접근 패턴 참고"}
+  ],
+  "reference_notes": "vga_timing.v 원본은 capstones/mmio-vga-tilemap-dashboard (동일 저장소 캡스톤)에서 복사. 핀 XDC도 같은 출처.",
+  "sources": {
+    "rtl":         ["rtl/vga_timing.v", "rtl/vga_doublebuf.v", "rtl/basys3_top.v"],
+    "tb":          ["tb/tb_vga_doublebuf.v"],
+    "constraints": ["constr/basys3.xdc"],
+    "build":       ["Makefile"]
+  },
+  "howto": {
+    "sim":   "make sim  # iverilog -g2005 + vvp; 'PASS'/'FAIL' 출력 확인",
+    "lint":  "make lint # verilator --lint-only",
+    "synth": "make synth # yosys synth_xilinx 추정 자원",
+    "vivado": "Vivado 2024.2 → Create Project → Add Sources (rtl/*.v) → Add Constraints (constr/basys3.xdc) → Run Synthesis/Implementation/Generate Bitstream"
+  },
+  "verification": {
+    "grade": "S0",
+    "board": "not-tested",
+    "notes": "자동 생성 패키지(§13.7 무조건 최대한 생성). CI 통과 시 S1/S2로 자동 갱신. S3는 사람만 올릴 수 있다.",
+    "board_evidence": null
+  },
+  "risks": [
+    "단일 25MHz 도메인: AXI 버스(100MHz 기준 설계)와 25MHz 사이에 CDC 없음. 실제 MicroBlaze V 연결 시 클럭 도메인 교차(CDC) 처리가 필요하다",
+    "BRAM 추정 15개 (30%): yosys 추정 기준. Vivado 구현 후 실제 자원 확인 필요",
+    "row_off 15비트: 119×160=19040. 14비트(16383) 초과로 반드시 15비트 확보",
+    "wstrb 무시: 바이트 단위 쓰기 미지원. 픽셀 쓰기는 반드시 32비트 정렬 word 단위",
+    "vsync_flag 타이밍: STATUS 읽기와 swap 발생이 같은 클럭이면 swap 우선"
+  ]
+}
