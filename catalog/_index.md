@@ -2,6 +2,9 @@
 
 | 이름 | 등급 | 단계 | 보드 | 갱신일 |
 |---|---|---|---|---|
+| [mcdanel-2019-full-stack-cnn-bn-folding](papers/mcdanel-2019-full-stack-cnn-bn-folding.md) | L2 | T4 | VC707 (needs-port) | 2026-11-06 |
+| [khan-2024-bn-hls4ml-uw](papers/khan-2024-bn-hls4ml-uw.md) | L2 | T4 | VC709 (needs-port) | 2026-11-06 |
+| [kim-2025-layernorm-fpga](papers/kim-2025-layernorm-fpga.md) | L2 | T4 | VU37P (needs-port) | 2026-11-06 |
 | [abhi-raval-1910-basys3-cnn-2layer](amd/abhi-raval-1910-basys3-cnn-2layer.md) | L3 | T4 | Basys3 | 2026-11-06 |
 | [mo-ah-al11505-cnn-convolution-accelerator](amd/mo-ah-al11505-cnn-convolution-accelerator.md) | L3 | T2 | PYNQ-Z2 (needs-port) | 2026-11-06 |
 | [kang-yang-2023-aocstream-sensors](papers/kang-yang-2023-aocstream-sensors.md) | L3 | T4 | XCKU5P/XC7K325T (needs-port) | 2026-11-06 |

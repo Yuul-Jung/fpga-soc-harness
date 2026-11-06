@@ -1955,3 +1955,36 @@
 - 새로움의 근거: 카탈로그에 복수 활성화 함수를 같은 고정소수점 비트폭으로 통일하고 테스트벤치로 비교한 패키지 없음. S7 난이도 사다리로 T4 범위 내 완결.
 - Basys3 적합성의 근거: 내 판단: 단계 1(ReLU) LUT < 10, 단계 2(sigmoid ROM) ≤ 1 BRAM, 단계 3(Twofold tanh) ≤ 1 BRAM+∆LUT — 모두 Basys3 범위 내. 테스트벤치는 iverilog 무설치 도구로 CI에서 돌 수 있다.
 - 난이도: 3 / 단계: T4
+
+## I-143 BN Fold 사전 계산 AXI4-Lite IP — scale·shift BRAM 적재, MAC 출력단 직렬 연결 (T4)
+
+- 내 판단: 배치 정규화(BN) 파라미터 γ, β, μ, σ를 모델 적재 시 MicroBlaze V CPU가 사전 계산(`scale=γ/√(σ²+ε)`, `shift=β−γμ/√(σ²+ε)`)해 BRAM에 적재. 추론 단계에서 각 채널 출력에 1 MAC(곱셈+덧셈)만 추가. 별도 BN 블록이 없어지므로 추론 레이턴시와 LUT 절감 가능.
+- 조합: [accelerator, BRAM, AXI4-Lite]
+- 근거 카드: [mcdanel-2019-full-stack-cnn-bn-folding, khan-2024-bn-hls4ml-uw]
+- 근거 URL: [https://arxiv.org/abs/1905.00462, https://people.ece.uw.edu/hauck/publications/BatchNorm.pdf]
+- 새로움의 근거: 카탈로그에 BN fold 사전 계산을 AXI4-Lite 슬레이브로 묶은 Basys3 IP 없음. 기존 MLP·CNN 카드들은 모두 BN 블록 미구현.
+- Basys3 적합성의 근거: 채널 수 최대 64 → scale·shift 각 64×32비트 = 256바이트. BRAM 1개(1K×32비트) 여유. AXI4-Lite 슬레이브 추가 LUT ~100개 추정. 추론 MAC 추가는 DSP 1개 채널당(내 판단).
+- 난이도: 3 / 단계: T4 / 상태: raw
+- 심사: (미심사)
+
+## I-144 뉴턴-랍슨 역제곱근 LUT 모듈 — Q4.12(16비트), 반복 2회, Basys3 BRAM 1개 (T4)
+
+- 내 판단: LayerNorm 하드웨어의 핵심인 1/σ 계산을 뉴턴-랍슨 반복으로 구현. 초기 추정값 LUT는 BRAM 1개(256~512 엔트리, Q4.12 16비트). 2회 반복으로 정밀도 ~1 ULP. Kim 2025 논문의 Q5.26 대신 Q4.12(16비트 총폭)로 비트 폭 축소해 Artix-7 LUT 예산 내 가능.
+- 조합: [accelerator, BRAM, fixed-point]
+- 근거 카드: [kim-2025-layernorm-fpga, khan-2024-bn-hls4ml-uw]
+- 근거 URL: [https://www.mdpi.com/2079-9292/14/12/2337, https://people.ece.uw.edu/hauck/publications/BatchNorm.pdf]
+- 새로움의 근거: 카탈로그에 역제곱근 LUT + 뉴턴-랍슨 반복을 조합한 Basys3 모듈 없음. 기존 고정소수점 Q포맷 카드들은 덧셈·곱셈만 다룸.
+- Basys3 적합성의 근거: BRAM 1개(256×16비트 LUT) + Q4.12 16비트 2회 반복 = 추정 ~400 LUT. XC7A35T 여유. 역제곱근 LUT 생성은 Python/C로 오프라인 가능.
+- 난이도: 3 / 단계: T4 / 상태: raw
+- 심사: (미심사)
+
+## I-145 RMS-Norm 하드웨어 모듈 — LLaMA 호환, 평균 제거 불필요, Basys3 LUT 예산 내 (T4, S1 이식)
+
+- 내 판단: RMSNorm(Root Mean Square Normalization)은 LayerNorm에서 평균 μ 계산을 제거한 간소화 버전. 각 채널 x를 `x/RMS(x)`로 나눈 뒤 scale(γ)만 곱함. LLaMA·GPT-NeoX 등 최신 경량 LLM에서 사용. 나눗셈은 뉴턴-랍슨 역수 계산으로 대체 가능. S1 이식: Arduino/MCU의 소프트웨어 RMSNorm을 FPGA 하드웨어로 이식하면 추론 속도 비교 가능.
+- 조합: [accelerator, fixed-point, BRAM]
+- 근거 카드: [kim-2025-layernorm-fpga, mcdanel-2019-full-stack-cnn-bn-folding]
+- 근거 URL: [https://www.mdpi.com/2079-9292/14/12/2337, https://arxiv.org/abs/1905.00462]
+- 새로움의 근거: 카탈로그에 RMSNorm FPGA 구현 없음. LN보다 Basys3 자원 부담 낮아(μ 계산 불필요 → 가산기 절감) 소형 모듈 패키지 적합.
+- Basys3 적합성의 근거: RMS 계산은 제곱합+나눗셈 없이 역제곱근 LUT로 대체 가능. Artix-7 DSP 최소 사용(추정 1 DSP/채널). BRAM 1개 LUT 적재.
+- 난이도: 3 / 단계: T4 / 상태: raw
+- 심사: (미심사)

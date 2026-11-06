@@ -71,3 +71,14 @@
 2026-11-06 | [B3] 활성화 함수 하드웨어 | FPGA activation function hardware ReLU sigmoid LUT BRAM Basys3 Artix-7 Verilog comparison 2024 GitHub | 유효
 2026-11-06 | [B3] 활성화 함수 하드웨어 | hls4ml FPGA machine learning activation function hardware sigmoid ReLU | 유효
 >>>>>>> cc9ee0e (catalog: add activation-function cards (adityapusalkar L3, xie-2020-tvlsi L2, arxiv-1810-08650 L2))
+
+2026-11-06 | [B3] 배치 정규화·층 정규화 하드웨어 | FPGA batch normalization hardware accelerator fixed-point Verilog GitHub | 유효
+2026-11-06 | [B3] 배치 정규화·층 정규화 하드웨어 | layer normalization hardware FPGA fixed-point inference accelerator arXiv | 유효
+2026-11-06 | [B3] 배치 정규화·층 정규화 하드웨어 | BN FPGA inference scale offset gamma beta reciprocal square root | 유효
+2026-11-06 | [B3] 배치 정규화·층 정규화 하드웨어 | site:github.com BN Verilog fixed-point CNN inference | 유효
+2026-11-06 | [B3] 배치 정규화·층 정규화 하드웨어 | BN "folded into weights" Verilog Basys3 Artix-7 | 빈약
+2026-11-06 | [B3] 배치 정규화·층 정규화 하드웨어 | site:github.com LN Verilog/SV FPGA fixed-point transformer 2023 2024 | 유효
+2026-11-06 | [B3] 배치 정규화·층 정규화 하드웨어 | FPGA 배치정규화 하드웨어 Verilog 고정소수점 GitHub (한국어) | 빈약
+2026-11-06 | [B3] 배치 정규화·층 정규화 하드웨어 | BN folding CNN FPGA Verilog "BN fold" "fused BN" | 유효
+2026-11-06 | [B3] 배치 정규화·층 정규화 하드웨어 | FPGA "batch norm" OR "batch normalization" folded weights Verilog fixed-point inference GitHub 2023 2024 | 유효
+2026-11-06 | [B3] 배치 정규화·층 정규화 하드웨어 | FPGA NPU CNN 배치정규화 BN folding 고정소수점 scale shift Verilog 구현 GitHub Basys3 (한국어) | 빈약

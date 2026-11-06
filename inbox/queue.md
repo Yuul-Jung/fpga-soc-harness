@@ -719,3 +719,9 @@
 - https://arxiv.org/abs/1810.08650 | Mrazek 2018 arXiv: FPGA 활성화 함수 5방식(ROM/CORDIC/Taylor/조합) 비교 tanh_7_4·SELU_8_5, 카드 작성 완료(L2) | FPGA activation function comparison ROM CORDIC Taylor combinational arXiv
 - https://github.com/fastmachinelearning/hls4ml | HLS4ML: ML 모델 → FPGA/HLS 자동 변환, sigmoid·ReLU·tanh 활성화 함수 하드웨어 지원 — 미열람(L1) | FPGA activation function hardware HLS neural network
 - blocked: crambl/fpga-neuralnetwork PROVENANCE_REQUIRED — 열람 차단 | FPGA neural network activation function Verilog GitHub
+
+- https://github.com/uw-acme/HLS4ML_VS_MANUAL | UW 2024 BN 하드웨어 비교 Verilog 소스(역제곱근 LUT / scale+shift fold / HLS4ML 시프트) — 미열람(L2 열람은 PDF), GitHub 직접 열람 필요 (L2→L3 후보) | FPGA batch normalization hardware HLS4ML manual Verilog comparison
+- https://arxiv.org/abs/1905.00462 | McDanel 2019 BN folding into log-quantized CNN weights for FPGA inference(VC707) — 초록/검색 요약(L2), 카드 작성 완료 | BN folding CNN FPGA Verilog log quantization
+- https://www.mdpi.com/2079-9292/14/12/2337 | Kim 2025 MDPI Electronics: LN+Softmax Newton-Raphson, Q5.26, VU37P — 카드 작성 완료(L2) | FPGA layer normalization Newton-Raphson Q5.26 2025
+- https://github.com/ansh07verma/fpga-mini-npu | ansh07verma fpga-mini-npu: Basys3/NexysA7 INT8 MAC 시스톨릭 어레이, MIT 라이선스, BN/LN 없음 — 미열람(L1→L2 확인 완료), 별도 주제 큐 가능 | FPGA mini NPU INT8 Basys3 Verilog
+- https://arxiv.org/abs/2308.13922 | Liu 2023 Swin Transformer FPGA 가속기(LN→BN 치환 제안) — 초록만(L1), RTL/보드 미상 | FPGA Swin Transformer accelerator layer normalization batch normalization
