@@ -1,6 +1,7 @@
 ---
 name: arxiv-1511-05552-rnn-fpga
-url: https://arxiv.org/abs/1511.05552
+url: https://arxiv.org/pdf/1511.05552
+duplicate_of: chang-2015-rnn-fpga
 source_type: paper
 vendor: neutral
 board: []
