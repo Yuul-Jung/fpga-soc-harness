@@ -60,3 +60,14 @@
 2026-11-06 | [B3] CNN 컨볼루션 엔진 | FPGA 컨볼루션 엔진 슬라이딩 윈도우 라인 버퍼 Basys3 Verilog GitHub 한국어 | 빈약
 2026-11-06 | [B3] CNN 컨볼루션 엔진 | hackaday FPGA CNN convolutional neural network accelerator sliding window | 빈약
 2026-11-06 | [B3] CNN 컨볼루션 엔진 | FPGA convolution accelerator Basys3 MNIST 2layer neural network Verilog 2024 GitHub | 유효 (abhi-raval-1910 발견)
+<<<<<<< HEAD
+=======
+2026-11-06 | [B3] 활성화 함수 하드웨어 | FPGA neural network activation function ReLU sigmoid hardware Verilog GitHub Basys3 | 유효 (AdityaPusalkar 발견)
+2026-11-06 | [B3] 활성화 함수 하드웨어 | FPGA fixed-point activation function comparison ROM CORDIC Taylor LUT hardware | 유효 (arXiv 1810.08650 발견)
+2026-11-06 | [B3] 활성화 함수 하드웨어 | Twofold LUT activation function FPGA area reduction IEEE TVLSI | 유효 (Xie 2020 발견)
+2026-11-06 | [B3] 활성화 함수 하드웨어 | FPGA activation function hardware combinational sum-of-products Karnaugh map implementation | 유효
+2026-11-06 | [B3] 활성화 함수 하드웨어 | FPGA MLP neural network ReLU activation function hardware Basys3 Artix-7 Verilog GitHub | 유효
+2026-11-06 | [B3] 활성화 함수 하드웨어 | FPGA 활성화 함수 하드웨어 ReLU Sigmoid 근사 구현 고정소수점 Verilog GitHub 2024 | 유효
+2026-11-06 | [B3] 활성화 함수 하드웨어 | FPGA activation function hardware ReLU sigmoid LUT BRAM Basys3 Artix-7 Verilog comparison 2024 GitHub | 유효
+2026-11-06 | [B3] 활성화 함수 하드웨어 | hls4ml FPGA machine learning activation function hardware sigmoid ReLU | 유효
+>>>>>>> cc9ee0e (catalog: add activation-function cards (adityapusalkar L3, xie-2020-tvlsi L2, arxiv-1810-08650 L2))

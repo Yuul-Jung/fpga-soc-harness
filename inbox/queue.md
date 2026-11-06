@@ -714,3 +714,8 @@
 - https://github.com/mattjesc/efficient-fpga-cnn-accelerator | mattjesc/efficient-fpga-cnn-accelerator: 효율적 FPGA CNN 가속기 — 미열람(L1) | efficient FPGA CNN accelerator Verilog
 - https://github.com/CodeNameGrapefruit/SoC_CNN | CodeNameGrapefruit/SoC_CNN: SoC CNN 통합 — 미열람(L1) | SoC CNN integration FPGA Verilog
 - https://people.ece.cornell.edu/land/courses/ece5760/FinalProjects/ | Cornell ECE 5760 프로젝트 목록: CNN 관련 최종 프로젝트 다수 — 미열람(L1) | Cornell ECE 5760 CNN project FPGA
+- https://github.com/AdityaPusalkar/fpga_neural_network | AdityaPusalkar/fpga_neural_network: Basys3 Verilog ReLU MLP MNIST, 가중치 ×100 정수 스케일링, 카드 작성 완료(L3) | FPGA neural network Basys3 Verilog ReLU activation function
+- https://doi.org/10.1109/TVLSI.2020.3015391 | Xie 2020 IEEE TVLSI Twofold LUT tanh/sigmoid 94.44% 면적 절감, 카드 작성 완료(L2) | FPGA activation function LUT area reduction IEEE TVLSI 2020
+- https://arxiv.org/abs/1810.08650 | Mrazek 2018 arXiv: FPGA 활성화 함수 5방식(ROM/CORDIC/Taylor/조합) 비교 tanh_7_4·SELU_8_5, 카드 작성 완료(L2) | FPGA activation function comparison ROM CORDIC Taylor combinational arXiv
+- https://github.com/fastmachinelearning/hls4ml | HLS4ML: ML 모델 → FPGA/HLS 자동 변환, sigmoid·ReLU·tanh 활성화 함수 하드웨어 지원 — 미열람(L1) | FPGA activation function hardware HLS neural network
+- blocked: crambl/fpga-neuralnetwork PROVENANCE_REQUIRED — 열람 차단 | FPGA neural network activation function Verilog GitHub

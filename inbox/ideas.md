@@ -1921,3 +1921,30 @@
 - Basys3 적합성의 근거: 내 판단: 채널 ≤8 가정 시 레이어 1 라인 버퍼 2×28×8×8b ≈ 448 B, 레이어 2 2×14×16×8b ≈ 448 B, 가중치 ROM 1×8×3×3×8b+8×16×3×3×8b ≈ 10 KB 추정 → 합계 약 15 KB 미만, XC7A35T 225 KB 내.
 - 난이도: 4 / 단계: T4
 - 심사: 2026-11-06 /verify(29차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(kang-yang-2023-aocstream-sensors·abhi-raval-1910-basys3-cnn-2layer·mo-ah-al11505-cnn-convolution-accelerator 모두 rechecked_at 없음) + 새로움 2(AoCStream Basys3 소형화 구현 없음, 완전한 자체 RTL CNN 패키지 없음) + 적합성 2(BRAM 15KB 추정 근거 있으나 채널 채널 ≤8 소형화 타당성 복잡도 높음, 실측 없음) + 완결성 1(소형화 채널 수·레이어 구조·정확도 목표 추가 정의 필요, RTL 구조 미확정) = 5점 → vetted. 보강: 소형화 범위 확정(채널 수, 정확도 목표, AXI 인터페이스 종류), kang-yang-2023-aocstream-sensors rechecked_at 추가.
+
+## I-140 LUT-only 조합 활성화 함수 모듈: tanh_7_4·ReLU (T4, S4 제약 역전)
+- 상태: raw
+- 요약: 내 판단: BRAM이나 DSP48 없이 순수 LUT 조합 로직만으로 tanh, ReLU 등을 구현. arXiv 1810.08650 Karnaugh map sum-of-products 접근법을 Basys3 XC7A35T에 이식. BRAM 없는 Basys3 추론 파이프라인에서 활성화 함수 슬롯을 작은 LUT 묶음으로 대체하는 S4 제약 역전 사례.
+- 조합: [activation-function, LUT-only, no-BRAM, no-DSP, fixed-point, MLP]
+- 근거: [arxiv-1810-08650-activation-dse, adityapusalkar-fpga-neural-network]
+- 새로움의 근거: 카탈로그에 LUT-only 조합 활성화 함수 모듈 없음. ROM/BRAM-based 접근을 쓴 카드와 대비되는 BRAM-free 대안.
+- Basys3 적합성의 근거: 내 판단: tanh_7_4(4비트 입력→7비트 출력) 기준 Karnaugh map SOP 로직은 LUT 수십 개 이내. XC7A35T 20800 LUT 중 소수만 소비 추정.
+- 난이도: 2 / 단계: T4
+
+## I-141 Twofold LUT 기반 초소형 tanh/sigmoid 모듈 Basys3 포팅 (T4, S1+S4)
+- 상태: raw
+- 요약: 내 판단: Xie 2020 IEEE TVLSI의 d-LUT(근사값)+e-LUT(오차 보정) Twofold LUT 아키텍처를 Basys3 BRAM 2개 소용량으로 구현. 단일 대형 LUT 대비 94.44% 면적 절감. MCU 소프트웨어 sigmoid/tanh 테이블 아이디어를 하드웨어 Twofold LUT로 이식하는 S1 접근이면서, 적은 BRAM으로 고정밀도를 달성하는 S4 사례.
+- 조합: [activation-function, Twofold-LUT, BRAM-dual, fixed-point, tanh, sigmoid]
+- 근거: [xie-2020-tvlsi-twofold-lut-tanh, adityapusalkar-fpga-neural-network]
+- 새로움의 근거: 카탈로그에 Twofold LUT(d-LUT+e-LUT 조합) 활성화 함수 구현 없음. 단순 ROM_y 또는 CORDIC과 다른 압축 방식.
+- Basys3 적합성의 근거: 내 판단: tanh 8비트 입력 기준 d-LUT 256×8b + e-LUT 256×4b ≈ 3 KB, XC7A35T 225 KB BRAM 내. 지연 39.721 ns는 Basys3 100 MHz 클럭(10 ns 주기)에서 4사이클 파이프라인으로 처리 가능.
+- 난이도: 3 / 단계: T4
+
+## I-142 활성화 함수 하드웨어 3단계 비교 테스트벤치 묶음 (T4, S7 난이도 사다리)
+- 상태: raw
+- 요약: 내 판단: ReLU(단순 조합) → sigmoid(단일 ROM) → tanh(Twofold LUT) 세 단계로 복잡도를 올리며 각 단계의 자원(LUT/BRAM/DSP48)·지연·정확도를 같은 테스트벤치 형식으로 비교. 단계마다 Basys3에 올릴 수 있는 고정소수점 모듈과 iverilog 테스트벤치를 한 패키지로 묶는다.
+- 조합: [activation-function, testbench-suite, fixed-point, comparison, ReLU, sigmoid, tanh]
+- 근거: [arxiv-1810-08650-activation-dse, xie-2020-tvlsi-twofold-lut-tanh, unlv-si-harris-drelu-fpga-mlp]
+- 새로움의 근거: 카탈로그에 복수 활성화 함수를 같은 고정소수점 비트폭으로 통일하고 테스트벤치로 비교한 패키지 없음. S7 난이도 사다리로 T4 범위 내 완결.
+- Basys3 적합성의 근거: 내 판단: 단계 1(ReLU) LUT < 10, 단계 2(sigmoid ROM) ≤ 1 BRAM, 단계 3(Twofold tanh) ≤ 1 BRAM+∆LUT — 모두 Basys3 범위 내. 테스트벤치는 iverilog 무설치 도구로 CI에서 돌 수 있다.
+- 난이도: 3 / 단계: T4

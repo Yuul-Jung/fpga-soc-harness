@@ -281,3 +281,6 @@
 | [unlv-si-harris-drelu-fpga-mlp](papers/unlv-si-harris-drelu-fpga-mlp.md) | L3 | T2 | 없음 (논문) | 2026-11-06 |
 | [sivakumarchakarapalli-systolic-array-accelerator](vendor-neutral/sivakumarchakarapalli-systolic-array-accelerator.md) | L3 | T2 | Basys3 | 2026-11-06 |
 | [itskannapi-fpga-mlp-accelerator](vendor-neutral/itskannapi-fpga-mlp-accelerator.md) | L3 | T4 | Basys3 | 2026-11-06 |
+| [adityapusalkar-fpga-neural-network](amd/adityapusalkar-fpga-neural-network.md) | L3 | T4 | Basys3 | 2026-11-06 |
+| [xie-2020-tvlsi-twofold-lut-tanh](papers/xie-2020-tvlsi-twofold-lut-tanh.md) | L2 | T4 | 없음 (논문) | 2026-11-06 |
+| [arxiv-1810-08650-activation-dse](papers/arxiv-1810-08650-activation-dse.md) | L2 | T4 | 없음 (논문) | 2026-11-06 |
