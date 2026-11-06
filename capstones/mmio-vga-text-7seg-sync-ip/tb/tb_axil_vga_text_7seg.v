@@ -150,15 +150,16 @@ task axil_read;
         araddr  = addr;
         arvalid = 1'b1;
         rready  = 1'b1;
+        // DUT가 arready와 rvalid를 같은 사이클에 올림.
+        // 별도 대기 시 "arready 확인 → 다음 posedge rvalid 확인" 사이에
+        // DUT가 rvalid=1 && rready=1 → rvalid←0으로 클리어해 무한루프.
+        // 두 신호를 동시에 기다려 같은 posedge에서 rdata 캡처.
         @(posedge clk);
-        while (!arready) @(posedge clk);
-        @(negedge clk);
-        arvalid = 1'b0;
-        @(posedge clk);
-        while (!rvalid) @(posedge clk);
+        while (!(arready && rvalid)) @(posedge clk);
         data = rdata;
         @(negedge clk);
-        rready = 1'b0;
+        arvalid = 1'b0;
+        rready  = 1'b0;
     end
 endtask
 
@@ -205,7 +206,7 @@ initial begin
 
     // ── T4: 문자 버퍼 쓰기/읽기
     axil_write(8'h10, 32'h00000000); // CHAR_ADDR=0
-    axil_write(8'h14, 32'h00070041); // 'A', fg=7(흰), bg=0(검)
+    axil_write(8'h14, 32'h00000741); // 'A'(0x41), fg=7(흰), bg=0(검) → char_buf=[7:0]ASCII,[11:8]fg,[15:12]bg
     axil_read (8'h14, rd);
     check("T4 CHAR r/w ASCII=0x41", (rd & 32'h00FF) === 32'h41);
     check("T4 CHAR r/w fg=7",       (rd & 32'h0F00) === 32'h700);
