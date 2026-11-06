@@ -276,9 +276,10 @@ initial begin
     $finish;
 end
 
-// 타임아웃 (3프레임 = 1260000 클럭 × 40ns = 50.4ms)
+// 타임아웃 (5프레임 여유 = 2100000 클럭 × 40ns = 84ms → 120ms로 여유)
+// T8+T9+T10 각 @(negedge vsync)를 연속 대기하므로 최소 ~66ms 필요
 initial begin
-    #55_000_000;
+    #120_000_000;
     $display("FAIL: timeout");
     $finish;
 end
