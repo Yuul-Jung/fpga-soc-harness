@@ -1,6 +1,6 @@
 # SoC 기술 트리 (단계별 카드 연결)
 
-갱신: 2026-11-06 (/verify 29차). 카드 283건 기준. 비 FPGA 도메인(STM32 18건·ESP32 14건·RPi·Arduino·임베디드·전자기술 14건·papers 포함). 10차: 전자기술 도메인 14건 추가(SPWM 인버터·게이트 드라이버·전원 설계·XADC 아날로그 프런트엔드). 13차: I-082·I-083 ready 승격(PCB 설계 체크리스트), 감사 경고 수정 3건(라이선스 주석 추가). 20차: VGA·7세그·프레임버퍼·카메라·LED·PWM 카드 9건 추가(video-vga 그룹 6건+camera 1건+pwm-rgb 2건). atlas/video-vga.md 신규 작성. 22차: AXI4-Lite INTC 3건·WDT 3건·AXI4-Lite 레지스터 템플릿 3건(총 9건) 추가. I-111·I-113 ready 승격. atlas/axil-peripheral-ip.md 신규 작성. 25-26차: AXI 타이밍 분석 3건·Q포맷 고정소수점 3건 추가, atlas/axil-peripheral-ip.md §5 AXI 성능 모니터링 추가. 27-28차: MAC 행렬 가속기 5건·MLP 뉴런 3건·CNN 컨볼루션 엔진 3건(총 11건) 추가. 29차: I-134~I-139 아이디어 vetted 심사, atlas/ml-accelerator.md 신규 작성.
+갱신: 2026-11-07 (/verify 31차). 카드 288건 기준. 비 FPGA 도메인(STM32 18건·ESP32 14건·RPi·Arduino·임베디드·전자기술 14건·papers 포함). 10차: 전자기술 도메인 14건 추가(SPWM 인버터·게이트 드라이버·전원 설계·XADC 아날로그 프런트엔드). 13차: I-082·I-083 ready 승격(PCB 설계 체크리스트), 감사 경고 수정 3건(라이선스 주석 추가). 20차: VGA·7세그·프레임버퍼·카메라·LED·PWM 카드 9건 추가(video-vga 그룹 6건+camera 1건+pwm-rgb 2건). atlas/video-vga.md 신규 작성. 22차: AXI4-Lite INTC 3건·WDT 3건·AXI4-Lite 레지스터 템플릿 3건(총 9건) 추가. I-111·I-113 ready 승격. atlas/axil-peripheral-ip.md 신규 작성. 25-26차: AXI 타이밍 분석 3건·Q포맷 고정소수점 3건 추가, atlas/axil-peripheral-ip.md §5 AXI 성능 모니터링 추가. 27-28차: MAC 행렬 가속기 5건·MLP 뉴런 3건·CNN 컨볼루션 엔진 3건(총 11건) 추가. 29차: I-134~I-139 아이디어 vetted 심사, atlas/ml-accelerator.md 신규 작성. 30차: 활성화 함수 4건(arxiv-1810·xie-2020·unlv-si·adityapusalkar) 추가, atlas §3.5 신규. 31차: BN/LN 정규화 3건(mcdanel-2019·khan-2024·kim-2025) + RNN/LSTM 3건(chang-2015·qian-2023·ahirsharan) 추가. I-101·I-103 ready 승격. atlas §5·§6 신규.
 
 ---
 
@@ -118,6 +118,10 @@ FreeRTOS·Zephyr 비교 카드는 MicroBlaze V + AXI INTC RTOS 설계에 개조 
 - gap T2: D-ReLU vs sigmoid 면적 비교 CI 검증 사례 없음; unlv-si-harris-drelu-fpga-mlp(논문, L3)가 근거 — I-135(vetted 6점)이 채울 예정.
 - gap T4: Basys3 AXI4-Lite 버스 연결 MLP 추론 IP 카드 없음; libfpga(MIT)·erwanregy(Apache-2.0) 패턴 카드 추가됨 — I-134(vetted 6점), I-137(vetted 6점) 아이디어가 채울 예정.
 - gap T4: Basys3 3×3 Conv AXI4-Stream 프리미티브 카드 없음; mo-ah-al11505(MIT, PYNQ needs-port)가 근거 — I-138(vetted 6점)이 채울 예정.
+- gap T4: Basys3 BN Fold AXI4-Lite IP 카드 없음; mcdanel-2019·khan-2024(방법 2 fold, 오차 0, LUT 90% 절감)가 근거 — I-143(vetted 6점)이 채울 예정.
+- gap T4: Basys3 뉴턴-랍슨 역제곱근 LUT 모듈 카드 없음; kim-2025 Q5.26 → Q4.12 이식 경로 — I-144(vetted 6점)이 채울 예정.
+- gap T4: Basys3 LSTM 셀 AXI4-Lite 가속기 카드 없음; chang-2015(PLA sigmoid/tanh, L3)·qian-2023(4+1 병렬 ALU, L3) 근거 — I-146(vetted, T3 단순 RNN) → I-147(vetted, T4 LSTM 셀) → I-148(vetted, T4 타임스텝 루프) S7 사다리.
+- T4 ML 카드 추가: 활성화 함수 4건(arxiv-1810-08650·xie-2020-tvlsi·unlv-si-harris·adityapusalkar), BN/LN 정규화 3건(mcdanel-2019·khan-2024·kim-2025), RNN/LSTM 3건(chang-2015·qian-2023·ahirsharan). atlas/ml-accelerator.md §3.5·§5·§6 참조.
 
 ---
 

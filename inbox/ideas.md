@@ -1409,9 +1409,10 @@
 - Basys3 적합성 근거: LUT 약 300~500개(UART TX/RX + FSM + CRC16), AXI4-Lite 슬롯 1개, Pmod JA UART 핀 사용 가능 — 내 판단.
 - 난이도: 3
 - 단계: T2
-- 상태: vetted
+- 상태: ready
 - 심사: 2026-11-05 13:49 /verify(18차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(xtrinch-icestick-fpga-uart·codeshaa-16-bit-hdlc-using-vhdl·opencores-auto-baud 모두 rechecked_at 없음) + 새로움 2(하드웨어 패킷 프레이머+CRC16 AXI4-Lite IP 카탈로그 없음) + 적합성 2(LUT 300~500개, AXI4-Lite 슬롯 1개, Pmod JA UART 핀 사용 가능 — 내 판단) + 완결성 2(UART TX/RX + 길이 카운터 FSM + CRC16 + AXI4-Lite 래퍼 범위 명확, RTL+TB 작성 가능) = 6점 → vetted. 보강: 근거 카드 rechecked_at 1건 이상.
 - 차단조건재심사: 2026-11-05 13:49, 점수 9. 근거 3(xtrinch-icestick-fpga-uart·codeshaa-16-bit-hdlc-using-vhdl·opencores-auto-baud 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7, 사이클 상한 2건 도달로 vetted 유지(이 사이클에서 I-104·I-029 ready 승격). 다음 사이클에서 ready 승격 가능. WebFetch PROVENANCE_REQUIRED 18차 연속 차단(§14.2 차단 조건 적용).
+- 상태 변경: vetted → ready (2026-11-07 /verify 31차, 차단조건재심사 9점, 사이클 슬롯 1번째. WebFetch PROVENANCE_REQUIRED 31차 연속 차단 §14.2 차단 조건 적용)
 
 ---
 ## I-102: UART 슬립 디텍트 FSM (웨이크업 패턴 하드웨어 감지)
@@ -1441,9 +1442,10 @@
 - Basys3 적합성 근거: LUT 약 500~700개(오토보드 FSM + 프레이머 + CRC + AXI4-Lite), 1 AXI4-Lite free_slot. I-101·I-102를 먼저 만들어 단계적으로 검증 가능 — 내 판단.
 - 난이도: 4
 - 단계: T2
-- 상태: vetted
+- 상태: ready
 - 심사: 2026-11-05 13:49 /verify(18차), 첫 raw→vetted 심사(차단조건재심사 불적용). 근거 0(opencores-auto-baud·xtrinch-icestick-fpga-uart·codeshaa-16-bit-hdlc-using-vhdl 모두 rechecked_at 없음) + 새로움 2(오토보드+패킷 프레이밍 단일 AXI4-Lite IP 없음) + 적합성 2(LUT 500~700개, AXI4-Lite free_slot 1개, I-101·I-102 선행 단계화 가능 — 내 판단) + 완결성 2(3단계 FSM + AXI4-Lite 래퍼 + C 드라이버 범위 명확) = 6점 → vetted. 보강: 근거 카드 rechecked_at 1건, I-101·I-102 선행 완료 후 진행.
 - 차단조건재심사: 2026-11-05 13:49, 점수 9. 근거 3(opencores-auto-baud·xtrinch-icestick-fpga-uart·codeshaa-16-bit-hdlc-using-vhdl 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7, 사이클 상한 2건 도달로 vetted 유지. 다음 사이클에서 ready 승격 가능. WebFetch PROVENANCE_REQUIRED 18차 연속 차단(§14.2 차단 조건 적용).
+- 상태 변경: vetted → ready (2026-11-07 /verify 31차, 차단조건재심사 9점, 사이클 슬롯 2번째. WebFetch PROVENANCE_REQUIRED 31차 연속 차단 §14.2 차단 조건 적용)
 
 ## I-104: BRAM 핑퐁 더블 버퍼 VGA 컨트롤러 (Basys3 T2, S4 제약 역전)
 - id: I-104
@@ -1795,6 +1797,7 @@
 - 난이도: 2 / 단계: T2 / 상태: vetted
 - 심사: 2026-11-06 /harvest(S1). 근거 0(근거 카드 rechecked_at 없음, 금번 세션 신규) + 새로움 2(고정소수점 AXI-Lite IP 조합 없음) + 적합성 3(20+50LUT 추정, Basys3 가능) + 완결성 2(RTL+래퍼+드라이버+7세그 범위 명확) = 7점 → raw(첫심사). 보강: 근거 카드 rechecked_at 1건 이상.
 - 상태 변경: raw → vetted (2026-11-06 /verify 27차, 첫심사 7점 충족)
+- 차단조건재심사: 2026-11-07 /verify 31차, 점수 9. 근거 2(wangxuan95-fpga-fixedpoint·gisselquist-zipcpu-bit-growth 카드 2건, rechecked_at 불문) + 새로움 2 + 적합성 3 + 완결성 2 = 9점 ≥ 7, 그러나 사이클 슬롯 2건 한도소진(I-101·I-103 승격). 다음 사이클에서 ready 승격 가능. WebFetch PROVENANCE_REQUIRED 31차 연속 차단(§14.2 차단 조건 적용).
 
 ## I-129 Basys3 파라미터화 FIR 필터 고정소수점 MAC 유닛 (T4)
 
@@ -1837,6 +1840,7 @@
 - 난이도: 2 / 단계: T4 / 상태: vetted
 - 심사: 2026-11-06 /harvest(S7). 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(int8 순차 MAC AXI-Lite IP 없음) + 적합성 3(Basys3 데모 확인 카드, DSP48×1) + 완결성 2(MAC FSM+AXI래퍼+드라이버+7세그 범위 명확) = 7점 → raw(첫심사). 보강: 근거 카드 rechecked_at 추가.
 - 상태 변경: raw → vetted (2026-11-06 /verify 28차, /harvest 첫심사 7점 충족)
+- 차단조건재심사: 2026-11-07 /verify 31차, 점수 10. 근거 3(antoinelecalvez05-ml-dot-product-accelerator·wangxuan95-fpga-fixedpoint·gisselquist-zipcpu-bit-growth 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 3 + 완결성 2 = 10점 ≥ 7, 그러나 사이클 슬롯 2건 한도소진(I-101·I-103 승격). 다음 사이클에서 ready 승격 가능. WebFetch PROVENANCE_REQUIRED 31차 연속 차단(§14.2 차단 조건 적용).
 
 ## I-132 Basys3 4×4 시스톨릭 어레이 행렬 곱셈 AXI-Lite IP (T4, S7 사다리 2단)
 
@@ -1851,6 +1855,7 @@
 - 난이도: 3 / 단계: T4 / 상태: vetted
 - 심사: 2026-11-06 /harvest(S7). 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(4×4 시스톨릭 AXI-Lite 패키지 없음) + 적합성 2(DSP48×16 가능 추정, 타이밍 위험 있음) + 완결성 2(PE·BRAM·AXI·드라이버 범위 명확) = 6점 → raw(첫심사). 보강: DSP48 타이밍 실측, 근거 카드 rechecked_at.
 - 상태 변경: raw → vetted (2026-11-06 /verify 28차, /harvest 첫심사 6점 충족)
+- 차단조건재심사: 2026-11-07 /verify 31차, 점수 9. 근거 3(ethanflorendo-fpga-systolic-array-matrix-multiplier·antoinelecalvez05-ml-dot-product-accelerator·wangxuan95-fpga-fixedpoint 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7, 그러나 사이클 슬롯 2건 한도소진(I-101·I-103 승격). 다음 사이클에서 ready 승격 가능. WebFetch PROVENANCE_REQUIRED 31차 연속 차단(§14.2 차단 조건 적용).
 
 ## I-133 Basys3 Compute-in-BRAM MAC IP: BRAMAC 아이디어 Artix-7 이식 (T4, S7+S4 사다리 3단)
 
@@ -1865,6 +1870,7 @@
 - 난이도: 5 / 단계: T4 / 상태: vetted
 - 심사: 2026-11-06 /harvest(S7+S4). 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(BRAM 계산 패브릭 IP 없음) + 적합성 1(BRAM SDP 사양 확인 필요, 불확실) + 완결성 1(BRAM SDP 포트 조작 방식 미확인, RTL 설계 복잡도 높음) = 4점 → raw(첫심사). 보강: BRAM36 SDP 포트 사양 확인, 논문 L3 열람.
 - 상태 변경: raw → vetted (2026-11-06 /verify 28차 재심사, /verify 독립 재점수 5점: 근거 0 + 새로움 2 + 적합성 2(BRAM36 50블록 충분, SDP 모드 가용성 plausible) + 완결성 1(BRAM SDP 포트 조작 미확인, RTL 복잡도 높음) = 5점 ≥ 5점 → vetted. /harvest의 4점 판정 재심사 결과 적합성 2로 조정)
+- 차단조건재심사: 2026-11-07 /verify 31차, 점수 7. 근거 3(arxiv-2304.03974-bramac·ethanflorendo-fpga-systolic-array-matrix-multiplier·antoinelecalvez05-ml-dot-product-accelerator 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 1(BRAM SDP 포트 사양 미확인, 고위험) + 완결성 1(BRAM SDP 조작 방식 미확정, RTL 설계 복잡도 높음) = 7점 ≥ 7, 그러나 사이클 슬롯 2건 한도소진(I-101·I-103 승격). 다음 사이클에서 ready 승격 가능. WebFetch PROVENANCE_REQUIRED 31차 연속 차단(§14.2 차단 조건 적용).
 
 ## I-134 Basys3 2층 MLP MNIST 추론 가속기 AXI4-Lite IP (T4)
 - 상태: vetted
@@ -1935,6 +1941,7 @@
 - Basys3 적합성의 근거: 내 판단: tanh_7_4(4비트 입력→7비트 출력) 기준 Karnaugh map SOP 로직은 LUT 수십 개 이내. XC7A35T 20800 LUT 중 소수만 소비 추정.
 - 난이도: 2 / 단계: T4
 - 심사: 2026-11-06 /verify(30차), raw→vetted 첫 심사(§14.2 표준). 근거 0(arxiv-1810-08650·adityapusalkar 모두 rechecked_at 없음) + 새로움 2(LUT-only 조합 활성화 함수 카탈로그 없음) + 적합성 2(tanh_7_4 SOP LUT 수십 개 이내 추정; Basys3 20800 LUT 여유 있으나 카드 L3 근거 미확인) + 완결성 2(ReLU/tanh_7_4 모듈+TB 작성 범위 명확, iverilog CI 가능) = 6점 → vetted. 보강: arxiv-1810-08650·adityapusalkar rechecked_at 취득 필요.
+- 차단조건재심사: 2026-11-07 /verify 31차, 점수 8. 근거 2(arxiv-1810-08650-activation-dse·adityapusalkar-fpga-neural-network 카드 2건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 8점 ≥ 7, 그러나 사이클 슬롯 2건 한도소진(I-101·I-103 승격). 다음 사이클에서 ready 승격 가능. WebFetch PROVENANCE_REQUIRED 31차 연속 차단(§14.2 차단 조건 적용).
 
 ## I-141 Twofold LUT 기반 초소형 tanh/sigmoid 모듈 Basys3 포팅 (T4, S1+S4)
 - 상태: vetted
@@ -1945,6 +1952,7 @@
 - 새로움의 근거: 카탈로그에 Twofold LUT(d-LUT+e-LUT 조합) 활성화 함수 구현 없음. 단순 ROM_y 또는 CORDIC과 다른 압축 방식.
 - Basys3 적합성의 근거: 내 판단: tanh 8비트 입력 기준 d-LUT 256×8b + e-LUT 256×4b ≈ 3 KB, XC7A35T 225 KB BRAM 내. 지연 39.721 ns는 Basys3 100 MHz 클럭(10 ns 주기)에서 4사이클 파이프라인으로 처리 가능.
 - 난이도: 3 / 단계: T4
+- 차단조건재심사: 2026-11-07 /verify 31차, 점수 9. 근거 2(xie-2020-tvlsi-twofold-lut-tanh·adityapusalkar-fpga-neural-network 카드 2건, rechecked_at 불문) + 새로움 2 + 적합성 3 + 완결성 2 = 9점 ≥ 7, 그러나 사이클 슬롯 2건 한도소진(I-101·I-103 승격). 다음 사이클에서 ready 승격 가능. WebFetch PROVENANCE_REQUIRED 31차 연속 차단(§14.2 차단 조건 적용).
 
 ## I-142 활성화 함수 하드웨어 3단계 비교 테스트벤치 묶음 (T4, S7 난이도 사다리)
 - 상태: vetted
@@ -1955,6 +1963,7 @@
 - 새로움의 근거: 카탈로그에 복수 활성화 함수를 같은 고정소수점 비트폭으로 통일하고 테스트벤치로 비교한 패키지 없음. S7 난이도 사다리로 T4 범위 내 완결.
 - Basys3 적합성의 근거: 내 판단: 단계 1(ReLU) LUT < 10, 단계 2(sigmoid ROM) ≤ 1 BRAM, 단계 3(Twofold tanh) ≤ 1 BRAM+∆LUT — 모두 Basys3 범위 내. 테스트벤치는 iverilog 무설치 도구로 CI에서 돌 수 있다.
 - 난이도: 3 / 단계: T4
+- 차단조건재심사: 2026-11-07 /verify 31차, 점수 10. 근거 3(arxiv-1810-08650-activation-dse·xie-2020-tvlsi-twofold-lut-tanh·unlv-si-harris-drelu-fpga-mlp 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 3 + 완결성 2 = 10점 ≥ 7, 그러나 사이클 슬롯 2건 한도소진(I-101·I-103 승격). 다음 사이클에서 ready 승격 가능. WebFetch PROVENANCE_REQUIRED 31차 연속 차단(§14.2 차단 조건 적용).
 
 ## I-143 BN Fold 사전 계산 AXI4-Lite IP — scale·shift BRAM 적재, MAC 출력단 직렬 연결 (T4)
 
@@ -1964,8 +1973,8 @@
 - 근거 URL: [https://arxiv.org/abs/1905.00462, https://people.ece.uw.edu/hauck/publications/BatchNorm.pdf]
 - 새로움의 근거: 카탈로그에 BN fold 사전 계산을 AXI4-Lite 슬레이브로 묶은 Basys3 IP 없음. 기존 MLP·CNN 카드들은 모두 BN 블록 미구현.
 - Basys3 적합성의 근거: 채널 수 최대 64 → scale·shift 각 64×32비트 = 256바이트. BRAM 1개(1K×32비트) 여유. AXI4-Lite 슬레이브 추가 LUT ~100개 추정. 추론 MAC 추가는 DSP 1개 채널당(내 판단).
-- 난이도: 3 / 단계: T4 / 상태: raw
-- 심사: (미심사)
+- 난이도: 3 / 단계: T4 / 상태: vetted
+- 심사: 2026-11-07 /verify 31차, raw→vetted 첫 심사(§14.2 표준, 차단조건재심사 불적용). 근거 0(mcdanel-2019-full-stack-cnn-bn-folding·khan-2024-bn-hls4ml-uw 모두 rechecked_at 없음) + 새로움 2(BN fold를 AXI4-Lite 슬레이브로 묶은 Basys3 IP 카탈로그 없음) + 적합성 2(채널 64 × scale·shift 32비트 = 256바이트 → BRAM 1개, 추정 근거 카드 L2) + 완결성 2(BN fold 사전계산+BRAM 적재+1 MAC 범위 명확, iverilog CI 가능) = 6점 → vetted. 보강: mcdanel-2019·khan-2024 rechecked_at 취득 필요.
 
 ## I-144 뉴턴-랍슨 역제곱근 LUT 모듈 — Q4.12(16비트), 반복 2회, Basys3 BRAM 1개 (T4)
 
@@ -1975,8 +1984,8 @@
 - 근거 URL: [https://www.mdpi.com/2079-9292/14/12/2337, https://people.ece.uw.edu/hauck/publications/BatchNorm.pdf]
 - 새로움의 근거: 카탈로그에 역제곱근 LUT + 뉴턴-랍슨 반복을 조합한 Basys3 모듈 없음. 기존 고정소수점 Q포맷 카드들은 덧셈·곱셈만 다룸.
 - Basys3 적합성의 근거: BRAM 1개(256×16비트 LUT) + Q4.12 16비트 2회 반복 = 추정 ~400 LUT. XC7A35T 여유. 역제곱근 LUT 생성은 Python/C로 오프라인 가능.
-- 난이도: 3 / 단계: T4 / 상태: raw
-- 심사: (미심사)
+- 난이도: 3 / 단계: T4 / 상태: vetted
+- 심사: 2026-11-07 /verify 31차, raw→vetted 첫 심사(§14.2 표준, 차단조건재심사 불적용). 근거 0(kim-2025-layernorm-fpga·khan-2024-bn-hls4ml-uw 모두 rechecked_at 없음) + 새로움 2(역제곱근 LUT + 뉴턴-랍슨 반복 조합 Basys3 모듈 카탈로그 없음) + 적합성 2(BRAM 1개(256×16비트 LUT)+~400 LUT 추정; 근거 카드 L2이므로 감점) + 완결성 2(역제곱근 LUT 모듈+TB 작성 범위 명확, iverilog CI 가능) = 6점 → vetted. 보강: kim-2025·khan-2024 rechecked_at 취득 필요.
 
 ## I-145 RMS-Norm 하드웨어 모듈 — LLaMA 호환, 평균 제거 불필요, Basys3 LUT 예산 내 (T4, S1 이식)
 
@@ -1986,8 +1995,8 @@
 - 근거 URL: [https://www.mdpi.com/2079-9292/14/12/2337, https://arxiv.org/abs/1905.00462]
 - 새로움의 근거: 카탈로그에 RMSNorm FPGA 구현 없음. LN보다 Basys3 자원 부담 낮아(μ 계산 불필요 → 가산기 절감) 소형 모듈 패키지 적합.
 - Basys3 적합성의 근거: RMS 계산은 제곱합+나눗셈 없이 역제곱근 LUT로 대체 가능. Artix-7 DSP 최소 사용(추정 1 DSP/채널). BRAM 1개 LUT 적재.
-- 난이도: 3 / 단계: T4 / 상태: raw
-- 심사: (미심사)
+- 난이도: 3 / 단계: T4 / 상태: vetted
+- 심사: 2026-11-07 /verify 31차, raw→vetted 첫 심사(§14.2 표준, 차단조건재심사 불적용). 근거 0(kim-2025-layernorm-fpga·mcdanel-2019-full-stack-cnn-bn-folding 모두 rechecked_at 없음) + 새로움 2(RMSNorm FPGA 구현 카탈로그 없음) + 적합성 2(역제곱근 LUT로 대체 가능, DSP 최소 사용 추정; 근거 카드 L2이므로 감점) + 완결성 2(RMSNorm 모듈+TB 범위 명확, iverilog CI 가능) = 6점 → vetted. 보강: kim-2025·mcdanel-2019 rechecked_at 취득 필요.
 
 ## I-146 단순 RNN 셀 타임스텝 루프 — 이진 덧셈기 수준부터 시작하는 최소 순환 네트워크 (T3, S7 사다리 1단계)
 
@@ -1997,8 +2006,8 @@
 - 근거 URL: [https://arxiv.org/abs/1511.05552, https://github.com/ahirsharan/LSTM]
 - 새로움의 근거: 카탈로그에 단순 RNN(LSTM 없는 순수 h_t 순환 셀) FPGA 구현 카드 없음. LSTM 사다리의 필수 사전 단계이므로 독립 패키지 가치 있음.
 - Basys3 적합성의 근거: MAC 1개 + 상태 레지스터 1개 + LUT tanh(256-entry BRAM). 추정 LUT < 200, BRAM 1, DSP 1. XC7A35T 여유 충분.
-- 난이도: 2 / 단계: T3 / 상태: raw
-- 심사: (미심사)
+- 난이도: 2 / 단계: T3 / 상태: vetted
+- 심사: 2026-11-07 /verify 31차, raw→vetted 첫 심사(§14.2 표준, 차단조건재심사 불적용). 근거 0(chang-2015-rnn-fpga·ahirsharan-lstm 모두 rechecked_at 없음) + 새로움 2(단순 RNN 순환 셀 FPGA 카탈로그 없음) + 적합성 2(MAC 1개+상태 레지스터+LUT tanh, LUT<200·BRAM1·DSP1 추정; 근거 카드 chang은 L3이나 ahirsharan은 L2) + 완결성 2(단일 셀 MAC+FSM+LUT tanh 범위 명확, iverilog CI 가능) = 6점 → vetted. 보강: chang-2015·ahirsharan rechecked_at 취득 필요.
 
 ## I-147 LSTM 셀 단일 타임스텝 가속기 — 4+1 병렬 ALU, Q8.8, Basys3 AXI4-Lite 슬레이브 (T4, S7 사다리 2단계)
 
@@ -2008,8 +2017,8 @@
 - 근거 URL: [https://arxiv.org/abs/1511.05552, https://arxiv.org/abs/2310.16842, https://github.com/ahirsharan/LSTM]
 - 새로움의 근거: 카탈로그에 Basys3 대상 LSTM 셀 AXI4-Lite 슬레이브 카드 없음. Chang 2015 PLA + Qian 2023 병렬 ALU 조합은 기존 카드와 다른 조합.
 - Basys3 적합성의 근거: Qian 2023이 LUT 400개짜리 XC7S15에서 동작 → Basys3(20,800 LUT)에 여유. 추정 LUT 1,500, BRAM 2(가중치 2×), DSP 4(게이트당 1). free_slots 1슬롯(64KB).
-- 난이도: 3 / 단계: T4 / 상태: raw
-- 심사: (미심사)
+- 난이도: 3 / 단계: T4 / 상태: vetted
+- 심사: 2026-11-07 /verify 31차, raw→vetted 첫 심사(§14.2 표준, 차단조건재심사 불적용). 근거 0(chang-2015-rnn-fpga·ahirsharan-lstm·qian-2023-lstm-spartan7 모두 rechecked_at 없음) + 새로움 2(Basys3 LSTM AXI4-Lite 슬레이브 카탈로그 없음; Chang 2015 PLA+Qian 2023 4+1 ALU 조합 신규) + 적합성 2(Qian XC7S15(1,296 LUT)에서 LUT 400 동작 → Basys3 20,800 LUT 여유; 추정 LUT 1,500·BRAM 2·DSP 4; 근거 카드 모두 L3이나 Basys3 직접 합성 미확인) + 완결성 2(4+1 ALU+AXI4-Lite 슬레이브 범위 명확, iverilog CI 가능) = 6점 → vetted. 보강: 근거 카드 rechecked_at 취득 필요.
 
 ## I-148 타임스텝 루프 LSTM 시퀀스 추론 — 가속기 위에 FSM 루프 추가, 멀티 스텝 시계열 처리 (T4, S7 사다리 3단계)
 
@@ -2019,5 +2028,5 @@
 - 근거 URL: [https://arxiv.org/abs/1511.05552, https://arxiv.org/abs/2310.16842]
 - 새로움의 근거: 카탈로그에 Basys3 멀티-타임스텝 LSTM 시퀀스 추론 패키지 없음. I-147 단일 셀 위에 루프 컨트롤러를 얹는 조합은 사다리 완성이며 독립 패키지.
 - Basys3 적합성의 근거: I-147 대비 추가 자원은 루프 FSM(LUT 100개 이하) + 입력 시퀀스 BRAM(T×I 크기, T=10 I=4 → 40 entries, 최소). XC7A35T 여유 충분.
-- 난이도: 4 / 단계: T4 / 상태: raw
-- 심사: (미심사)
+- 난이도: 4 / 단계: T4 / 상태: vetted
+- 심사: 2026-11-07 /verify 31차, raw→vetted 첫 심사(§14.2 표준, 차단조건재심사 불적용). 근거 0(chang-2015-rnn-fpga·qian-2023-lstm-spartan7·ahirsharan-lstm 모두 rechecked_at 없음) + 새로움 2(Basys3 멀티-타임스텝 LSTM 시퀀스 추론 패키지 카탈로그 없음) + 적합성 2(I-147 대비 루프 FSM LUT<100+입력 BRAM 추가만 필요, XC7A35T 여유; 근거 카드 모두 L3이나 Basys3 직접 합성 미확인) + 완결성 2(루프 FSM+BRAM 입력버퍼+선형분류레이어 범위 명확, iverilog CI 가능) = 6점 → vetted. 보강: 근거 카드 rechecked_at 취득 필요.
