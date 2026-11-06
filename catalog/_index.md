@@ -2,6 +2,9 @@
 
 | 이름 | 등급 | 단계 | 보드 | 갱신일 |
 |---|---|---|---|---|
+| [abhi-raval-1910-basys3-cnn-2layer](amd/abhi-raval-1910-basys3-cnn-2layer.md) | L3 | T4 | Basys3 | 2026-11-06 |
+| [mo-ah-al11505-cnn-convolution-accelerator](amd/mo-ah-al11505-cnn-convolution-accelerator.md) | L3 | T2 | PYNQ-Z2 (needs-port) | 2026-11-06 |
+| [kang-yang-2023-aocstream-sensors](papers/kang-yang-2023-aocstream-sensors.md) | L3 | T4 | XCKU5P/XC7K325T (needs-port) | 2026-11-06 |
 | [digilent-forum-pmodamp3-basys3-i2s](amd/digilent-forum-pmodamp3-basys3-i2s.md) | L3 | T2 | Basys3 | 2026-11-02 |
 | [zipcpu-pmodamp2-project-ladder](vendor-neutral/zipcpu-pmodamp2-project-ladder.md) | L3 | T0-T2 | iCE40 (Basys3 needs-port) | 2026-11-02 |
 | [columbia-4840-audio-visualizer](intel/columbia-4840-audio-visualizer.md) | L3 | T4 | DE1-SoC | 2026-11-02 |

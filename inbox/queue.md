@@ -703,3 +703,14 @@
 - https://github.com/ZFTurbo/Verilog-Generator-of-Neural-Net-Digit-Detector | ZFTurbo/Verilog-Generator-of-Neural-Net-Digit-Detector: Python으로 Verilog 신경망 숫자 인식기 자동 생성 — 미열람(L1) | Verilog generator neural network digit detector MNIST
 - https://www.mdpi.com/2079-9292/9/6/1004 | MDPI Electronics 2020: FPGA 기반 신경망 추론 가속기 설계 — 미열람(L1) | FPGA neural network inference accelerator MDPI Electronics 2020
 - https://www.preprints.org/manuscript/202210.0462/v1 | Preprints.org: FPGA MLP 고정소수점 추론 가속기(2022) — 미열람(L1) | FPGA MLP fixed-point inference accelerator preprints 2022
+
+## 2026-11-06 CNN 컨볼루션 엔진 사이클
+- https://github.com/abhi-raval-1910/Basys3_CNN_2layer | abhi-raval-1910/Basys3_CNN_2layer: Basys3 2층 CNN MNIST 추론, MIT, 카드 작성 완료(L3) | FPGA CNN Basys3 Verilog 2layer MNIST
+- https://github.com/mo-ah-al11505/CNN_Convolution_Accelerator | mo-ah-al11505/CNN_Convolution_Accelerator: 3×3 슬라이딩 윈도우 RTL 생성기, ModelSim 검증, MIT, 카드 작성 완료(L3) | FPGA CNN 3x3 sliding window Verilog accelerator
+- https://www.mdpi.com/1424-8220/23/19/8104 | Kang&Yang Sensors 2023 AoCStream: 외부메모리 없는 CNN 스트리밍, 카드 작성 완료(L3) | AoCStream no external memory streaming CNN FPGA
+- https://github.com/h23yonsei/fpga-cnn-accelerator-labs | h23yonsei/fpga-cnn-accelerator-labs: Arty S7 대상 CNN 가속기 실습 — 미열람(L1) | FPGA CNN accelerator lab Arty S7 course
+- https://github.com/shagunnngupta/FPGA-CNN-Accelerator | shagunnngupta/FPGA-CNN-Accelerator: FPGA CNN 가속기 — 미열람(L1) | FPGA CNN accelerator Verilog GitHub
+- https://github.com/Ahmed-Amr-Farouk/-FPGA-CNN-Accelerator | Ahmed-Amr-Farouk/-FPGA-CNN-Accelerator: FPGA CNN 가속기 — 미열람(L1) | FPGA CNN accelerator Verilog GitHub
+- https://github.com/mattjesc/efficient-fpga-cnn-accelerator | mattjesc/efficient-fpga-cnn-accelerator: 효율적 FPGA CNN 가속기 — 미열람(L1) | efficient FPGA CNN accelerator Verilog
+- https://github.com/CodeNameGrapefruit/SoC_CNN | CodeNameGrapefruit/SoC_CNN: SoC CNN 통합 — 미열람(L1) | SoC CNN integration FPGA Verilog
+- https://people.ece.cornell.edu/land/courses/ece5760/FinalProjects/ | Cornell ECE 5760 프로젝트 목록: CNN 관련 최종 프로젝트 다수 — 미열람(L1) | Cornell ECE 5760 CNN project FPGA

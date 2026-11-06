@@ -1887,3 +1887,33 @@
 - Basys3 적합성의 근거: 내 판단: 단일 뉴런 Q4.4 MAC은 LUT 수백 미만. libfpga 사례(832 LUT4, 가중치 포함)가 근거. AXI4-Lite 슬레이브 추가해도 Basys3 20800 LUT 한참 이내.
 - 난이도: 2 / 단계: T1
 - 심사: (미심사, raw)
+
+## I-137 Basys3 2층 CNN MNIST 추론기 AXI4-Lite 버전 (T4 CNN 사다리)
+- 상태: raw
+- 요약: 내 판단: abhi-raval-1910-basys3-cnn-2layer 카드의 흐름을 MicroBlaze V SoC로 이식. UART 대신 AXI4-Lite 슬레이브로 이미지 픽셀 스트림을 받고, 가중치를 AXI-Lite 레지스터 맵에서 로드하며, 추론 완료 인터럽트를 MicroBlaze V에 보낸다. 출력은 AXI-Lite 레지스터에서 소프트웨어가 읽는다.
+- 조합: [conv_engine, pool_engine, fc_engine, AXI4-Lite, MicroBlaze-V, BRAM-weight]
+- 근거: [abhi-raval-1910-basys3-cnn-2layer, mo-ah-al11505-cnn-convolution-accelerator]
+- 새로움의 근거: abhi-raval 카드는 UART 하드와이어드. AXI-Lite SoC 버전은 카탈로그에 없음. kang-yang AoCStream과 달리 소스 제공 모델.
+- Basys3 적합성의 근거: 내 판단: abhi-raval 프로젝트가 이미 XC7A35T에서 동작 확인. AXI-Lite 래퍼 추가는 LUT 수백 수준 증가. 가중치 BRAM 소요량 abhi-raval 기준에서 추정 가능.
+- 난이도: 3 / 단계: T4
+- 심사: (미심사, raw)
+
+## I-138 라인 버퍼 스트리밍 3×3 Conv IP — 외부 메모리 불필요 (T3 CNN 사다리 기초)
+- 상태: raw
+- 요약: 내 판단: mo-ah-al11505 카드의 3×3 슬라이딩 윈도우 RTL을 Basys3용 Verilog-2001로 재작성하고 AXI4-Stream 인터페이스를 붙인다. kang-yang AoCStream 논문의 no-DRAM 스트리밍 원리를 소규모 적용: 단일 채널 28×28 입력 → 26×26 valid 출력을 BRAM 라인 버퍼 2행으로 처리. MicroBlaze V가 AXI4-Lite로 커널 계수를 설정하고 AXI4-Stream으로 픽셀을 공급.
+- 조합: [line-buffer, sliding-window, AXI4-Stream, AXI4-Lite, Basys3-BRAM]
+- 근거: [mo-ah-al11505-cnn-convolution-accelerator, kang-yang-2023-aocstream-sensors]
+- 새로움의 근거: 카탈로그에 AXI4-Stream 인터페이스 conv 프리미티브 없음. kang-yang 아키텍처를 Basys3 소규모로 구현한 사례도 없다.
+- Basys3 적합성의 근거: 내 판단: 단일 채널 3×3 conv 라인 버퍼는 2×(28+2)×8b ≈ 60 B BRAM. XC7A35T 225 KB 내에서 여러 채널 병렬 가능. mo-ah-al11505가 Zynq(동일 Artix-7 패브릭)에서 검증된 근거.
+- 난이도: 3 / 단계: T3
+- 심사: (미심사, raw)
+
+## I-139 AoCStream 논문 재현: Basys3 채널 ≤8 2레이어 스트리밍 CNN (T4)
+- 상태: raw
+- 요약: 내 판단: kang-yang 2023 AoCStream 아키텍처를 Basys3 제약(채널 ≤8, BRAM ≤225 KB)에 맞게 소형화하여 자체 RTL로 구현. 레이어 간 라인 버퍼를 BRAM으로, 가중치를 ROM으로 구성. 1→8→16 채널, 28×28 입력, MaxPool 포함 2레이어 구조. 논문이 XC7K325T에서 87.5% 프루닝을 요구한 것보다 작은 규모로 Basys3에 맞춘다.
+- 조합: [AoCStream-arch, line-buffer-streaming, no-DRAM, 2-layer-CNN, Basys3-BRAM]
+- 근거: [kang-yang-2023-aocstream-sensors, abhi-raval-1910-basys3-cnn-2layer, mo-ah-al11505-cnn-convolution-accelerator]
+- 새로움의 근거: AoCStream을 Basys3 XC7A35T에 소형화 적용한 구현 없음. 카탈로그 CNN 카드 중 완전한 자체 RTL 패키지도 없다.
+- Basys3 적합성의 근거: 내 판단: 채널 ≤8 가정 시 레이어 1 라인 버퍼 2×28×8×8b ≈ 448 B, 레이어 2 2×14×16×8b ≈ 448 B, 가중치 ROM 1×8×3×3×8b+8×16×3×3×8b ≈ 10 KB 추정 → 합계 약 15 KB 미만, XC7A35T 225 KB 내.
+- 난이도: 4 / 단계: T4
+- 심사: (미심사, raw)

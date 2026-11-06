@@ -51,3 +51,12 @@
 2026-11-06 | [B3] MLP 추론 가속기 | FPGA neural network MLP BRAM weight storage forward pass ReLU fixed point Artix-7 | 유효 (Columbia MNIST PDF DE1-SoC)
 2026-11-06 | [B3] MLP 추론 가속기 | github.com FPGA MNIST MLP neural network inference Basys3 Artix-7 AXI | 유효 (sivakumarchakarapalli: Basys3 INT8 AXI-Lite)
 2026-11-06 | [B3] MLP 추론 가속기 | site:github.com Basys3 MLP neural network accelerator BRAM fixed point AXI (extended) | 유효 (itsKannapi BRAM 15개 INT8, duydat291007 FlyWire-Basys3)
+
+2026-11-06 | [B3] CNN 컨볼루션 엔진 | FPGA CNN convolution engine 3x3 sliding window line buffer Basys3 Artix-7 Verilog GitHub | 유효
+2026-11-06 | [B3] CNN 컨볼루션 엔진 | FPGA Verilog 3x3 convolution sliding window line buffer MaxPooling RTL parameterized | 유효
+2026-11-06 | [B3] CNN 컨볼루션 엔진 | site:github.com FPGA CNN accelerator 3x3 convolution Basys3 Artix-7 Verilog MNIST | 유효
+2026-11-06 | [B3] CNN 컨볼루션 엔진 | FPGA CNN inference accelerator no external memory line buffer streaming arXiv 2023 | 유효
+2026-11-06 | [B3] CNN 컨볼루션 엔진 | "streaming CNN" FPGA "line buffer" "no external memory" site:mdpi.com OR site:ieeexplore.ieee.org | 유효 (AoCStream Sensors 2023 발견)
+2026-11-06 | [B3] CNN 컨볼루션 엔진 | FPGA 컨볼루션 엔진 슬라이딩 윈도우 라인 버퍼 Basys3 Verilog GitHub 한국어 | 빈약
+2026-11-06 | [B3] CNN 컨볼루션 엔진 | hackaday FPGA CNN convolutional neural network accelerator sliding window | 빈약
+2026-11-06 | [B3] CNN 컨볼루션 엔진 | FPGA convolution accelerator Basys3 MNIST 2layer neural network Verilog 2024 GitHub | 유효 (abhi-raval-1910 발견)
