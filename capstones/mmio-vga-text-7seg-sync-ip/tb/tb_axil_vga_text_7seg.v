@@ -243,15 +243,19 @@ initial begin
     check("T8 frame=420000clk", (vsync_period_clk >= 419990) && (vsync_period_clk <= 420010));
 
     // ── T9: vblank 진입 시 dig_sel 변화 (an 비트 변화)
-    // VBlank 첫 진입 대기 (vsync 이후)
+    // dig_sel은 vblank_rise(v_count=480)에서 증가하고,
+    // negedge vsync는 v_count=490(10줄 뒤)에 발생한다.
+    // → @(negedge vsync) 직후 an은 이미 현재 프레임의 새 값.
+    //   다음 an 변화는 다음 프레임 vblank_rise까지 약 412000클럭.
+    // 대기창을 413500클럭으로 설정해 다음 프레임 변화를 포착한다.
     @(negedge vga_vsync);
-    @(posedge clk); // VBlank 기간 시작 근방
-    // an[1:0] 변화 감시 (최대 2×800=1600 클럭)
+    @(posedge clk); // VBlank 기간(vsync 이후) 진입
     old_an = an;
     dig_changed = 0;
     begin : wait_dig
         integer k;
-        for (k = 0; k < 2000; k = k + 1) begin
+        // 다음 vblank_rise까지 최대 ~412000 클럭(515줄×800)
+        for (k = 0; k < 413500; k = k + 1) begin
             @(posedge clk);
             if (an !== old_an) begin
                 dig_changed = 1;
@@ -277,8 +281,11 @@ initial begin
     $finish;
 end
 
-// 타임아웃 (5프레임 여유 = 2100000 클럭 × 40ns = 84ms → 120ms로 여유)
-// T8+T9+T10 각 @(negedge vsync)를 연속 대기하므로 최소 ~66ms 필요
+// 타임아웃 120ms: 최대 소요 추정
+//   T8: 2프레임 = 840000클럭(33.6ms)
+//   T9: vsync대기 420000 + an변화대기 최대 413500 = 833500클럭(33.3ms)
+//   T10: vsync대기 420000 + 여유 = ~16.8ms
+//   합계 ~83.7ms → 120ms 여유
 initial begin
     #120_000_000;
     $display("FAIL: timeout");
