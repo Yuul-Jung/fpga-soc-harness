@@ -158,11 +158,11 @@
   },
 
   "verification": {
-    "lint":  "not-run",
-    "sim":   "not-run",
-    "synth": "not-run",
+    "lint":  "pass (경고 0건, iverilog -g2001 -Wall, CI run 42160311548)",
+    "sim":   "pass (PASS, vvp tb_i2s_rx_axil, CI run 42160311548)",
+    "synth": "pass (LUT 69, FF 155, yosys synth_xilinx 추정, CI run 42160311548)",
     "board": "not-run",
-    "notes": "S0 패키지. 근거 재확인 없음(§13.7 무조건 최대한 생성 원칙 2026-11-06 적용). lint·sim·synth는 CI가 채운다. 보드 동작 확인(S3)은 사람만 올릴 수 있다."
+    "notes": "S2. 근거 재확인 없음(§13.7 무조건 최대한 생성 원칙 2026-11-06 적용). CI run 42160311548: 본 패키지 lint·sim·synth 모두 통과. CI 전체 실패는 무관한 기존 broken 패키지(mmio-axil-xbar-2m4s-ip, mmio-color-lane-detect, mmio-oled-ssd1306-ip, mmio-ov7670-sccb-capture, mmio-qenc-diag-checker) 때문임. 보드 동작 확인(S3)은 사람만 올릴 수 있다."
   },
 
   "risks": [
