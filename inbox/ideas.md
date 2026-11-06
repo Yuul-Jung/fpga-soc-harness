@@ -1809,10 +1809,11 @@
 - 근거 URL: https://lay007.github.io/zynq-sdr-course/en/blocks/04-fixed-point-workflow/
 - 새로움의 근거: 카탈로그에 Basys3 순수 PL FIR + DSP48E1 + Q포맷 명세 패키지 없음 — 내 판단.
 - Basys3 적합성의 근거: 탭 16개 FIR → DSP48E1 16개 → XC7A35T 90개 중 18%, BRAM 1개, LUT ~200 추정 — 내 판단.
-- 난이도: 3 / 단계: T4 / 상태: ready
+- 난이도: 3 / 단계: T4 / 상태: used / 패키지 slug: mmio-fir-q1p15-mac-ip
 - 심사: 2026-11-06 /harvest(S2). 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(Basys3 FIR Q포맷 명세 패키지 없음) + 적합성 3(DSP48E1×16 XC7A35T 가능) + 완결성 1(AXI-Stream 인터페이스 추가 정의 필요) = 6점 → raw(첫심사). 보강: AXI-Stream 인터페이스 범위 확정 + 근거 카드 rechecked_at.
 - 상태 변경: raw → vetted (2026-11-06 /verify 27차, 첫심사 6점 충족 → vetted)
 - 차단조건재심사: 2026-11-07 /verify 32차, 근거 3(카드 3건 rechecked_at 불문: lay007·wangxuan95·gisselquist) + 새로움 2 + 적합성 3 + 완결성 1 = 9점 → ready 승격
+- 상태 변경: ready → used (2026-11-07 /capstone 자동 과제화, 무조건 최대한 생성 원칙, 근거 재확인 없음)
 
 ## I-130 고정소수점 비트폭 계산기: 덧셈·곱셈·FIR 가드 비트 자동 산출 웹 도구 (T0)
 

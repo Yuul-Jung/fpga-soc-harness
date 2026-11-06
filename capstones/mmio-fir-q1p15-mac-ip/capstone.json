@@ -1,0 +1,265 @@
+{
+  "slug": "mmio-fir-q1p15-mac-ip",
+  "title": "Basys3 파라미터화 FIR 필터 고정소수점 MAC 유닛",
+  "summary": "16탭 Q1.15 FIR 필터. BRAM/분산 RAM 계수, Q4.28 누산기, DSP48E1 추론 곱셈, AXI4-Stream 샘플 경로, AXI4-Lite 계수 로딩 및 제어 레지스터. Basys3 XC7A35T 순수 PL(FPGA 구조만) 구현.",
+  "board": "Basys3 (XC7A35T)",
+  "stage": "T4",
+  "goals": [
+    "16탭 Q1.15 FIR MAC 코어를 Verilog-2001로 작성한다",
+    "계수를 AXI4-Lite 슬레이브를 통해 런타임에 로드할 수 있게 한다",
+    "AXI4-Stream 인터페이스로 샘플을 받고 필터링 결과를 출력한다",
+    "Q4.28 누산기와 Q1.15 출력 포화+반올림을 구현한다",
+    "DSP48E1을 Verilog 추론으로 활성화해 LUT MAC을 대체한다",
+    "자체 점검(PASS/FAIL) 테스트벤치를 작성하고 iverilog로 통과시킨다"
+  ],
+  "non_goals": [
+    "부동소수점 연산",
+    "런타임 탭 수 변경 (파라미터로 고정)",
+    "OS, 소프트웨어 드라이버 (레지스터 맵만 제공)",
+    "보드 동작 확인 (S3) — 사람이 별도 확인",
+    "외부 ADC/DAC 연결 (Pmod 핀 예약만)",
+    "계수 자동 계산기 (I-130 아이디어와 별개)"
+  ],
+  "architecture": {
+    "clock": "100 MHz (clk_in1 → MMCM → 100 MHz sys_clk)",
+    "reset": "btnC active-high → aresetn(active-low)로 변환",
+    "blocks": [
+      {
+        "id": "top",
+        "name": "basys3_top",
+        "kind": "wrapper",
+        "module": "basys3_top",
+        "file": "rtl/axil_fir_wrap.v",
+        "desc": "Basys3 최상위 래퍼. 핀, 클럭, 리셋, AXI4-Lite 버스 마스터 포트 노출",
+        "short": "Board top",
+        "side": "left"
+      },
+      {
+        "id": "wrap",
+        "name": "axil_fir_wrap",
+        "kind": "peripheral",
+        "module": "axil_fir_wrap",
+        "file": "rtl/axil_fir_wrap.v",
+        "desc": "AXI4-Lite 슬레이브 래퍼. 계수 로딩, CTRL/STATUS 레지스터, fir_core 인스턴스",
+        "short": "AXI4-Lite wrapper",
+        "side": "center"
+      },
+      {
+        "id": "fir",
+        "name": "fir_core",
+        "kind": "dsp",
+        "module": "fir_core",
+        "file": "rtl/fir_core.v",
+        "desc": "16탭 FIR 코어. 시프트 레지스터, 계수 RAM, Q4.28 누산기, 포화+반올림 출력. DSP48E1 추론.",
+        "short": "FIR MAC core",
+        "side": "right"
+      }
+    ],
+    "links": [
+      {
+        "from": "top",
+        "to": "wrap",
+        "label": "AXI4-Lite (s_axil)"
+      },
+      {
+        "from": "wrap",
+        "to": "fir",
+        "label": "coeff_we/addr/dat + enable"
+      },
+      {
+        "from": "top",
+        "to": "fir",
+        "label": "s_axis (Q1.15 샘플 입력)"
+      },
+      {
+        "from": "fir",
+        "to": "top",
+        "label": "m_axis (Q1.15 필터 출력)"
+      }
+    ]
+  },
+  "bus_protocol": {
+    "type": "AXI4-Lite + AXI4-Stream",
+    "addr_width": 16,
+    "data_width": 32,
+    "signals": [
+      "s_axil_awaddr",
+      "s_axil_awvalid",
+      "s_axil_awready",
+      "s_axil_wdata",
+      "s_axil_wstrb",
+      "s_axil_wvalid",
+      "s_axil_wready",
+      "s_axil_bresp",
+      "s_axil_bvalid",
+      "s_axil_bready",
+      "s_axil_araddr",
+      "s_axil_arvalid",
+      "s_axil_arready",
+      "s_axil_rdata",
+      "s_axil_rresp",
+      "s_axil_rvalid",
+      "s_axil_rready",
+      "s_axis_data",
+      "s_axis_valid",
+      "s_axis_ready",
+      "m_axis_data",
+      "m_axis_valid",
+      "m_axis_ready"
+    ],
+    "limits": [
+      "WSTRB 전체 쓰기만 지원. BRESP/RRESP 항상 OKAY.",
+      "AXI4-Stream: TKEEP/TLAST 미사용. 샘플당 16 MAC 사이클 처리.",
+      "burst 불가, 인터럽트 출력 없음"
+    ]
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "mbv-frozen-v2",
+    "compat": "compatible",
+    "plan": "FIR 제어 레지스터를 free_slot [29] = 0x4029_0000에 배정. 인터럽트 없음(폴링 또는 DMA 연결).",
+    "frozen_mapping": [
+      {
+        "block": "wrap",
+        "region": "free_slot_29",
+        "base": "0x4029_0000",
+        "size": "0x10000",
+        "intc": null
+      }
+    ]
+  },
+  "external_parts": [],
+  "schematic": {
+    "state": "not-written",
+    "note": "외부 부품 없음. Pmod JB 핀(JB1=s_axis_data_dbg, JB2=m_axis_data_dbg)은 디버그 옵션으로만 xdc에 주석 처리."
+  },
+  "hierarchy": [
+    {
+      "module": "basys3_top",
+      "file": "rtl/axil_fir_wrap.v",
+      "children": [
+        {
+          "module": "axil_fir_wrap",
+          "file": "rtl/axil_fir_wrap.v",
+          "children": [
+            {
+              "module": "fir_core",
+              "file": "rtl/fir_core.v",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "memory_map": [
+    {
+      "base": "0x4029_0000",
+      "size": "0x10000",
+      "block": "wrap",
+      "desc": "FIR MAC IP 레지스터 공간 (free_slots[29], 동결 전 제안)",
+      "regs": [
+        {
+          "off": "0x00",
+          "name": "CTRL",
+          "access": "RW",
+          "desc": "[0]=enable [1]=bypass_mode"
+        },
+        {
+          "off": "0x04",
+          "name": "STATUS",
+          "access": "RO",
+          "desc": "[0]=busy(computing)"
+        },
+        {
+          "off": "0x08",
+          "name": "COEFF_ADDR",
+          "access": "RW",
+          "desc": "[3:0]=탭 인덱스(0~15)"
+        },
+        {
+          "off": "0x0C",
+          "name": "COEFF_DATA",
+          "access": "RW",
+          "desc": "Q1.15 계수 s16; 쓰기 시 COEFF_ADDR 인덱스에 저장"
+        }
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T2",
+      "state": "done",
+      "title": "MMIO UART+GPIO 스켈레톤",
+      "refs": []
+    },
+    {
+      "stage": "T3",
+      "state": "done",
+      "title": "MicroBlaze V AXI4-Lite 버스 체계",
+      "refs": []
+    },
+    {
+      "stage": "T4",
+      "state": "current",
+      "title": "FIR MAC 코어 + AXI4-Stream 경로",
+      "refs": [
+        "lay007-zynq-sdr-course-block04",
+        "wangxuan95-fpga-fixedpoint",
+        "gisselquist-zipcpu-bit-growth"
+      ]
+    },
+    {
+      "stage": "T4",
+      "state": "planned",
+      "title": "CIC 데시메이터 + 다단 필터 체인",
+      "refs": []
+    }
+  ],
+  "references": [
+    {
+      "name": "lay007-zynq-sdr-course-block04",
+      "reason": "AXI4-Stream FIR 구조, Q1.15 계수 형식"
+    },
+    {
+      "name": "wangxuan95-fpga-fixedpoint",
+      "reason": "고정소수점 비트 성장 분석, 포화+반올림 패턴"
+    },
+    {
+      "name": "gisselquist-zipcpu-bit-growth",
+      "reason": "MAC 가드 비트 계산, 누산기 폭 근거"
+    }
+  ],
+  "sources": {
+    "rtl": [
+      "rtl/fir_core.v",
+      "rtl/axil_fir_wrap.v"
+    ],
+    "tb": [
+      "tb/tb_fir.v"
+    ],
+    "constraints": [
+      "constr/basys3.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
+  },
+  "howto": {
+    "sim": "make sim  # iverilog + vvp; PASS/FAIL 출력",
+    "lint": "make lint  # verilator --lint-only",
+    "synth": "make synth  # yosys -p 'synth_xilinx -top basys3_top'",
+    "vivado": "Vivado에서 rtl/*.v + constr/basys3.xdc를 프로젝트에 추가, top=basys3_top, 합성·구현 후 비트스트림 생성"
+  },
+  "verification": {
+    "board": "not-verified",
+    "notes": "S0: 작성됨, 미검증. CI가 iverilog 시뮬레이션(S1)과 yosys 합성(S2)을 기록한다."
+  },
+  "risks": [
+    "DSP48E1 추론: Verilog-2001 $signed() 곱셈이 yosys 합성에서 DSP48E1로 매핑되는지 CI에서 확인 필요",
+    "Q4.28 누산기: 16탭 모두 최대 계수(0x7FFF)이면 오버플로 가능. 포화 로직이 이를 방지한다고 가정하나 TB에서 경계값 테스트 필요",
+    "AXI4-Lite 타이밍: s_axil_awready와 s_axil_wready를 같은 사이클에 올리는 단순 구현. AXI 명세상 허용이나 일부 마스터와 비호환 가능",
+    "계수 초기화: 리셋 후 계수 RAM은 0으로 초기화됨. 소프트웨어가 계수를 로드하기 전에 enable하면 출력이 0",
+    "latency: 16 MAC 사이클(파이프라인 없이 순차 MAC). 고속 스트리밍에 부적합. s_axis_ready를 computing 중에 Low로 유지."
+  ]
+}
