@@ -248,3 +248,4 @@
 2026-11-07 03:29 | collect | GRU 셀 대 LSTM 셀 비교 · S1 인접 도메인(주)+S4 제약 역전(보조) | 카드 +3 | 아이디어 +3 | 큐 잔여 25 | blocked 6
 2026-11-07 04:36 | verify | 재열람 3 (WebFetch PROVENANCE_REQUIRED 32차 연속 차단, 신규 카드 3건 파일 직접 확인) | 수정 0 | 불일치 0 | 승격 L2→L3 0 | ready +2 (I-129·I-130) | 차단조건재심사: I-129(9점)·I-130(9점) → ready | raw→vetted: I-149(5점)·I-150(7점)·I-151(7점) | atlas §7 GRU/LSTM 비교 신규 | soc-map 32차 갱신
 2026-11-07 05:11 | capstone | I-129 FIR Q1.15 MAC IP · 무조건 최대한 생성 원칙 | mmio-fir-q1p15-mac-ip | S2 (CI lint·sim·synth·audit PASS, run=42287113545) | 근거 재확인 없음(§13.7 무조건 최대한 생성 원칙) | ready→used | 슬롯 [29] 0x4029_0000 / mbv-frozen-v2 partial | 소스: fir_core.v(236줄) + axil_fir_wrap.v(248줄) + tb_fir.v(294줄) + basys3.xdc + Makefile
+2026-11-07 06:20 | collect | 어텐션 메커니즘 하드웨어 기초 · S5 비정형 출처(주)+S3 빈틈 추적(보조) | 카드 +3 | 아이디어 +2 | 큐 잔여 8 | blocked 2

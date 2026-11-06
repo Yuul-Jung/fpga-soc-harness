@@ -294,3 +294,6 @@
 | [li-2019-ernn-gru-lstm](papers/li-2019-ernn-gru-lstm.md) | L3 | T4 | Virtex-7/KU060 (needs-port) | 2026-11-07 |
 | [khoda-2023-hls4ml-gru-lstm](papers/khoda-2023-hls4ml-gru-lstm.md) | L3 | T4 | Kintex UltraScale/U250 (needs-port) | 2026-11-07 |
 | [chae-2022-gru-de1soc](papers/chae-2022-gru-de1soc.md) | L2 | T4 | DE1-SoC (needs-port) | 2026-11-07 |
+| [wang-2020-mha-fpga-accelerator](papers/wang-2020-mha-fpga-accelerator.md) | L3 | T4 | xcvu13p (Basys3 needs-port) | 2026-11-07 |
+| [richielee-2025-tiled-matmul-attention-kv260](papers/richielee-2025-tiled-matmul-attention-kv260.md) | L3 | T4 | KV260 (Basys3 needs-port) | 2026-11-07 |
+| [ftrans-2020-transformer-fpga-piecewise-softmax](papers/ftrans-2020-transformer-fpga-piecewise-softmax.md) | L3 | T4 | VCU118 (Basys3 no) | 2026-11-07 |

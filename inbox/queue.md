@@ -739,3 +739,13 @@
 - https://dissem.in/p/140257494/ | Rapuano 2022: GRU FPGA 추론 가속기(Hindawi) — L2(초록 수준), GRU 셀 Verilog 구현 직접 비교 | GRU FPGA hardware accelerator fixed-point Hindawi 2022
 - https://github.com/lz1313/BlockCIrculantRNN | E-RNN 소스: 블록-순환 RNN FPGA 구현(라이선스 미확인) — 차단(PROVENANCE_REQUIRED), li-2019-ernn-gru-lstm 카드 근거 코드 | E-RNN BlockCirculantRNN GitHub
 - https://arxiv.org/abs/2207.00559 | hls4ml GRU/LSTM 논문 원본(Machine Learning: Sci & Tech) — 차단(PROVENANCE_REQUIRED), khoda-2023-hls4ml-gru-lstm 카드 보완 | hls4ml GRU LSTM FPGA inference arXiv
+
+## 어텐션 메커니즘 하드웨어 기초 — 2026-11-07 06시대 사이클 추가
+- https://arxiv.org/abs/2409.14023 | FAMOUS: 소형 Softmax 하드웨어(온라인 로그-합-지수, Artix-7 타겟) arXiv 2024 — 미열람(L1), 소형 보드 Softmax 아이디어 후보 | FPGA Softmax hardware approximation log-sum-exp
+- https://arxiv.org/abs/2402.01047 | FlashAttention FPGA 구현 사례(arXiv 2024) — 미열람(L1), 어텐션 하드웨어 슬라이딩 윈도우 | FlashAttention FPGA hardware implementation 2024
+- https://arxiv.org/abs/2411.18148 | Softmax 근사 비교 논문(차단: PROVENANCE_REQUIRED) — blocked: 프록시 오류, 다음 사이클 재시도 필요 | FPGA Softmax approximation comparison 2024
+- https://github.com/ErickMaRi/HDL-Bitnet-1.58 | Bitnet-1.58 RTL(GitHub): 어텐션·Softmax 미구현(TODO만 존재) — L2 열람(기여 불가 상태), 카드 보류, 완성도 확인 후 재시도 | Verilog attention softmax hardware
+- https://www.mdpi.com/2072-666X/17/1/84 | MDPI 2026 Alveo U55C 어텐션 가속기 — L2 열람(자원 테이블 없음, 클럭 미기재), 카드 보류: 완전 L3 열람 필요 | FPGA transformer attention accelerator hardware
+- https://arxiv.org/abs/2311.06268 | SpAtten: 희소 어텐션 가속기(arXiv 2023) — 미열람(L1), 어텐션 헤드 가지치기+FPGA | sparse attention FPGA accelerator
+- https://arxiv.org/abs/2208.11642 | I-BERT / 정수 어텐션(어림 소수 연산 없이 INT8 Softmax) — 미열람(L1), INT8 전용 어텐션 소형 보드 적합성 후보 | integer-only Softmax attention FPGA INT8
+- https://github.com/openhwgroup/cvfpu | CVA6 FPU(부동소수점 단위) — 미열람(L1), exp 하드웨어 참고 가능성 확인 필요 | hardware exp floating point open source Verilog
