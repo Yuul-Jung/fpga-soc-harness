@@ -116,7 +116,7 @@ module axil_spi_slave #(
                     if (spi_bit_cnt == 4'd7) begin
                         // 첫 번째 바이트 완료 — 주소 바이트
                         spi_addr_byte <= {spi_shift_in[6:0], mosi_sync[1]};
-                        spi_rd_request <= {spi_shift_in[6:0], mosi_sync[1]}[7]; // MSB=1: 읽기
+                        spi_rd_request <= spi_shift_in[6]; // 수신 바이트 MSB (bit7): 1=읽기, 0=쓰기
                     end else if (spi_bit_cnt == 4'd15) begin
                         // 두 번째 바이트 완료 — 데이터 바이트
                         spi_data_byte  <= {spi_shift_in[6:0], mosi_sync[1]};

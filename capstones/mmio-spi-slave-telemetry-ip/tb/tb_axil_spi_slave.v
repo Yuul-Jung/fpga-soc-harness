@@ -111,7 +111,7 @@ module tb_axil_spi_slave;
         // TC1: AXI4-Lite TX_DATA_0 쓰기 → 읽기
         // -------------------------------------------------
         axil_write(8'h00, 32'h5A);
-        begin
+        begin: tc1_check
             reg [31:0] rd;
             axil_read(8'h00, rd);
             if (rd[7:0] !== 8'h5A) begin
@@ -128,7 +128,7 @@ module tb_axil_spi_slave;
         spi_write_frame(8'h01, 8'hA5);
         repeat(10) @(posedge clk); // CDC 동기화 대기
 
-        begin
+        begin: tc2_check
             reg [31:0] rd;
             axil_read(8'h20, rd); // STATUS
             if (rd[0] !== 1'b1) begin
@@ -149,7 +149,7 @@ module tb_axil_spi_slave;
         // TC3: SPI READ 프레임 (addr=0x80 MSB=1, data=0x00) → MISO 수신
         //      TX_DATA_0을 0x5A로 미리 채웠으므로 MISO에서 0x5A 기대
         // -------------------------------------------------
-        begin
+        begin: tc3_check
             reg [7:0] miso_byte;
             spi_read_frame(8'h80, 8'h00, miso_byte);
             repeat(10) @(posedge clk);
@@ -165,7 +165,7 @@ module tb_axil_spi_slave;
         // -------------------------------------------------
         // TC4: STATUS 레지스터 — CS 비활성 시 cs_active=0
         // -------------------------------------------------
-        begin
+        begin: tc4_check
             reg [31:0] rd;
             axil_read(8'h20, rd); // STATUS: [2]=cs_active
             if (rd[2] !== 1'b0) begin
@@ -180,7 +180,7 @@ module tb_axil_spi_slave;
         // -------------------------------------------------
         axil_write(8'h24, 32'h1); // CTRL[0]=rx_clear
         repeat(5) @(posedge clk);
-        begin
+        begin: tc5_check
             reg [31:0] rd;
             axil_read(8'h20, rd);
             if (rd[0] !== 1'b0) begin
@@ -198,7 +198,7 @@ module tb_axil_spi_slave;
         spi_write_frame(8'h03, 8'hCC);
         repeat(10) @(posedge clk);
 
-        begin
+        begin: tc6_check
             reg [31:0] rd0, rd1, st;
             axil_read(8'h20, st);
             axil_read(8'h10, rd0); // RX_DATA_0
