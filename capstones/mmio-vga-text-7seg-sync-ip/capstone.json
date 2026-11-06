@@ -142,9 +142,12 @@
     "vivado": "Vivado 2024.2: 새 프로젝트 → XC7A35T-1CPG236C → rtl/ + constr/ 추가 → Generate Bitstream"
   },
   "verification": {
-    "grade": "S0",
+    "grade": "S2",
     "board": "pending",
-    "notes": "무조건 최대한 생성 원칙(§13.7 사용자 운영 방침). Gate 3·4 건너뜀. 근거 카드 rechecked_at 미확인. CI 통과 시 S2로 갱신."
+    "ci_run": "42256262013",
+    "ci_result": "lint PASS(경고 19건), sim PASS(all 10 tests), synth PASS(LUT 31675, FF 38587, yosys 추정)",
+    "ci_date": "2026-11-06",
+    "notes": "무조건 최대한 생성 원칙(§13.7 사용자 운영 방침). Gate 3·4 건너뜀. 3차 CI 시도에서 PASS. S3(보드 동작)는 사람만 올릴 수 있음."
   },
   "risks": [
     "BRAM 추론: Verilog-2001 reg 배열이 Xilinx BRAM이 아닌 LUT-RAM으로 합성될 수 있음. attribute BRAM_STYLE 명시 권장.",
