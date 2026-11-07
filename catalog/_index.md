@@ -2,7 +2,7 @@
 
 | 이름 | 등급 | 단계 | 보드 | 갱신일 |
 |---|---|---|---|---|
-| [ansh07verma-fpga-mini-npu](vendor-neutral/ansh07verma-fpga-mini-npu.md) | L2 | T4 | 미명시 (needs-port) | 2026-11-07 |
+| [ansh07verma-fpga-mini-npu](amd/ansh07verma-fpga-mini-npu.md) | L3 | T4 | Basys3 | 2026-11-08 |
 | [axc1271-mini-npu](vendor-neutral/axc1271-mini-npu.md) | L2 | T4 | 미명시 (needs-port) | 2026-11-07 |
 | [cornell-ece5760-2024-conv-accel](papers/cornell-ece5760-2024-conv-accel.md) | L2 | T4 | DE1-SoC (needs-port) | 2026-11-07 |
 | [arxiv-2607-03652-eliteformer](papers/arxiv-2607-03652-eliteformer.md) | L2 | T4 | Versal VCK5000 (no) | 2026-11-07 |
@@ -316,7 +316,7 @@
 | [shanker-teo-integer-intelligence-2026](papers/shanker-teo-integer-intelligence-2026.md) | L3 | T4 | Cmod A7 (needs-port) | 2026-11-07 |
 | [hiteshtp09-verilog-softmax-accelerator](vendor-neutral/hiteshtp09-verilog-softmax-accelerator.md) | L3 | T0 | 미명시 (needs-port) | 2026-11-07 |
 | [cardarilli-2021-pseudo-softmax](papers/cardarilli-2021-pseudo-softmax.md) | L3 | T4 | 없음 (논문) | 2026-11-07 |
-| [columbia-4840-sp26-mnist-accelerator](papers/columbia-4840-sp26-mnist-accelerator.md) | L3 | T3 | DE1-SoC (needs-port) | 2026-11-07 |
+| [columbia-4840-sp26-mnist-accelerator](papers/columbia-4840-sp26-mnist-accelerator.md) | L3 | T4 | DE1-SoC (needs-port) | 2026-11-08 |
 | [shreyasilver22-neural-accelerator](amd/shreyasilver22-neural-accelerator.md) | L3 | T2 | Nexys4-DDR (needs-port) | 2026-11-08 |
 | [hussain-2025-har-mlp-artix7](papers/hussain-2025-har-mlp-artix7.md) | L3 | T2 | Artix-7-35T (yes) | 2026-11-08 |
 | [tasci-2025-fpga-qnn](papers/tasci-2025-fpga-qnn.md) | L3 | T4 | PYNQ-Z1 (needs-port) | 2026-11-08 |

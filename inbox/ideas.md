@@ -2153,8 +2153,9 @@
 - Basys3 적합성 근거: 1-MAC INT8 = 8비트×8비트+16비트 누산, DSP48E1 1개 또는 LUT 위주. 가중치 레지스터 최대 8쌍 × 2바이트 = 16B → BRAM 불필요. free_slots 1개(64KB) 충분. XC7A35T 적합.
 - 난이도: 2
 - 단계: T4
-- 상태: ready
-- 심사: 2026-11-07 /verify 35차, raw→vetted 첫 심사(§14.2 표준). 근거 0(ansh07verma-fpga-mini-npu·axc1271-mini-npu·cornell-ece5760-2024-conv-accel 모두 rechecked_at 없음) + 새로움 2(1-MAC AXI4-Lite NPU IP 패키지 카탈로그 없음) + 적합성 2(DSP 1개 또는 LUT 위주, BRAM 불필요, XC7A35T 적합 명확) + 완결성 2(가중치 레지스터·트리거·결과 플래그 AXI 슬레이브 범위 명확, iverilog CI 가능) = 6점 → vetted. 이후 차단조건재심사: 근거 3(카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7 → ready. WebFetch PROVENANCE_REQUIRED 35차 연속 차단(§14.2 차단 조건 적용). 사이클 1번째 슬롯 소비.
+- 상태: used
+- 패키지: mmio-mlp-axil-ip
+- 심사: 2026-11-07 /verify 35차, raw→vetted 첫 심사(§14.2 표준). 근거 0(ansh07verma-fpga-mini-npu·axc1271-mini-npu·cornell-ece5760-2024-conv-accel 모두 rechecked_at 없음) + 새로움 2(1-MAC AXI4-Lite NPU IP 패키지 카탈로그 없음) + 적합성 2(DSP 1개 또는 LUT 위주, BRAM 불필요, XC7A35T 적합 명확) + 완결성 2(가중치 레지스터·트리거·결과 플래그 AXI 슬레이브 범위 명확, iverilog CI 가능) = 6점 → vetted. 이후 차단조건재심사: 근거 3(카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7 → ready. WebFetch PROVENANCE_REQUIRED 35차 연속 차단(§14.2 차단 조건 적용). 사이클 1번째 슬롯 소비. 2026-11-07 /capstone 2시간 완결 파이프라인: ready → used. 패키지 mmio-mlp-axil-ip(T4, S0, 근거 재확인 없음, §13.7 무조건 최대한 생성).
 
 ---
 

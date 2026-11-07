@@ -50,9 +50,11 @@ def main():
         if fm is None:
             errors.append(f"{rel}: frontmatter 없음")
             continue
-        for k in REQUIRED:
-            if not fm.get(k):
-                errors.append(f"{rel}: 필수 필드 누락 '{k}' (모르면 unverified: 사유)")
+        is_superseded = fm.get("status") == "superseded" or bool(fm.get("duplicate_of"))
+        if not is_superseded:
+            for k in REQUIRED:
+                if not fm.get(k):
+                    errors.append(f"{rel}: 필수 필드 누락 '{k}' (모르면 unverified: 사유)")
         for k, allowed in ENUMS.items():
             if fm.get(k) and fm[k] not in allowed:
                 errors.append(f"{rel}: {k}='{fm[k]}' 허용값 아님 {sorted(allowed)}")
@@ -71,7 +73,7 @@ def main():
         if fm.get("name") and fm["name"] not in index_text:
             errors.append(f"{rel}: _index.md에 반영되지 않음")
         url = fm.get("url")
-        if url:
+        if url and not is_superseded:
             if url in seen_urls:
                 errors.append(f"{rel}: url 중복 ({seen_urls[url]})")
             seen_urls[url] = rel

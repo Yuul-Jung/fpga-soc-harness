@@ -1,6 +1,8 @@
 ---
 name: ansh07verma-fpga-mini-npu
 url: https://github.com/ansh07verma/fpga-mini-npu
+status: superseded
+duplicate_of: ansh07verma-fpga-mini-npu
 source_type: repo
 vendor: neutral
 board: [unknown]

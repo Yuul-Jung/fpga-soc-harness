@@ -1,0 +1,383 @@
+{
+  "slug": "mmio-mlp-axil-ip",
+  "title": "MLP 추론 AXI4-Lite IP — 단일 MAC 순차 실행",
+  "summary": "Basys3(XC7A35T) 대상 INT8 순차 MAC 1개로 FC MLP를 추론하는 AXI4-Lite 슬레이브 IP. 784→128→10 (MNIST 데모) 구조. MicroBlaze V 동결 맵 슬롯 [2F] 배정.",
+  "board": "Basys3",
+  "stage": "T4",
+  "goals": [
+    "AXI4-Lite 슬레이브 레지스터 맵(CONTROL/STATUS/RESULT/CONFIDENCE/LOAD_ADDR/LOAD_DATA/LOAD_TARGET/VERSION)을 Verilog로 구현",
+    "INT8 가중치·편향을 BRAM에 $readmemh로 초기화, AXI 스트리밍으로 덮어쓰기 가능",
+    "단일 순차 MAC FSM으로 FC1(784→128, ReLU) → FC2(128→10, argmax) 추론 실행",
+    "MicroBlaze V C 드라이버와 직결: start 비트 쓰기 → done 폴링 → result 읽기",
+    "이식 근거: Columbia 2026 Avalon-MM 레지스터 맵을 AXI4-Lite로 변환"
+  ],
+  "non_goals": [
+    "MNIST 학습·Python 환경 — 가중치는 사전 양자화된 hex 파일로 제공",
+    "배치 추론·DMA 연결",
+    "보드 동작 확인(S3) — CI S2까지만 목표",
+    "파이프라인 MAC 병렬화 — 단일 MAC 순차 실행만 구현"
+  ],
+  "architecture": {
+    "clock": "100 MHz (Basys3 기본 클럭)",
+    "reset": "btnC active-high (시스템 리셋과 동일)",
+    "blocks": [
+      {
+        "id": "TOP",
+        "name": "basys3_top_mlp",
+        "kind": "wrapper",
+        "module": "basys3_top_mlp",
+        "file": "rtl/basys3_top_mlp.v",
+        "desc": "Basys3 최상위 래퍼. 클럭·리셋·LED 연결",
+        "short": "board\nwrapper",
+        "side": "left"
+      },
+      {
+        "id": "IP",
+        "name": "axil_mlp_infer",
+        "kind": "ip",
+        "module": "axil_mlp_infer",
+        "file": "rtl/axil_mlp_infer.v",
+        "desc": "AXI4-Lite 슬레이브 + 레지스터 맵 + FSM 제어",
+        "short": "AXI4-Lite\nMLP IP",
+        "side": "center"
+      },
+      {
+        "id": "MAC",
+        "name": "mlp_mac_fsm",
+        "kind": "compute",
+        "module": "mlp_mac_fsm",
+        "file": "rtl/mlp_mac_fsm.v",
+        "desc": "INT8×INT8→INT32 단일 순차 MAC FSM. IDLE→FC1→RELU→FC2→ARGMAX→DONE",
+        "short": "MAC\nFSM",
+        "side": "center"
+      },
+      {
+        "id": "RELU",
+        "name": "relu_int32",
+        "kind": "activation",
+        "module": "relu_int32",
+        "file": "rtl/relu_int32.v",
+        "desc": "INT32 ReLU: max(0, x)",
+        "short": "ReLU",
+        "side": "center"
+      },
+      {
+        "id": "ARGMAX",
+        "name": "argmax_10",
+        "kind": "classifier",
+        "module": "argmax_10",
+        "file": "rtl/argmax_10.v",
+        "desc": "10-클래스 argmax. INT32 비교, 최대 인덱스 반환",
+        "short": "argmax\n×10",
+        "side": "center"
+      },
+      {
+        "id": "W1",
+        "name": "bram_w1",
+        "kind": "bram",
+        "desc": "FC1 가중치 BRAM (784×128 INT8 = 100 KB)",
+        "short": "BRAM\nW1",
+        "side": "right"
+      },
+      {
+        "id": "B1",
+        "name": "bram_b1",
+        "kind": "bram",
+        "desc": "FC1 편향 BRAM (128 INT32 = 512 B)",
+        "short": "BRAM\nB1",
+        "side": "right"
+      },
+      {
+        "id": "W2",
+        "name": "bram_w2",
+        "kind": "bram",
+        "desc": "FC2 가중치 BRAM (128×10 INT8 = 1.25 KB)",
+        "short": "BRAM\nW2",
+        "side": "right"
+      },
+      {
+        "id": "B2",
+        "name": "bram_b2",
+        "kind": "bram",
+        "desc": "FC2 편향 BRAM (10 INT32 = 40 B)",
+        "short": "BRAM\nB2",
+        "side": "right"
+      },
+      {
+        "id": "INPUT",
+        "name": "input_bram",
+        "kind": "bram",
+        "desc": "입력 이미지 BRAM (784 INT8 = 784 B)",
+        "short": "BRAM\nINPUT",
+        "side": "right"
+      }
+    ],
+    "links": [
+      {
+        "from": "TOP",
+        "to": "IP",
+        "label": "AXI4-Lite M"
+      },
+      {
+        "from": "IP",
+        "to": "MAC",
+        "label": "start/done"
+      },
+      {
+        "from": "IP",
+        "to": "W1",
+        "label": "load_w"
+      },
+      {
+        "from": "IP",
+        "to": "B1",
+        "label": "load_b"
+      },
+      {
+        "from": "IP",
+        "to": "W2",
+        "label": "load_w"
+      },
+      {
+        "from": "IP",
+        "to": "B2",
+        "label": "load_b"
+      },
+      {
+        "from": "IP",
+        "to": "INPUT",
+        "label": "load_input"
+      },
+      {
+        "from": "MAC",
+        "to": "W1",
+        "label": "rd_w1"
+      },
+      {
+        "from": "MAC",
+        "to": "B1",
+        "label": "rd_b1"
+      },
+      {
+        "from": "MAC",
+        "to": "W2",
+        "label": "rd_w2"
+      },
+      {
+        "from": "MAC",
+        "to": "B2",
+        "label": "rd_b2"
+      },
+      {
+        "from": "MAC",
+        "to": "INPUT",
+        "label": "rd_input"
+      },
+      {
+        "from": "MAC",
+        "to": "RELU",
+        "label": "fc1_sum"
+      },
+      {
+        "from": "MAC",
+        "to": "ARGMAX",
+        "label": "fc2_sum"
+      },
+      {
+        "from": "RELU",
+        "to": "MAC",
+        "label": "h[128]"
+      },
+      {
+        "from": "ARGMAX",
+        "to": "IP",
+        "label": "result[3:0]"
+      }
+    ]
+  },
+  "bus_protocol": {
+    "name": "AXI4-Lite",
+    "data_width": 32,
+    "addr_width": 8,
+    "signals": [
+      "awvalid",
+      "awready",
+      "awaddr",
+      "wvalid",
+      "wready",
+      "wdata",
+      "wstrb",
+      "bvalid",
+      "bready",
+      "bresp",
+      "arvalid",
+      "arready",
+      "araddr",
+      "rvalid",
+      "rready",
+      "rdata",
+      "rresp"
+    ],
+    "note": "단순화: bresp/rresp = 2'b00 고정, wstrb는 무시(32비트 전체 쓰기)"
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "mbv-frozen-v2",
+    "compat": "compatible",
+    "plan": "동결 맵 슬롯 [2F] = 0x402F_0000에 배정. MicroBlaze V에서 Xil_Out32/Xil_In32로 직접 접근 가능. 인터럽트 없음(폴링 방식).",
+    "frozen_mapping": {
+      "IP": "[2F] 0x402F_0000"
+    }
+  },
+  "external_parts": [],
+  "schematic": {
+    "state": "not-written",
+    "note": "디지털 IP 전용, 외부 부품 없음"
+  },
+  "hierarchy": [
+    {
+      "module": "basys3_top_mlp",
+      "file": "rtl/basys3_top_mlp.v",
+      "children": [
+        {
+          "module": "axil_mlp_infer",
+          "file": "rtl/axil_mlp_infer.v",
+          "children": [
+            {
+              "module": "mlp_mac_fsm",
+              "file": "rtl/mlp_mac_fsm.v"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "memory_map": [
+    {
+      "region": "mlp_axil_ip",
+      "base": "0x402F_0000",
+      "size": "0x10000",
+      "block": "IP",
+      "regs": [
+        {
+          "off": "0x00",
+          "name": "CONTROL",
+          "access": "W",
+          "desc": "[0]=start, [1]=load_mode, [2]=clear_done"
+        },
+        {
+          "off": "0x04",
+          "name": "STATUS",
+          "access": "R",
+          "desc": "[0]=busy, [1]=done(sticky)"
+        },
+        {
+          "off": "0x08",
+          "name": "RESULT",
+          "access": "R",
+          "desc": "예측 클래스 [3:0]"
+        },
+        {
+          "off": "0x0C",
+          "name": "CONFIDENCE",
+          "access": "R",
+          "desc": "FC2 최대 누산값 하위 32비트"
+        },
+        {
+          "off": "0x10",
+          "name": "LOAD_ADDR",
+          "access": "R/W",
+          "desc": "대상 메모리 쓰기 인덱스"
+        },
+        {
+          "off": "0x14",
+          "name": "LOAD_DATA",
+          "access": "W",
+          "desc": "스트리밍 데이터 포트 (바이트 단위 [7:0])"
+        },
+        {
+          "off": "0x18",
+          "name": "LOAD_TARGET",
+          "access": "W",
+          "desc": "0=W1, 1=B1, 2=W2, 3=B2, 4=INPUT"
+        },
+        {
+          "off": "0x1C",
+          "name": "VERSION",
+          "access": "R",
+          "desc": "0x00010000 (v1.0)"
+        }
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T4",
+      "state": "current",
+      "title": "단일 MAC 순차 MLP IP (이번 패키지)",
+      "refs": [
+        "columbia-4840-sp26-mnist-accelerator",
+        "ansh07verma-fpga-mini-npu"
+      ]
+    },
+    {
+      "stage": "T4",
+      "state": "planned",
+      "title": "파이프라인 MAC 병렬화 (다음 패키지)",
+      "refs": [
+        "cornell-ece5760-2024-conv-accel"
+      ]
+    }
+  ],
+  "references": [
+    {
+      "name": "columbia-4840-sp26-mnist-accelerator",
+      "reason": "레지스터 맵 패턴(CONTROL/STATUS/RESULT/CONFIDENCE/LOAD_ADDR/LOAD_DATA/LOAD_TARGET/VERSION) 직접 차용, Avalon-MM→AXI4-Lite 변환"
+    },
+    {
+      "name": "ansh07verma-fpga-mini-npu",
+      "reason": "INT8 MAC 단위 설계, controller FSM 상태 설계 참고"
+    },
+    {
+      "name": "columbia-4840-sp26-lenet5-cnn-accelerator",
+      "reason": "BRAM 가중치 초기화($readmemh) 패턴"
+    }
+  ],
+  "sources": {
+    "rtl": [
+      "rtl/basys3_top_mlp.v",
+      "rtl/axil_mlp_infer.v",
+      "rtl/mlp_mac_fsm.v",
+      "rtl/relu_int32.v",
+      "rtl/argmax_10.v"
+    ],
+    "tb": [
+      "tb/tb_mlp_axil.v"
+    ],
+    "constraints": [
+      "constr/basys3_mlp.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
+  },
+  "howto": {
+    "simulation": "make sim  # iverilog + vvp",
+    "synthesis": "vivado -mode batch -source synth.tcl  # (또는 Makefile의 make synth)",
+    "weight_load": "MicroBlaze V C: Xil_Out32(LOAD_TARGET, 0); for(i=0;i<784*128;i++){Xil_Out32(LOAD_DATA, w1[i]);} ...; Xil_Out32(CONTROL, 1);  // start",
+    "note": "$readmemh 초기화: tb/weights/*.hex 파일이 없으면 시뮬레이션에서 가중치=0으로 동작(기능 구조 확인용)"
+  },
+  "verification": {
+    "board": "not-verified",
+    "notes": "CI: iverilog lint + iverilog sim(PASS/FAIL). 보드 확인은 사람이 직접 한다.",
+    "targets": [
+      "tb/tb_mlp_axil.v: 레지스터 R/W, start→done 폴링, result 읽기 확인"
+    ]
+  },
+  "risks": [
+    "BRAM 사용: W1=100KB, W2=1.25KB, B1/B2≈0.5KB, INPUT=0.8KB → 합계 ≈103KB (Basys3 225KB의 46%). 다른 IP와 공존 시 BRAM 충돌 가능",
+    "추론 시간: 784×128 + 128×10 = 101,632 MAC. 100MHz에서 2사이클/MAC 가정 시 ≈2ms/추론",
+    "정확도: INT8 양자화로 90%+ MNIST 정확도 달성 가능하나 가중치 품질에 따라 달라짐",
+    "AXI4-Lite wstrb 무시: 32비트 전체 쓰기만 지원. 바이트 단위 접근 불가"
+  ]
+}
