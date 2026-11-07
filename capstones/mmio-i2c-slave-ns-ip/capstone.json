@@ -191,8 +191,15 @@
     ]
   },
   "verification": {
+    "grade": "S2",
+    "lint": "pass",
+    "sim": "pass",
+    "synth": "pass",
+    "ci_run": "42359551147",
+    "ci_commit": "5536caf9fb4abb23428216f02dbd43262d647f4b",
+    "ci_date": "2026-11-07",
     "board": "not-tested",
-    "notes": "시뮬레이션 TB로 주소 필터·WRITE·READ 동작 확인. 보드 검증은 사람이 수행(S3 등급)."
+    "notes": "CI verify #449 (commit 5536caf9): lint·sim·synth 모두 통과 → S2 달성. 시뮬레이션 TB로 주소 필터·WRITE·READ·STATUS·I2C_ADDR 동작 확인(T1~T5). 보드 검증은 사람이 수행(S3 등급)."
   },
   "risks": [
     "RPi BCM I2C 내부 풀업(~50 kΩ)으로 100 kHz 동작 시 SDA 라이즈 타임이 느릴 수 있음. 외부 4.7 kΩ 풀업 권장.",
