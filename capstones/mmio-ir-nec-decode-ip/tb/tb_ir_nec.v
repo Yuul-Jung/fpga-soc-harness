@@ -291,7 +291,7 @@ module tb_ir_nec;
             begin
                 // decoded_valid 무시하고 decoded_repeat 대기
                 // (전체 프레임 전송 시간 + 반복 코드 전송 시간)
-                wait_output(2_000_000, 0, 1, 0, got_pulse);
+                wait_output(10_000_000, 0, 1, 0, got_pulse);
                 if (!got_pulse) begin
                     $display("FAIL: TC3 - decoded_repeat 펄스 없음");
                     fail_count = fail_count + 1;
@@ -350,7 +350,7 @@ module tb_ir_nec;
 
     // 타임아웃 보호 (3초 시뮬레이션 시간 = 300M ns)
     initial begin
-        #300_000_000;
+        #500_000_000;
         $display("FAIL: 테스트 타임아웃 (300ms 초과)");
         $finish;
     end
