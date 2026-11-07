@@ -279,3 +279,4 @@
 - 2026-11-08 03:19 | collect | NPU 캡스톤 T2(CIFAR-10 CNN 가속기+VGA) · S4 제약역전(주)+S6 실패사례(보조) | 카드 +3 | 아이디어 +1 (I-149 raw) | 큐 잔여 large | blocked 0 | 갭: CIFAR-10+VGA 조합 사례 없음 확인
 2026-11-08 04:45 | verify | 재열람 5 | 수정 1 | 불일치 1 | 승격 L2→L3 0 | ready +2 | raw→vetted +4 | WebFetch 차단 38차(PROVENANCE_REQUIRED) — 내부 일관성 검증으로 대체; atlas/ml-accelerator.md CNN 엔진 섹션 카드 3건(jonathan-quan·basdabt·ziad-abaid) 추가
 2026-11-08 04:59 | capstone | I-061 AXI4-Lite 다운카운터 타이머 IRQ + FreeRTOS xSemaphoreGiveFromISR 통지 패턴 (§13.7 무조건 최대한 생성) | mmio-axil-irq-timer-ip | T2, slot [30] 0x4030_0000, INTC ch14 | 검증 S2 (lint+sim+synth 통과, CI run 42408983970) | 게이트 3·4 사용자 방침(2026-11-06)에 따라 생략. 근거 재확인 없이 생성됨.
+2026-11-08 06:24 | capstone | I-134 mmio-attn1h-axil-ip (T4, AXI4-Lite 1헤드 Self-Attention IP d_model=8, slot [31] 0x4031_0000) | 패키지 +1 (Q/K/V 가중치 8×8 INT8 레지스터, 순차 MAC FSM, 소프트맥스 선형 근사) | 검증 S0 (도구 없음, CI 대기) | 게이트 3·4 사용자 방침(2026-11-06 §13.7 무조건 최대한 생성)에 따라 생략. 근거 재확인 없이 생성됨.

@@ -1,0 +1,232 @@
+{
+  "slug": "mmio-attn1h-axil-ip",
+  "title": "단일 헤드 Self-Attention AXI4-Lite IP (d_model=8, 순차 MAC)",
+  "summary": "Basys3(XC7A35T) 대상 1헤드 Self-Attention을 AXI4-Lite 슬레이브 IP로 구현. d_model=8, seq_len=1~4 (레지스터 설정). Q/K/V 가중치를 reg 배열에 $readmemh로 초기화. 순차 MAC FSM. MicroBlaze V 동결 맵 슬롯 [31] 배정.",
+  "board": "Basys3",
+  "stage": "T4",
+  "goals": [
+    "AXI4-Lite 슬레이브 레지스터 맵(CTRL/STATUS/WDATA/WIDX/OUT_DATA/OUT_IDX/CFG/VERSION)을 Verilog-2001로 구현",
+    "INT8 Q/K/V 가중치(8×8)를 reg 배열로 보유, AXI 쓰기로 동적 로드 가능",
+    "순차 MAC FSM으로 Q=X*WQ, K=X*WK, V=X*WV 사영, 스케일드 닷프로덕트, 소프트맥스 근사, 출력 집계",
+    "MicroBlaze V C 드라이버와 직결: start 비트 쓰기 → done 폴링 → 출력 읽기",
+    "이식 근거: arxiv-2505-17662 TinyTransformer4TS(XC7S15)의 단일 헤드 어텐션 구조를 AXI4-Lite로 래핑"
+  ],
+  "non_goals": [
+    "학습 — 가중치는 사전 양자화된 hex 파일로 제공",
+    "배치 추론·DMA 연결",
+    "보드 동작 확인(S3) — CI S2까지만 목표",
+    "파이프라인 병렬화 — 순차 단일 MAC 실행만 구현",
+    "d_model > 8 지원 — 400줄 RTL 예산 내 범위 한정"
+  ],
+  "architecture": {
+    "clock": "100 MHz (Basys3 기본 클럭)",
+    "reset": "btnC active-high",
+    "blocks": [
+      {
+        "id": "TOP",
+        "name": "basys3_top_attn1h",
+        "kind": "wrapper",
+        "module": "basys3_top_attn1h",
+        "file": "rtl/basys3_top_attn1h.v",
+        "desc": "Basys3 최상위 래퍼. 클럭·리셋·LED 연결",
+        "short": "board\nwrapper",
+        "side": "left"
+      },
+      {
+        "id": "IP",
+        "name": "axil_attn1h",
+        "kind": "ip",
+        "module": "axil_attn1h",
+        "file": "rtl/axil_attn1h.v",
+        "desc": "AXI4-Lite 슬레이브 + 레지스터 맵 + FSM + Q/K/V 연산",
+        "short": "AXI4-Lite\nAttn1H IP",
+        "side": "center"
+      },
+      {
+        "id": "WQ",
+        "name": "wq_regs",
+        "kind": "regfile",
+        "desc": "Q 가중치 reg 배열 8×8 INT8 (64 bytes)",
+        "short": "WQ[8][8]",
+        "side": "right"
+      },
+      {
+        "id": "WK",
+        "name": "wk_regs",
+        "kind": "regfile",
+        "desc": "K 가중치 reg 배열 8×8 INT8",
+        "short": "WK[8][8]",
+        "side": "right"
+      },
+      {
+        "id": "WV",
+        "name": "wv_regs",
+        "kind": "regfile",
+        "desc": "V 가중치 reg 배열 8×8 INT8",
+        "short": "WV[8][8]",
+        "side": "right"
+      },
+      {
+        "id": "XBUF",
+        "name": "x_buf",
+        "kind": "regfile",
+        "desc": "입력 토큰 버퍼 4×8 INT8",
+        "short": "X[4][8]",
+        "side": "right"
+      },
+      {
+        "id": "FSM",
+        "name": "attn_fsm",
+        "kind": "compute",
+        "desc": "어텐션 FSM: IDLE→PROJ_QKV→SCORE→SOFTMAX→ATTN_OUT→DONE",
+        "short": "Attn\nFSM",
+        "side": "center"
+      }
+    ],
+    "links": [
+      {"from": "TOP", "to": "IP", "label": "AXI4-Lite M"},
+      {"from": "IP",  "to": "WQ",  "label": "load/rd"},
+      {"from": "IP",  "to": "WK",  "label": "load/rd"},
+      {"from": "IP",  "to": "WV",  "label": "load/rd"},
+      {"from": "IP",  "to": "XBUF","label": "load/rd"},
+      {"from": "IP",  "to": "FSM", "label": "start/done"},
+      {"from": "FSM", "to": "WQ",  "label": "rd_wq"},
+      {"from": "FSM", "to": "WK",  "label": "rd_wk"},
+      {"from": "FSM", "to": "WV",  "label": "rd_wv"},
+      {"from": "FSM", "to": "XBUF","label": "rd_x"},
+      {"from": "FSM", "to": "IP",  "label": "out_buf[4][8]"}
+    ]
+  },
+  "bus_protocol": {
+    "name": "AXI4-Lite",
+    "data_width": 32,
+    "addr_width": 8,
+    "signals": [
+      "awvalid","awready","awaddr",
+      "wvalid","wready","wdata","wstrb",
+      "bvalid","bready","bresp",
+      "arvalid","arready","araddr",
+      "rvalid","rready","rdata","rresp"
+    ],
+    "note": "단순화: bresp/rresp = 2'b00 고정, wstrb 무시(32비트 전체 쓰기)"
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "mbv-frozen-v2",
+    "compat": "compatible",
+    "plan": "동결 맵 슬롯 [31] = 0x4031_0000에 배정. MicroBlaze V에서 Xil_Out32/Xil_In32로 직접 접근. 인터럽트 없음(폴링).",
+    "frozen_mapping": {
+      "IP": "[31] 0x4031_0000"
+    }
+  },
+  "external_parts": [],
+  "schematic": {
+    "state": "not-written",
+    "note": "디지털 IP 전용, 외부 부품 없음"
+  },
+  "hierarchy": [
+    {
+      "module": "basys3_top_attn1h",
+      "file": "rtl/basys3_top_attn1h.v",
+      "children": [
+        {
+          "module": "axil_attn1h",
+          "file": "rtl/axil_attn1h.v"
+        }
+      ]
+    }
+  ],
+  "memory_map": [
+    {
+      "region": "attn1h_axil_ip",
+      "base": "0x4031_0000",
+      "size": "0x10000",
+      "block": "IP",
+      "regs": [
+        {"off": "0x00", "name": "CTRL",     "access": "W",   "desc": "[0]=start [1]=load_w [2]=clear_done [7:4]=target(0=WQ 1=WK 2=WV 3=X)"},
+        {"off": "0x04", "name": "STATUS",   "access": "R",   "desc": "[0]=busy [1]=done(sticky)"},
+        {"off": "0x08", "name": "WDATA",    "access": "W",   "desc": "[7:0]=weight/input byte to write"},
+        {"off": "0x0C", "name": "WIDX",     "access": "R/W", "desc": "[5:0]=auto-inc write index (row*8+col for WQ/WK/WV, pos*8+dim for X)"},
+        {"off": "0x10", "name": "OUT_DATA", "access": "R",   "desc": "[31:0]=attention output at OUT_IDX"},
+        {"off": "0x14", "name": "OUT_IDX",  "access": "R/W", "desc": "[4:0]={pos[1:0],dim[2:0]}: out_buf[pos][dim] INT32"},
+        {"off": "0x18", "name": "CFG",      "access": "R/W", "desc": "[2:0]=seq_len-1 (0→1tok .. 3→4tok)"},
+        {"off": "0x1C", "name": "VERSION",  "access": "R",   "desc": "0x00010001 (v1.0, 1-head, d_model=8)"}
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T4",
+      "state": "done",
+      "title": "INT8 MLP FC 추론 AXI IP (mmio-mlp-axil-ip)",
+      "refs": ["columbia-4840-sp26-mnist-accelerator"]
+    },
+    {
+      "stage": "T4",
+      "state": "done",
+      "title": "삼진 가중치 MAC AXI IP (mmio-ternary-weight-mac-ip)",
+      "refs": ["arxiv-2607-03652-eliteformer"]
+    },
+    {
+      "stage": "T4",
+      "state": "current",
+      "title": "단일 헤드 Self-Attention AXI IP (이번 패키지)",
+      "refs": ["arxiv-2505-17662-tinyformer4ts", "arxiv-2410-03294-mixprecq-ts-fpga"]
+    },
+    {
+      "stage": "T4",
+      "state": "planned",
+      "title": "FFN(Feed-Forward) AXI IP + 완전 트랜스포머 인코더 조합",
+      "refs": ["arxiv-2410-03294-mixprecq-ts-fpga"]
+    }
+  ],
+  "references": [
+    {
+      "name": "arxiv-2505-17662-tinyformer4ts",
+      "reason": "d_model=40 단일 인코더(1헤드 MHA)가 XC7S15(8K LUT)에서 동작함 → d_model=8이 Basys3 가능이라는 적합성 근거"
+    },
+    {
+      "name": "arxiv-2410-03294-mixprecq-ts-fpga",
+      "reason": "성분별 혼합 정밀도(4~8비트) 양자화, Q/K/V 사영 개별 비트폭 설계 참고"
+    },
+    {
+      "name": "arxiv-2401-02721-tiny-transformer-fpga",
+      "reason": "FPGA 소형 트랜스포머 AXI4-Lite 인터페이스 구조 참고"
+    }
+  ],
+  "sources": {
+    "rtl": [
+      "rtl/axil_attn1h.v",
+      "rtl/basys3_top_attn1h.v"
+    ],
+    "tb": [
+      "tb/tb_axil_attn1h.v"
+    ],
+    "constraints": [
+      "constr/basys3_attn1h.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
+  },
+  "howto": {
+    "simulation": "make sim  # iverilog + vvp; 출력에서 PASS 확인",
+    "synthesis": "make synth  # yosys+nextpnr 또는 Vivado TCL",
+    "weight_load": "MicroBlaze V C: Xil_Out32(BASE+0x1C,0x3); Xil_Out32(BASE+0x0C,0); for(i=0;i<64;i++) Xil_Out32(BASE+0x08, wq[i]); ...; Xil_Out32(BASE+0x00,1);",
+    "note": "$readmemh 초기화: tb/weights/*.hex 없으면 가중치=0으로 동작(구조 확인용)"
+  },
+  "verification": {
+    "board": "not-verified",
+    "notes": "CI: iverilog lint + iverilog sim(PASS/FAIL). 보드 확인은 사람이 직접 한다.",
+    "targets": [
+      "tb/tb_axil_attn1h.v: 레지스터 R/W, 가중치 로드, start→done, out 읽기 확인",
+      "항등 가중치(WQ=WK=WV=I)에서 self-attention 출력이 입력의 가중 평균임을 검증"
+    ]
+  },
+  "risks": [
+    "INT8 MAC 오버플로우: d_model=8, seq_len=4 기준 score = sum(8 INT8*INT8) → 최대 8*127*127≈130K → INT32 필요",
+    "소프트맥스 근사 정확도: 선형 최대-빼기 근사는 실제 exp보다 거칠어 attention weight 분포가 균등해질 수 있음",
+    "LUT 추정: Q/K/V 사영 각 64 MAC + score 계산 16 MAC + 출력 32 MAC → 순차 FSM으로 LUT <2000 추정(Basys3 20800의 ~10%)",
+    "reg 배열 크기: WQ+WK+WV 각 64바이트 = 192 × 8비트 FF. seq_len × d_model 중간 버퍼 포함 ~600 FF → 제한 없음"
+  ]
+}

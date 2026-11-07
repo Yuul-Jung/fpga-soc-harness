@@ -2120,8 +2120,9 @@
 - Basys3 적합성 근거: d_model=32, 1헤드, 4비트 → XC7S15 기준 LUT ~35% → Basys3(4배) 기준 ~8-9%. BRAM: 가중치 BRAM 2~3개 범위(d_model=32, 4비트). DSP: 삼진 가중치로 0 가능(arxiv-2607-03652 참고). 실측 없음. free_slots 1개 배정 제안.
 - 난이도: 4
 - 단계: T4
-- 상태: ready
-- 심사: 2026-11-07 /verify 34차, raw→vetted 첫 심사(§14.2 표준). 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(d_model≤32 단일 인코더 AXI4-Lite NPU IP 카드·패키지 없음) + 적합성 2(XC7S15 ~35% → Basys3 ~8-9%, BRAM 2~3블록 추정 명확) + 완결성 2(단일 인코더 FSM+AXI 래퍼+TB 범위 명확, iverilog CI 가능) = 6점 → vetted. 이후 차단조건재심사(PROVENANCE_REQUIRED 34차 연속 차단): 근거 카드 총 수 2(rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 8점 ≥ 7 → ready. 차단조건재심사: 2026-11-07, 점수 8.
+- 상태: used
+- slug: mmio-attn1h-axil-ip
+- 심사: 2026-11-07 /verify 34차, raw→vetted 첫 심사(§14.2 표준). 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(d_model≤32 단일 인코더 AXI4-Lite NPU IP 카드·패키지 없음) + 적합성 2(XC7S15 ~35% → Basys3 ~8-9%, BRAM 2~3블록 추정 명확) + 완결성 2(단일 인코더 FSM+AXI 래퍼+TB 범위 명확, iverilog CI 가능) = 6점 → vetted. 이후 차단조건재심사(PROVENANCE_REQUIRED 34차 연속 차단): 근거 카드 총 수 2(rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 8점 ≥ 7 → ready. 차단조건재심사: 2026-11-07, 점수 8. 2026-11-07 /capstone 2시간 완결 파이프라인: mmio-attn1h-axil-ip 패키지 작성, used로 전환.
 
 ---
 
