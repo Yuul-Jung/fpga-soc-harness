@@ -209,9 +209,10 @@ module axil_ir_nec_wrap #(
     // wstrb 상위 비트([3:1])는 바이트 레인 미사용으로 무시한다.
     // ---------------------------------------------------------------
     wire _unused_ok = &{1'b0,
-        s_axi_wstrb[DATA_W/8-1:1],
-        s_axi_araddr[1:0],
-        aw_addr_lat[1:0]
+        s_axi_wdata[DATA_W-1:3],     // [31:3]: W1C는 bit2:0만 사용
+        s_axi_wstrb[DATA_W/8-1:1],  // [3:1]: 바이트 레인 1~3 미사용
+        s_axi_araddr[1:0],           // 워드 정렬, 디코드는 [3:2]만 사용
+        aw_addr_lat[1:0]             // 워드 정렬, 디코드는 [3:2]만 사용
     };
 
 endmodule
