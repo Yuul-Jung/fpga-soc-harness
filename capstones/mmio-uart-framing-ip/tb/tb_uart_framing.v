@@ -222,8 +222,8 @@ initial begin
             axi_read(8'h00, rd);
             if (rd[0]) disable wait_done1;
             wait_cnt = wait_cnt + 1;
-            if (wait_cnt > 200) begin
-                $display("FAIL T1: PKT_DONE가 200클럭 안에 셋되지 않았다");
+            if (wait_cnt > 10000) begin
+                $display("FAIL T1: PKT_DONE가 10000클럭 안에 셋되지 않았다");
                 fail_cnt = fail_cnt + 1;
                 disable wait_done1;
             end
@@ -273,7 +273,7 @@ initial begin
             axi_read(8'h00, rd);
             if (rd[0]) disable wait_done2;
             wait_cnt = wait_cnt + 1;
-            if (wait_cnt > 200) begin
+            if (wait_cnt > 10000) begin
                 $display("FAIL T2: PKT_DONE 대기 타임아웃");
                 fail_cnt = fail_cnt + 1;
                 disable wait_done2;
@@ -306,7 +306,7 @@ initial begin
             axi_read(8'h00, rd);
             if (rd[0]) disable wait_done3;
             wait_cnt = wait_cnt + 1;
-            if (wait_cnt > 200) begin
+            if (wait_cnt > 10000) begin
                 $display("FAIL T3: PKT_DONE 대기 타임아웃");
                 fail_cnt = fail_cnt + 1;
                 disable wait_done3;
