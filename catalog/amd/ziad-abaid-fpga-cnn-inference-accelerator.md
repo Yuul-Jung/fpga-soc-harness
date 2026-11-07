@@ -16,6 +16,7 @@ stats: {stars: unverified, commits: unverified, last_update: unverified}
 doc_language: en
 verification: L3
 checked_at: 2026-11-08
+rechecked_at: 2026-11-08
 source_rev:
 sources: [https://github.com/ZiadAbaid/FPGA-CNN-Inference-Accelerator]
 ---

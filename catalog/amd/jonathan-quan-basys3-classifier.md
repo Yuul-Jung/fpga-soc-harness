@@ -6,7 +6,7 @@ vendor: amd
 board: [Basys3]
 fit_basys3: yes
 cpu: none(FSM)
-language: unverified
+language: unknown
 tools: [Vivado]
 bus: none
 peripherals: [UART]
@@ -16,9 +16,12 @@ stats: {stars: unverified, commits: unverified, last_update: unverified}
 doc_language: en
 verification: L3
 checked_at: 2026-11-08
+rechecked_at: 2026-11-08
 source_rev:
 sources: [https://github.com/jonathan-quan/basys3-classifier]
 ---
+
+변경: language: unverified → language: unknown (2026-11-08). 소스 파일을 직접 열람하지 않아 Verilog/VHDL 불명; 카드 본문에도 "소스 파일 직접 미열람" 명시. `unverified`는 비표준 값이므로 `unknown`으로 수정.
 
 ## 요약 (3줄)
 Basys3 Artix-7 XC7A35T에서 동작하는 4-class 물체 분류기. 노트북 웹캠 → USB-UART → FPGA 추론 → UART 결과 반환 파이프라인. MNIST·CIFAR-10 대신 Google Open Images 기반 Rubik's cube·펜·책·마우스 4개 클래스. 소형 MobileNet 스타일 DW/PW CNN(6,084 파라미터)을 Basys3에서 2,636 LUT·7 DSP만으로 구현.

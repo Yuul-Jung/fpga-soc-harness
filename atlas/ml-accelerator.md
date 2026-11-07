@@ -1,6 +1,6 @@
 # ML 추론 가속기: 고정소수점 연산·MAC 행렬·MLP·CNN·GRU/LSTM·어텐션 메커니즘
 
-갱신: 2026-11-07 (/verify 37차). 카드 40건 기반 (Q포맷 4건, MAC/행렬 4건, MLP 뉴런 5건, 활성화 함수 4건, CNN 엔진 3건, BN/LN 정규화 3건, RNN/LSTM 가속기 3건, GRU/LSTM 비교 3건, 논문 2건, 어텐션/Transformer 가속기 3건, 트랜스포머 슬림화 3건, Softmax·출력 분류기 3건).
+갱신: 2026-11-08 (/verify 38차). 카드 43건 기반 (Q포맷 4건, MAC/행렬 4건, MLP 뉴런 5건, 활성화 함수 4건, CNN 엔진 6건, BN/LN 정규화 3건, RNN/LSTM 가속기 3건, GRU/LSTM 비교 3건, 논문 2건, 어텐션/Transformer 가속기 3건, 트랜스포머 슬림화 3건, Softmax·출력 분류기 3건).
 고정소수점 Q포맷 산술, MAC 배열 가속기, MLP/CNN 추론 IP, BN/LN 정규화 하드웨어, RNN/LSTM 가속기, 어텐션 메커니즘 하드웨어, 트랜스포머 슬림화의 Basys3 적용 가능성을 정리한다.
 MicroBlaze V SoC의 `free_slots`에서 AXI4-Lite 가속기 IP로 연결하는 경로를 중심으로 분석한다.
 
@@ -94,26 +94,35 @@ MicroBlaze V SoC의 `free_slots`에서 AXI4-Lite 가속기 IP로 연결하는 �
 
 ## 4. CNN 컨볼루션 엔진
 
-| 항목 | abhi-raval-1910-basys3-cnn-2layer | mo-ah-al11505-cnn-convolution-accelerator | kang-yang-2023-aocstream-sensors |
-|---|---|---|---|
-| 카드 | [abhi-raval-1910-basys3-cnn-2layer](../catalog/amd/abhi-raval-1910-basys3-cnn-2layer.md) | [mo-ah-al11505-cnn-convolution-accelerator](../catalog/amd/mo-ah-al11505-cnn-convolution-accelerator.md) | [kang-yang-2023-aocstream-sensors](../catalog/papers/kang-yang-2023-aocstream-sensors.md) |
-| 보드 | Basys3 (XC7A35T) | PYNQ-Z2 (needs-port) | XCKU5P / XC7K325T |
-| 아키텍처 | 순차 2레이어 CNN MNIST | 3×3 슬라이딩 윈도우 + 9-MAC | AoCStream 스트리밍 (no-DRAM) |
-| 입출력 | UART 직렬 입력 → 7세그 | AXI4-Stream | 외부 메모리 없음 (라인 버퍼) |
-| 라이선스 | MIT | MIT | unknown(논문) |
-| 등급 | L3 | L3 | L3 |
-| 단계 | T4 | T4 | T4 |
-| Basys3 직접 | yes | needs-port | needs-port(87.5% 가중치 가지치기 필요) |
+| 항목 | abhi-raval-1910-basys3-cnn-2layer | basdabt-fpga-mnist-cnn-accelerator | jonathan-quan-basys3-classifier | ziad-abaid-fpga-cnn-inference-accelerator | mo-ah-al11505-cnn-convolution-accelerator | kang-yang-2023-aocstream-sensors |
+|---|---|---|---|---|---|---|
+| 카드 | [abhi-raval-1910-basys3-cnn-2layer](../catalog/amd/abhi-raval-1910-basys3-cnn-2layer.md) | [basdabt-fpga-mnist-cnn-accelerator](../catalog/amd/basdabt-fpga-mnist-cnn-accelerator.md) | [jonathan-quan-basys3-classifier](../catalog/amd/jonathan-quan-basys3-classifier.md) | [ziad-abaid-fpga-cnn-inference-accelerator](../catalog/amd/ziad-abaid-fpga-cnn-inference-accelerator.md) | [mo-ah-al11505-cnn-convolution-accelerator](../catalog/amd/mo-ah-al11505-cnn-convolution-accelerator.md) | [kang-yang-2023-aocstream-sensors](../catalog/papers/kang-yang-2023-aocstream-sensors.md) |
+| 보드 | Basys3 (XC7A35T) | Basys3 (XC7A35T) | Basys3 (XC7A35T) | Nexys4 (XC7A100T) | PYNQ-Z2 (needs-port) | XCKU5P / XC7K325T |
+| 언어 | 미확인 | Verilog | 미확인(RTL) | VHDL | 미확인 | 미확인(논문) |
+| 아키텍처 | 순차 2레이어 CNN MNIST | Conv3×3(4필터)→Pool→FC×3 MNIST | DW/PW MobileNet 스타일 9레이어(6,084파라미터) | 5레이어 CNN(Conv+Dense) Q8.8 | 3×3 슬라이딩 윈도우 + 9-MAC | AoCStream 스트리밍 (no-DRAM) |
+| 버스 | none(FSM) | none(FSM) | none(FSM) | AXI-Stream | AXI4-Stream | - |
+| 입출력 | UART 직렬 → 7세그 | BRAM 입력(readmemh) → 7세그 | 웹캠 → UART → UART 결과 | SPI(RPi5) → 추론 → SPI 출력 | AXI4-Stream | 외부 메모리 없음 (라인 버퍼) |
+| 자원 | 미기재 | 미기재 (10 MHz CNN 클럭) | 2,636 LUT / 7 DSP48E1 | LUT ~35%(≈35,504) / DSP 23% / BRAM 8% | 미확인 | 미확인 |
+| 클래스 수 | 10 (MNIST) | 10 (MNIST) | 4(자체 데이터셋) | 3-class | n/a | n/a |
+| 라이선스 | MIT | unknown | unknown | unknown | MIT | unknown(논문) |
+| 등급 | L3 | L3 | L3 | L3 | L3 | L3 |
+| 단계 | T4 | T2 | T4 | T4 | T4 | T4 |
+| Basys3 직접 | yes | yes | yes | needs-port | needs-port | needs-port |
 
 **패턴 (내 판단):**
-- abhi-raval: Basys3에서 XC7A35T로 MNIST 추론을 UART 입출력으로 완성한 유일한 L3 카드. 단, AXI4-Lite 버스가 없어 MicroBlaze V 연동은 UART 경유 또는 AXI4-Lite 래퍼 추가 필요(I-137 아이디어).
-- mo-ah-al11505: 2개 FIFO 라인 버퍼 + 슬라이딩 3×3 윈도우 + 9-MAC 병렬 구조가 AXI4-Stream 인터페이스로 추상화된 최소 단위 컨볼루션 프리미티브다. Basys3 이식 시 Artix-7 패브릭 호환이 근거 있으나 PYNQ DDR 의존성 제거 필요(I-138 아이디어).
-- AoCStream 논문: 가중치 가지치기 없이 Basys3에서 완전 구동은 불가(87.5% 가지치기 필요). 채널 ≤8 소형화 버전(I-139 아이디어)이 현실적 대안이나 추가 연구 필요.
+- abhi-raval: Basys3에서 XC7A35T로 MNIST 추론을 UART 입출력으로 완성한 L3 카드. AXI4-Lite 버스가 없어 MicroBlaze V 연동은 AXI4-Lite 래퍼 추가 필요(I-137 아이디어).
+- basdabt: Basys3 XC7A35T 직접 타깃의 Verilog MNIST CNN. BRAM-only 가중치(`$readmemh`) + 10 MHz CNN 클럭 + 7세그 출력. 자원·WNS 미기재가 단점. MicroBlaze V 연동을 위한 AXI4-Lite 래퍼 추가 가능성 있음. 라이선스 없음 → 재사용 전 허락 필요.
+- jonathan-quan: Basys3 XC7A35T에서 DW/PW MobileNet 스타일 CNN으로 2,636 LUT·7 DSP만 사용해 4-class 추론을 완성한 S4(제약 역전) 사례. 초소형 CNN의 Basys3 가능성을 실증한 가장 주목할 만한 카드. 라이선스 없음 → 허락 필요.
+- ziad-abaid: Nexys4(XC7A100T) VHDL AXI-Stream CNN. LUT ~35,504로 Basys3(20,800) 한도 초과. 채널·레이어 수를 1/3 수준으로 축소 후 Basys3 포팅 가능(내 판단). SPI→AXI-Stream 브리지 패턴과 Zero WNS 100 MHz 달성 경험이 참고 가치.
+- mo-ah-al11505: 2개 FIFO 라인 버퍼 + 슬라이딩 3×3 윈도우 + 9-MAC 병렬 구조. AXI4-Stream 인터페이스로 추상화된 최소 단위 컨볼루션 프리미티브. PYNQ DDR 의존성 제거 필요.
+- AoCStream 논문: 가중치 가지치기 없이 Basys3에서 완전 구동은 불가(87.5% 가지치기 필요). 채널 ≤8 소형화 버전(I-139)이 현실적 대안.
 
 **T4 CNN 사다리 (내 판단):**
 1. T2: 단일 뉴런 AXI-Lite IP (I-136, libfpga 기반)
-2. T3: MLP 2층 BRAM 가중치 추론 (I-134, erwanregy 패턴)
-3. T4: 2레이어 CNN MNIST AXI-Lite 버전 (I-137, abhi-raval 포팅)
+2. T2: BRAM-only MNIST CNN Basys3 직접 (basdabt, 개조 시 AXI-Lite 추가)
+3. T3: MLP 2층 BRAM 가중치 추론 (I-134, erwanregy 패턴)
+4. T4: 2레이어 CNN MNIST AXI-Lite 버전 (I-137, abhi-raval 포팅)
+5. T4: 2,636 LUT 초소형 DW/PW CNN (jonathan-quan, 4-class → CIFAR-10 가능성 있음)
 
 ---
 
@@ -320,5 +329,5 @@ kim-2025의 Q5.26 → Basys3용은 Q4.12(16비트 총폭)로 비트 폭을 줄�
 - hiteshtp09 FSM 베이스: LUT 46K cell(Yosys 추정, Vivado 미확인). XDC·클럭 래퍼 없음 → AXI4-Lite 래퍼 추가 필요.
 
 **아이디어 연결:**
-- I-144: Basys3 10클래스 분류 출력 IP — argmax + 7세그 AXI4-Lite (vetted, T1, 9점)
-- I-145: Basys3 의사-소프트맥스 IP — base-2 지수 + 역수 PWL (vetted, T4, 10점, 슬롯 소진으로 이번 사이클 ready 보류 → 다음 사이클 1순위)
+- I-144: Basys3 10클래스 분류 출력 IP — argmax + 7세그 AXI4-Lite (**ready**, T1, 9점; 2026-11-08 38차 차단조건재심사로 승격)
+- I-145: Basys3 의사-소프트맥스 IP — base-2 지수 + 역수 PWL (**ready**, T4, 10점; 2026-11-08 38차 차단조건재심사로 승격)

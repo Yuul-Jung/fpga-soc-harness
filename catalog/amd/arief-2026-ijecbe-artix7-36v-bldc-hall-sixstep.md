@@ -16,6 +16,7 @@ stats: {}
 doc_language: en
 verification: L2
 checked_at: 2026-11-02
+rechecked_at: 2026-11-08
 sources: [https://ijecbe.ui.ac.id/go/article/view/244]
 ---
 

@@ -2254,7 +2254,7 @@
 - 심사: 2026-11-07 /verify 36차, raw→vetted 첫 심사(§14.2 표준). 근거 2(shanker-teo-integer-intelligence-2026·tb-rohan-int8-cnn-accelerator, rechecked_at: 2026-11-07 본 사이클 추가) + 새로움 2(PTQ 보정→레지스터 자동 생성 도구 카탈로그 미등록; SW-HW 브릿지 패턴 없음) + 적합성 2(소프트웨어 도구 주체로 FPGA 자원 최소; AXI4-Lite 슬레이브 레지스터 패턴 shanker-teo에서 확인) + 완결성 1(Python 스크립트 범위 명확하나 RTL TB 최소; Verilog 헤더 생성 단계 범위 보강 필요) = 7점 → vetted. 보강: 근거 카드 추가, RTL 쪽 레지스터 블록 범위 명확화 필요.
 
 ## I-144 Basys3 10클래스 분류 출력 IP: 아르그맥스 + 7세그 표시
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: MLP 추론 결과 10개 로짓(INT8 또는 INT32)을 받아 아르그맥스를 계산하고 분류 클래스(0~9)를 Basys3 7세그에 표시하는 경량 AXI4-Lite IP. 소프트맥스 없이 순수 비교기로 구현하면 LUT 소비가 최소화된다.
 - 조합: [accelerator, debug, AXI4-Lite]
 - 근거: [columbia-4840-sp26-mnist-accelerator, hiteshtp09-verilog-softmax-accelerator]
@@ -2262,9 +2262,10 @@
 - Basys3 적합성의 근거: 아르그맥스 10사이클 선형 스캔 ≈ 20 LUT 미만. 7세그 디코더는 Basys3 기본(6자리 멀티플렉스). AXI4-Lite 슬레이브 1슬롯 (free_slot 배정 필요).
 - 난이도: 1 / 단계: T1
 - 심사: 2026-11-07 /verify 37차, raw→vetted 첫 심사(§14.2 표준). 근거 2(columbia-4840-sp26-mnist-accelerator·hiteshtp09-verilog-softmax-accelerator, rechecked_at: 2026-11-07 본 사이클 추가) + 새로움 2(10클래스 분류 출력 IP 단독 패키지화 카탈로그 미등록; Columbia는 Avalon-MM, hiteshtp09는 AXI 래퍼 없음) + 적합성 3(아르그맥스 10사이클 선형 스캔 ≈20 LUT, 7세그 Basys3 기본, AXI4-Lite free_slot 배정 가능) + 완결성 2(아르그맥스+AXI4-Lite 슬레이브+7세그 디코더 범위 명확, iverilog CI 가능) = 9점, 근거=2 → vetted. 보강: 근거 카드 3건 확보 시 ready 승격 가능.
+- 차단조건재심사: 2026-11-08, 점수 9 (38차 사이클 WebFetch PROVENANCE_REQUIRED 전면 차단; 차단 조건 점수 9점≥7점; 슬롯 2순위 → ready 승격)
 
 ## I-145 Basys3 의사-소프트맥스 IP: base-2 지수 + 역수 PWL
-- 상태: vetted
+- 상태: ready
 - 요약: 내 판단: Cardarilli 2021 논문의 base-2 의사-소프트맥스를 Artix-7(XC7A35T)에 맞게 Verilog로 구현한다. 2^(x_i)는 INT8 입력에서 비트 시프트만으로 계산하고, 역수는 2구간 PWL(계수를 2의 거듭제곱으로 선택 → 곱셈 없이 시프트)로 근사한다. MicroBlaze V AXI4-Lite IP로 래핑해 추론 파이프라인 말단에 삽입한다.
 - 조합: [accelerator, AXI4-Lite]
 - 근거: [cardarilli-2021-pseudo-softmax, columbia-4840-sp26-mnist-accelerator, hiteshtp09-verilog-softmax-accelerator]
@@ -2272,43 +2273,44 @@
 - Basys3 적합성의 근거: 근거 논문이 INT8 10클래스 3.22ns(90nm CMOS) 달성. Artix-7 LUT-only로 구현 가능. DSP48 없이도 가능(시프트 연산). BRAM 불필요.
 - 난이도: 3 / 단계: T4
 - 심사: 2026-11-07 /verify 37차, raw→vetted 첫 심사(§14.2 표준). 근거 3(cardarilli-2021-pseudo-softmax·columbia-4840-sp26-mnist-accelerator·hiteshtp09-verilog-softmax-accelerator, rechecked_at: 2026-11-07 본 사이클 추가) + 새로움 2(base-2 소프트맥스 FPGA 구현 카탈로그 미등록; hiteshtp09는 LUT exp(-d) 방식, Columbia는 아르그맥스만 사용) + 적합성 3(LUT-only 구현 가능, DSP48 불필요, BRAM 불필요; 논문 10클래스 INT8 3.22ns 근거) + 완결성 2(base-2 지수+역수 PWL+AXI4-Lite 슬레이브+TB 범위 명확, iverilog CI 가능) = 10점 ≥ 8점, 근거=3 → 정상 기준 ready 해당. 단, 사이클 슬롯 2건 한도소진(I-141·I-057 승격). vetted 유지. 다음 사이클 ready 후보.
+- 차단조건재심사: 2026-11-08, 점수 10 (38차 사이클 WebFetch PROVENANCE_REQUIRED 전면 차단; 근거=3·정상 기준 ready 충족; 슬롯 1순위 → ready 승격)
 
 ## I-146 Basys3 직렬 MAC MLP 784→128→10 INT8 추론 AXI4-Lite T1 캡스톤
-- 상태: raw
+- 상태: vetted
 - 요약: 내 판단: hussain-2025-har-mlp-artix7 카드의 Q8.8 직렬 MAC FSM 패턴을 784→128→10 MLP로 확장한다. 가중치는 BRAM에 저장(784×128×1 + 128×10×1 = 약 101KB → BRAM18 약 6개), 활성화 함수는 ReLU, 출력은 아르그맥스 10클래스. MicroBlaze V AXI4-Lite 슬레이브로 래핑해 T1 캡스톤 패키지로 만든다. MNIST ≥90% 정확도 목표.
 - 조합: [accelerator, AXI4-Lite, BRAM]
 - 근거: [hussain-2025-har-mlp-artix7, columbia-4840-sp26-mnist-accelerator]
 - 새로움의 근거: hussain-2025는 7→6→5(소규모), columbia-4840은 Nios II 기반. Artix-7 35T에서 784→128→10을 순수 Verilog 직렬 MAC + AXI4-Lite 슬레이브로 구현한 사례가 카탈로그에 없음.
 - Basys3 적합성의 근거: hussain-2025 카드에서 같은 Artix-7 35T 칩에서 LUT 2.5%, DSP 2.22%만 사용 확인. BRAM18 6개(50개 한도 내). 클럭 50MHz, WNS 여유.
 - 난이도: 3 / 단계: T1
-- 심사: (미심사)
+- 심사: 2026-11-08 /verify 38차, raw→vetted 첫 심사(§14.2 표준, 차단조건재심사 불적용). 근거 1(columbia-4840-sp26-mnist-accelerator rechecked_at: 2026-11-07; hussain-2025-har-mlp-artix7 rechecked_at 없음) + 새로움 2(Artix-7 35T 직렬 MAC+AXI4-Lite 슬레이브 784→128→10 MLP 카탈로그 미등록) + 적합성 3(hussain-2025 Artix-7 35T LUT 2.5%·DSP 2.22% 실증; BRAM18 6개 한도 50개 내) + 완결성 2(직렬 MAC FSM+ReLU+아르그맥스+AXI4-Lite 슬레이브+TB 범위 명확, iverilog CI 가능) = 8점, 근거=1 → vetted. 보강: hussain-2025 rechecked_at 추가로 근거=2, 추가 카드 확보로 근거=3 → ready 승격 가능.
 
 ## I-147 Basys3 W1A2 초저정밀 MNIST MLP (FINN 없이 순수 Verilog)
-- 상태: raw
+- 상태: vetted
 - 요약: 내 판단: tasci-2025-fpga-qnn 카드의 W1A2 양자화 개념(가중치 1비트, 활성화 2비트)을 FINN 없이 순수 Verilog로 구현한다. 784→128→10 MLP에서 가중치를 LUT-distributed로 저장(784×128비트 = 12.3KB → BRAM 거의 불필요), 활성화는 임계치 2개 비교(ReLU-step). MicroBlaze V AXI4-Lite 래퍼로 연결. 목표 정확도 ≥90%는 W1A2에서 달성 가능성 있음(Tasci 논문 W1A2 MLP ~90% 보고).
 - 조합: [accelerator, AXI4-Lite]
 - 근거: [tasci-2025-fpga-qnn, emirertorer-bnn-mnist-nexys-a7]
 - 새로움의 근거: FINN 없이 순수 Verilog W1A2 MLP Basys3 구현이 카탈로그에 없음. emirertorer는 W1A1 BNN(Nexys A7), tasci는 FINN+PYNQ 기반으로 접근 방식이 다름.
 - Basys3 적합성의 근거: W1A2에서 가중치 784×128 = 100,352비트 ≈ 12.3KB → LUT 분산 RAM 또는 BRAM 1개 미만. 활성화 2비트 → 임계치 비교 FSM. DSP 불필요(XNOR/popcount 연산).
 - 난이도: 4 / 단계: T1
-- 심사: (미심사)
+- 심사: 2026-11-08 /verify 38차, raw→vetted 첫 심사(§14.2 표준, 차단조건재심사 불적용). 근거 1(emirertorer-bnn-mnist-nexys-a7 rechecked_at: 2026-11-07; tasci-2025-fpga-qnn rechecked_at 없음) + 새로움 2(FINN 없는 순수 Verilog W1A2 MLP Basys3 구현 카탈로그 미등록; emirertorer는 W1A1 BNN Nexys A7, tasci는 FINN+PYNQ 기반) + 적합성 2(W1A2 가중치 12.3KB·BRAM 1개 미만·DSP 불필요 추정 명확; Basys3 직접 합성 미확인) + 완결성 2(XNOR/popcount FSM+임계치 비교 활성화+TB 범위 명확, iverilog CI 가능) = 7점, 근거=1 → vetted. 보강: tasci-2025 rechecked_at 추가, Basys3 직접 LUT 추정 필요.
 
 ## I-148 Artix-7 35T MLP 직렬-병렬 MAC 처리 소자 비교 (1×/8×/16× PE)
-- 상태: raw
+- 상태: vetted
 - 요약: 내 판단: 같은 784→128→10 MLP에서 MAC 처리 소자 수(1개 직렬, 8개, 16개 병렬)를 바꿔 지연·자원·전력 트레이드오프를 측정·비교한다. hussain-2025 카드(LUT 2.5%)와 shreyasilver22 카드(은닉층 16뉴런) 패턴을 함께 참조. yosys 추정 자원과 iverilog 시뮬레이션 타이밍으로 비교표를 만든다.
 - 조합: [accelerator, AXI4-Lite]
 - 근거: [hussain-2025-har-mlp-artix7, shreyasilver22-neural-accelerator]
 - 새로움의 근거: 카탈로그에 동일 MLP 아키텍처를 처리 소자 수 변화로 비교한 사례 없음. 단일 Artix-7 35T에서 처리 소자 수 대비 LUT/DSP/레이턴시 비교표가 없음.
 - Basys3 적합성의 근거: hussain-2025는 Artix-7 35T에서 LUT 2.5%만 사용(여유 97.5%). 16× PE도 LUT 40% 미만 추정. BRAM은 가중치 101KB로 6개(한도 50개 내).
 - 난이도: 3 / 단계: T2
-- 심사: (미심사)
+- 심사: 2026-11-08 /verify 38차, raw→vetted 첫 심사(§14.2 표준, 차단조건재심사 불적용). 근거 0(hussain-2025-har-mlp-artix7·shreyasilver22-neural-accelerator 모두 rechecked_at 없음) + 새로움 2(동일 MLP 아키텍처를 처리 소자 수 변화로 비교한 Basys3 사례 카탈로그 없음) + 적합성 3(hussain-2025 Artix-7 35T LUT 2.5% 실증; 16× PE도 LUT 40% 미만 추정; BRAM 6개 한도 50개 내) + 완결성 2(1×/8×/16× PE RTL+TB+yosys 추정 비교표 범위 명확, iverilog CI 가능) = 7점, 근거=0 → vetted. 보강: 근거 카드 rechecked_at 취득 필요.
 
 ## I-149 Basys3 CIFAR-10 소형 CNN 가속기 + 특징 맵 VGA 표시 (BRAM-only)
-- 상태: raw
+- 상태: vetted
 - 요약: 내 판단: CIFAR-10 32×32×3 입력에 2 conv층(conv1: 8채널 3×3, conv2: 16채널 3×3)을 적용하고 conv1 출력 중 1채널을 32×32 feature map으로 VGA에 표시. 가중치를 BRAM에 `$readmemh`로 로드, AXI4-Lite 슬레이브로 MicroBlaze V와 연결. 이 조합은 카탈로그에 없는 미개척 영역(S4 제약 역전: BRAM-only feature map 버퍼).
 - 조합: [accelerator, video-vga, AXI4-Lite, comm-uart]
 - 근거: [jonathan-quan-basys3-classifier(DW CNN 최소 자원 Basys3), basdabt-fpga-mnist-cnn-accelerator(BRAM-only CNN Basys3), mo-ah-al11505-cnn-convolution-accelerator(conv 가속기 AXI)]
 - 새로움의 근거: 카탈로그에 CIFAR-10 + VGA feature map 조합 카드 없음. jonathan-quan은 CIFAR-10 아님(4-class), basdabt는 VGA 없음. 이 조합은 S4(BRAM 제약을 활용한 소형 feature map 버퍼: 32×32×8비트=1KB=BRAM 1개) 전략으로만 가능한 구조.
 - Basys3 적합성의 근거: CIFAR-10 32×32×3 입력 = 3,072바이트 → BRAM 1개 미만. conv1 출력 1채널(32×32×8비트=1KB) VGA 버퍼 → BRAM 1개. 가중치: conv1(3×3×3×8=216 파라미터), conv2(3×3×8×16=1,152 파라미터) → 합계 ~1.4K×8비트 ≈ 1.1KB → BRAM 1개. 총 LUT 추산: jonathan-quan 패턴(2,636 LUT/4-class CNN) + VGA 컨트롤러(≈1,000 LUT) = ~4K-8K LUT → Basys3 20,800 LUT 여유 충분.
 - 난이도: 3 / 단계: T2
-- 심사: (미심사)
+- 심사: 2026-11-08 /verify 38차, raw→vetted 첫 심사(§14.2 표준, 차단조건재심사 불적용). 근거 0(jonathan-quan-basys3-classifier·basdabt-fpga-mnist-cnn-accelerator·mo-ah-al11505-cnn-convolution-accelerator 모두 이번 사이클 rechecked_at 추가 예정이나 심사 시점 기준 rechecked_at 미취득) + 새로움 2(CIFAR-10 + VGA feature map 조합 카탈로그 없음; jonathan-quan은 4-class, basdabt는 VGA 없음) + 적합성 3(CIFAR-10 입력 3KB·feature map 1KB·가중치 1.1KB → 총 BRAM 3개 추산; LUT 4~8K 추산 — Basys3 20,800 LUT 여유; jonathan-quan 패턴 근거) + 완결성 2(conv1+conv2+VGA 컨트롤러+AXI4-Lite+TB 범위 명확, iverilog CI 가능) = 7점, 근거=0 → vetted. 보강: 근거 카드 rechecked_at 추가(이번 사이클 후 2개 확보) → 다음 사이클 근거=2+, 근거=3 충족 시 ready 가능.

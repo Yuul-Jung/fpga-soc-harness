@@ -16,6 +16,7 @@ stats: {}
 doc_language: en
 verification: L3
 checked_at: 2026-11-02
+rechecked_at: 2026-11-08
 sources: [https://digilent.com/reference/_export/xhtml/learn/programmable-logic/tutorials/basys-3-getting-started-with-microblaze/start]
 unverified: 게시·수정일, Vivado 정확한 버전, 라이선스(문서 사이트 약관 미확인)
 ---
