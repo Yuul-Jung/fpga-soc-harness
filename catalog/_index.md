@@ -2,6 +2,9 @@
 
 | 이름 | 등급 | 단계 | 보드 | 갱신일 |
 |---|---|---|---|---|
+| [nitk-ieee-expo-alexa-junior-kws](embedded/nitk-ieee-expo-alexa-junior-kws.md) | L3 | T3 | Nexys 4 DDR (needs-port) | 2026-11-08 |
+| [martinuke0-tinybert-sentiment-mcu](embedded/martinuke0-tinybert-sentiment-mcu.md) | L3 | T1 | Cortex-M55 MCU (needs-port) | 2026-11-08 |
+| [arxiv-2411-18148-runtime-adaptive-transformer](papers/arxiv-2411-18148-runtime-adaptive-transformer.md) | L3 | T4 | Alveo U55C (no) | 2026-11-08 |
 | [ansh07verma-fpga-mini-npu](amd/ansh07verma-fpga-mini-npu.md) | L3 | T4 | Basys3 | 2026-11-08 |
 | [axc1271-mini-npu](vendor-neutral/axc1271-mini-npu.md) | L2 | T4 | 미명시 (needs-port) | 2026-11-07 |
 | [cornell-ece5760-2024-conv-accel](papers/cornell-ece5760-2024-conv-accel.md) | L2 | T4 | DE1-SoC (needs-port) | 2026-11-07 |

@@ -157,7 +157,7 @@
 ### 캡스톤급 NPU 과제
 - [x] [B3] NPU 캡스톤 T1: Basys3 MLP 가속기 — MNIST 추론 (784→128→10, 고정소수점, 정확도 ≥90%) — 2026-11-07 /capstone 2시간 완결: mmio-mlp-axil-ip (T4, S0, slot [2F])
 - [x] [B3] NPU 캡스톤 T2: Basys3 CNN 가속기 — CIFAR-10 소형 모델 컨볼루션층 1~2개, 특징 맵 VGA 표시 — 2026-11-08 collect 완료(S4 제약역전(주)+S6 실패사례(보조)): jonathan-quan-basys3-classifier(L3), basdabt-fpga-mnist-cnn-accelerator(L3), ziad-abaid-fpga-cnn-inference-accelerator(L3) 카드 3건 생성. 단, CIFAR-10+VGA 조합 사례 없음(I-149 아이디어 등록)
-- [ ] [B3] NPU 캡스톤 T3: Basys3 어텐션 블록 — 감성 분류 1헤드 트랜스포머, 직렬 토큰 입력(UART), 결과 출력
+- [x] [B3] NPU 캡스톤 T3: Basys3 어텐션 블록 — 감성 분류 1헤드 트랜스포머, 직렬 토큰 입력(UART), 결과 출력 — 2026-11-08 06:20 collect 완료(S1 인접 도메인 이식(주)+S2 조합 탐색(보조)): nitk-ieee-expo-alexa-junior-kws(L3), arxiv-2411-18148-runtime-adaptive-transformer(L3), martinuke0-tinybert-sentiment-mcu(L3) 카드 3건 생성
 - [ ] [B3] NPU 캡스톤 T4: 엣지 AI 통합 — OV7670 카메라 → 소형 CNN → 실시간 제스처/물체 인식 → LED 표시
 
 

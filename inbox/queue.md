@@ -2,6 +2,11 @@
 
 형식: `- <URL> | <한 줄 설명> | <출처 검색어>`
 
+- https://ieee.l1.nitk.ac.in/virtual_expo/report/148 | NITK IEEE Expo 2026: Alexa Junior — Artix-7 CNN 키워드 인식, UART 멜스펙트로그램 직렬 입력, 8비트 고정소수점(L3 열람 완료, 카드 작성됨) | FPGA keyword spotting UART serial input Artix-7 CNN
+- https://arxiv.org/abs/2411.18148 | arXiv 2411.18148: Runtime-Adaptive Transformer NN Accelerator (Kabir et al.) — Alveo U55C QKV 처리 모듈 HLS, Basys3 부적합(L3-HTML 열람 완료, 카드 작성됨) | FPGA runtime adaptive transformer neural network accelerator
+- https://martinuke0.github.io/posts/2026-03-26-benchmarking-memoryefficient-transformer-architectures-for-realtime-inference-on-embedded-systems | MCU DistilBERT/TinyBERT/Linformer/Performer 감성 분류 벤치마크, 선형 어텐션 40% 저지연(L3 열람 완료, 카드 작성됨) | embedded NLP sentiment MCU Linformer Performer benchmark
+- https://ar5iv.labs.arxiv.org/html/2503.16731 | arXiv 2503.16731: KV260 Tiled GEMM Transformer Self-Attention(Li/Chen UC Irvine), DistilBERT 768-dim, int8 — 미열람(L2 초록만), /verify에서 L3 열람 예정 | FPGA tiled matrix multiply transformer attention KV260
+- https://pure.seoultech.ac.kr/en/publications/a-survey-of-fpga-and-asic-designs-for-transformer-inference-accel/ | Seoul Tech/JSA 2024 survey: FPGA·ASIC 트랜스포머 추론 가속 최적화 방법론 — 미열람(L2 초록/메타만), /verify에서 L3 열람 예정 | FPGA ASIC transformer inference acceleration survey 2024
 - https://github.com/espressif/esp-idf/tree/v5.1.1/examples/bluetooth/bluedroid/ble/gatt_client | Espressif ESP-IDF v5.1.1 BLE GATT 클라이언트 예제(Apache-2.0) — 미열람(L1), GATT 서버 워크스루 보완용 | ESP-IDF GATT client example BLE
 - https://github.com/dollop80/ESP32-BLE-Scanner | ESP32 BLE 스캐너(라이선스 미표기) — 미열람(L1), 비콘 스캐너 보완 | ESP32 BLE beacon scanner iBeacon RSSI GitHub
 - https://www.beaconzone.co.uk/blog/indoor-positioning-trilateration/ | iBeacon 삼변측량 실내 측위 원리 블로그(비정형 출처) — 미열람(L1), 비콘→FPGA 삼변측량 아이디어 근거용 | ESP32 iBeacon indoor positioning trilateration

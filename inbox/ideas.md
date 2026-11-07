@@ -3,6 +3,21 @@
 상태: `raw` → `vetted` → `ready` → `used` 또는 `dropped`. 지우지 않고 상태와 사유만 바꾼다. (HARNESS.md §12.8, §14.2)
 아이디어는 사실이 아니라 판단이다. 각 항목은 "내 판단:"으로 시작한다.
 
+## I-154 Basys3 1헤드 감성 분류 트랜스포머 — UART 토큰 직렬 입력, Linformer O(nk) 어텐션, LED/UART 판정 출력 (T3, S1 인접 도메인 이식)
+
+내 판단: 호스트 PC가 SST-2 감성 문장을 INT8 임베딩 토큰으로 변환 후 UART(115200 baud)로 Basys3에 순차 전송하고, FPGA 1헤드 Linformer 어텐션(seq_len=16, k=4, d_model=16)이 고정소수점 추론을 수행해 긍정/부정 판정을 LED 1개와 UART 응답으로 출력하는 T3 캡스톤.
+
+- id: I-154
+- 조합: [UART-토큰-수신-FSM, BRAM-임베딩-버퍼, 1헤드-Linformer-어텐션, 아르그맥스-디코더, LED-출력]
+- 근거 카드: [[nitk-ieee-expo-alexa-junior-kws]], [[martinuke0-tinybert-sentiment-mcu]], [[arxiv-2411-18148-runtime-adaptive-transformer]]
+- 근거 URL: https://ieee.l1.nitk.ac.in/virtual_expo/report/148, https://martinuke0.github.io/posts/2026-03-26-benchmarking-memoryefficient-transformer-architectures-for-realtime-inference-on-embedded-systems
+- 새로움 근거: 카탈로그에 NLP 텍스트 분류 FPGA 직접 구현 카드 없음. 기존 NPU 카드들은 모두 이미지(MNIST/CIFAR) 대상이며, UART 토큰 직렬 입력 + 트랜스포머 어텐션 + SST-2 감성 출력 조합은 없음. Linformer 선형 어텐션은 카탈로그 첫 적용(내 판단).
+- Basys3 적합성 근거: seq_len=16, k=4, d_model=16 INT8 → QKV 행렬 각 16×16 = 256 B × 3 = 768 B → BRAM 1블록 미만. 1헤드 Linformer 어텐션 FSM은 O(nk) = O(64) 연산 → LUT 400줄 Verilog 목표 달성 가능(내 추정, 미검증). UART FSM은 `nitk-ieee-expo-alexa-junior-kws` 패턴 재사용.
+- 난이도: 3
+- 단계: T3
+- 상태: raw
+- 심사: 미실시 (2026-11-08 collect 등록)
+
 형식:
 ```
 ## <id> <제목>

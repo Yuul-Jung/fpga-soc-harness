@@ -181,3 +181,16 @@
 2026-11-08 | [B3] NPU 캡스톤 T2 | FPGA CIFAR-10 inference BRAM-only no external memory small CNN 2 conv layers resource constrained Artix-7 GitHub 2023 2024 | 빈약
 2026-11-08 | [B3] NPU 캡스톤 T2 | FPGA CNN feature map visualization VGA display intermediate layer convolutional neural network GitHub Verilog 2023 2024 | 유효(DE2-115 사례 발견, Basys3 아님)
 2026-11-08 | [B3] NPU 캡스톤 T2 | "FPGA CNN CIFAR-10 inference VGA feature map visualization Xilinx Artix-7 small network 2 conv layers GitHub project 2023 2024" | 빈약
+2026-11-08 | [B3] NPU T3 어텐션 감성 | FPGA NLP sentiment analysis transformer hardware accelerator Verilog UART serial input 2024 | 유효
+2026-11-08 | [B3] NPU T3 어텐션 감성 | FPGA text classification 1-head attention hardware implementation fixed-point Artix-7 Spartan-7 | 유효
+2026-11-08 | [B3] NPU T3 어텐션 감성 | TFLite Micro embedded NLP sentiment analysis Arduino MCU transformer inference UART | 유효
+2026-11-08 | [B3] NPU T3 어텐션 감성 | FPGA word embedding BRAM lookup NLP inference hardware Verilog fixed-point 2023 2024 | 유효
+2026-11-08 | [B3] NPU T3 어텐션 감성 | FPGA 감성분류 트랜스포머 하드웨어 가속기 Verilog UART 토크나이저 | 빈약
+2026-11-08 | [B3] NPU T3 어텐션 감성 | arXiv FPGA BERT transformer NLP inference small FPGA resource-constrained Artix Spartan 2024 2025 | 유효
+2026-11-08 | [B3] NPU T3 어텐션 감성 | arXiv 2411.18148 FPGA transformer runtime adaptive accelerator | 유효
+2026-11-08 | [B3] NPU T3 어텐션 감성 | "Alexa Junior" keyword spotting FPGA NITK github Verilog hardware implementation | 유효
+2026-11-08 | [B3] NPU T3 어텐션 감성 | FPGA テキスト分類 トランスフォーマー ハードウェア実装 UART シリアル入力 Verilog | 빈약
+2026-11-08 | [B3] NPU T3 어텐션 감성 | FPGA keyword spotting NLP serial UART token hardware accelerator small transformer Basys3 Artix | 유효
+2026-11-08 | [B3] NPU T3 어텐션 감성 | site:github.com FPGA transformer NLP attention hardware Verilog UART tokenizer sentiment | 유효
+2026-11-08 | [B3] NPU T3 어텐션 감성 | site:github.com FPGA attention mechanism transformer "sentiment" OR "text classification" Verilog RTL small FPGA 2023 2024 2025 | 유효
+2026-11-08 | [B3] NPU T3 어텐션 감성 | FPGA 소형 트랜스포머 NLP 추론 Basys3 Artix-7 고정소수점 단일 헤드 어텐션 구현 2024 2025 | 유효
