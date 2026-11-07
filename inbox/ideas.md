@@ -695,7 +695,7 @@
 **Basys3 적합성 근거**: SPI 슬레이브 FSM은 약 200 LUT 추정, 동결 맵 free_slot 하나로 64KB 배정 가능; RPi 3.3V ↔ Basys3 Pmod 3.3V 레벨 변환 불필요
 **난이도**: 3
 **단계**: T2
-**상태**: ready
+**상태**: used (패키지: mmio-spi-dbg-axil-bridge, 2026-11-07, §13.7 무조건최대한생성)
 **심사**: 2026-11-04 /verify, 근거 0(michalstc·jakubcabal·doceme rechecked_at 없음) + 새로움 2(RPi→FPGA AXI4-Lite SPI 브리지 카드 없음; Wishbone 선례를 AXI4-Lite로 개조하는 첫 카드) + 적합성 2(SPI 슬레이브 FSM ~200 LUT, 동결 맵 free_slot 하나, Pmod 3.3V 직결) + 완결성 2(SPI R/W TB 범위 명확, 단일 IP 계통도) = 6점 → vetted. 보강: michalstc·jakubcabal·doceme rechecked_at 취득 필요.
 - 차단조건재심사: 2026-11-04, 근거 3(michalstc·jakubcabal·doceme, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7 → ready 승격
 

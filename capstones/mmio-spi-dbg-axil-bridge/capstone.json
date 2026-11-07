@@ -1,0 +1,219 @@
+{
+  "slug": "mmio-spi-dbg-axil-bridge",
+  "title": "RPi SPI 디버그 콘솔 — MicroBlaze V 레지스터 R/W 창구",
+  "summary": "RPi를 SPI 마스터로 사용해 Basys3 MicroBlaze V 시스템의 모든 AXI4-Lite 주변장치 레지스터를 직접 읽고 쓰는 디버그 창구 IP. JTAG 없이 현장 레지스터 덤프·주입 가능. SPI 슬레이브 FSM(모드 0) + AXI4-Lite 마스터 FSM으로 구성. 약 200 LUT 추정.",
+  "board": "Basys3 XC7A35T",
+  "stage": "T2",
+  "goals": [
+    "RPi spidev로 8바이트 프레임 하나로 AXI4-Lite R/W 완결",
+    "JTAG 없이 현장 주변장치 레지스터 덤프·주입",
+    "SPI 모드 0 슬레이브 FSM 설계 패턴 예제",
+    "AXI4-Lite 마스터 FSM 설계 패턴 예제"
+  ],
+  "non_goals": [
+    "MicroBlaze V CPU 실행 제어 (JTAG 역할 불가)",
+    "AXI slave 주소 슬롯 점유 없음 (마스터 전용 IP)",
+    "고속 SPI (안전 사용 주파수: f_sck ≤ f_aclk/10, 최대 10 MHz @ 100 MHz aclk)",
+    "보드 동작 검증(S3)은 사용자가 직접 수행"
+  ],
+  "architecture": {
+    "clock": "100 MHz (Basys3 W5), 단일 클럭 도메인. SPI 신호는 2단 FF로 동기화.",
+    "blocks": [
+      {
+        "id": "spi_rx_tx",
+        "name": "SPI Slave RX/TX FSM",
+        "kind": "rtl",
+        "module": "axil_spi_dbg_bridge",
+        "file": "rtl/axil_spi_dbg_bridge.v",
+        "desc": "SPI mode-0 슬레이브. 8바이트 프레임 수신(MOSI), MISO 응답 송신. 2단 FF 동기화 포함.",
+        "short": "SPI slave FSM",
+        "side": "left"
+      },
+      {
+        "id": "axil_master",
+        "name": "AXI4-Lite Master FSM",
+        "kind": "rtl",
+        "module": "axil_spi_dbg_bridge",
+        "file": "rtl/axil_spi_dbg_bridge.v",
+        "desc": "SPI 프레임 디코드 후 AXI4-Lite 마스터 R/W 발행. 주소는 {8'h40, ADDR[23:0]}으로 조합.",
+        "short": "AXI4-Lite master",
+        "side": "right"
+      },
+      {
+        "id": "soc_wrap",
+        "name": "SoC Top Wrapper",
+        "kind": "rtl",
+        "module": "soc_top",
+        "file": "rtl/soc_top.v",
+        "desc": "axil_spi_dbg_bridge 인스턴스 + AXI 마스터 포트 노출.",
+        "short": "SoC wrapper",
+        "side": "top"
+      },
+      {
+        "id": "board_wrap",
+        "name": "Basys3 Board Wrapper",
+        "kind": "rtl",
+        "module": "basys3_top",
+        "file": "rtl/basys3_top.v",
+        "desc": "Pmod JA 핀 배선, btnC 리셋, LD0 busy LED.",
+        "short": "board wrapper",
+        "side": "top"
+      },
+      {
+        "id": "rpi_host",
+        "name": "RPi SPI Master (External)",
+        "kind": "external",
+        "module": null,
+        "file": null,
+        "desc": "RPi4 GPIO SPI0 (CE0, MOSI, MISO, SCLK). Python spidev로 8바이트 프레임 발행.",
+        "short": "RPi4 SPI master",
+        "side": "left"
+      },
+      {
+        "id": "axil_fabric",
+        "name": "MicroBlaze V AXI Interconnect (Planned)",
+        "kind": "planned",
+        "module": null,
+        "file": null,
+        "desc": "풀 통합 시 이 브리지의 AXI 마스터 포트를 시스템 인터커넥트에 추가 마스터로 연결.",
+        "short": "AXI interconnect",
+        "side": "right"
+      }
+    ],
+    "links": [
+      {"from": "rpi_host",   "to": "spi_rx_tx",  "label": "SPI mode-0 (Pmod JA, 3.3 V)"},
+      {"from": "spi_rx_tx",  "to": "axil_master", "label": "decoded CMD/ADDR/DATA pulse"},
+      {"from": "axil_master","to": "axil_fabric", "label": "AXI4-Lite master (W/R)"},
+      {"from": "soc_wrap",   "to": "spi_rx_tx",  "label": "wrap"},
+      {"from": "soc_wrap",   "to": "axil_master", "label": "wrap"},
+      {"from": "board_wrap", "to": "soc_wrap",    "label": "wrap"}
+    ]
+  },
+  "bus_protocol": {
+    "type": "AXI4-Lite master",
+    "data_width": 32,
+    "addr_width": 32,
+    "signals": ["awaddr","awvalid","awready","wdata","wstrb","wvalid","wready","bresp","bvalid","bready","araddr","arvalid","arready","rdata","rresp","rvalid","rready"],
+    "notes": "마스터 전용 IP. 슬레이브 포트 없음. wstrb=4'hF(전체 32비트 쓰기). 주소 = {8'h40, SPI_ADDR[23:0]}으로 AXI 주소 계산."
+  },
+  "spi_protocol": {
+    "mode": "CPOL=0 CPHA=0 (mode 0)",
+    "frame_bytes": 8,
+    "frame": {
+      "B0": "CMD: 0x01=write 0x02=read (다른 값: 무시, AXI 발행 없음)",
+      "B1": "ADDR[23:16]",
+      "B2": "ADDR[15:8]",
+      "B3": "ADDR[7:0]  — 주소 완성 후 read CMD이면 AXI 읽기 발행",
+      "B4": "DATA[31:24] (write: MOSI; read: MISO에 AXI rdata[31:24])",
+      "B5": "DATA[23:16]",
+      "B6": "DATA[15:8]",
+      "B7": "DATA[7:0]  — write CMD이면 B7 완료 후 AXI 쓰기 발행"
+    },
+    "miso_read_response": "B0-B3: 0x00, B4-B7: rdata[31:24..7:0]",
+    "timing_note": "AXI 읽기는 B3 직후 발행. B4 시작 전(8 SPI 클럭 = 8µs @ 1 MHz = 800 aclk 사이클)에 AXI 응답 완료 필요. AXI 슬레이브 레이턴시 ≤ 4사이클이면 f_sck ≤ 10 MHz에서 충분."
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "mbv-frozen-v2",
+    "compat": "partial",
+    "plan": "이 IP는 AXI 마스터 전용으로 슬레이브 주소 슬롯을 차지하지 않는다. 풀 통합 시 MicroBlaze V AXI 인터커넥트에 추가 마스터 포트로 연결. 슬롯 [2E](0x402E_0000)은 미래에 상태 레지스터 슬레이브 추가 시 예약 사용 가능. 단독 사용 시(현재 capstone): AXI 슬레이브 스텁을 테스트벤치가 제공.",
+    "frozen_mapping": null
+  },
+  "external_parts": [
+    {
+      "id": "rpi4",
+      "name": "Raspberry Pi 4 (또는 3/Zero 2 W)",
+      "block": "rpi_host",
+      "interface": "SPI0 (CE0)",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": false,
+      "notes": "RPi GPIO 8-11을 Basys3 Pmod JA에 직결(레벨 변환 불필요). Python spidev 라이브러리 사용."
+    },
+    {
+      "id": "pmod_cable",
+      "name": "Pmod JA — RPi GPIO 점퍼 케이블 4선",
+      "block": "rpi_host",
+      "interface": "SPI",
+      "io_voltage": 3.3,
+      "qty": 4,
+      "board_resident": false,
+      "notes": "JA1=SCK, JA2=MOSI, JA3=MISO, JA4=CSN. GND 공통 필수."
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "디지털 계통도만 작성. RPi↔Basys3 Pmod 연결은 4선(SPI+GND) 단순 직결이며 별도 전기 회로도 불필요."
+  },
+  "hierarchy": [
+    {
+      "module": "basys3_top",
+      "file": "rtl/basys3_top.v",
+      "children": [
+        {
+          "module": "soc_top",
+          "file": "rtl/soc_top.v",
+          "children": [
+            {"module": "axil_spi_dbg_bridge", "file": "rtl/axil_spi_dbg_bridge.v", "children": []}
+          ]
+        }
+      ]
+    }
+  ],
+  "memory_map": {
+    "note": "이 IP는 AXI 마스터이므로 자신의 슬레이브 주소를 갖지 않는다. 접근 가능 범위는 AXI 주소 {8'h40, ADDR[23:0]} → 0x4000_0000 ~ 0x40FF_FFFF (16 MB).",
+    "regions": [],
+    "accessible_range": {"base": "0x4000_0000", "size": "0x0100_0000", "note": "SPI ADDR[23:0]으로 접근 가능"}
+  },
+  "roadmap": [
+    {
+      "stage": "T2",
+      "state": "current",
+      "title": "SPI→AXI4-Lite 디버그 브리지 (본 패키지)",
+      "refs": ["michalstc-rpi-zero-fpga-spi-wishbone", "jakubcabal-spi-fpga", "doceme-py-spidev"]
+    },
+    {
+      "stage": "T3",
+      "state": "planned",
+      "title": "상태 레지스터 슬레이브 추가 + MicroBlaze V 인터커넥트 통합",
+      "refs": []
+    }
+  ],
+  "references": [
+    {"name": "michalstc-rpi-zero-fpga-spi-wishbone", "reason": "SPI→Wishbone R/W 패턴 실증; AXI4-Lite 개조 근거"},
+    {"name": "jakubcabal-spi-fpga",                  "reason": "MIT SPI 슬레이브 IP 구조 참고 (자체 RTL로 재작성)"},
+    {"name": "doceme-py-spidev",                      "reason": "RPi spidev Python API 근거"}
+  ],
+  "sources": {
+    "rtl": [
+      "rtl/axil_spi_dbg_bridge.v",
+      "rtl/soc_top.v",
+      "rtl/basys3_top.v"
+    ],
+    "tb": [
+      "tb/tb_spi_dbg_axil_bridge.v"
+    ],
+    "constraints": [
+      "constr/basys3.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
+  },
+  "howto": {
+    "sim": "cd capstones/mmio-spi-dbg-axil-bridge && make sim",
+    "lint": "cd capstones/mmio-spi-dbg-axil-bridge && make lint",
+    "synth": "cd capstones/mmio-spi-dbg-axil-bridge && make synth",
+    "vivado": "unverified: Basys3 XC7A35T 타겟으로 Vivado 2024.2에서 임포트. basys3_top을 최상위 모듈로 설정. AXI 마스터 포트는 풀 통합 전까지는 미연결(open) 상태.",
+    "rpi_usage": "RPi에서: sudo pip3 install spidev. 예시: import spidev; spi=spidev.SpiDev(); spi.open(0,0); spi.max_speed_hz=1000000; spi.mode=0; spi.xfer2([0x02,0x00,0x40,0x00,0,0,0,0])  # read 0x40400000"
+  },
+  "verification": {
+    "board": "not-tested",
+    "notes": "lint + sim: Makefile로 실행. synth: yosys 추정치. 보드 동작(S3)은 사용자가 직접 확인 후 board_evidence 기재."
+  },
+  "risks": [
+    "AXI 슬레이브 레이턴시가 8 SPI 클럭(B4 시작까지) 이내여야 읽기 데이터가 정확히 B4-B7에 실린다. 더 빠른 SPI 속도 사용 시 B3 패딩 삽입 필요.",
+    "이 IP는 AXI 마스터이므로 풀 통합 시 MicroBlaze V 인터커넥트에 추가 마스터 포트 슬롯 필요(기본 1마스터→2마스터 구성 변경).",
+    "GND를 Basys3와 RPi 사이에 공통으로 연결하지 않으면 SPI 신호 오동작."
+  ]
+}
