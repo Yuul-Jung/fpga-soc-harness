@@ -21,10 +21,11 @@ sim: $(TB_SRC) $(RTL_DIR)/axil_can_fd_rx.v
 	vvp $(SIM_OUT)
 
 ## ── 린트 ─────────────────────────────────────────────────────────────────
-lint: $(RTL_SRCS)
+# DUT 코어만 lint: basys3_top_can_fd.v는 IBUFG 프리미티브를 써서 Verilator 제외
+lint: $(RTL_DIR)/axil_can_fd_rx.v
 	verilator --lint-only -Wall \
-	    --top-module basys3_top_can_fd \
-	    $(RTL_SRCS)
+	    --top-module axil_can_fd_rx \
+	    $(RTL_DIR)/axil_can_fd_rx.v
 
 ## ── 합성 (Yosys, 자원 추정) ───────────────────────────────────────────────
 synth: $(RTL_SRCS)
