@@ -1,0 +1,203 @@
+{
+  "slug": "mmio-i2c-slave-ns-ip",
+  "title": "I2C 슬레이브(무클럭스트레칭) AXI4-Lite IP — RPi BCM I2C 호환 레지스터 창구",
+  "summary": "RPi BCM I2C 하드웨어의 클럭 스트레칭 미지원 버그를 전제로, 클럭 스트레칭 없이 동작하는 I2C 슬레이브 FSM과 AXI4-Lite 래퍼를 구현한다. 7비트 주소 필터, 레지스터 R/W, START/STOP 감지를 모두 단일 SCL 사이클 이내에 처리한다. MicroBlaze V SoC에서 RPi를 외부 디버그·제어 호스트로 활용하는 Basys3 Pmod 연결 패턴 카드.",
+  "board": "Basys3 (XC7A35T)",
+  "stage": "T2",
+  "goals": [
+    "SCL 100 kHz 기준, RPi I2C master ↔ FPGA I2C slave 통신 (클럭 스트레칭 없음)",
+    "7비트 슬레이브 주소(기본 0x20)와 1바이트 레지스터 주소로 최대 8개 레지스터 R/W",
+    "AXI4-Lite 슬레이브 래퍼로 MicroBlaze V 버스에서 I2C 슬레이브 레지스터 접근",
+    "Basys3 Pmod JA 핀 배선 예시 및 RPi 연결 도식 문서화"
+  ],
+  "non_goals": [
+    "클럭 스트레칭 (RPi BCM I2C 미지원으로 의도적 제외)",
+    "10비트 주소 모드",
+    "SMBus PEC 체크섬",
+    "다중 마스터 중재 (single-master 가정)",
+    "400 kHz 고속 모드 (100 kHz Fast-Standard만 지원)"
+  ],
+  "architecture": {
+    "clock": "100 MHz (Basys3 W5 클럭 입력)",
+    "reset": "btnC active-high",
+    "blocks": [
+      {
+        "id": "top",
+        "name": "basys3_top",
+        "kind": "wrapper",
+        "module": "basys3_top",
+        "file": "rtl/basys3_top.v",
+        "desc": "Basys3 최상위. 클럭/리셋 + Pmod JA I2C 핀 연결",
+        "short": "board top",
+        "side": "left"
+      },
+      {
+        "id": "axil_wrap",
+        "name": "axil_i2c_slave_ns",
+        "kind": "peripheral",
+        "module": "axil_i2c_slave_ns",
+        "file": "rtl/axil_i2c_slave_ns.v",
+        "desc": "AXI4-Lite 슬레이브 래퍼. 8×32비트 레지스터 파일 + I2C 슬레이브 코어 인스턴스화",
+        "short": "AXI wrap",
+        "side": "center"
+      },
+      {
+        "id": "i2c_core",
+        "name": "i2c_slave_ns",
+        "kind": "peripheral",
+        "module": "i2c_slave_ns",
+        "file": "rtl/i2c_slave_ns.v",
+        "desc": "I2C 슬레이브 FSM 코어. START/STOP 감지, 주소 필터, 레지스터 R/W. 클럭 스트레칭 없음",
+        "short": "I2C slave",
+        "side": "center"
+      },
+      {
+        "id": "ext_rpi",
+        "name": "RPi I2C Master",
+        "kind": "external",
+        "module": null,
+        "file": null,
+        "desc": "RPi (i2c-dev, 100 kHz). SCL/SDA → Basys3 Pmod JA. 클럭 스트레칭 불지원",
+        "short": "RPi master",
+        "side": "left"
+      }
+    ],
+    "links": [
+      {"from": "top", "to": "axil_wrap", "label": "AXI4-Lite"},
+      {"from": "axil_wrap", "to": "i2c_core", "label": "reg_wdata/rdata/addr/we/re"},
+      {"from": "ext_rpi", "to": "top", "label": "SCL / SDA (Pmod JA)"}
+    ]
+  },
+  "bus_protocol": {
+    "name": "AXI4-Lite",
+    "signals": ["AWADDR", "AWVALID", "AWREADY", "WDATA", "WVALID", "WREADY",
+                "BRESP", "BVALID", "BREADY", "ARADDR", "ARVALID", "ARREADY",
+                "RDATA", "RRESP", "RVALID", "RREADY"],
+    "data_width": 32,
+    "addr_width": 8,
+    "notes": "WSTRB 미구현 (전체 32비트 쓰기만). BRESP/RRESP는 항상 2'b00 (OKAY)."
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "mbv-frozen-v2",
+    "compat": "compatible",
+    "plan": "동결 맵 free_slot [2D] = 0x402D_0000 에 배정. 슬롯 크기 64KB.",
+    "frozen_mapping": {
+      "axil_wrap": "[2D] 0x402D_0000"
+    }
+  },
+  "external_parts": [
+    {
+      "id": "rpi",
+      "name": "Raspberry Pi (any model with BCM I2C)",
+      "block": "ext_rpi",
+      "interface": "I2C (100 kHz, master, 3.3V)",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": 5.0,
+      "level_shift": false,
+      "power_note": "RPi 3.3V GPIO ↔ Basys3 Pmod 3.3V 직결 가능. RPi 5V 핀은 연결하지 않는다.",
+      "arduino_compatible": false,
+      "notes": "SCL→JA1 핀, SDA→JA2 핀. SDA 풀업 4.7 kΩ (RPi GPIO 내부 풀업 약 50 kΩ으로 100 kHz 가능하나, 외부 4.7 kΩ 권장)."
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "디지털 계통도(diagram.svg)는 build.py가 생성. 전기 회로도(레벨 변환 불필요, 풀업 배선)는 미작성."
+  },
+  "hierarchy": [
+    {
+      "module": "basys3_top",
+      "file": "rtl/basys3_top.v",
+      "children": [
+        {
+          "module": "axil_i2c_slave_ns",
+          "file": "rtl/axil_i2c_slave_ns.v",
+          "children": [
+            {
+              "module": "i2c_slave_ns",
+              "file": "rtl/i2c_slave_ns.v",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "memory_map": [
+    {
+      "base": "0x402D_0000",
+      "size": "0x10000",
+      "block": "axil_wrap",
+      "desc": "I2C 슬레이브 레지스터 공간 (64 KB)",
+      "regs": [
+        {"off": "0x00", "name": "REG0",    "access": "RW", "desc": "8비트 범용 레지스터 0 (I2C 레지스터 주소 0x00)"},
+        {"off": "0x04", "name": "REG1",    "access": "RW", "desc": "8비트 범용 레지스터 1 (I2C 레지스터 주소 0x01)"},
+        {"off": "0x08", "name": "REG2",    "access": "RW", "desc": "8비트 범용 레지스터 2 (I2C 레지스터 주소 0x02)"},
+        {"off": "0x0C", "name": "REG3",    "access": "RW", "desc": "8비트 범용 레지스터 3 (I2C 레지스터 주소 0x03)"},
+        {"off": "0x10", "name": "REG4",    "access": "RW", "desc": "8비트 범용 레지스터 4 (I2C 레지스터 주소 0x04)"},
+        {"off": "0x14", "name": "REG5",    "access": "RW", "desc": "8비트 범용 레지스터 5 (I2C 레지스터 주소 0x05)"},
+        {"off": "0x18", "name": "REG6",    "access": "RW", "desc": "8비트 범용 레지스터 6 (I2C 레지스터 주소 0x06)"},
+        {"off": "0x1C", "name": "REG7",    "access": "RW", "desc": "8비트 범용 레지스터 7 (I2C 레지스터 주소 0x07)"},
+        {"off": "0x20", "name": "STATUS",  "access": "R",  "desc": "[2]:start_det [1]:stop_det [0]:busy"},
+        {"off": "0x24", "name": "I2C_ADDR","access": "RW", "desc": "[6:0] I2C 슬레이브 주소 (기본 0x20)"},
+        {"off": "0x28", "name": "CTRL",    "access": "RW", "desc": "[0]:clr_status (1펄스로 start_det/stop_det 클리어)"}
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T2",
+      "state": "current",
+      "title": "I2C 슬레이브 무클럭스트레칭 AXI4-Lite IP — 기본 R/W 레지스터 파일",
+      "refs": ["angelojacobo-fpga-i2c-implementation", "abelectronics-rpi-spi-tutorial"]
+    },
+    {
+      "stage": "T3",
+      "state": "planned",
+      "title": "다중 마스터 지원 + 인터럽트(start/stop 이벤트 → AXI INTC) + 400 kHz 모드",
+      "refs": ["tom-urkin-i2c", "hdl-util-i2c"]
+    }
+  ],
+  "references": [
+    {
+      "name": "angelojacobo-fpga-i2c-implementation",
+      "reason": "Verilog I2C 구현 선례. I2C FSM 구조(START/STOP 감지, ACK) 참고."
+    },
+    {
+      "name": "abelectronics-rpi-spi-tutorial",
+      "reason": "RPi GPIO 프로토콜(spidev/i2c-dev) 활성화 절차. i2c-dev 접근법 유사."
+    }
+  ],
+  "sources": {
+    "rtl": ["rtl/i2c_slave_ns.v", "rtl/axil_i2c_slave_ns.v", "rtl/basys3_top.v"],
+    "tb":   ["tb/tb_i2c_slave_ns.v"],
+    "constraints": ["constr/basys3.xdc"],
+    "build": ["Makefile"]
+  },
+  "howto": {
+    "simulation": [
+      "iverilog -g2001 -o build/tb_i2c rtl/i2c_slave_ns.v rtl/axil_i2c_slave_ns.v tb/tb_i2c_slave_ns.v",
+      "vvp build/tb_i2c",
+      "PASS로 시작하는 행이 모든 테스트를 통과한 것. FAIL 행이 있으면 실패."
+    ],
+    "vivado": [
+      "1. Vivado 2024.2에서 프로젝트 생성 (xc7a35tcpg236-1)",
+      "2. rtl/*.v 추가, constr/basys3.xdc 추가",
+      "3. axil_i2c_slave_ns를 사용자 IP로 패키징하거나 AXI Interconnect에 직접 연결",
+      "4. 합성·구현 후 비트스트림 생성",
+      "5. RPi i2c-tools: `i2cdetect -y 1` 로 슬레이브 주소(0x20) 검출 확인"
+    ]
+  },
+  "verification": {
+    "board": "not-tested",
+    "notes": "시뮬레이션 TB로 주소 필터·WRITE·READ 동작 확인. 보드 검증은 사람이 수행(S3 등급)."
+  },
+  "risks": [
+    "RPi BCM I2C 내부 풀업(~50 kΩ)으로 100 kHz 동작 시 SDA 라이즈 타임이 느릴 수 있음. 외부 4.7 kΩ 풀업 권장.",
+    "클럭 스트레칭 없이 동작하므로 SCL HIGH 구간에 ACK/데이터를 준비해야 함. FSM 지연이 1클럭(10 ns) 이상이면 타이밍 위반.",
+    "다중 마스터 환경에서 중재 없음. 단일 RPi 마스터로만 사용.",
+    "Vivado AXI Slave 연결 시 axil_i2c_slave_ns의 WSTRB 미구현으로 바이트 단위 쓰기 불가."
+  ]
+}

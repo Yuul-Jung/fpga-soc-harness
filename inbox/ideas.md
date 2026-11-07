@@ -705,7 +705,7 @@
 
 **id**: I-056
 **제목**: RPi I2C 클럭 스트레칭 버그 → FPGA I2C 슬레이브 무클럭스트레칭 설계 패턴
-**상태**: raw
+**상태**: used (패키지: mmio-i2c-slave-ns-ip, 2026-11-07, §13.7 무조건최대한생성)
 **요약**: RPi의 BCM I2C 하드웨어 버그(클럭 스트레칭 미지원)를 전제로, FPGA I2C 슬레이브를 클럭 스트레칭 없이 설계하는 패턴 카드 및 Basys3 Pmod I2C 연결 예제.
 **조합**: RPi I2C-master(spidev 아닌 i2c-dev) + FPGA I2C-slave(no-stretch) + AXI4-Lite 브리지
 **근거**:
@@ -716,8 +716,7 @@
 **Basys3 적합성 근거**: I2C 슬레이브 FSM은 ~100 LUT, RPi 3.3V ↔ Basys3 Pmod 3.3V 직결 가능
 **난이도**: 2
 **단계**: T2
-**상태**: ready
-**심사**: 2026-11-04 /verify, 근거 0(angelojacobo·abelectronics rechecked_at 없음) + 새로움 2(RPi 호스트 한계 명시적 전제한 I2C 슬레이브 설계 패턴 카드 없음) + 적합성 2(I2C 슬레이브 FSM ~100 LUT, Pmod 3.3V 직결, free_slot 하나) + 완결성 1(패턴 카드 형식이라 TB 범위 불명확; 무클럭스트레칭 타이밍 체크 TB 필요) = 5점 → vetted. 보강: angelojacobo rechecked_at 취득 필요.
+**최초심사**: 2026-11-04 /verify, 근거 0(angelojacobo·abelectronics rechecked_at 없음) + 새로움 2(RPi 호스트 한계 명시적 전제한 I2C 슬레이브 설계 패턴 카드 없음) + 적합성 2(I2C 슬레이브 FSM ~100 LUT, Pmod 3.3V 직결, free_slot 하나) + 완결성 1(패턴 카드 형식이라 TB 범위 불명확; 무클럭스트레칭 타이밍 체크 TB 필요) = 5점 → vetted. 보강: angelojacobo rechecked_at 취득 필요.
 - 차단조건재심사: 2026-11-06 /verify(24차), 근거 2(angelojacobo-fpga-i2c-implementation·abelectronics-rpi-spi-tutorial 카드 2건, rechecked_at 불문) + 새로움 2(RPi 호스트 한계 명시적 전제한 I2C 슬레이브 설계 패턴 카탈로그 없음) + 적합성 2(I2C 슬레이브 FSM ~100 LUT, Pmod 3.3V 직결, free_slot 하나) + 완결성 1(패턴 카드 형식 TB 범위 불명확, 무클럭스트레칭 타이밍 체크 TB 필요) = 7점 ≥ 7점. 사이클 한도(ready +2) 소진(I-115·I-116 승격)으로 vetted 유지. 다음 사이클 ready 후보.
 - 차단조건재심사: 2026-11-06 /verify(26차), 모든 WebFetch PROVENANCE_REQUIRED 차단(26차 연속). 근거 2(angelojacobo-fpga-i2c-implementation·abelectronics-rpi-spi-tutorial 카드 2건, rechecked_at 불문) + 새로움 2(RPi 호스트 한계 명시적 전제한 I2C 슬레이브 설계 패턴 카탈로그 없음) + 적합성 2(I2C 슬레이브 FSM ~100 LUT, Pmod 3.3V 직결) + 완결성 1(패턴 카드 형식 TB 범위 불명확) = 7점 ≥ 7점 → ready 승격 (사이클 26차 1번째 슬롯).
 

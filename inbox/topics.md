@@ -149,7 +149,7 @@
 
 ### 전문: NPU 시스템 통합
 - [x] [B3] 소형 NPU SoC 설계: MicroBlaze V + AXI4-Lite NPU IP (가중치 로드, 추론 트리거, 결과 읽기 레지스터) — 2026-11-07 복수 사이클 완료: leonui-tiny-npu(amd), arxiv-2508-16095-nvdla-riscv-soc, columbia-4840-sp26-lenet5-cnn-accelerator, ansh07verma-fpga-mini-npu, axc1271-mini-npu, cornell-ece5760-2024-conv-accel 카드 작성
-- [ ] [B3] 엣지 AI 추론 파이프라인: 카메라(OV7670) → CNN 특징 추출 → MLP 분류 → LED/VGA 출력 (전체 데이터 흐름)
+- [x] [B3] 엣지 AI 추론 파이프라인: 카메라(OV7670) → CNN 특징 추출 → MLP 분류 → LED/VGA 출력 (전체 데이터 흐름) — 2026-11-07 15:22 collect 완료(S2+S6; rajmali-22·columbia-4840-sp24·emirertorer 카드 3건)
 - [x] [B3] 엣지 AI 추론 파이프라인: 카메라(OV7670) → CNN 특징 추출 → MLP 분류 → LED/VGA 출력 (전체 데이터 흐름) — 2026-11-07 S2 조합 탐색(주)+S6 실패 사례(보조): rajmali-22-fpga-zebra-crossing-camera(L3, BNN BCNN+OV7670+VGA), columbia-4840-sp24-lenet-classifier(L3, LeNet+Avalon+7seg, 실패 교훈), emirertorer-bnn-mnist-nexys-a7(L3, BNN FC BRAM 97.78% 한계) 카드 3건 생성
 - [x] [B3] 양자화 인식 훈련과 하드웨어 배포: INT8/INT4 가중치, 스케일 팩터 AXI 레지스터, 정밀도 손실 측정 — 2026-11-07 S7 난이도 사다리(주)+S5 비정형 출처(보조): tb-rohan-int8-cnn-accelerator(L3, Artix-7 200T, fit_basys3:no), shanker-teo-integer-intelligence-2026(L3, Cmod A7/XC7A35T, fit_basys3:needs-port) 카드 2건 생성
 - [ ] [B3] 하드웨어 소프트맥스·아르그맥스: 지수 근사(Mitchell), 분류 출력 인터페이스, 10클래스 분류 데모
