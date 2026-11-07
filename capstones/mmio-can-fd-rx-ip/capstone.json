@@ -1,0 +1,218 @@
+{
+  "slug": "mmio-can-fd-rx-ip",
+  "title": "CAN FD 프레임 수신 파서·필터 AXI4-Lite IP",
+  "summary": "CAN 2.0A/FD 프레임을 비트 수준에서 수신·파싱하고, 11비트 ID 필터를 적용해 AXI4-Lite 슬레이브 레지스터로 노출하는 RTL IP. 100 MHz 클럭, 500 kbit/s 샘플링(200 클럭/비트). Basys3 Pmod에 TJA1050 등 CAN 트랜시버 연결.",
+  "board": "Basys3",
+  "stage": "T2",
+  "goals": [
+    "CAN 2.0A(SOF·ID·DLC·데이터·CRC·EOF) 프레임을 비트 FSM으로 수신·파싱",
+    "11비트 ID 마스크 필터(FILTER_ID, FILTER_MASK)로 수신 프레임 선별",
+    "FD 프레임 헤더(FDF·BRS·ESI 비트) 감지 및 STATUS 플래그 노출",
+    "AXI4-Lite 슬레이브 레지스터로 STATUS·FRAME_ID·DLC·DATA0-7 제공",
+    "iverilog 비트-레벨 주입 테스트벤치로 PASS 확인"
+  ],
+  "non_goals": [
+    "CAN FD 가변 비율(Data Phase) 완전 구현 — FDF/BRS 감지만",
+    "CAN 송신(TX) 기능",
+    "CAN FD 17/21비트 CRC 완전 검증(기본 15비트 CRC 위주)",
+    "멀티 메시지 수신 큐(FIFO) — 1프레임 레지스터만",
+    "오류 능동/수동/버스 오프 상태 머신",
+    "소프트웨어 드라이버(펌웨어 계층)"
+  ],
+  "architecture": {
+    "clock": "100 MHz (Basys3 W5), CAN 500 kbit/s = 200 클럭/비트, 샘플점 75%(150번째 클럭)",
+    "blocks": [
+      {
+        "id": "top",
+        "name": "basys3_top_can_fd",
+        "kind": "wrapper",
+        "module": "basys3_top_can_fd",
+        "file": "rtl/basys3_top_can_fd.v",
+        "desc": "Basys3 최상위 래퍼. IBUFG 클럭 버퍼, 액티브 로우 리셋, AXI4-Lite 마스터 포트 노출",
+        "short": "board wrapper",
+        "side": "left"
+      },
+      {
+        "id": "can_ip",
+        "name": "axil_can_fd_rx",
+        "kind": "peripheral",
+        "module": "axil_can_fd_rx",
+        "file": "rtl/axil_can_fd_rx.v",
+        "desc": "AXI4-Lite 슬레이브 + CAN 비트 FSM. 프레임 수신·파싱·필터, 레지스터 노출",
+        "short": "CAN FD RX IP",
+        "side": "right"
+      },
+      {
+        "id": "transceiver",
+        "name": "TJA1050",
+        "kind": "external",
+        "module": null,
+        "file": null,
+        "desc": "CAN 트랜시버 IC (TJA1050 또는 호환). Pmod JA 핀 1=TX, 2=RX. 차동 버스(CANH/CANL)",
+        "short": "CAN XCVR",
+        "side": "right"
+      }
+    ],
+    "links": [
+      {
+        "from": "top",
+        "to": "can_ip",
+        "label": "AXI4-Lite [17] 0x4017_0000"
+      },
+      {
+        "from": "can_ip",
+        "to": "transceiver",
+        "label": "can_rx (Pmod JA pin2)"
+      }
+    ]
+  },
+  "bus_protocol": {
+    "name": "AXI4-Lite",
+    "data_width": 32,
+    "addr_width": 32,
+    "signals": [
+      "AWVALID", "AWREADY", "AWADDR",
+      "WVALID",  "WREADY",  "WDATA", "WSTRB",
+      "BVALID",  "BREADY",  "BRESP",
+      "ARVALID", "ARREADY", "ARADDR",
+      "RVALID",  "RREADY",  "RDATA", "RRESP"
+    ],
+    "limits": [
+      "단일 비프리 트랜잭션. 아웃스탠딩 불가. WSTRB는 4'b1111만 처리."
+    ]
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "mbv-frozen-v2",
+    "compat": "compatible",
+    "plan": "free_slots의 [17](0x4017_0000, 64KB)에 배정. intc_free [14] 사용 없음(폴링 모드만).",
+    "frozen_mapping": {
+      "can_ip": "[17] 0x4017_0000"
+    }
+  },
+  "external_parts": [
+    {
+      "id": "u_xcvr",
+      "name": "TJA1050T (또는 MCP2551, SN65HVD230 등 CAN 트랜시버)",
+      "block": "transceiver",
+      "interface": "CAN",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": 5.0,
+      "level_shift": true,
+      "power_note": "TJA1050은 5V 전원 필요. CANH/CANL은 차동 버스. 로직 핀(TX/RX)은 3.3V/5V 겸용이나 레벨 변환 권장. SN65HVD230은 3.3V 단일 전원으로 간단.",
+      "arduino_compatible": true,
+      "notes": "Pmod JA 핀 1(TX→트랜시버 TXD), 핀 2(트랜시버 RXD→FPGA can_rx). 종단 저항 120 Ω 필요(버스 양단). 단일 노드 테스트 시 루프백 가능."
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "TX(FPGA→트랜시버) + RX(트랜시버→FPGA), 차동 버스(CANH/CANL), 종단 120Ω. 별도 회로도 미작성."
+  },
+  "hierarchy": [
+    {
+      "module": "basys3_top_can_fd",
+      "file": "rtl/basys3_top_can_fd.v",
+      "children": [
+        {
+          "module": "axil_can_fd_rx",
+          "file": "rtl/axil_can_fd_rx.v",
+          "children": []
+        }
+      ]
+    }
+  ],
+  "memory_map": [
+    {
+      "region": "can_fd_rx",
+      "base": "0x4017_0000",
+      "size": "0x10000",
+      "block": "can_ip",
+      "regs": [
+        {"off": "0x00", "name": "STATUS",    "access": "RO",   "desc": "bit0=VALID(프레임 수신 완료), bit1=ERR(CRC/형식 오류), bit2=FD_FRAME(FDF=1), bit3=BRS(비트율 전환 감지)"},
+        {"off": "0x04", "name": "CTRL",      "access": "WO",   "desc": "bit0=CLR_VALID(VALID·ERR 클리어, 자동 클리어)"},
+        {"off": "0x08", "name": "FILTER_ID", "access": "RW",   "desc": "수신 허용 ID[10:0]. 0=전체 허용"},
+        {"off": "0x0C", "name": "FILTER_MSK","access": "RW",   "desc": "마스크[10:0]. 1=비트 비교, 0=비트 무시"},
+        {"off": "0x10", "name": "FRAME_ID",  "access": "RO",   "desc": "수신된 11비트 ID[10:0]"},
+        {"off": "0x14", "name": "FRAME_DLC", "access": "RO",   "desc": "수신된 DLC[3:0]"},
+        {"off": "0x18", "name": "DATA0",     "access": "RO",   "desc": "데이터 바이트 0[7:0]"},
+        {"off": "0x1C", "name": "DATA1",     "access": "RO",   "desc": "데이터 바이트 1[7:0]"},
+        {"off": "0x20", "name": "DATA2",     "access": "RO",   "desc": "데이터 바이트 2[7:0]"},
+        {"off": "0x24", "name": "DATA3",     "access": "RO",   "desc": "데이터 바이트 3[7:0]"},
+        {"off": "0x28", "name": "DATA4",     "access": "RO",   "desc": "데이터 바이트 4[7:0]"},
+        {"off": "0x2C", "name": "DATA5",     "access": "RO",   "desc": "데이터 바이트 5[7:0]"},
+        {"off": "0x30", "name": "DATA6",     "access": "RO",   "desc": "데이터 바이트 6[7:0]"},
+        {"off": "0x34", "name": "DATA7",     "access": "RO",   "desc": "데이터 바이트 7[7:0]"}
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T1",
+      "state": "done",
+      "title": "MMIO UART+GPIO 스켈레톤",
+      "refs": ["fanguoc2len-risc-v-computer"]
+    },
+    {
+      "stage": "T2",
+      "state": "current",
+      "title": "CAN FD 프레임 수신 IP (이 패키지)",
+      "refs": ["csselectronics-can-fd-frame-guide", "wangxuan95-fpga-can", "dpiegdon-verilog-can"]
+    },
+    {
+      "stage": "T3",
+      "state": "planned",
+      "title": "CAN FD TX + 메시지 큐 + 오류 FSM",
+      "refs": []
+    }
+  ],
+  "references": [
+    {
+      "name": "csselectronics-can-fd-frame-guide",
+      "reason": "CAN 2.0A/FD 프레임 구조(SOF·ID·DLC·데이터·CRC·EOF) 근거"
+    },
+    {
+      "name": "wangxuan95-fpga-can",
+      "reason": "FPGA CAN 비트 FSM 구조 참고"
+    },
+    {
+      "name": "dpiegdon-verilog-can",
+      "reason": "Verilog CAN 수신 FSM 패턴 참고"
+    }
+  ],
+  "sources": {
+    "rtl": [
+      "rtl/axil_can_fd_rx.v",
+      "rtl/basys3_top_can_fd.v"
+    ],
+    "tb": [
+      "tb/tb_can_fd_rx.v"
+    ],
+    "constraints": [
+      "constr/basys3_can_fd.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
+  },
+  "howto": {
+    "sim": "make sim  # iverilog tb/tb_can_fd_rx.v rtl/axil_can_fd_rx.v rtl/basys3_top_can_fd.v -o sim.out && vvp sim.out",
+    "lint": "make lint  # verilator --lint-only rtl/*.v",
+    "synth": "make synth  # yosys -p 'synth_xilinx -top basys3_top_can_fd' rtl/*.v",
+    "vivado": "Vivado에서 rtl/*.v 추가, constr/basys3_can_fd.xdc 추가, top=basys3_top_can_fd으로 합성·구현·비트스트림 생성"
+  },
+  "verification": {
+    "board": "not-tested",
+    "notes": "§13.7 사용자 운영 방침(무조건 최대한 생성). 근거 재확인 없이 생성. CI에서 lint+sim+synth 목표."
+  },
+  "risks": [
+    "비트 타이밍: 500 kbit/s 고정. 실제 버스 속도와 맞지 않으면 프레임 파싱 실패",
+    "스터프 비트 처리: 5 연속 동일 비트 → 스터프 비트 삽입/제거 로직 필요 (본 구현 포함)",
+    "TJA1050은 5V 전원 필요. 3.3V 단일 전원을 원하면 SN65HVD230 사용 권장",
+    "CAN FD 가변 데이터율(BRS 이후)은 감지만 하고 완전 파싱 안 함 — STATUS[3]=BRS로 표시",
+    "단일 프레임 버퍼: 새 프레임 도착 시 VALID가 클리어되지 않으면 덮어쓰기 발생",
+    "15비트 CRC 검증만 구현. FD 17/21비트 CRC는 미구현(ERR=1 가능성)"
+  ],
+  "idea_ref": "I-064"
+}

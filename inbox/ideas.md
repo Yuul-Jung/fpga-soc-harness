@@ -864,9 +864,11 @@
 - Basys3 적합성 근거: 100 MHz 클럭으로 5 Mbit/s 오버샘플(20 클럭/비트) 가능. CAN 트랜시버(TJA1050 등)를 Pmod에 연결. BRAM 소모 적음(프레임 버퍼 2~3개).
 - 난이도: 3
 - 단계: T2
-- 상태: ready
+- 상태: used
+- 패키지: mmio-can-fd-rx-ip
 - 심사: 2026-11-04 /verify, 근거 1(wangxuan95-fpga-can rechecked_at: 2026-11-02; csselectronics·dpiegdon rechecked_at 없음) + 새로움 2(CAN FD FSM IP 없음) + 적합성 3(100MHz 20클럭/비트 오버샘플 가능, Pmod 연결 가능, BRAM 소량) + 완결성 2(FDF·BRS·DLC·CRC FSM 범위 명확, AXI래퍼 작성 가능, TB 가능) = 8점. 근거 1<3이므로 ready 미달 → vetted. 보강: csselectronics·dpiegdon rechecked_at 취득 필요(차단 조건 적용 불가: raw→vetted 첫 심사).
 - 차단조건재심사: 2026-11-04 /verify(5차), 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(csselectronics-can-fd-frame-guide, wangxuan95-fpga-can, dpiegdon-verilog-can, rechecked_at 불문) → 근거 3 + 새로움 2(CAN FD FSM·AXI4-Lite IP 없음) + 적합성 3(100 MHz 20클럭/비트 오버샘플 가능, Pmod TJA1050 연결, BRAM 소량) + 완결성 2(FDF·BRS·DLC·21비트 CRC FSM 범위 명확) = 10점 ≥ 7 → ready 승격. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
+- used: 2026-11-07, 캡스톤 패키지 mmio-can-fd-rx-ip 생성. §13.7 "무조건 최대한 생성" 원칙 적용(근거 재확인 없음). 검증 등급: CI 결과 대기.
 
 ---
 
