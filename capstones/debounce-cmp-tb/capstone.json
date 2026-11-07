@@ -123,7 +123,15 @@
   },
   "verification": {
     "board": "not-verified",
-    "notes": "자동 생성 패키지(S0). CI에서 lint+sim+synth 통과 시 S2로 갱신됨. 보드 확인은 사람이 직접 한다(S3)."
+    "notes": "S2 달성 (CI run 42389312313, commit bc0ef3b, 2026-11-08: lint·sim·synth 모두 통과). 보드 확인은 사람이 직접 한다(S3).",
+    "ci": {
+      "lint": "pass",
+      "sim": "pass",
+      "synth": "pass",
+      "run_id": "42389312313",
+      "commit": "bc0ef3b",
+      "date": "2026-11-08"
+    }
   },
   "risks": [
     "세 방식의 STABLE_COUNT/SR_WIDTH 파라미터가 다르면 사이클 비교 결과가 달라진다 — 테스트벤치에서 같은 값으로 고정함",
