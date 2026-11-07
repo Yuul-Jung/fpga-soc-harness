@@ -183,6 +183,7 @@ always @(posedge clk) begin
 
         // ---- FSM execution ----
         case (state)
+        ST_IDLE: ; // FSM start is handled above; default must not override state <= ST_PROJ
         ST_PROJ: begin
             // Q=X*WQ, K=X*WK, V=X*WV sequentially
             // acc += x_buf[i*D+k] * w?[k*D+j]
@@ -195,9 +196,11 @@ always @(posedge clk) begin
             if (ctr_k == D-1) begin
                 // Store result, advance
                 case (proj_phase)
-                    3'd0: q_buf[ctr_i*D+ctr_j] <= acc[15:0];
-                    3'd1: k_buf[ctr_i*D+ctr_j] <= acc[15:0];
-                    3'd2: v_buf[ctr_i*D+ctr_j] <= acc[15:0];
+                    // Include final product (matches ST_SCORE/ST_OUT pattern)
+                    // q_buf is [15:0] so 32-bit RHS truncates automatically
+                    3'd0: q_buf[ctr_i*D+ctr_j] <= acc + $signed(x_buf[ctr_i*D+ctr_k]) * $signed(wq[ctr_k*D+ctr_j]);
+                    3'd1: k_buf[ctr_i*D+ctr_j] <= acc + $signed(x_buf[ctr_i*D+ctr_k]) * $signed(wk[ctr_k*D+ctr_j]);
+                    3'd2: v_buf[ctr_i*D+ctr_j] <= acc + $signed(x_buf[ctr_i*D+ctr_k]) * $signed(wv[ctr_k*D+ctr_j]);
                     default: ;
                 endcase
                 acc   <= 32'sd0;
