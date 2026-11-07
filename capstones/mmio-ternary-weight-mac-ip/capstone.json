@@ -103,25 +103,23 @@
       ]
     }
   ],
-  "memory_map": {
-    "base": "0x4016_0000",
-    "regions": [
-      {
-        "base": "0x4016_0000",
-        "size": "0x10000",
-        "block": "slave"
-      }
-    ],
-    "registers": [
-      {"off": "0x00", "name": "STATUS",   "access": "RO", "desc": "bit[0]=DONE, bit[1]=BUSY"},
-      {"off": "0x04", "name": "CTRL",     "access": "WO", "desc": "bit[0]=START(자동 클리어), bit[1]=CLR_DONE, bits[7:4]=VECLEN(0=1요소, 15=16요소)"},
-      {"off": "0x08", "name": "W_DATA",   "access": "WO", "desc": "가중치 32비트 패킹: 2비트×16요소. W_ADDR_REG 순서로 쓴다"},
-      {"off": "0x0C", "name": "W_ADDR",   "access": "WO", "desc": "가중치 블록 쓰기 주소(0=첫 16요소 뭉치, 현재 1개 뭉치만 사용)"},
-      {"off": "0x10", "name": "V_ADDR",   "access": "WO", "desc": "활성화 벡터 쓰기 주소(0~15)"},
-      {"off": "0x14", "name": "V_DATA",   "access": "WO", "desc": "활성화 바이트(부호 있는 8비트, LSB 정렬)"},
-      {"off": "0x18", "name": "RESULT_LO","access": "RO", "desc": "내적 결과 하위 24비트(부호 확장 32비트)"}
-    ]
-  },
+  "memory_map": [
+    {
+      "region": "ternary_mac",
+      "base": "0x4016_0000",
+      "size": "0x10000",
+      "block": "slave",
+      "regs": [
+        {"off": "0x00", "name": "STATUS",   "access": "RO", "desc": "bit[0]=DONE, bit[1]=BUSY"},
+        {"off": "0x04", "name": "CTRL",     "access": "WO", "desc": "bit[0]=START(자동 클리어), bit[1]=CLR_DONE, bits[7:4]=VECLEN(0=1요소, 15=16요소)"},
+        {"off": "0x08", "name": "W_DATA",   "access": "WO", "desc": "가중치 32비트 패킹: 2비트×16요소. W_ADDR_REG 순서로 쓴다"},
+        {"off": "0x0C", "name": "W_ADDR",   "access": "WO", "desc": "가중치 블록 쓰기 주소(0=첫 16요소 뭉치, 현재 1개 뭉치만 사용)"},
+        {"off": "0x10", "name": "V_ADDR",   "access": "WO", "desc": "활성화 벡터 쓰기 주소(0~15)"},
+        {"off": "0x14", "name": "V_DATA",   "access": "WO", "desc": "활성화 바이트(부호 있는 8비트, LSB 정렬)"},
+        {"off": "0x18", "name": "RESULT_LO","access": "RO", "desc": "내적 결과 하위 24비트(부호 확장 32비트)"}
+      ]
+    }
+  ],
   "roadmap": [
     {"stage": "T2", "state": "done",    "title": "UART MMIO 뼈대(mmio-uart-gpio-skeleton)", "refs": ["mmio-uart-gpio-skeleton"]},
     {"stage": "T4", "state": "current", "title": "삼진 가중치 압축 BRAM MAC IP (this)", "refs": []},
