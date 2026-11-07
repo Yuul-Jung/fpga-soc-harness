@@ -148,7 +148,7 @@
 - [x] [B3] 트랜스포머 블록 하드웨어 슬림화: 멀티헤드 어텐션 1~2헤드, FFN 1층, Basys3 자원 한계 내 구현 가능성 분석 — 2026-11-07 S4 제약 역전(주)+S1 인접 도메인 이식(보조): arxiv-2505-17662-tinyformer4ts(L3), arxiv-2410-03294-mixprecq-ts-fpga(L3), arxiv-2607-03652-eliteformer(L2) 카드 3건 생성
 
 ### 전문: NPU 시스템 통합
-- [x] [B3] 소형 NPU SoC 설계: MicroBlaze V + AXI4-Lite NPU IP (가중치 로드, 추론 트리거, 결과 읽기 레지스터) — 2026-11-07 2시간 완결 사이클 ①단계 수집: leonui-tiny-npu(amd), arxiv-2508-16095-nvdla-riscv-soc, columbia-4840-sp26-lenet5-cnn-accelerator 카드 3건
+- [x] [B3] 소형 NPU SoC 설계: MicroBlaze V + AXI4-Lite NPU IP (가중치 로드, 추론 트리거, 결과 읽기 레지스터) — 2026-11-07 복수 사이클 완료: leonui-tiny-npu(amd), arxiv-2508-16095-nvdla-riscv-soc, columbia-4840-sp26-lenet5-cnn-accelerator, ansh07verma-fpga-mini-npu, axc1271-mini-npu, cornell-ece5760-2024-conv-accel 카드 작성
 - [ ] [B3] 엣지 AI 추론 파이프라인: 카메라(OV7670) → CNN 특징 추출 → MLP 분류 → LED/VGA 출력 (전체 데이터 흐름)
 - [ ] [B3] 양자화 인식 훈련과 하드웨어 배포: INT8/INT4 가중치, 스케일 팩터 AXI 레지스터, 정밀도 손실 측정
 - [ ] [B3] 하드웨어 소프트맥스·아르그맥스: 지수 근사(Mitchell), 분류 출력 인터페이스, 10클래스 분류 데모

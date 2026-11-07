@@ -2133,3 +2133,35 @@
 - 난이도: 3
 - 단계: T4
 - 상태: raw
+
+---
+
+## I-137 AXI4-Lite NPU IP 1-MAC 최소 슬레이브 (가중치 레지스터·추론 트리거·결과 플래그)
+
+내 판단: ansh07verma-fpga-mini-npu와 axc1271-mini-npu의 INT8 MAC 모듈을 근거로, MicroBlaze V에서 AXI4-Lite로 제어 가능한 최소 1-MAC NPU IP를 직접 설계. 가중치 쌍(A, B)을 AXI 레지스터로 쓰고, 추론 트리거 1비트로 MAC 연산 시작, 결과 레지스터에서 읽는 패턴. cornell-ece5760-2024-conv-accel의 HPS→ARM 소프트웨어 흐름을 MicroBlaze V C 드라이버로 대체하는 개조 경로가 명확함.
+
+- id: I-137
+- 조합: [INT8-MAC, AXI4-Lite-slave, weight-register, inference-trigger, result-flag, MicroBlaze-V-driver]
+- 근거 카드: [[ansh07verma-fpga-mini-npu]], [[axc1271-mini-npu]], [[cornell-ece5760-2024-conv-accel]]
+- 근거 URL: https://github.com/ansh07verma/fpga-mini-npu, https://github.com/AxC1271/mini-NPU
+- 새로움 근거: 카탈로그에 1-MAC AXI4-Lite 슬레이브 최소 NPU IP 패키지 없음. 기존 FIR·UART 프레이밍 IP(mmio-fir-q1p15-mac-ip 등)는 신호처리 위주. INT8 추론 MAC을 MicroBlaze V AXI 슬레이브로 감싼 IP는 카탈로그 첫 사례.
+- Basys3 적합성 근거: 1-MAC INT8 = 8비트×8비트+16비트 누산, DSP48E1 1개 또는 LUT 위주. 가중치 레지스터 최대 8쌍 × 2바이트 = 16B → BRAM 불필요. free_slots 1개(64KB) 충분. XC7A35T 적합.
+- 난이도: 2
+- 단계: T4
+- 상태: raw
+
+---
+
+## I-138 2D 합성곱 행·열 계수 AXI 로드 + 추론 파이프라인 (3×3 커널, BRAM 가중치)
+
+내 판단: cornell-ece5760-2024-conv-accel의 파라미터화 합성곱 아이디어를 Basys3 BRAM 한계 내로 축소해 3×3 커널 1개 고정, 행·열 계수 9개를 AXI4-Lite 레지스터로 로드하고 라인 버퍼로 슬라이딩 윈도우 합성곱을 수행하는 IP. I-137의 1-MAC을 확장한 단계. 소프트웨어 드라이버(C)는 cornell의 software_design 패턴을 MicroBlaze V Vitis 흐름으로 직접 개조 가능.
+
+- id: I-138
+- 조합: [3x3-conv, sliding-window, line-buffer, AXI4-Lite-weight-load, BRAM-kernel, MicroBlaze-V-C-driver]
+- 근거 카드: [[cornell-ece5760-2024-conv-accel]], [[ansh07verma-fpga-mini-npu]], [[axc1271-mini-npu]]
+- 근거 URL: https://people.ece.cornell.edu/land/courses/ece5760/FinalProjects/s2024/yx623_jz2275_sl2874_NEW/
+- 새로움 근거: kwondo99-fpga-vga-photobooth-project는 OV7670→VGA 파이프라인에 집중하며 소프트웨어 가중치 로드 패턴 없음. 3×3 커널 AXI 로드 + 라인 버퍼 합성곱 IP는 카탈로그 미등록.
+- Basys3 적합성 근거: 3×3 INT8 커널 = 9B × 1채널 → 가중치 레지스터 9개. 라인 버퍼 3행 × 열 너비 최대 128픽셀 × 8비트 = 384B → BRAM 1개 미만. DSP 1~4개. XC7A35T 가능. 실측 없음.
+- 난이도: 3
+- 단계: T4
+- 상태: raw

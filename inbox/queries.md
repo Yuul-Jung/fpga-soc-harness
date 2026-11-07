@@ -127,3 +127,15 @@
 2026-11-07 | [B3] 트랜스포머 블록 하드웨어 슬림화 | FPGA transformer encoder block 1 head feedforward network BRAM LUT resource usage small FPGA | 유효
 2026-11-07 | [B3] 트랜스포머 블록 하드웨어 슬림화 | ElasticNode V5 Spartan-7 transformer hardware implementation machine learning edge FPGA | 유효
 2026-11-07 | [B3] 트랜스포머 블록 하드웨어 슬림화 | transformer block FPGA LLaMA ternary weight compression BRAM efficient inference Versal | 유효
+2026-11-07 | [B3] 소형 NPU SoC 설계 | FPGA NPU INT8 systolic array Verilog AXI4-Lite GitHub site:github.com | 유효
+2026-11-07 | [B3] 소형 NPU SoC 설계 | MicroBlaze AXI4-Lite NPU IP weight load inference register FPGA Basys3 | 빈약
+2026-11-07 | [B3] 소형 NPU SoC 설계 | FPGA NPU AXI4-Lite slave Verilog weight register inference trigger result register | 유효
+2026-11-07 | [B3] 소형 NPU SoC 설계 | ansh07verma fpga-mini-npu INT8 CNN FPGA systolic | 유효
+2026-11-07 | [B3] 소형 NPU SoC 설계 | AxC1271 mini-NPU INT8 MAC systolic array FPGA | 유효
+2026-11-07 | [B3] 소형 NPU SoC 설계 | Cornell ECE5760 2024 convolution accelerator FPGA student project | 유효
+2026-11-07 | [B3] 소형 NPU SoC 설계 | FPGA INT8 systolic array NPU AXI MicroBlaze inference accelerator small | 빈약
+2026-11-07 | [B3] 소형 NPU SoC 설계 | small NPU FPGA Verilog AXI slave register weight load inference trigger GitHub | 유효
+2026-11-07 | [B3] 소형 NPU SoC 설계 | FPGA NPU IP Basys3 Artix-7 INT8 MAC accelerator AXI4-Lite programmable | 빈약
+2026-11-07 | [B3] 소형 NPU SoC 설계 | FPGA AI 가속기 AXI4-Lite NPU IP 소형 추론 엔진 Verilog MicroBlaze 한국어 | 빈약
+2026-11-07 | [B3] 소형 NPU SoC 설계 | MicroBlaze NPU IP AXI weight inference register BRAM FPGA Xilinx | 유효
+2026-11-07 | [B3] 소형 NPU SoC 설계 | FPGA convolution accelerator HPS AXI DE1-SoC student project Cornell 2024 | 유효

@@ -759,3 +759,10 @@
 - https://www.cs.columbia.edu/~sedwards/classes/2026/4840-spring/designs/LeNet-5-CNN-Accelerator.pdf | Columbia CSEE 4840 2026 Spring LeNet-5 CNN 가속기 보고서 (L2, 카드 columbia-4840-sp26-lenet5-cnn-accelerator 작성) | LeNet-5 CNN accelerator FPGA SystemVerilog
 - https://arxiv.org/html/2508.16095v1 | Bare-Metal RISC-V + NVDLA SoC 딥러닝 추론 (arXiv 2508.16095, L2, 카드 arxiv-2508-16095-nvdla-riscv-soc 작성) | RISC-V NVDLA SoC inference FPGA AXI
 - https://github.com/NetKit-Labs/npukit | npukit: 네트워크 처리 가속기 킷, NPU AXI Verilog (L1, 미열람) | NPU AXI Verilog neural network accelerator GitHub
+- https://github.com/YqGe585/Neural-Processing-Unit-on-FPGA | Cornell ECE5760 2024 Superscalar OOO NPU(GitHub) — 미열람(L1), DE1-SoC 보드 | FPGA NPU superscalar out-of-order Cornell
+- https://github.com/YqGe585/NPU-Design-on-FPGA | Cornell NPU Design on FPGA(GitHub, 같은 저자) — 미열람(L1) | FPGA NPU design Cornell 2024
+- https://people.ece.cornell.edu/land/courses/ece5760/FinalProjects/s2024/jy874_yz2952_ac2839/jy874_yz2952_ac2839/5760_Project_Web/5760_final.html | Cornell ECE5760 2024 FPGA CNN 숫자 인식 on DE1-SoC(HPS+FPGA, AXI) — 미열람(L1), S5 비정형 출처 | Cornell ECE5760 2024 FPGA CNN digit recognition DE1-SoC
+- https://arxiv.org/pdf/2603.08740 | FPGA AI 가속기 설계 성능 분석 종합 리뷰(arXiv 2026) — 미열람(L1) | FPGA AI accelerator design performance review 2026
+- https://github.com/avikde/tiny-xpu | tiny-xpu: 소형 XPU(GitHub) — 미열람(L1) | small NPU XPU FPGA Verilog
+- https://github.com/deaneeth/tiny-tpu | tiny-tpu: 소형 TPU(GitHub) — 미열람(L1) | small TPU FPGA systolic matrix
+- https://github.com/Divyajyotipatra10/axi_lite_slave | AXI4-Lite 슬레이브 Verilog(핸드셰이크·단일/연속 R/W, ARM SoC 대상) — 미열람(L1), NPU AXI 슬레이브 패턴 참고 | AXI4-Lite slave Verilog FPGA SoC

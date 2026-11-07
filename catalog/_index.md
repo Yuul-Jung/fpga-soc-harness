@@ -2,6 +2,9 @@
 
 | 이름 | 등급 | 단계 | 보드 | 갱신일 |
 |---|---|---|---|---|
+| [ansh07verma-fpga-mini-npu](vendor-neutral/ansh07verma-fpga-mini-npu.md) | L2 | T4 | 미명시 (needs-port) | 2026-11-07 |
+| [axc1271-mini-npu](vendor-neutral/axc1271-mini-npu.md) | L2 | T4 | 미명시 (needs-port) | 2026-11-07 |
+| [cornell-ece5760-2024-conv-accel](papers/cornell-ece5760-2024-conv-accel.md) | L2 | T4 | DE1-SoC (needs-port) | 2026-11-07 |
 | [arxiv-2607-03652-eliteformer](papers/arxiv-2607-03652-eliteformer.md) | L2 | T4 | Versal VCK5000 (no) | 2026-11-07 |
 | [arxiv-2410-03294-mixprecq-ts-fpga](papers/arxiv-2410-03294-mixprecq-ts-fpga.md) | L3 | T4 | Spartan-7 XC7S15 (needs-port) | 2026-11-07 |
 | [arxiv-2505-17662-tinyformer4ts](papers/arxiv-2505-17662-tinyformer4ts.md) | L3 | T4 | Spartan-7 XC7S15 (needs-port) | 2026-11-07 |
