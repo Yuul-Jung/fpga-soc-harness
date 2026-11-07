@@ -800,3 +800,10 @@
 - https://github.com/clashoftroops111-bit/MLP-PROJECT-ONE | MNIST MLP 추론 Verilog, ModelSim 검증 — 미열람(L1) | FPGA MLP MNIST 784 128 10 Verilog "fully connected" fixed-point inference accelerator 2024 2025
 - https://www.preprints.org/manuscript/202609.2272 | 재구성 가능 FPGA MLP 가속기: Q8.8/Q12.12/Q16.16, serial/parallel PE, VHDL, Zynq UltraScale+ — L2(preprints.org 부분 열람) | arXiv FPGA MLP inference fixed-point quantization MNIST 784 128 Basys3 2023 2024
 - https://github.com/kennykguo/veri-nn | DE1-SoC 딥러닝 파이프라인(MNIST 분류, Verilog) — 미열람(L1) | FPGA MLP inference accelerator MNIST Basys3 Nexys A7 Verilog matrix multiply BRAM pipelined 2024
+
+- https://github.com/jonathan-quan/basys3-classifier | Basys3 4-class DW/PW CNN 분류기(2,636 LUT, 7 DSP, 6,084 파라미터) — 열람 L3, 카드 완료 | Basys3 CNN classifier object detection FPGA inference UART
+- https://github.com/BasdaBT/FPGA-MNIST-CNN-Accelerator | Basys3 Verilog MNIST CNN 가속기(conv3×3+MaxPool+FC×3, 10MHz CNN, 라이선스 없음) — 열람 L3, 카드 완료 | Basys3 CNN MNIST Verilog accelerator 7-segment inference
+- https://github.com/ZiadAbaid/FPGA-CNN-Inference-Accelerator | Nexys4 Pure VHDL CNN(AXI-Stream, SPI, Q8.8, 35%LUT, Zero WNS 100MHz) — 열람 L3, 카드 완료 | Nexys4 VHDL CNN inference AXI-Stream SPI Raspberry Pi
+- https://github.com/DGiridhar2085/neural-network-hardware-accelerator-fpga | Artix-7 Verilog 3×3 conv MAC 프리미티브(3in,8out, 8비트 고정소수점, 라이선스 없음) — 열람 L3, 카드 미작성(보드·데이터셋 미명시) | Artix-7 CNN convolution accelerator MAC Verilog fixed-point
+- https://github.com/grant4001/MNIST_Classification_FPGA | DE2-115(Cyclone IV) SystemVerilog 7-layer MNIST CNN + VGA 카메라 뷰(GPL-3.0) — 열람 L3, Basys3 no, 카드 보류 | FPGA MNIST CNN VGA camera SystemVerilog Intel classification
+- https://github.com/abmoh4219/cifar10-simple-cnn | Python 2-layer CIFAR-10 소형 CNN(훈련·평가·추론 파이프라인) — 미열람(L1), 하드웨어 아님, 가중치 추출 참고용 | CIFAR-10 simple CNN 2 conv layers Python training

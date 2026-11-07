@@ -176,3 +176,8 @@
 2026-11-08 | [B3] NPU 캡스톤 T1 | FPGA MLP inference accelerator MNIST Basys3 Nexys A7 Verilog matrix multiply BRAM pipelined 2024 university course project | 유효
 2026-11-08 | [B3] NPU 캡스톤 T1 | FPGA MLP MNIST 784 128 10 fully connected ReLU fixed point Q8.8 Verilog AXI inference accelerator GitHub 2024 | 유효
 2026-11-08 | [B3] NPU 캡스톤 T1 | FPGA 고정소수점 MLP 추론 Verilog "784" "128" "10" github 2024 2025 논문 사례 | 빈약
+2026-11-08 | [B3] NPU 캡스톤 T2 | site:github.com Basys3 "CIFAR-10" CNN Verilog accelerator inference FPGA 2024 | 빈약
+2026-11-08 | [B3] NPU 캡스톤 T2 | FPGA CNN CIFAR-10 VGA feature map visualization "Artix-7" small network GitHub 2023 2024 | 빈약
+2026-11-08 | [B3] NPU 캡스톤 T2 | FPGA CIFAR-10 inference BRAM-only no external memory small CNN 2 conv layers resource constrained Artix-7 GitHub 2023 2024 | 빈약
+2026-11-08 | [B3] NPU 캡스톤 T2 | FPGA CNN feature map visualization VGA display intermediate layer convolutional neural network GitHub Verilog 2023 2024 | 유효(DE2-115 사례 발견, Basys3 아님)
+2026-11-08 | [B3] NPU 캡스톤 T2 | "FPGA CNN CIFAR-10 inference VGA feature map visualization Xilinx Artix-7 small network 2 conv layers GitHub project 2023 2024" | 빈약

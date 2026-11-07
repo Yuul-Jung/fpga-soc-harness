@@ -320,3 +320,6 @@
 | [shreyasilver22-neural-accelerator](amd/shreyasilver22-neural-accelerator.md) | L3 | T2 | Nexys4-DDR (needs-port) | 2026-11-08 |
 | [hussain-2025-har-mlp-artix7](papers/hussain-2025-har-mlp-artix7.md) | L3 | T2 | Artix-7-35T (yes) | 2026-11-08 |
 | [tasci-2025-fpga-qnn](papers/tasci-2025-fpga-qnn.md) | L3 | T4 | PYNQ-Z1 (needs-port) | 2026-11-08 |
+| [jonathan-quan-basys3-classifier](amd/jonathan-quan-basys3-classifier.md) | L3 | T4 | Basys3 (yes) | 2026-11-08 |
+| [basdabt-fpga-mnist-cnn-accelerator](amd/basdabt-fpga-mnist-cnn-accelerator.md) | L3 | T2 | Basys3 (yes) | 2026-11-08 |
+| [ziad-abaid-fpga-cnn-inference-accelerator](amd/ziad-abaid-fpga-cnn-inference-accelerator.md) | L3 | T4 | Nexys4 (needs-port) | 2026-11-08 |

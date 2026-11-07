@@ -2302,3 +2302,13 @@
 - Basys3 적합성의 근거: hussain-2025는 Artix-7 35T에서 LUT 2.5%만 사용(여유 97.5%). 16× PE도 LUT 40% 미만 추정. BRAM은 가중치 101KB로 6개(한도 50개 내).
 - 난이도: 3 / 단계: T2
 - 심사: (미심사)
+
+## I-149 Basys3 CIFAR-10 소형 CNN 가속기 + 특징 맵 VGA 표시 (BRAM-only)
+- 상태: raw
+- 요약: 내 판단: CIFAR-10 32×32×3 입력에 2 conv층(conv1: 8채널 3×3, conv2: 16채널 3×3)을 적용하고 conv1 출력 중 1채널을 32×32 feature map으로 VGA에 표시. 가중치를 BRAM에 `$readmemh`로 로드, AXI4-Lite 슬레이브로 MicroBlaze V와 연결. 이 조합은 카탈로그에 없는 미개척 영역(S4 제약 역전: BRAM-only feature map 버퍼).
+- 조합: [accelerator, video-vga, AXI4-Lite, comm-uart]
+- 근거: [jonathan-quan-basys3-classifier(DW CNN 최소 자원 Basys3), basdabt-fpga-mnist-cnn-accelerator(BRAM-only CNN Basys3), mo-ah-al11505-cnn-convolution-accelerator(conv 가속기 AXI)]
+- 새로움의 근거: 카탈로그에 CIFAR-10 + VGA feature map 조합 카드 없음. jonathan-quan은 CIFAR-10 아님(4-class), basdabt는 VGA 없음. 이 조합은 S4(BRAM 제약을 활용한 소형 feature map 버퍼: 32×32×8비트=1KB=BRAM 1개) 전략으로만 가능한 구조.
+- Basys3 적합성의 근거: CIFAR-10 32×32×3 입력 = 3,072바이트 → BRAM 1개 미만. conv1 출력 1채널(32×32×8비트=1KB) VGA 버퍼 → BRAM 1개. 가중치: conv1(3×3×3×8=216 파라미터), conv2(3×3×8×16=1,152 파라미터) → 합계 ~1.4K×8비트 ≈ 1.1KB → BRAM 1개. 총 LUT 추산: jonathan-quan 패턴(2,636 LUT/4-class CNN) + VGA 컨트롤러(≈1,000 LUT) = ~4K-8K LUT → Basys3 20,800 LUT 여유 충분.
+- 난이도: 3 / 단계: T2
+- 심사: (미심사)
