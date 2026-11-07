@@ -811,9 +811,11 @@
 - Basys3 적합성 근거: Vitis에서 MicroBlaze V BSP를 생성하면 FreeRTOS 패키지 선택 가능. AXI INTC는 Basys3 XC7A35T에 1개 이상 인스턴스화 가능(LUT 소량). 동결 맵의 free_slots에서 IP 1슬롯 배정.
 - 난이도: 3
 - 단계: T2
-- 상태: ready
+- 상태: used
+- package_slug: mmio-axil-irq-timer-ip
 - 심사: 2026-11-04 /verify 3차, 근거 0(beningo·freertos-org rechecked_at 없음) + 새로움 2(MicroBlaze V + FreeRTOS + AXI INTC 조합 카드·패키지 없음; ISR→태스크 통지 최소 예제 없음) + 적합성 2(Vitis FreeRTOS BSP 패키지 선택 가능, AXI INTC XC7A35T 가능, free_slots 1슬롯) + 완결성 2(RTL+C 최소 예제 패키지 범위 명확, AXI INTC + xSemaphoreGiveFromISR TB 단일 플로우) = 6점 → vetted. 보강: beningo·freertos-org rechecked_at 취득 필요.
 - 차단조건재심사: 2026-11-06 /verify(28차), WebFetch PROVENANCE_REQUIRED 전면 차단. 근거 2(beningo-freertos-to-zephyr-migration·freertos-org-faq-memory 카드 2건, rechecked_at 불문) + 새로움 2(MicroBlaze V + FreeRTOS + AXI INTC 조합 카드·패키지 없음) + 적합성 3(Vitis FreeRTOS BSP 패키지 선택 가능, AXI INTC XC7A35T 가능, free_slots 1슬롯) + 완결성 2(RTL+C 최소 예제 패키지 범위 명확, AXI INTC + xSemaphoreGiveFromISR TB 단일 플로우) = 9점 ≥ 7점 → ready 승격 (사이클 28차 2번째 슬롯). §14.2 차단 조건 적용.
+- 과제화: 2026-11-08 /capstone, 게이트 3·4 사용자 방침(2026-11-06)에 따라 생략. 근거 재확인 없이 생성됨.
 
 ---
 

@@ -1,0 +1,207 @@
+{
+  "slug": "mmio-axil-irq-timer-ip",
+  "title": "AXI4-Lite 다운카운터 타이머 IP — FreeRTOS xSemaphoreGiveFromISR 통지 패턴",
+  "summary": "MicroBlaze V + FreeRTOS 환경에서 하드웨어 인터럽트 → xSemaphoreGiveFromISR() → vSemaphoreTake() 태스크 통지 패턴을 시연하는 AXI4-Lite 슬레이브 타이머 IP. COUNT 레지스터에 프리셋 클럭 수를 쓰고 CTRL[0]=1로 활성화하면 다운카운터가 만료 시 ip2intc_irpt를 어서트한다. IRQ_ACK·IRQ_MASK·IRQ_FORCE 레지스터로 인터럽트를 제어한다. T2 단계 AXI4-Lite IP 체인 연습 목적.",
+  "author_note": "이 패키지의 소스는 하네스가 직접 작성한 원본이며 외부 코드를 포함하지 않는다. FreeRTOS xSemaphoreGiveFromISR 패턴은 근거 카드(I-061)에서 참고했으며 C 드라이버 코드는 포함하지 않는다. 아이디어 I-061(차단조건재심사 2026-11-06, 9점)에서 선정. 게이트 1·2 통과, 게이트 3·4 사용자 방침(2026-11-06)에 따라 생략.",
+  "board": "Basys3",
+  "stage": "T2",
+  "goals": [
+    "AXI4-Lite 슬레이브 다운카운터 타이머 IP: CTRL·COUNT·IRQ_STATUS·IRQ_MASK·IRQ_ACK·IRQ_FORCE 6개 레지스터",
+    "단발(single-shot) 및 자동 재로드(auto_reload) 모드",
+    "만료 시 ip2intc_irpt 어서트 (INTC 채널 14 연결)",
+    "IRQ_MASK[0]=0이면 irq_out 차단 (테스트 중 의도치 않은 인터럽트 방지)",
+    "IRQ_FORCE 쓰기로 소프트웨어 테스트 IRQ 발생 (FreeRTOS ISR 경로 단위 검증용)",
+    "Verilog-2001 iverilog·verilator·yosys 호환 RTL, 자체 점검(PASS/FAIL) 테스트벤치",
+    "FreeRTOS 연동 C 패턴을 howto에 의사 코드로 제시"
+  ],
+  "non_goals": [
+    "MicroBlaze V BSP C 드라이버 코드 제공",
+    "AXI4 Full(버스트) 지원",
+    "32비트 초과 COUNT 범위 (오버플로 방지 로직 미포함)",
+    "보드 동작 검증(S3): 시뮬레이션 S1까지",
+    "복수 타이머 채널 (인스턴스 복수 사용으로 확장 가능)"
+  ],
+  "architecture": {
+    "clock": "100 MHz 단일 클럭 (s_axil_aclk, W5), 비동기 리셋-해제 (aresetn = ~btnC active-low)",
+    "blocks": [
+      {
+        "id": "timer_ip",
+        "name": "AXI4-Lite 다운카운터 타이머",
+        "kind": "peripheral",
+        "module": "axil_irq_timer",
+        "file": "rtl/axil_irq_timer.v",
+        "desc": "AXI4-Lite 슬레이브 + 32비트 다운카운터 + IRQ 로직. 6개 레지스터, apply_wstrb() 패턴 적용.",
+        "short": "AXI4-Lite timer+IRQ",
+        "side": "left"
+      },
+      {
+        "id": "board",
+        "name": "Basys3 최상위 래퍼",
+        "kind": "top",
+        "module": "basys3_top_irq_timer",
+        "file": "rtl/basys3_top_irq_timer.v",
+        "desc": "100 MHz 클럭, btnC 리셋. LED[0]=ip2intc_irpt. AXI 버스는 인터커넥트 연결.",
+        "short": "board top",
+        "side": "left"
+      }
+    ],
+    "links": [
+      {
+        "from": "board",
+        "to": "timer_ip",
+        "label": "AXI4-Lite (AW/W/B/AR/R)"
+      },
+      {
+        "from": "timer_ip",
+        "to": "board",
+        "label": "ip2intc_irpt → INTC ch14"
+      }
+    ]
+  },
+  "bus_protocol": {
+    "name": "AXI4-Lite",
+    "data_width": 32,
+    "addr_width": 5,
+    "signals": [
+      "AWADDR", "AWPROT", "AWVALID", "AWREADY",
+      "WDATA", "WSTRB", "WVALID", "WREADY",
+      "BRESP", "BVALID", "BREADY",
+      "ARADDR", "ARPROT", "ARVALID", "ARREADY",
+      "RDATA", "RRESP", "RVALID", "RREADY"
+    ],
+    "limits": "단일 마스터 가정. 버스트 없음. BRESP/RRESP 항상 2'b00(OKAY). 주소·데이터 채널 순차 수락."
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "mbv-frozen-v2",
+    "compat": "compatible",
+    "plan": "동결 맵 슬롯 [30] (0x4030_0000, 64KB) 사용. IRQ: INTC 채널 14 (intc_free[1]). 이 슬롯 선택 사유: 슬롯 [16]~[2F]는 기존 패키지가 순차 제안 사용 중.",
+    "frozen_mapping": {
+      "timer_ip": "slot_30 (0x4030_0000, 64KB)"
+    }
+  },
+  "external_parts": [],
+  "schematic": {
+    "state": "not-written",
+    "note": "외부 부품 없음(보드 내부 AXI4-Lite 연결만). 회로도 불필요."
+  },
+  "hierarchy": [
+    {
+      "module": "basys3_top_irq_timer",
+      "file": "rtl/basys3_top_irq_timer.v",
+      "children": [
+        {
+          "module": "axil_irq_timer",
+          "file": "rtl/axil_irq_timer.v",
+          "children": []
+        }
+      ]
+    }
+  ],
+  "memory_map": [
+    {
+      "base": "0x4030_0000",
+      "size": "0x10000",
+      "block": "timer_ip",
+      "desc": "AXI4-Lite 다운카운터 타이머 IP 레지스터 공간 (동결 맵 슬롯 [30])",
+      "regs": [
+        {
+          "off": "0x00",
+          "name": "CTRL",
+          "access": "RW",
+          "desc": "bit[0]=enable: 1로 세트 시 COUNT를 로드해 카운트 시작. bit[1]=auto_reload: 1이면 만료 후 자동 재로드. single-shot(bit1=0)이면 만료 시 bit[0] 자동 클리어."
+        },
+        {
+          "off": "0x04",
+          "name": "COUNT",
+          "access": "RW",
+          "desc": "32비트 프리셋 카운트 값. 타이머가 멈춘 상태에서만 유효하게 갱신됨. 0을 쓰면 타이머가 시작되지 않는다."
+        },
+        {
+          "off": "0x08",
+          "name": "IRQ_STATUS",
+          "access": "R",
+          "desc": "bit[0]=expired: 타이머 만료 또는 IRQ_FORCE 쓰기로 세트. IRQ_ACK 쓰기로 클리어. bit[1]=running: 타이머 카운트 중."
+        },
+        {
+          "off": "0x0C",
+          "name": "IRQ_MASK",
+          "access": "RW",
+          "desc": "bit[0]=irq_en: 1이면 expired & irq_en → ip2intc_irpt 어서트. 0이면 expired가 세트돼도 irq_out 차단."
+        },
+        {
+          "off": "0x10",
+          "name": "IRQ_ACK",
+          "access": "W",
+          "desc": "임의 값 쓰기 → expired 클리어 (우선순위 최고). ip2intc_irpt 비활성."
+        },
+        {
+          "off": "0x14",
+          "name": "IRQ_FORCE",
+          "access": "W",
+          "desc": "임의 값 쓰기 → expired 강제 세트. FreeRTOS ISR 경로 소프트웨어 테스트용."
+        }
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "stage": "T1",
+      "state": "done",
+      "title": "MMIO UART+GPIO 스켈레톤 (mmio-uart-gpio-skeleton)",
+      "refs": ["ArmmyC-HolySoC", "suoglu-axi-lite-slave"]
+    },
+    {
+      "stage": "T2",
+      "state": "current",
+      "title": "AXI4-Lite 타이머 IRQ + FreeRTOS 통지 패턴 (이 패키지)",
+      "refs": ["beningo-freertos-to-zephyr-migration", "freertos-org-faq-memory"]
+    },
+    {
+      "stage": "T2+",
+      "state": "planned",
+      "title": "복수 타이머 채널 + 우선순위 인터럽트 (axil_intc_multi_timer)",
+      "refs": []
+    },
+    {
+      "stage": "T3",
+      "state": "planned",
+      "title": "FreeRTOS 태스크 간 큐 통신 + 타이머 주기 조정",
+      "refs": []
+    }
+  ],
+  "references": [
+    {
+      "name": "beningo-freertos-to-zephyr-migration",
+      "reason": "FreeRTOS xSemaphoreGiveFromISR() 패턴과 ISR→태스크 통지 구조 참고"
+    },
+    {
+      "name": "freertos-org-faq-memory",
+      "reason": "FreeRTOS 세마포어 ISR-safe API 사용법 참고"
+    }
+  ],
+  "sources": {
+    "rtl": ["rtl/axil_irq_timer.v", "rtl/basys3_top_irq_timer.v"],
+    "tb": ["tb/tb_axil_irq_timer.v"],
+    "constraints": ["constr/basys3.xdc"],
+    "build": ["Makefile"]
+  },
+  "howto": {
+    "sim": "make sim  # iverilog + vvp; PASS: ALL TESTS PASSED 출력 확인",
+    "lint": "make lint  # verilator --lint-only -g2012",
+    "synth": "make synth  # yosys Artix-7 추정 LUT 카운트",
+    "vivado": "Vivado IP Packager → Port/Interface Map: S_AXI 인터페이스 매핑, ip2intc_irpt를 interrupt 타입으로 연결. 블록 디자인에서 AXI4-Lite 슬레이브로 추가 후 MBV AXI 인터커넥트 슬롯 [30](0x4030_0000)에 연결. INTC 채널 14 연결.",
+    "freertos_pattern": "// MicroBlaze V BSP + FreeRTOS ISR→태스크 통지 의사 코드:\n// ISR (XIntc 핸들러, 채널 14 등록):\n//   XIntc_AckIntr(INTC_BASE, 1 << 14);\n//   XAxiTimer_WriteReg(TIMER_BASE, 0x10, 1); // IRQ_ACK\n//   xSemaphoreGiveFromISR(xTimerSem, &xHighPriorityTaskWoken);\n//   portYIELD_FROM_ISR(xHighPriorityTaskWoken);\n//\n// 태스크:\n//   while(1) {\n//     if (xSemaphoreTake(xTimerSem, portMAX_DELAY) == pdTRUE) {\n//       // 타이머 만료 처리: COUNT 갱신, 재시작 등\n//       Xil_Out32(TIMER_BASE + 0x04, new_count);\n//       Xil_Out32(TIMER_BASE + 0x00, 0x01); // re-enable\n//     }\n//   }"
+  },
+  "verification": {
+    "board": "not-tested",
+    "notes": "CI: iverilog 시뮬레이션 PASS 목표(S1). yosys 합성 성공 시 S2. 아이디어 I-061 선정, 게이트 3·4 사용자 방침(2026-11-06)에 따라 생략. 근거 재확인 없이 생성됨(로그 기록)."
+  },
+  "risks": [
+    "COUNT=0 쓰기 후 enable 세트 시 타이머가 시작되지 않음 (의도적 방어 로직, TB TC2에서 확인)",
+    "AXI 쓰기와 타이머 만료 동일 사이클: ACK 우선으로 설계, 드물지만 가능한 경쟁 조건",
+    "auto_reload 모드에서 IRQ_ACK 처리 지연 시 연속 IRQ 발생 — FreeRTOS ISR 처리 속도 주의",
+    "COUNT 값이 클럭 주기보다 작으면(1 사이클) 즉시 만료 가능 — 최소 COUNT=2 권장",
+    "INTC 채널 14 등록: MicroBlaze V BSP에서 XIntc_Connect()로 핸들러 등록 필요 (드라이버 코드 미포함)"
+  ]
+}
