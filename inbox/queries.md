@@ -139,3 +139,14 @@
 2026-11-07 | [B3] 소형 NPU SoC 설계 | FPGA AI 가속기 AXI4-Lite NPU IP 소형 추론 엔진 Verilog MicroBlaze 한국어 | 빈약
 2026-11-07 | [B3] 소형 NPU SoC 설계 | MicroBlaze NPU IP AXI weight inference register BRAM FPGA Xilinx | 유효
 2026-11-07 | [B3] 소형 NPU SoC 설계 | FPGA convolution accelerator HPS AXI DE1-SoC student project Cornell 2024 | 유효
+
+2026-11-07 | [B3] 엣지 AI 추론 파이프라인 | OV7670 FPGA CNN inference pipeline Verilog VGA GitHub | 유효
+2026-11-07 | [B3] 엣지 AI 추론 파이프라인 | FPGA binary neural network BNN camera OV7670 Basys3 Artix-7 Verilog GitHub | 유효
+2026-11-07 | [B3] 엣지 AI 추론 파이프라인 | FPGA edge AI inference camera preprocessing 1-bit BCNN XNOR popcount Xilinx | 유효
+2026-11-07 | [B3] 엣지 AI 추론 파이프라인 | FPGA 카메라 CNN 추론 OV7670 엣지 AI 파이프라인 Verilog VGA 한국어 | 빈약
+2026-11-07 | [B3] 엣지 AI 추론 파이프라인 | FPGA zebra crossing pedestrian detection BNN Artix-7 real-time | 유효
+2026-11-07 | [B3] 엣지 AI 추론 파이프라인 | binary neural network FPGA MNIST handwritten digit recognition BRAM Nexys A7 arXiv | 유효
+2026-11-07 | [B3] 엣지 AI 추론 파이프라인 | Columbia FPGA LeNet OV7670 classifier student project report 2024 | 유효
+2026-11-07 | [B3] 엣지 AI 추론 파이프라인 | FPGA Lenet CNN accelerator DE1-SoC Cyclone V Avalon HPS camera fixed-point | 유효
+2026-11-07 | [B3] 엣지 AI 추론 파이프라인 | FPGA MLP object detection OV7670 Arty A7 Verilog fixed-point | 빈약
+2026-11-07 | [B3] 엣지 AI 추론 파이프라인 | FPGA Lenet BNN camera VGA pipeline failure case issue tracker post-mortem GitHub | 빈약

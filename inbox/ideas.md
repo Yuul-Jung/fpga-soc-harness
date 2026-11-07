@@ -2168,3 +2168,51 @@
 - 난이도: 3
 - 단계: T4
 - 상태: raw
+
+---
+
+## I-139 Basys3 1-bit BNN BCNN 횡단보도 감지 → Pmod/VGA 출력 (OV7670 전처리 모듈 재사용)
+
+내 판단: rajmali-22-fpga-zebra-crossing-camera의 BNN BCNN(XC7A35T, LUT 16% · BRAM 38%)이 Basys3와 동일 칩임을 확인. EDGE-Artix-7 커스텀 보드 XDC만 Basys3 XDC로 교체하면 LUT·BRAM 여유가 충분. OV7670을 Pmod 핀으로, VGA를 온보드 커넥터로 연결. 단일 클래스 판별(횡단보도 있음/없음)이므로 출력은 LED + VGA 오버레이. 이 파이프라인 전체가 MicroBlaze V 없이 순수 FSM으로 동작하므로, AXI4-Lite 슬레이브로 래핑 시 T4 캡스톤 첫 번째 자연스러운 엔트리포인트.
+
+- id: I-139
+- 조합: [OV7670-SCCB, 8x8-block-avg, RGB565-to-gray, BNN-BCNN-4conv-FC, VGA-overlay, LED-buzzer, Pmod-camera]
+- 근거 카드: [[rajmali-22-fpga-zebra-crossing-camera]], [[kwondo99-fpga-vga-photobooth-project]], [[adityapusalkar-fpga-neural-network]]
+- 근거 URL: https://github.com/Rajmali-22/fpga-zebra-crossing-camera
+- 새로움 근거: 카탈로그에 OV7670+BNN 완전 파이프라인은 rajmali-22만 있으나 그것은 커스텀 보드 전용. Basys3 XDC 이식 + Pmod 핀 배선이 추가 기여. 단순 카메라→VGA 파이프라인(kwondo99)은 BNN 없음.
+- Basys3 적합성 근거: rajmali-22 자원 LUT 3,370(16%) · BRAM 19/50(38%) → Basys3(20,800 LUT, 50 BRAM) 충분. OV7670을 JA/JB Pmod(GPIO)로 연결 가능. VGA는 온보드 커넥터. LCD·버저는 제거 또는 Pmod 대체. XDC 전면 교체가 핵심.
+- 난이도: 3
+- 단계: T4
+- 상태: raw
+
+---
+
+## I-140 Basys3 소형 BNN FC + OV7670 카메라 전처리 조합 — 카메라-내장 MNIST-like 분류기
+
+내 판단: emirertorer-bnn-mnist-nexys-a7의 BNN FC(784→128→64→10)는 BRAM 97.78%(132/135)로 Basys3 불가. 단, 층·폭 축소(784→32→16→10, BRAM ≈ 7개)하면 Basys3 한도 내 가능. rajmali-22의 OV7670+8×8 평균 전처리 모듈(독립 분리 가능)을 붙이면 카메라에서 직접 입력을 받아 BNN FC 추론 → LED/VGA 숫자 출력이 된다. 전처리 → 추론 → 표시 완전 파이프라인.
+
+- id: I-140
+- 조합: [OV7670-SCCB, 8x8-block-avg, RGB565-to-gray, BNN-FC-784-32-16-10, 7seg-or-VGA-class-display]
+- 근거 카드: [[emirertorer-bnn-mnist-nexys-a7]], [[rajmali-22-fpga-zebra-crossing-camera]], [[adityapusalkar-fpga-neural-network]]
+- 근거 URL: https://arxiv.org/abs/2512.19304
+- 새로움 근거: emirertorer는 카메라 없이 MNIST 픽셀 직접 주입. 카메라를 BNN FC 앞단에 붙이는 조합은 카탈로그 미등록. rajmali-22는 BNN BCNN(합성곱)이므로 BNN FC+카메라 조합은 다른 접근.
+- Basys3 적합성 근거: 가중치 축소 후 BRAM ≈ 7개(50개 한도 내). OV7670 Pmod 가능. VGA 온보드. 단, MNIST 대비 OV7670 입력 화질 차이로 정확도 저하 예상. 내 판단: 정확도보다 파이프라인 완결성이 목표.
+- 난이도: 4
+- 단계: T4
+- 상태: raw
+
+---
+
+## I-141 Q4.4 고정소수점 LeNet → Basys3 순수 FSM (Columbia 실패 교훈 반영)
+
+내 판단: columbia-4840-sp24-lenet-classifier의 LeNet(42×42 입력, 2 conv + 3 FC, Q4.4)을 HPS 없는 순수 FSM으로 Basys3에 옮기는 캡스톤. Columbia 보고서의 실패 교훈 4가지(클럭 불일치, 하드코딩 주소, Q4.4 오버플로우, 경계 패딩 오류)를 처음부터 방어 설계에 적용. AXI4-Lite 슬레이브 IP로 래핑 → MicroBlaze V C 드라이버로 가중치 로드 및 추론 트리거.
+
+- id: I-141
+- 조합: [LeNet-2conv-3fc-Q4.4, 42x42-grayscale-input, AXI4-Lite-slave, MicroBlaze-V-driver, VGA-or-7seg-output, Vivado-fixed-point]
+- 근거 카드: [[columbia-4840-sp24-lenet-classifier]], [[adityapusalkar-fpga-neural-network]], [[columbia-4840-sp26-lenet5-cnn-accelerator]]
+- 근거 URL: https://www1.cs.columbia.edu/~sedwards/classes/2024/4840-spring/reports/LeNet-Classifier-report.pdf
+- 새로움 근거: Columbia 원본은 Cyclone V HPS+Avalon 의존. Basys3 순수 FSM+AXI 래핑 + 실패 교훈 반영 조합은 카탈로그 미등록. adityapusalkar는 MLP(FC 전용)이므로 합성곱 포함 LeNet은 다른 구현.
+- Basys3 적합성 근거: 42×42×1 입력. Conv 1(5×5×6): 커널 150×6=900개 Q4.4 = 900B → BRAM 1개 미만. Conv 2(5×5×16): 2,400B → BRAM 1개. FC 784→324→10: 254,016 Q4.4 = 약 250KB → BRAM ≈ 7개. 합계 약 10 BRAM, Basys3 50개 한도 내. LUT 추정: unverified. 내 판단: BRAM 적합, 단 중간 활성화 맵 버퍼도 필요(라인 버퍼 추가).
+- 난이도: 4
+- 단계: T4
+- 상태: raw

@@ -259,3 +259,4 @@
 2026-11-07 12:17 | collect | 소형 NPU SoC · S1 인접도메인이식(주)+S5 비정형출처(보조) | 카드 +3 | 아이디어 +2 | 큐 잔여 676 | blocked 0
 2026-11-07 12:36 | verify | 재열람 9 (WebFetch PROVENANCE_REQUIRED 34차 연속 차단, 9건 파일 직접 확인) | 수정 1 (ammar-bin-amir 상태 메모 갱신) | 불일치 0 | 승격 L2→L3 0 | ready +2 (I-134·I-136) | 차단조건재심사: I-134(8점)·I-136(7점) → ready, I-135(7점) 한도 보류 | raw→vetted: I-134(6점)·I-135(6점)·I-136(6점) | atlas §9 트랜스포머 슬림화 신규(카드 3건), 헤더 37건·34차 갱신 | soc-map 34차·301건·I-134/I-136 ready·transformer gap 갱신
 2026-11-07 13:15 | capstone | 삼진 가중치 MAC AXI4-Lite IP · 무조건 최대한 생성 원칙 | mmio-ternary-weight-mac-ip | S0 (CI 대기 중, 선행 패키지 CI 오류 수정 후 커밋) | 선행 CI 수정: ir_nec_decode 린트 경고 3종 제거 + S_DATA_SPACE 오버라이드 버그 수정, axil_uart_framing pkt_done F_IDLE 클리어 버그 수정 | 근거 재확인 없음(§13.7 무조건 최대한 생성 원칙) | I-136 ready→used | 슬롯 [16] 0x4016_0000 / mbv-frozen-v2 compatible
+2026-11-07 15:22 | collect | 엣지 AI 추론 파이프라인(카메라→CNN→MLP→LED/VGA) · S2 조합 탐색(주)+S6 실패 사례(보조) | 카드 +3 | 아이디어 +3 | 큐 잔여 713 | blocked 0

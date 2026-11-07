@@ -766,3 +766,11 @@
 - https://github.com/avikde/tiny-xpu | tiny-xpu: 소형 XPU(GitHub) — 미열람(L1) | small NPU XPU FPGA Verilog
 - https://github.com/deaneeth/tiny-tpu | tiny-tpu: 소형 TPU(GitHub) — 미열람(L1) | small TPU FPGA systolic matrix
 - https://github.com/Divyajyotipatra10/axi_lite_slave | AXI4-Lite 슬레이브 Verilog(핸드셰이크·단일/연속 R/W, ARM SoC 대상) — 미열람(L1), NPU AXI 슬레이브 패턴 참고 | AXI4-Lite slave Verilog FPGA SoC
+
+## 2026-11-07 — 엣지 AI 추론 파이프라인 (카메라 → CNN → MLP → LED/VGA) [S2+S6]
+- https://github.com/MirthipatiSatyaSreeja/FPGA_OV7670_CNN_object_detection | Arty A7-100T, OV7670 Q12 고정소수점 CNN 객체 인식, Verilog — 미열람(L2 부분 열람: 보드 Arty A7-100T, 라이선스 미확인), S2 조합 탐색 | FPGA OV7670 CNN object detection Arty fixed-point
+- https://github.com/kwondoeon/OV7670_FPGA_Image_Capture | OV7670 캡처 모듈 Basys3/Artix-7, SCCB 초기화 포함 — 미열람(L1), 카메라 전처리 단독 모듈 후보 | OV7670 FPGA Basys3 camera SCCB image capture
+- https://arxiv.org/abs/2411.13793 | arXiv 2024: BNN FPGA 실시간 추론 최적화 (BRAM/LUT 균형, 에너지 효율) — 미열람(L1) | BNN FPGA real-time inference optimization energy
+- https://github.com/jncraton/fpga-cnn | 순수 Verilog CNN 가속기, MNIST, Artix/Basys 대상 — 미열람(L1) | FPGA CNN accelerator MNIST Verilog Artix Basys3
+- https://github.com/nicowillis/fpga-mnist | FPGA MNIST MLP Verilog, Basys3 타깃 — 미열람(L1) | FPGA MNIST MLP Verilog Basys3
+- https://github.com/AndresGarciaEscovar/fpga-leNet5 | LeNet-5 FPGA Verilog 구현, Artix-7 — 미열람(L1) | LeNet5 FPGA Verilog Artix-7
