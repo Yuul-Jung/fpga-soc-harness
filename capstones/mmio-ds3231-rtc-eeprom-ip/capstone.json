@@ -1,0 +1,194 @@
+{
+  "slug": "mmio-ds3231-rtc-eeprom-ip",
+  "title": "DS3231 RTC + 24LC256 EEPROM I2C IP (AXI4-Lite, Basys3 T2)",
+  "summary": "Basys3 Pmod 1개(JA, SCL+SDA)로 DS3231 RTC의 시각 레지스터와 24LC256 EEPROM을 AXI4-Lite 슬레이브로 연결하는 I2C 마스터 IP. 클럭 100MHz → 분주비 250으로 400 kHz I2C. BRAM 불필요.",
+  "board": "Basys3",
+  "stage": "T2",
+  "goals": [
+    "DS3231(0x68)의 시각 레지스터 7바이트를 읽어 AXI4-Lite 레지스터에 노출",
+    "24LC256(0x50)의 임의 주소에 1바이트 쓰기/읽기",
+    "400 kHz I2C 비트 마스터를 RTL로 구현, iverilog/verilator/yosys에서 린트·시뮬·합성 통과"
+  ],
+  "non_goals": [
+    "멀티 마스터 I2C 중재",
+    "EEPROM 페이지 쓰기(최대 64바이트)",
+    "DS3231 알람·BBSQW·32 kHz 출력 제어",
+    "소프트웨어 드라이버(펌웨어 계층)"
+  ],
+  "architecture": {
+    "clock": "100 MHz (Basys3 W5), I2C SCL = 100 MHz / (2 * 250) = 200 kHz half-period → 400 kHz",
+    "blocks": [
+      {
+        "id": "top",
+        "name": "basys3_top_ds3231",
+        "kind": "wrapper",
+        "module": "basys3_top_ds3231",
+        "file": "rtl/basys3_top_ds3231.v",
+        "desc": "Basys3 최상위 래퍼. 클럭 버퍼, 리셋, AXI4-Lite 마스터 포트 노출",
+        "short": "board wrapper",
+        "side": "left"
+      },
+      {
+        "id": "soc",
+        "name": "soc_top_ds3231",
+        "kind": "soc",
+        "module": "soc_top_ds3231",
+        "file": "rtl/basys3_top_ds3231.v",
+        "desc": "SoC 코어. AXI4-Lite 버스 + I2C IP 슬레이브",
+        "short": "SoC core",
+        "side": "left"
+      },
+      {
+        "id": "i2c_ip",
+        "name": "axil_i2c_rtc_log",
+        "kind": "peripheral",
+        "module": "axil_i2c_rtc_log",
+        "file": "rtl/axil_i2c_rtc_log.v",
+        "desc": "AXI4-Lite 슬레이브 + I2C 비트 마스터. DS3231 시각 읽기·24LC256 바이트 읽기·쓰기 커맨드 레지스터",
+        "short": "I2C IP",
+        "side": "right"
+      },
+      {
+        "id": "ds3231",
+        "name": "DS3231",
+        "kind": "external",
+        "module": null,
+        "file": null,
+        "desc": "DS3231 RTC IC, I2C 주소 0x68, Pmod JA 핀 1(SCL)·2(SDA)",
+        "short": "RTC",
+        "side": "right"
+      },
+      {
+        "id": "eeprom",
+        "name": "24LC256",
+        "kind": "external",
+        "module": null,
+        "file": null,
+        "desc": "24LC256 EEPROM, I2C 주소 0x50, SCL·SDA 공유",
+        "short": "EEPROM",
+        "side": "right"
+      }
+    ],
+    "links": [
+      {"from": "top", "to": "soc", "label": "IBUFG clk"},
+      {"from": "soc", "to": "i2c_ip", "label": "AXI4-Lite [2B] 0x402B_0000"},
+      {"from": "i2c_ip", "to": "ds3231", "label": "I2C SCL/SDA (Pmod JA)"},
+      {"from": "i2c_ip", "to": "eeprom", "label": "I2C SCL/SDA (공유)"}
+    ]
+  },
+  "bus_protocol": {
+    "name": "AXI4-Lite",
+    "data_width": 32,
+    "addr_width": 32,
+    "signals": ["AWVALID","AWREADY","AWADDR","WVALID","WREADY","WDATA","WSTRB","BVALID","BREADY","BRESP","ARVALID","ARREADY","ARADDR","RVALID","RREADY","RDATA","RRESP"],
+    "limits": ["단일 비프리 트랜잭션. 아웃스탠딩 불가. WSTRB는 4'b1111만 처리."]
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "mbv-frozen-v2",
+    "compat": "compatible",
+    "plan": "free_slots의 [2B](0x402B_0000, 64KB)에 배정. intc_free [13] 사용 없음(폴링 모드만).",
+    "frozen_mapping": {
+      "i2c_ip": "[2B] 0x402B_0000"
+    }
+  },
+  "external_parts": [
+    {
+      "id": "u_rtc",
+      "name": "DS3231SN (또는 DS3231 모듈)",
+      "block": "ds3231",
+      "interface": "I2C",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": 3.3,
+      "level_shift": false,
+      "power_note": "Basys3 Pmod 3.3V 공급 가능. 배터리(CR2032) 별도.",
+      "arduino_compatible": true,
+      "notes": "SCL/SDA 풀업 4.7 kΩ to 3.3V 필요. Pmod JA 핀 6·7(GND·VCC) 사용."
+    },
+    {
+      "id": "u_ee",
+      "name": "24LC256 (또는 24C256 모듈)",
+      "block": "eeprom",
+      "interface": "I2C",
+      "io_voltage": 3.3,
+      "qty": 1,
+      "board_resident": false,
+      "supply_voltage": 3.3,
+      "level_shift": false,
+      "power_note": "Pmod 3.3V 공급. A0/A1/A2 핀 GND에 연결(주소 0x50).",
+      "arduino_compatible": true,
+      "notes": "SCL/SDA 풀업 DS3231과 공유 가능."
+    }
+  ],
+  "schematic": {
+    "state": "not-written",
+    "note": "SCL/SDA 버스 공유, 풀업 4.7 kΩ x2(3.3V). 별도 회로도 미작성."
+  },
+  "hierarchy": [
+    {
+      "module": "basys3_top_ds3231",
+      "file": "rtl/basys3_top_ds3231.v",
+      "children": [
+        {
+          "module": "axil_i2c_rtc_log",
+          "file": "rtl/axil_i2c_rtc_log.v",
+          "children": []
+        }
+      ]
+    }
+  ],
+  "memory_map": {
+    "base": "0x402B_0000",
+    "size": "0x10000",
+    "regions": [
+      {"base": "0x402B_0000", "size": "0x10000", "block": "i2c_ip", "desc": "I2C RTC/EEPROM IP"}
+    ],
+    "registers": [
+      {"off": "0x00", "name": "STATUS",    "access": "RO", "desc": "비트0=BUSY, 비트1=ACK_ERR, 비트2=DONE"},
+      {"off": "0x04", "name": "CMD",       "access": "WO", "desc": "비트1:0=명령(00=없음,01=RTC_READ,10=EE_READ,11=EE_WRITE)"},
+      {"off": "0x08", "name": "EE_ADDR",   "access": "RW", "desc": "EEPROM 주소[14:0]"},
+      {"off": "0x0C", "name": "EE_WDATA",  "access": "RW", "desc": "EEPROM 쓰기 데이터[7:0]"},
+      {"off": "0x10", "name": "EE_RDATA",  "access": "RO", "desc": "EEPROM 읽기 데이터[7:0]"},
+      {"off": "0x14", "name": "RTC_SEC",   "access": "RO", "desc": "DS3231 초(BCD)"},
+      {"off": "0x18", "name": "RTC_MIN",   "access": "RO", "desc": "DS3231 분(BCD)"},
+      {"off": "0x1C", "name": "RTC_HOUR",  "access": "RO", "desc": "DS3231 시(BCD, 24시간)"},
+      {"off": "0x20", "name": "RTC_DAY",   "access": "RO", "desc": "DS3231 요일[2:0]"},
+      {"off": "0x24", "name": "RTC_DATE",  "access": "RO", "desc": "DS3231 일(BCD)"},
+      {"off": "0x28", "name": "RTC_MON",   "access": "RO", "desc": "DS3231 월(BCD)"},
+      {"off": "0x2C", "name": "RTC_YEAR",  "access": "RO", "desc": "DS3231 연(BCD, 00-99)"}
+    ]
+  },
+  "roadmap": [
+    {"stage": "T1", "state": "done",    "title": "MMIO UART+GPIO 스켈레톤", "refs": ["fanguoc2len-risc-v-computer"]},
+    {"stage": "T2", "state": "current", "title": "I2C RTC+EEPROM IP (이 패키지)", "refs": []},
+    {"stage": "T2", "state": "planned", "title": "I2C + SPI 복합 주변장치 허브", "refs": []}
+  ],
+  "references": [
+    {"name": "suoglu-axi-lite-slave",  "reason": "AXI4-Lite 슬레이브 FSM 패턴 참고"},
+    {"name": "janga786-basys3-fpga-portfolio", "reason": "I2C 드라이버 구조 참고"}
+  ],
+  "sources": {
+    "rtl": ["rtl/axil_i2c_rtc_log.v", "rtl/basys3_top_ds3231.v"],
+    "tb":  ["tb/tb_i2c_rtc_log.v"],
+    "constraints": ["constr/basys3_ds3231.xdc"],
+    "build": ["Makefile"]
+  },
+  "howto": {
+    "sim": "make sim  # iverilog tb/tb_i2c_rtc_log.v rtl/axil_i2c_rtc_log.v -o sim.out && vvp sim.out",
+    "lint": "make lint  # verilator --lint-only rtl/*.v",
+    "synth": "make synth  # yosys -p 'synth_xilinx -top basys3_top_ds3231' rtl/*.v",
+    "vivado": "Vivado에서 rtl/*.v 추가, constr/basys3_ds3231.xdc 추가, top=basys3_top_ds3231으로 합성·구현·비트스트림 생성"
+  },
+  "verification": {
+    "board": "not-tested",
+    "notes": "S0: 작성됨, 미검증. CI lint/sim/synth 결과는 CI 기록이 덮어씀."
+  },
+  "risks": [
+    "SCL/SDA 풀업 없이 연결 시 I2C 버스 high 불가 → 클럭 스트레칭/ACK 오류",
+    "DS3231 모듈 내장 풀업(10 kΩ)과 외부 풀업 중복 시 400 kHz 도달 어려울 수 있음(내 판단)",
+    "24LC256 쓰기 완료 대기(5 ms) 없이 연속 읽기 시 오래된 데이터 반환 가능",
+    "BCD 디코딩은 소프트웨어 계층에서 담당 — RTL은 원시 BCD 그대로 노출"
+  ]
+}

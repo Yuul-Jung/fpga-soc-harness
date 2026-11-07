@@ -382,7 +382,7 @@
 - 차단조건재심사: 2026-11-04 /verify, 근거 3(digilent-basys-3-xadc-demo, umd-phys495-basys3-xadc-voltmeter, unilim-vahid-xadc-basys3-vhdl, shashankr-basys3-fpga-robotic-arm, 4건 rechecked_at 불문) + 새로움 2 + 적합성 3(JXADC 보드 내장) + 완결성 2 = 10점 → ready. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
 
 ## I-033 시각·로그 IP: DS3231 시각 레지스터 + 24LC EEPROM 로그, 초 롤오버 재읽기 규칙, 두 칩 모델 테스트벤치
-- 상태: ready
+- 상태: used (패키지: mmio-ds3231-rtc-eeprom-ip, 2026-11-07, 무조건 최대한 생성 원칙 — 게이트 3·4 건너뜀)
 - 요약: 내 판단: I2C 비트·바이트 제어를 하드웨어에 두고 장치 주소·레지스터 포인터를 레지스터로 노출해 DS3231(0x68)과 24LC256(0x50)을 한 IP로 다룬다. 제어 루프 값을 시각과 함께 EEPROM에 남기는 로거 응용. NACK은 STATUS 비트로 올려 EEPROM 쓰기 중 ACK 폴링을 소프트웨어가 한다.
 - 조합: [I2C(DS3231 RTC, 24LC256 EEPROM), AXI4-Lite 레지스터, 바이트 FIFO, 제어 루프 값]
 - 근거: [angelojacobo-fpga-i2c-implementation, digikey-forum-mcp79410-pmod-rtcc-vhdl, mines-eeng383-lecture25-24lc256-i2c]
