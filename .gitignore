@@ -21,4 +21,5 @@ docs/*/bom.csv
 docs/*/source_manifest.json
 docs/*/verification.json
 docs/*.zip
+docs/*/*.zip
 ipcheck/*/build/
