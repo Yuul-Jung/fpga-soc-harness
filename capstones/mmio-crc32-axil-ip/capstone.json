@@ -166,11 +166,14 @@
   },
   "verification": {
     "board": "not-tested",
-    "lint": "pending",
-    "sim": "pending",
-    "synth": "pending",
-    "grade": "S0",
-    "notes": "자동 생성 S0. CI 통과 시 S2로 갱신. S3(보드 확인)은 사람이 직접 올린다. 근거 재확인(게이트3) 건너뜀(사용자 운영 방침 2026-11-06)."
+    "lint": "pass",
+    "sim": "pass",
+    "synth": "pass",
+    "grade": "S2",
+    "ci_run": 42354207088,
+    "ci_commit": "417bbff7",
+    "ci_date": "2026-11-07",
+    "notes": "CI verify #42354207088 성공(2026-11-07). 린트·시뮬레이션·합성 통과. S2. S3(보드 확인)은 사람이 직접 올린다. 근거 재확인(게이트3) 건너뜀(사용자 운영 방침 2026-11-06)."
   },
   "risks": [
     "CRC-32 XorOut(0xFFFFFFFF)이 IP에 없음 — 소프트웨어 드라이버가 최종값에 XOR해야 표준 CRC-32 출력이 됨",
