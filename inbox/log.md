@@ -269,3 +269,4 @@
 2026-11-07 17:08 | capstone | CRC-32 AXI4-Lite 단일 IP (ready→I-099, 무조건최대한생성, 근거재확인·체인연결 건너뜀) | 패키지 +1 (mmio-crc32-axil-ip, 슬롯[17]=0x4017_0000) | 검증 S0 | blocked 0
 2026-11-07 18:18 | collect | [B3] 양자화 인식 훈련·하드웨어 배포 · S7 난이도 사다리(주)+S5 비정형 출처(보조) | 카드 +2 | 아이디어 +2 | 큐 잔여 786 | blocked 1 (shijin-10 rate limit)
 2026-11-07 21:04 | capstone | RPi SPI 디버그 콘솔 (ready→I-055, 무조건최대한생성, 근거재확인·체인연결 건너뜀) | 패키지 +1 (mmio-spi-dbg-axil-bridge, AXI 마스터 전용 IP, 슬레이브 슬롯 없음) | 검증 S0 | blocked 0
+2026-11-07 21:17 | collect | 하드웨어 소프트맥스·아르그맥스 · S3 빈틈추적(주)+S6 실패사례(보조) | 카드 +3 | 아이디어 +2 | 큐 잔여 789 | blocked 1 (PMC PROVENANCE_REQUIRED)

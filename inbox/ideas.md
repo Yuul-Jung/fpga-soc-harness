@@ -2249,3 +2249,23 @@
 - Basys3 적합성의 근거: 소프트웨어 도구(Python 스크립트) 주체; FPGA 측은 AXI4-Lite 슬레이브 레지스터 블록으로 Basys3 자원 최소 사용.
 - 난이도: 2 / 단계: T3
 - 심사: 2026-11-07 /verify 36차, raw→vetted 첫 심사(§14.2 표준). 근거 2(shanker-teo-integer-intelligence-2026·tb-rohan-int8-cnn-accelerator, rechecked_at: 2026-11-07 본 사이클 추가) + 새로움 2(PTQ 보정→레지스터 자동 생성 도구 카탈로그 미등록; SW-HW 브릿지 패턴 없음) + 적합성 2(소프트웨어 도구 주체로 FPGA 자원 최소; AXI4-Lite 슬레이브 레지스터 패턴 shanker-teo에서 확인) + 완결성 1(Python 스크립트 범위 명확하나 RTL TB 최소; Verilog 헤더 생성 단계 범위 보강 필요) = 7점 → vetted. 보강: 근거 카드 추가, RTL 쪽 레지스터 블록 범위 명확화 필요.
+
+## I-144 Basys3 10클래스 분류 출력 IP: 아르그맥스 + 7세그 표시
+- 상태: raw
+- 요약: 내 판단: MLP 추론 결과 10개 로짓(INT8 또는 INT32)을 받아 아르그맥스를 계산하고 분류 클래스(0~9)를 Basys3 7세그에 표시하는 경량 AXI4-Lite IP. 소프트맥스 없이 순수 비교기로 구현하면 LUT 소비가 최소화된다.
+- 조합: [accelerator, debug, AXI4-Lite]
+- 근거: [columbia-4840-sp26-mnist-accelerator, hiteshtp09-verilog-softmax-accelerator]
+- 새로움의 근거: 카탈로그에 10클래스 분류 출력 인터페이스만 단독으로 패키지화한 IP가 없음. Columbia 카드는 Avalon-MM이고, hiteshtp09는 AXI 래퍼가 없음.
+- Basys3 적합성의 근거: 아르그맥스 10사이클 선형 스캔 ≈ 20 LUT 미만. 7세그 디코더는 Basys3 기본(6자리 멀티플렉스). AXI4-Lite 슬레이브 1슬롯 (free_slot 배정 필요).
+- 난이도: 1 / 단계: T1
+- 심사: (미심사)
+
+## I-145 Basys3 의사-소프트맥스 IP: base-2 지수 + 역수 PWL
+- 상태: raw
+- 요약: 내 판단: Cardarilli 2021 논문의 base-2 의사-소프트맥스를 Artix-7(XC7A35T)에 맞게 Verilog로 구현한다. 2^(x_i)는 INT8 입력에서 비트 시프트만으로 계산하고, 역수는 2구간 PWL(계수를 2의 거듭제곱으로 선택 → 곱셈 없이 시프트)로 근사한다. MicroBlaze V AXI4-Lite IP로 래핑해 추론 파이프라인 말단에 삽입한다.
+- 조합: [accelerator, AXI4-Lite]
+- 근거: [cardarilli-2021-pseudo-softmax, columbia-4840-sp26-mnist-accelerator, hiteshtp09-verilog-softmax-accelerator]
+- 새로움의 근거: 카탈로그에 base-2 소프트맥스 FPGA 구현이 없음. hiteshtp09는 LUT exp(-d) 방식(다른 근사), Columbia는 소프트맥스 없이 아르그맥스만 사용.
+- Basys3 적합성의 근거: 근거 논문이 INT8 10클래스 3.22ns(90nm CMOS) 달성. Artix-7 LUT-only로 구현 가능. DSP48 없이도 가능(시프트 연산). BRAM 불필요.
+- 난이도: 3 / 단계: T4
+- 심사: (미심사)

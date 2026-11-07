@@ -784,3 +784,9 @@
 - https://github.com/syedalicodes/fpga-quantized-inference | 양자화 추론 FPGA 저장소 — 미열람(L1) | INT8 quantization FPGA CNN accelerator AXI4-Lite
 - https://github.com/Columbia-University/4840-sp26-MNIST-Accelerator | Columbia 2026 MNIST INT8 가속기(추정) — 미열람(L1) | FPGA integer arithmetic LeNet-5 XC7A35T
 - https://github.com/akkshisaini11/DesignAndImplementation-of-Neural-Network-using-Fixed-Point-Arithmetic | 고정소수점 신경망 Artix-7 — 미열람(L1) | fixed-point quantization FPGA LeNet-5 Artix-7 Cmod
+- https://github.com/hiteshtp09/Verilog-Softmax-Accelerator | Verilog FSM+LUT 소프트맥스 가속기 (Q8.8 입력, exp(-d) 1/16 LUT, Yosys 46K 셀) — L3 카드 작성 완료 | FPGA hardware softmax Mitchell approximation Verilog fixed-point classification
+- https://www.nature.com/articles/s41598-021-94691-7 | Cardarilli 2021 의사-소프트맥스(base-2 지수 교체, INT8 10클래스, ASIC 90nm) — L3 카드 작성 완료 | pseudo-softmax hardware FPGA image classification argmax nature scientific reports 2021
+- https://www.cs.columbia.edu/~sedwards/classes/2026/4840-spring/designs/MNIST-Accelerator.pdf | Columbia 4840 SP26 MNIST MLP 가속기(argmax 10클래스, INT8/INT32/INT48, DE1-SoC) — L3 카드 작성 완료 | argmax hardware FPGA Verilog neural network classification output interface 10 class
+- https://arxiv.org/abs/2501.13379v2 | Leiva-Valverde 2025 소프트맥스 근사 비교(Taylor 1차/2차, 2차 LUT, LeNet-5·MobileNetV2) — 미열람(L2) | FPGA softmax approximate exponential hardware accelerator site:github.com Verilog fixed-point
+- https://reddit.birdcat.cafe/r/FPGA/comments/1jqm4cu/ | Reddit S6 실패 사례: BNN FSM argmax 버그(blocking/non-blocking, 10클래스 BNN 추론) — L2 | FPGA hardware softmax argmax approximation failure debugging post-mortem issue GitHub neural network classification
+- https://github.com/grant4001/MNIST_Classification_FPGA | DE2-115 SystemVerilog CNN MNIST(카메라+VGA+7세그, max() 함수로 argmax, 16비트 고정소수점, GPL v3) — 미열람(L1) | FPGA softmax argmax top-1 classification MNIST 10 class output Verilog GitHub

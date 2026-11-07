@@ -156,3 +156,15 @@
 2026-11-07 | [B3] 양자화 인식 훈련·하드웨어 배포 | 양자화 인식 훈련 FPGA INT8 하드웨어 배포 AXI 레지스터 Verilog | 빈약
 2026-11-07 | [B3] 양자화 인식 훈련·하드웨어 배포 | FPGA integer arithmetic neural network inference MDPI Electronics 2026 XC7A35T | 유효
 2026-11-07 | [B3] 양자화 인식 훈련·하드웨어 배포 | fixed-point quantization FPGA LeNet-5 Artix-7 Cmod co-simulation Python Verilog | 유효
+2026-11-07 | [B3] 하드웨어 소프트맥스·아르그맥스 | FPGA hardware softmax Mitchell approximation Verilog fixed-point classification | 유효
+2026-11-07 | [B3] 하드웨어 소프트맥스·아르그맥스 | argmax hardware FPGA Verilog neural network classification output interface 10 class | 유효
+2026-11-07 | [B3] 하드웨어 소프트맥스·아르그맥스 | FPGA softmax hardware implementation log-sum-exp approximation Basys3 Artix-7 Verilog GitHub | 빈약
+2026-11-07 | [B3] 하드웨어 소프트맥스·아르그맥스 | FPGA softmax approximate exponential hardware accelerator site:github.com Verilog fixed-point | 유효
+2026-11-07 | [B3] 하드웨어 소프트맥스·아르그맥스 | slideshare FPGA approximate softmax function CNN inference IRJMETS | 유효
+2026-11-07 | [B3] 하드웨어 소프트맥스·아르그맥스 | FPGA softmax hardware Mitchell approximation exponential 2^x LUT Verilog fixed-point IEEE | 유효
+2026-11-07 | [B3] 하드웨어 소프트맥스·아르그맥스 | pseudo-softmax hardware FPGA image classification argmax nature scientific reports 2021 | 유효
+2026-11-07 | [B3] 하드웨어 소프트맥스·아르그맥스 | site:github.com softmax FPGA Verilog argmax classification accelerator fixed-point | 유효
+2026-11-07 | [B3] 하드웨어 소프트맥스·아르그맥스 | FPGA hardware softmax argmax approximation failure debugging post-mortem issue GitHub neural network classification | 유효
+2026-11-07 | [B3] 하드웨어 소프트맥스·아르그맥스 | hiteshtp09 Verilog Softmax Accelerator GitHub FSM LUT exponential fixed-point approximation | 빈약
+2026-11-07 | [B3] 하드웨어 소프트맥스·아르그맥스 | FPGA hardware argmax circuit design Verilog combinational sequential 10 output classification neural network | 유효
+2026-11-07 | [B3] 하드웨어 소프트맥스·아르그맥스 | FPGA 소프트맥스 아르그맥스 하드웨어 구현 Verilog 고정소수점 분류 출력 한국어 | 빈약

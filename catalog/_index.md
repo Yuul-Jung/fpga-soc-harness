@@ -314,3 +314,6 @@
 | [emirertorer-bnn-mnist-nexys-a7](amd/emirertorer-bnn-mnist-nexys-a7.md) | L3 | T4 | Nexys-A7-100T (no) | 2026-11-07 |
 | [tb-rohan-int8-cnn-accelerator](amd/tb-rohan-int8-cnn-accelerator.md) | L3 | T4 | Artix-7 200T (no) | 2026-11-07 |
 | [shanker-teo-integer-intelligence-2026](papers/shanker-teo-integer-intelligence-2026.md) | L3 | T4 | Cmod A7 (needs-port) | 2026-11-07 |
+| [hiteshtp09-verilog-softmax-accelerator](vendor-neutral/hiteshtp09-verilog-softmax-accelerator.md) | L3 | T0 | 미명시 (needs-port) | 2026-11-07 |
+| [cardarilli-2021-pseudo-softmax](papers/cardarilli-2021-pseudo-softmax.md) | L3 | T4 | 없음 (논문) | 2026-11-07 |
+| [columbia-4840-sp26-mnist-accelerator](papers/columbia-4840-sp26-mnist-accelerator.md) | L3 | T3 | DE1-SoC (needs-port) | 2026-11-07 |
