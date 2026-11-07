@@ -16,6 +16,7 @@ stats: {stars: 0, commits: 2, last_update: unverified}
 doc_language: en
 verification: L3
 checked_at: 2026-11-07
+rechecked_at: 2026-11-07
 sources: [https://github.com/Rajmali-22/fpga-zebra-crossing-camera]
 ---
 

@@ -16,6 +16,7 @@ stats: {stars: unverified, commits: unverified, last_update: 2024}
 doc_language: en
 verification: L3
 checked_at: 2026-11-07
+rechecked_at: 2026-11-07
 sources: [https://www1.cs.columbia.edu/~sedwards/classes/2024/4840-spring/reports/LeNet-Classifier-report.pdf]
 ---
 

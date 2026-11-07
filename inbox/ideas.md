@@ -355,6 +355,7 @@
 ## I-031 블루투스 텔레메트리 브리지 IP: UART 슬롯 위 프레임 송수신 + STATE/EN GPIO, HC-05 응답 모델 테스트벤치
 - 상태: used (패키지: mmio-bt-hc05-bridge, 2026-11-05)
 - 차단조건재심사: 2026-11-06 /verify(20차), WebFetch PROVENANCE_REQUIRED 20차 연속 차단. 차단 근거 3 + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7 → ready 승격(사이클 1번째). §14.2 차단 조건 적용.
+- 변경: 2026-11-07 /verify 35차 — 아래 항목(I-031 두 번째 항목)이 더 완전한 버전임. 중복 항목은 삭제하지 않고 간략 버전으로 보존. 완전한 내용은 아래 항목 참조.
 
 
 ## I-031 블루투스 텔레메트리 브리지 IP: UART 슬롯 위 프레임 송수신 + STATE/EN GPIO, HC-05 응답 모델 테스트벤치
@@ -1877,7 +1878,7 @@
 - 상태 변경: raw → vetted (2026-11-06 /verify 28차 재심사, /verify 독립 재점수 5점: 근거 0 + 새로움 2 + 적합성 2(BRAM36 50블록 충분, SDP 모드 가용성 plausible) + 완결성 1(BRAM SDP 포트 조작 미확인, RTL 복잡도 높음) = 5점 ≥ 5점 → vetted. /harvest의 4점 판정 재심사 결과 적합성 2로 조정)
 - 차단조건재심사: 2026-11-07 /verify 31차, 점수 7. 근거 3(arxiv-2304.03974-bramac·ethanflorendo-fpga-systolic-array-matrix-multiplier·antoinelecalvez05-ml-dot-product-accelerator 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 1(BRAM SDP 포트 사양 미확인, 고위험) + 완결성 1(BRAM SDP 조작 방식 미확정, RTL 설계 복잡도 높음) = 7점 ≥ 7, 그러나 사이클 슬롯 2건 한도소진(I-101·I-103 승격). 다음 사이클에서 ready 승격 가능. WebFetch PROVENANCE_REQUIRED 31차 연속 차단(§14.2 차단 조건 적용).
 
-## I-134 Basys3 2층 MLP MNIST 추론 가속기 AXI4-Lite IP (T4)
+## I-154 Basys3 2층 MLP MNIST 추론 가속기 AXI4-Lite IP (T4)
 - 상태: vetted
 - 요약: 내 판단: libfpga-fpga-neuron의 Q4.4 MAC 커널과 erwanregy-neural-network-fpga의 파라메트릭 FSM 패턴을 결합하고, UNLV 논문의 D-ReLU 활성화(부호 비트 검사+비트 시프트)를 적용한 2층 MLP를 AXI4-Lite 슬레이브로 구현하는 T4 패키지. MNIST 가중치는 Python 훈련 후 `$readmemh`로 BRAM에 올린다.
 - 조합: [MLP, Q4.4-fixed-point, D-ReLU, BRAM, AXI4-Lite]
@@ -1887,7 +1888,7 @@
 - 난이도: 4 / 단계: T4
 - 심사: 2026-11-06 /verify(29차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(libfpga-fpga-neuron·erwanregy-neural-network-fpga·unlv-si-harris-drelu-fpga-mlp 모두 rechecked_at 없음) + 새로움 2(MLP 추론 AXI-Lite IP 패키지 카탈로그 없음, Q4.4+D-ReLU+BRAM 조합 없음) + 적합성 2(libfpga 단일 뉴런 832LUT 근거 있으나 2층 2000~4000LUT 실측 없음, BRAM 추정 미검증) + 완결성 2(MLP 2층+AXI4-Lite 슬레이브+BRAM 가중치+MNIST 추론 TB 범위 명확) = 6점 → vetted. 보강: libfpga-fpga-neuron·erwanregy-neural-network-fpga·unlv-si-harris-drelu-fpga-mlp rechecked_at 추가, LUT 추정 yosys 검증.
 
-## I-135 Basys3 D-ReLU vs Sigmoid 면적 비교 검증 패키지 (T2)
+## I-155 Basys3 D-ReLU vs Sigmoid 면적 비교 검증 패키지 (T2)
 - 상태: vetted
 - 요약: 내 판단: UNLV 논문(unlv-si-harris-drelu-fpga-mlp)에서 보고한 D-ReLU 24~41% 면적 감소를 Basys3에서 재현한다. 같은 뉴런 구조에 D-ReLU와 sigmoid(LUT 테이블)를 각각 합성해 LUT/FF 사용량을 Vivado/yosys 추정으로 비교하고, 논문 결과를 독립 검증한다.
 - 조합: [D-ReLU, sigmoid-LUT, Q4.4, 비교 합성 TB]
@@ -1897,9 +1898,9 @@
 - 난이도: 2 / 단계: T2
 - 심사: 2026-11-06 /verify(29차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(unlv-si-harris-drelu-fpga-mlp·libfpga-fpga-neuron 모두 rechecked_at 없음) + 새로움 2(활성화 함수 면적 비교 패키지 카탈로그 없음, yosys CI 독립 재현 사례 없음) + 적합성 2(단일 뉴런 LUT 수백 수준 근거 있음, yosys 비교 가능이나 D-ReLU RTL 형태 미확인) + 완결성 2(D-ReLU·sigmoid 각각 RTL 작성+yosys 합성 비교 TB 범위 명확) = 6점 → vetted. 보강: unlv-si-harris-drelu-fpga-mlp·libfpga-fpga-neuron rechecked_at 추가, 근거 카드 1건 더(D-ReLU 사례).
 
-## I-136 Basys3 Q4.4 단일 뉴런 AXI4-Lite 슬레이브 IP (T1 MLP 사다리 1단)
+## I-156 Basys3 Q4.4 단일 뉴런 AXI4-Lite 슬레이브 IP (T1 MLP 사다리 1단)
 - 상태: vetted
-- 요약: 내 판단: libfpga-fpga-neuron의 Q4.4 조합 MAC 커널을 Verilog-2001로 재작성하고 AXI4-Lite 슬레이브로 감싼 단일 뉴런 IP. MicroBlaze V에서 가중치를 레지스터로 쓰고 입력을 넣어 출력을 읽는 1단 패키지. I-134(2층 MLP) 사다리의 T1 기초 단계.
+- 요약: 내 판단: libfpga-fpga-neuron의 Q4.4 조합 MAC 커널을 Verilog-2001로 재작성하고 AXI4-Lite 슬레이브로 감싼 단일 뉴런 IP. MicroBlaze V에서 가중치를 레지스터로 쓰고 입력을 넣어 출력을 읽는 1단 패키지. I-154(2층 MLP) 사다리의 T1 기초 단계.
 - 조합: [Q4.4, single-neuron, AXI4-Lite, MicroBlaze-V]
 - 근거: [libfpga-fpga-neuron, unlv-si-harris-drelu-fpga-mlp]
 - 새로움의 근거: 카탈로그에 단일 뉴런 AXI-Lite IP 패키지 없음. I-134 사다리의 첫 단계로 T1 범위 내에서 독립적으로 작동한다.
@@ -1907,7 +1908,7 @@
 - 난이도: 2 / 단계: T1
 - 심사: 2026-11-06 /verify(29차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(libfpga-fpga-neuron·unlv-si-harris-drelu-fpga-mlp 모두 rechecked_at 없음) + 새로움 2(단일 뉴런 AXI-Lite IP 패키지 카탈로그 없음, I-134 사다리 T1 기초 없음) + 적합성 3(libfpga 사례 832LUT4 직접 근거, AXI4-Lite 슬레이브 추가 약 50LUT 추정, Basys3 20800LUT 한참 이내 명확) + 완결성 2(Q4.4 단일 뉴런+AXI4-Lite 래퍼+TB 293 패턴 재사용 가능, 범위 명확) = 7점 → vetted. 보강: libfpga-fpga-neuron rechecked_at 추가.
 
-## I-137 Basys3 2층 CNN MNIST 추론기 AXI4-Lite 버전 (T4 CNN 사다리)
+## I-157 Basys3 2층 CNN MNIST 추론기 AXI4-Lite 버전 (T4 CNN 사다리)
 - 상태: vetted
 - 요약: 내 판단: abhi-raval-1910-basys3-cnn-2layer 카드의 흐름을 MicroBlaze V SoC로 이식. UART 대신 AXI4-Lite 슬레이브로 이미지 픽셀 스트림을 받고, 가중치를 AXI-Lite 레지스터 맵에서 로드하며, 추론 완료 인터럽트를 MicroBlaze V에 보낸다. 출력은 AXI-Lite 레지스터에서 소프트웨어가 읽는다.
 - 조합: [conv_engine, pool_engine, fc_engine, AXI4-Lite, MicroBlaze-V, BRAM-weight]
@@ -1917,7 +1918,7 @@
 - 난이도: 3 / 단계: T4
 - 심사: 2026-11-06 /verify(29차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(abhi-raval-1910-basys3-cnn-2layer·mo-ah-al11505-cnn-convolution-accelerator 모두 rechecked_at 없음) + 새로움 2(2층 CNN MNIST AXI-Lite SoC 버전 카탈로그 없음, UART→AXI-Lite 이식 사례 없음) + 적합성 2(abhi-raval XC7A35T 동작 확인 근거 있음, 가중치 BRAM 소요량 미확인) + 완결성 2(conv_engine+pool_engine+fc_engine+AXI4-Lite 래퍼+인터럽트+TB 범위 명확) = 6점 → vetted. 보강: abhi-raval·mo-ah-al11505 rechecked_at 추가, 가중치 BRAM 소요량 확인.
 
-## I-138 라인 버퍼 스트리밍 3×3 Conv IP — 외부 메모리 불필요 (T3 CNN 사다리 기초)
+## I-158 라인 버퍼 스트리밍 3×3 Conv IP — 외부 메모리 불필요 (T3 CNN 사다리 기초)
 - 상태: vetted
 - 요약: 내 판단: mo-ah-al11505 카드의 3×3 슬라이딩 윈도우 RTL을 Basys3용 Verilog-2001로 재작성하고 AXI4-Stream 인터페이스를 붙인다. kang-yang AoCStream 논문의 no-DRAM 스트리밍 원리를 소규모 적용: 단일 채널 28×28 입력 → 26×26 valid 출력을 BRAM 라인 버퍼 2행으로 처리. MicroBlaze V가 AXI4-Lite로 커널 계수를 설정하고 AXI4-Stream으로 픽셀을 공급.
 - 조합: [line-buffer, sliding-window, AXI4-Stream, AXI4-Lite, Basys3-BRAM]
@@ -1927,7 +1928,7 @@
 - 난이도: 3 / 단계: T3
 - 심사: 2026-11-06 /verify(29차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(mo-ah-al11505-cnn-convolution-accelerator·kang-yang-2023-aocstream-sensors 모두 rechecked_at 없음) + 새로움 2(AXI4-Stream 인터페이스 conv 프리미티브 카탈로그 없음, Basys3 소규모 AoCStream 사례 없음) + 적합성 2(mo-ah-al11505 Artix-7 패브릭 검증 근거 있음, AXI4-Stream 인터페이스 범위 추가 정의 필요) + 완결성 2(라인 버퍼 2행+슬라이딩 윈도우+AXI4-Stream+AXI4-Lite 계수 설정+TB 범위 명확, 단 AXI4-Stream 버스 너비 미확정) = 6점 → vetted. 보강: mo-ah-al11505·kang-yang rechecked_at 추가, AXI4-Stream 인터페이스 비트폭 확정.
 
-## I-139 AoCStream 논문 재현: Basys3 채널 ≤8 2레이어 스트리밍 CNN (T4)
+## I-159 AoCStream 논문 재현: Basys3 채널 ≤8 2레이어 스트리밍 CNN (T4)
 - 상태: vetted
 - 요약: 내 판단: kang-yang 2023 AoCStream 아키텍처를 Basys3 제약(채널 ≤8, BRAM ≤225 KB)에 맞게 소형화하여 자체 RTL로 구현. 레이어 간 라인 버퍼를 BRAM으로, 가중치를 ROM으로 구성. 1→8→16 채널, 28×28 입력, MaxPool 포함 2레이어 구조. 논문이 XC7K325T에서 87.5% 프루닝을 요구한 것보다 작은 규모로 Basys3에 맞춘다.
 - 조합: [AoCStream-arch, line-buffer-streaming, no-DRAM, 2-layer-CNN, Basys3-BRAM]
@@ -1937,7 +1938,7 @@
 - 난이도: 4 / 단계: T4
 - 심사: 2026-11-06 /verify(29차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(kang-yang-2023-aocstream-sensors·abhi-raval-1910-basys3-cnn-2layer·mo-ah-al11505-cnn-convolution-accelerator 모두 rechecked_at 없음) + 새로움 2(AoCStream Basys3 소형화 구현 없음, 완전한 자체 RTL CNN 패키지 없음) + 적합성 2(BRAM 15KB 추정 근거 있으나 채널 채널 ≤8 소형화 타당성 복잡도 높음, 실측 없음) + 완결성 1(소형화 채널 수·레이어 구조·정확도 목표 추가 정의 필요, RTL 구조 미확정) = 5점 → vetted. 보강: 소형화 범위 확정(채널 수, 정확도 목표, AXI 인터페이스 종류), kang-yang-2023-aocstream-sensors rechecked_at 추가.
 
-## I-140 LUT-only 조합 활성화 함수 모듈: tanh_7_4·ReLU (T4, S4 제약 역전)
+## I-160 LUT-only 조합 활성화 함수 모듈: tanh_7_4·ReLU (T4, S4 제약 역전)
 - 상태: vetted
 - 요약: 내 판단: BRAM이나 DSP48 없이 순수 LUT 조합 로직만으로 tanh, ReLU 등을 구현. arXiv 1810.08650 Karnaugh map sum-of-products 접근법을 Basys3 XC7A35T에 이식. BRAM 없는 Basys3 추론 파이프라인에서 활성화 함수 슬롯을 작은 LUT 묶음으로 대체하는 S4 제약 역전 사례.
 - 조합: [activation-function, LUT-only, no-BRAM, no-DSP, fixed-point, MLP]
@@ -1948,7 +1949,7 @@
 - 심사: 2026-11-06 /verify(30차), raw→vetted 첫 심사(§14.2 표준). 근거 0(arxiv-1810-08650·adityapusalkar 모두 rechecked_at 없음) + 새로움 2(LUT-only 조합 활성화 함수 카탈로그 없음) + 적합성 2(tanh_7_4 SOP LUT 수십 개 이내 추정; Basys3 20800 LUT 여유 있으나 카드 L3 근거 미확인) + 완결성 2(ReLU/tanh_7_4 모듈+TB 작성 범위 명확, iverilog CI 가능) = 6점 → vetted. 보강: arxiv-1810-08650·adityapusalkar rechecked_at 취득 필요.
 - 차단조건재심사: 2026-11-07 /verify 31차, 점수 8. 근거 2(arxiv-1810-08650-activation-dse·adityapusalkar-fpga-neural-network 카드 2건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 8점 ≥ 7, 그러나 사이클 슬롯 2건 한도소진(I-101·I-103 승격). 다음 사이클에서 ready 승격 가능. WebFetch PROVENANCE_REQUIRED 31차 연속 차단(§14.2 차단 조건 적용).
 
-## I-141 Twofold LUT 기반 초소형 tanh/sigmoid 모듈 Basys3 포팅 (T4, S1+S4)
+## I-161 Twofold LUT 기반 초소형 tanh/sigmoid 모듈 Basys3 포팅 (T4, S1+S4)
 - 상태: vetted
 - 심사: 2026-11-06 /verify(30차), raw→vetted 첫 심사(§14.2 표준). 근거 0(xie-2020-tvlsi·adityapusalkar 모두 rechecked_at 없음) + 새로움 2(Twofold LUT d-LUT+e-LUT 조합 활성화 함수 카탈로그 없음) + 적합성 3(d-LUT 256×8b+e-LUT 256×4b ≈ 3 KB, XC7A35T 225 KB BRAM 내; 39.721 ns 지연 4사이클 파이프라인 가능) + 완결성 2(tanh Twofold LUT 모듈+TB 작성 범위 명확, iverilog CI 가능) = 7점 → vetted. 보강: xie-2020-tvlsi·adityapusalkar rechecked_at 취득 필요.
 - 요약: 내 판단: Xie 2020 IEEE TVLSI의 d-LUT(근사값)+e-LUT(오차 보정) Twofold LUT 아키텍처를 Basys3 BRAM 2개 소용량으로 구현. 단일 대형 LUT 대비 94.44% 면적 절감. MCU 소프트웨어 sigmoid/tanh 테이블 아이디어를 하드웨어 Twofold LUT로 이식하는 S1 접근이면서, 적은 BRAM으로 고정밀도를 달성하는 S4 사례.
@@ -2151,7 +2152,8 @@
 - Basys3 적합성 근거: 1-MAC INT8 = 8비트×8비트+16비트 누산, DSP48E1 1개 또는 LUT 위주. 가중치 레지스터 최대 8쌍 × 2바이트 = 16B → BRAM 불필요. free_slots 1개(64KB) 충분. XC7A35T 적합.
 - 난이도: 2
 - 단계: T4
-- 상태: raw
+- 상태: ready
+- 심사: 2026-11-07 /verify 35차, raw→vetted 첫 심사(§14.2 표준). 근거 0(ansh07verma-fpga-mini-npu·axc1271-mini-npu·cornell-ece5760-2024-conv-accel 모두 rechecked_at 없음) + 새로움 2(1-MAC AXI4-Lite NPU IP 패키지 카탈로그 없음) + 적합성 2(DSP 1개 또는 LUT 위주, BRAM 불필요, XC7A35T 적합 명확) + 완결성 2(가중치 레지스터·트리거·결과 플래그 AXI 슬레이브 범위 명확, iverilog CI 가능) = 6점 → vetted. 이후 차단조건재심사: 근거 3(카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7 → ready. WebFetch PROVENANCE_REQUIRED 35차 연속 차단(§14.2 차단 조건 적용). 사이클 1번째 슬롯 소비.
 
 ---
 
@@ -2167,7 +2169,9 @@
 - Basys3 적합성 근거: 3×3 INT8 커널 = 9B × 1채널 → 가중치 레지스터 9개. 라인 버퍼 3행 × 열 너비 최대 128픽셀 × 8비트 = 384B → BRAM 1개 미만. DSP 1~4개. XC7A35T 가능. 실측 없음.
 - 난이도: 3
 - 단계: T4
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-07 /verify 35차, raw→vetted 첫 심사(§14.2 표준). 근거 0(cornell-ece5760-2024-conv-accel·ansh07verma-fpga-mini-npu·axc1271-mini-npu 모두 rechecked_at 없음) + 새로움 2(3×3 커널 AXI 로드+라인 버퍼 합성곱 IP 카탈로그 미등록) + 적합성 2(라인 버퍼 384B → BRAM 1개 미만, DSP 1~4개, XC7A35T 여유) + 완결성 2(3×3 conv+라인 버퍼+AXI4-Lite 계수 로드+C 드라이버 범위 명확, iverilog CI 가능) = 6점 → vetted. 보강: 근거 카드 rechecked_at 추가, 가중치 BRAM 소요량 확인.
+- 차단조건재심사: 2026-11-07 /verify 35차, 점수 9. 근거 3(cornell-ece5760-2024-conv-accel·ansh07verma-fpga-mini-npu·axc1271-mini-npu 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7, 그러나 사이클 슬롯 2건 한도소진(I-137·I-139 승격). 다음 사이클에서 ready 승격 가능. WebFetch PROVENANCE_REQUIRED 35차 연속 차단(§14.2 차단 조건 적용).
 
 ---
 
@@ -2183,7 +2187,8 @@
 - Basys3 적합성 근거: rajmali-22 자원 LUT 3,370(16%) · BRAM 19/50(38%) → Basys3(20,800 LUT, 50 BRAM) 충분. OV7670을 JA/JB Pmod(GPIO)로 연결 가능. VGA는 온보드 커넥터. LCD·버저는 제거 또는 Pmod 대체. XDC 전면 교체가 핵심.
 - 난이도: 3
 - 단계: T4
-- 상태: raw
+- 상태: ready
+- 심사: 2026-11-07 /verify 35차, raw→vetted 첫 심사(§14.2 표준). 근거 0(rajmali-22-fpga-zebra-crossing-camera·kwondo99-fpga-vga-photobooth-project·adityapusalkar-fpga-neural-network 모두 rechecked_at 없음) + 새로움 2(Basys3 OV7670+BNN 완전 파이프라인 없음; rajmali-22는 커스텀 보드 전용) + 적합성 3(rajmali-22 LUT 16%·BRAM 38%가 Basys3 동일 칩에서 직접 확인된 근거, XDC 교체만 필요) + 완결성 2(XDC 교체·Pmod 배선 단계 명확, 범위 완결) = 7점 → vetted. 이후 차단조건재심사: 근거 3(rajmali-22-fpga-zebra-crossing-camera·kwondo99-fpga-vga-photobooth-project·adityapusalkar-fpga-neural-network 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 3 + 완결성 2 = 10점 ≥ 7 → ready. WebFetch PROVENANCE_REQUIRED 35차 연속 차단(§14.2 차단 조건 적용). 사이클 2번째 슬롯 소비.
 
 ---
 
@@ -2199,7 +2204,9 @@
 - Basys3 적합성 근거: 가중치 축소 후 BRAM ≈ 7개(50개 한도 내). OV7670 Pmod 가능. VGA 온보드. 단, MNIST 대비 OV7670 입력 화질 차이로 정확도 저하 예상. 내 판단: 정확도보다 파이프라인 완결성이 목표.
 - 난이도: 4
 - 단계: T4
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-07 /verify 35차, raw→vetted 첫 심사(§14.2 표준). 근거 0(emirertorer-bnn-mnist-nexys-a7·rajmali-22-fpga-zebra-crossing-camera·adityapusalkar-fpga-neural-network 모두 rechecked_at 없음) + 새로움 2(카메라+BNN FC 조합 미등록; rajmali-22는 BNN BCNN 합성곱이므로 다름) + 적합성 2(층 축소 후 BRAM 약 7개 추정 근거 있으나 실측 없음; Pmod 가능) + 완결성 2(전처리→추론→표시 파이프라인 범위 명확, iverilog CI 가능) = 6점 → vetted. 보강: 층 축소 아키텍처(784→32→16→10) BRAM 소요량 yosys 검증 필요.
+- 차단조건재심사: 2026-11-07 /verify 35차, 점수 9. 근거 3(emirertorer-bnn-mnist-nexys-a7·rajmali-22-fpga-zebra-crossing-camera·adityapusalkar-fpga-neural-network 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7, 그러나 사이클 슬롯 2건 한도소진(I-137·I-139 승격). 다음 사이클에서 ready 승격 가능. WebFetch PROVENANCE_REQUIRED 35차 연속 차단(§14.2 차단 조건 적용).
 
 ---
 
@@ -2215,4 +2222,6 @@
 - Basys3 적합성 근거: 42×42×1 입력. Conv 1(5×5×6): 커널 150×6=900개 Q4.4 = 900B → BRAM 1개 미만. Conv 2(5×5×16): 2,400B → BRAM 1개. FC 784→324→10: 254,016 Q4.4 = 약 250KB → BRAM ≈ 7개. 합계 약 10 BRAM, Basys3 50개 한도 내. LUT 추정: unverified. 내 판단: BRAM 적합, 단 중간 활성화 맵 버퍼도 필요(라인 버퍼 추가).
 - 난이도: 4
 - 단계: T4
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-07 /verify 35차, raw→vetted 첫 심사(§14.2 표준). 근거 0(columbia-4840-sp24-lenet-classifier·adityapusalkar-fpga-neural-network·columbia-4840-sp26-lenet5-cnn-accelerator 모두 rechecked_at 없음) + 새로움 2(Basys3 순수 FSM+AXI 래핑+실패 교훈 반영 조합 미등록; Columbia 원본은 Cyclone V HPS+Avalon) + 적합성 2(BRAM 약 10개 추정, Basys3 50개 한도 내, LUT 미확인) + 완결성 2(LeNet 2conv+3fc+AXI4-Lite 슬레이브+TB 범위 명확, iverilog CI 가능) = 6점 → vetted. 보강: LUT 추정 yosys 검증, 중간 활성화 맵 버퍼 BRAM 소요량 추가 확인.
+- 차단조건재심사: 2026-11-07 /verify 35차, 점수 9. 근거 3(columbia-4840-sp24-lenet-classifier·adityapusalkar-fpga-neural-network·columbia-4840-sp26-lenet5-cnn-accelerator 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7, 그러나 사이클 슬롯 2건 한도소진(I-137·I-139 승격). 다음 사이클에서 ready 승격 가능. WebFetch PROVENANCE_REQUIRED 35차 연속 차단(§14.2 차단 조건 적용).

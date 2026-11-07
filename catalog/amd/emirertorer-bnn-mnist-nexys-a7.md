@@ -16,6 +16,7 @@ stats: {stars: unverified, commits: unverified, last_update: 2025}
 doc_language: en
 verification: L3
 checked_at: 2026-11-07
+rechecked_at: 2026-11-07
 sources: [https://arxiv.org/abs/2512.19304, https://github.com/EmirErtorer/Binary_Neural_Network_Implementation_For_Handwritten_Digit_Recognition_On_FPGA]
 ---
 
