@@ -119,3 +119,11 @@
 2026-11-07 | [B3] 어텐션 메커니즘 하드웨어 기초 | 어텐션 메커니즘 FPGA 하드웨어 구현 Verilog Q K V 내적 소형 헤드 | 빈약
 2026-11-07 | [B3] 어텐션 메커니즘 하드웨어 기초 | tiny attention FPGA Basys3 Artix-7 single head small sequence length resource efficient | 유효
 2026-11-07 | [B3] 어텐션 메커니즘 하드웨어 기초 | FPGA attention mechanism softmax approximation max-shift linear fixed point Artix-7 | 유효
+2026-11-07 | [B3] 트랜스포머 블록 하드웨어 슬림화 | transformer block FPGA hardware slim multi-head attention FFN single layer resource efficient Basys3 | 유효
+2026-11-07 | [B3] 트랜스포머 블록 하드웨어 슬림화 | tiny transformer FPGA fixed point quantization Spartan-7 Artix-7 inference accelerator 2024 2025 arXiv | 유효
+2026-11-07 | [B3] 트랜스포머 블록 하드웨어 슬림화 | transformer FPGA mixed precision quantization hardware accelerator time series | 유효
+2026-11-07 | [B3] 트랜스포머 블록 하드웨어 슬림화 | 트랜스포머 FPGA 하드웨어 경량화 멀티헤드 어텐션 FFN 단일층 Basys3 자원 최적화 | 빈약
+2026-11-07 | [B3] 트랜스포머 블록 하드웨어 슬림화 | transformer ternary weights FPGA inference accelerator bitmasking DSP-free Artix-7 | 유효
+2026-11-07 | [B3] 트랜스포머 블록 하드웨어 슬림화 | FPGA transformer encoder block 1 head feedforward network BRAM LUT resource usage small FPGA | 유효
+2026-11-07 | [B3] 트랜스포머 블록 하드웨어 슬림화 | ElasticNode V5 Spartan-7 transformer hardware implementation machine learning edge FPGA | 유효
+2026-11-07 | [B3] 트랜스포머 블록 하드웨어 슬림화 | transformer block FPGA LLaMA ternary weight compression BRAM efficient inference Versal | 유효

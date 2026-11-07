@@ -2084,3 +2084,51 @@
 - Basys3 적합성의 근거: 32항목 LUT(8비트 주소→16비트 계수) = 512바이트 → BRAM 1/4블록. 가산기·비교기만 사용(DSP 불필요). 직렬 처리 d_k=16 → 16사이클. CI에서 iverilog/verilator 검증 가능(S1 목표). free_slots 불필요(library/rtl/ 추가).
 - 난이도: 2 / 단계: T3
 - 심사: 2026-11-07 /verify 33차, raw→vetted 첫 심사(§14.2 표준, 차단조건재심사 불적용). 근거 0(ftrans-2020-transformer-fpga-piecewise-softmax·wang-2020-mha-fpga-accelerator 모두 rechecked_at 없음) + 새로움 2(Basys3 구간 선형 exp 단독 FSM 카드·패키지 없음) + 적합성 2(32항목 LUT=512B·BRAM 1/4블록·DSP 불필요 추정 명확) + 완결성 2(150줄 이하 FSM·library/rtl/ 추가로 범위 명확, iverilog CI 가능) = 6점 → vetted. 보강: 근거 카드 rechecked_at 추가, 선형 exp 오차 한계 명시 필요.
+
+---
+
+## I-134 Basys3 소형 트랜스포머 추론 가속기 AXI IP (d_model=16~32, 1헤드, 4~8비트 혼합 정밀도)
+
+내 판단: XC7S15(8K LUT)에서 d_model=40까지 단일 인코더 블록이 동작한다면, Basys3(33K LUT, 약 4배)에서는 d_model=16~32 구성이 LUT 약 10~20%만 사용해 여유 있게 구현 가능. 단일 인코더(1헤드 MHA + 1층 FFN)를 AXI4-Lite 슬레이브 IP로 감싸 MicroBlaze V NPU IP로 연결. 성분별 비트폭(4/6/8비트)을 AXI 레지스터로 프로그래밍 가능하게 설계.
+
+- id: I-134
+- 조합: [single-encoder-transformer, MHA-1head, FFN-1layer, AXI4-Lite, MicroBlaze-V-NPU]
+- 근거 카드: [[arxiv-2505-17662-tinyformer4ts]], [[arxiv-2410-03294-mixprecq-ts-fpga]]
+- 근거 URL: https://arxiv.org/abs/2505.17662, https://arxiv.org/abs/2410.03294
+- 새로움 근거: 카탈로그에 d_model≤32 단일 인코더를 AXI4-Lite 슬레이브로 감싼 MicroBlaze V NPU IP 카드가 없음. TinyTransformer4TS(arxiv-2505-17662)는 XC7S15 전용 XDC이며 AXI 인터페이스 없음. S4 제약 역전: 소형 d_model을 제약이 아닌 적합성으로 활용.
+- Basys3 적합성 근거: d_model=32, 1헤드, 4비트 → XC7S15 기준 LUT ~35% → Basys3(4배) 기준 ~8-9%. BRAM: 가중치 BRAM 2~3개 범위(d_model=32, 4비트). DSP: 삼진 가중치로 0 가능(arxiv-2607-03652 참고). 실측 없음. free_slots 1개 배정 제안.
+- 난이도: 4
+- 단계: T4
+- 상태: raw
+
+---
+
+## I-135 혼합 정밀도 추론 AXI 레지스터 인터페이스 (성분별 4/6/8비트 SW 프로그래밍)
+
+내 판단: arxiv-2410-03294의 10개 성분별 혼합 정밀도(4/6/8비트) 아이디어를 MicroBlaze V AXI4-Lite 레지스터 인터페이스로 구현. 각 성분(입력 양자화·PE 추가·MHA·AddMHA·BN_MHA·FFN·AddFFN·BN_FFN·GAP·출력 역양자화)의 비트폭을 AXI 레지스터에서 소프트웨어로 설정, FSM이 비트폭 설정값을 읽어 동작. d_model≤32로 BRAM 포화 없이 구현.
+
+- id: I-135
+- 조합: [mixed-precision-quantization, AXI4-Lite-registers, transformer-10-components, MicroBlaze-V-SW-control]
+- 근거 카드: [[arxiv-2410-03294-mixprecq-ts-fpga]]
+- 근거 URL: https://arxiv.org/abs/2410.03294
+- 새로움 근거: 카탈로그에 성분별 비트폭을 AXI 레지스터에서 소프트웨어로 동적 설정하는 혼합 정밀도 추론 IP 카드가 없음. arxiv-2410-03294는 XC7S15 전용, AXI 인터페이스 없음. S4 제약 역전: d_model=64 BRAM 포화를 d_model≤32로 역전.
+- Basys3 적합성 근거: d_model=32, 10 성분 비트폭 각 2비트(4/6/8비트 선택) = AXI 레지스터 10개. XC7S15의 BRAM 100% 포화는 d_model=64 기준 → d_model=32로 절반. Basys3 50 BRAM36으로 여유. 실측 없음.
+- 난이도: 4
+- 단계: T4
+- 상태: raw
+
+---
+
+## I-136 삼진 가중치 압축 BRAM 모듈 (ternary 2비트 인코딩, DSP-free 비트마스크 MAC)
+
+내 판단: arxiv-2607-03652-eliteformer의 삼진 가중치(−1, 0, +1) 비트마스크 MAC 아이디어를 Basys3 소형 NPU 가중치 메모리에 적용. 가중치를 2비트 인코딩(00=0, 01=+1, 10=−1)으로 BRAM에 압축 저장(압축률 약 1/4), 비트마스크 AND+가산기로 MAC 대체해 DSP 소모 없음. MicroBlaze V AXI4-Lite NPU IP의 가중치 BRAM 모듈로 활용.
+
+- id: I-136
+- 조합: [ternary-weights, 2bit-encoding, bitmask-MAC, BRAM-compression, DSP-free, AXI4-Lite-NPU]
+- 근거 카드: [[arxiv-2607-03652-eliteformer]]
+- 근거 URL: https://arxiv.org/abs/2607.03652
+- 새로움 근거: 카탈로그에 Basys3 90 DSP 제약 완화를 위해 삼진 가중치 비트마스크로 DSP 사용 0으로 줄이는 카드·패키지가 없음. EliteFormer는 Versal VCK5000 AI엔진 전용으로 직접 이식 불가. 2비트 인코딩으로 BRAM 사용량 약 1/4 절감 가능. S4 제약 역전: DSP 의존도 제약을 LUT 위주 설계로 역전.
+- Basys3 적합성 근거: 2비트 가중치 × d_model=32 × 1층 = 약 2KB → BRAM 1개 미만. 비트마스크 AND+가산기는 LUT 위주, DSP 불필요. 90 DSP를 다른 용도(예: 사용자 가속기)에 여유 확보. 실측 없음.
+- 난이도: 3
+- 단계: T4
+- 상태: raw

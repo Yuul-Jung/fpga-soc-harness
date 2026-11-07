@@ -2,6 +2,9 @@
 
 | 이름 | 등급 | 단계 | 보드 | 갱신일 |
 |---|---|---|---|---|
+| [arxiv-2607-03652-eliteformer](papers/arxiv-2607-03652-eliteformer.md) | L2 | T4 | Versal VCK5000 (no) | 2026-11-07 |
+| [arxiv-2410-03294-mixprecq-ts-fpga](papers/arxiv-2410-03294-mixprecq-ts-fpga.md) | L3 | T4 | Spartan-7 XC7S15 (needs-port) | 2026-11-07 |
+| [arxiv-2505-17662-tinyformer4ts](papers/arxiv-2505-17662-tinyformer4ts.md) | L3 | T4 | Spartan-7 XC7S15 (needs-port) | 2026-11-07 |
 | [arxiv-2401-02721-tiny-transformer-fpga](papers/arxiv-2401-02721-tiny-transformer-fpga.md) | L2 | T4 | Artix-7 (needs-port) | 2026-11-07 |
 | [arxiv-2409-14023-famous-attention-fpga](papers/arxiv-2409-14023-famous-attention-fpga.md) | L2 | T4 | UltraScale+ (no) | 2026-11-07 |
 | [arxiv-2607-01798-approx-attention-fpga](papers/arxiv-2607-01798-approx-attention-fpga.md) | L2 | T4 | 미지정 (needs-port) | 2026-11-07 |

@@ -749,3 +749,9 @@
 - https://arxiv.org/abs/2311.06268 | SpAtten: 희소 어텐션 가속기(arXiv 2023) — 미열람(L1), 어텐션 헤드 가지치기+FPGA | sparse attention FPGA accelerator
 - https://arxiv.org/abs/2208.11642 | I-BERT / 정수 어텐션(어림 소수 연산 없이 INT8 Softmax) — 미열람(L1), INT8 전용 어텐션 소형 보드 적합성 후보 | integer-only Softmax attention FPGA INT8
 - https://github.com/openhwgroup/cvfpu | CVA6 FPU(부동소수점 단위) — 미열람(L1), exp 하드웨어 참고 가능성 확인 필요 | hardware exp floating point open source Verilog
+- https://arxiv.org/abs/2305.09520 | Tiny Transformer on FPGA: 소형 FPGA 임베디드 트랜스포머 추론(arXiv 2023) — 미열람(L1), 소형 FPGA 적합성 후보 | tiny transformer FPGA inference small
+- https://github.com/tianheng-ling/TinyTransformer4TS | TinyTransformer4TS 코드 저장소(GitHub, pending release) — L1(본문 미열람, arXiv 카드 근거 저장소), 공개 시 L3 업그레이드 예정 | TinyTransformer4TS Spartan-7 XC7S15 Verilog
+- https://arxiv.org/abs/2401.09596 | EdgeFormer: 엣지 디바이스 트랜스포머 가속기(arXiv 2024) — 미열람(L1), 소형 FPGA 타깃 후보 | edge transformer FPGA accelerator hardware 2024
+- https://arxiv.org/abs/2404.14073 | LWformer: 경량 트랜스포머 FPGA 추론(arXiv 2024) — 미열람(L1), 헤드 수·FFN 축소 최적화 사례 | lightweight transformer FPGA hardware inference resource efficient
+- https://arxiv.org/abs/2210.05659 | FQ-ViT: 비전 트랜스포머 완전 양자화(arXiv 2022) — 미열람(L1), LayerNorm·Softmax 양자화 기법 참고 | vision transformer full quantization fixed-point FPGA
+- https://arxiv.org/abs/2305.07558 | TransFCA: 트랜스포머 FCA 단위 FPGA 가속기(arXiv 2023) — 미열람(L1), 어텐션 연산 단위 분해 기법 | transformer FPGA accelerator attention computation unit 2023
