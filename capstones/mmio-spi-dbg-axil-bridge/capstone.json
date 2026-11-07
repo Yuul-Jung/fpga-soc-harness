@@ -81,19 +81,61 @@
       }
     ],
     "links": [
-      {"from": "rpi_host",   "to": "spi_rx_tx",  "label": "SPI mode-0 (Pmod JA, 3.3 V)"},
-      {"from": "spi_rx_tx",  "to": "axil_master", "label": "decoded CMD/ADDR/DATA pulse"},
-      {"from": "axil_master","to": "axil_fabric", "label": "AXI4-Lite master (W/R)"},
-      {"from": "soc_wrap",   "to": "spi_rx_tx",  "label": "wrap"},
-      {"from": "soc_wrap",   "to": "axil_master", "label": "wrap"},
-      {"from": "board_wrap", "to": "soc_wrap",    "label": "wrap"}
+      {
+        "from": "rpi_host",
+        "to": "spi_rx_tx",
+        "label": "SPI mode-0 (Pmod JA, 3.3 V)"
+      },
+      {
+        "from": "spi_rx_tx",
+        "to": "axil_master",
+        "label": "decoded CMD/ADDR/DATA pulse"
+      },
+      {
+        "from": "axil_master",
+        "to": "axil_fabric",
+        "label": "AXI4-Lite master (W/R)"
+      },
+      {
+        "from": "soc_wrap",
+        "to": "spi_rx_tx",
+        "label": "wrap"
+      },
+      {
+        "from": "soc_wrap",
+        "to": "axil_master",
+        "label": "wrap"
+      },
+      {
+        "from": "board_wrap",
+        "to": "soc_wrap",
+        "label": "wrap"
+      }
     ]
   },
   "bus_protocol": {
     "type": "AXI4-Lite master",
     "data_width": 32,
     "addr_width": 32,
-    "signals": ["awaddr","awvalid","awready","wdata","wstrb","wvalid","wready","bresp","bvalid","bready","araddr","arvalid","arready","rdata","rresp","rvalid","rready"],
+    "signals": [
+      "awaddr",
+      "awvalid",
+      "awready",
+      "wdata",
+      "wstrb",
+      "wvalid",
+      "wready",
+      "bresp",
+      "bvalid",
+      "bready",
+      "araddr",
+      "arvalid",
+      "arready",
+      "rdata",
+      "rresp",
+      "rvalid",
+      "rready"
+    ],
     "notes": "마스터 전용 IP. 슬레이브 포트 없음. wstrb=4'hF(전체 32비트 쓰기). 주소 = {8'h40, SPI_ADDR[23:0]}으로 AXI 주소 계산."
   },
   "spi_protocol": {
@@ -117,7 +159,7 @@
     "address_map": "mbv-frozen-v2",
     "compat": "partial",
     "plan": "이 IP는 AXI 마스터 전용으로 슬레이브 주소 슬롯을 차지하지 않는다. 풀 통합 시 MicroBlaze V AXI 인터커넥트에 추가 마스터 포트로 연결. 슬롯 [2E](0x402E_0000)은 미래에 상태 레지스터 슬레이브 추가 시 예약 사용 가능. 단독 사용 시(현재 capstone): AXI 슬레이브 스텁을 테스트벤치가 제공.",
-    "frozen_mapping": null
+    "frozen_mapping": []
   },
   "external_parts": [
     {
@@ -154,7 +196,11 @@
           "module": "soc_top",
           "file": "rtl/soc_top.v",
           "children": [
-            {"module": "axil_spi_dbg_bridge", "file": "rtl/axil_spi_dbg_bridge.v", "children": []}
+            {
+              "module": "axil_spi_dbg_bridge",
+              "file": "rtl/axil_spi_dbg_bridge.v",
+              "children": []
+            }
           ]
         }
       ]
@@ -166,7 +212,11 @@
       "stage": "T2",
       "state": "current",
       "title": "SPI→AXI4-Lite 디버그 브리지 (본 패키지)",
-      "refs": ["michalstc-rpi-zero-fpga-spi-wishbone", "jakubcabal-spi-fpga", "doceme-py-spidev"]
+      "refs": [
+        "michalstc-rpi-zero-fpga-spi-wishbone",
+        "jakubcabal-spi-fpga",
+        "doceme-py-spidev"
+      ]
     },
     {
       "stage": "T3",
@@ -176,9 +226,18 @@
     }
   ],
   "references": [
-    {"name": "michalstc-rpi-zero-fpga-spi-wishbone", "reason": "SPI→Wishbone R/W 패턴 실증; AXI4-Lite 개조 근거"},
-    {"name": "jakubcabal-spi-fpga",                  "reason": "MIT SPI 슬레이브 IP 구조 참고 (자체 RTL로 재작성)"},
-    {"name": "doceme-py-spidev",                      "reason": "RPi spidev Python API 근거"}
+    {
+      "name": "michalstc-rpi-zero-fpga-spi-wishbone",
+      "reason": "SPI→Wishbone R/W 패턴 실증; AXI4-Lite 개조 근거"
+    },
+    {
+      "name": "jakubcabal-spi-fpga",
+      "reason": "MIT SPI 슬레이브 IP 구조 참고 (자체 RTL로 재작성)"
+    },
+    {
+      "name": "doceme-py-spidev",
+      "reason": "RPi spidev Python API 근거"
+    }
   ],
   "sources": {
     "rtl": [
