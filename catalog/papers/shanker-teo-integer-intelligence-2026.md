@@ -16,6 +16,7 @@ stats: {stars: N/A, commits: N/A, last_update: 2026-03-08}
 doc_language: en
 verification: L3
 checked_at: 2026-11-07
+rechecked_at: 2026-11-07
 source_rev:
 sources: [https://www.mdpi.com/2079-9292/15/5/1117]
 ---

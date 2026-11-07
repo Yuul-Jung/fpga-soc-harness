@@ -16,7 +16,7 @@ stats: {}
 doc_language: en
 verification: L3
 checked_at: 2026-11-02
-rechecked_at: 2026-11-02
+rechecked_at: 2026-11-07
 sources: [https://community.element14.com/challenges-projects/design-challenges/summer-of-fpga/b/blog/posts/security-camera-2-sd-card-interfacing-52194343, https://digilent.com/reference/_export/xhtml/pmod/pmodmicrosd/reference-manual]
 ---
 

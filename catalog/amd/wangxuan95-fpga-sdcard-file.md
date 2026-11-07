@@ -16,7 +16,7 @@ stats: {}
 doc_language: en
 verification: L3
 checked_at: 2026-11-02
-rechecked_at: 2026-11-02
+rechecked_at: 2026-11-07
 sources: [https://github.com/WangXuan95/FPGA-SDcard-File]
 ---
 
