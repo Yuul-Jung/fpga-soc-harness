@@ -165,13 +165,7 @@ module ir_nec_decode (
                             state     <= S_DATA_SPACE;
                             cnt       <= 1;
                         end else begin
-                            // 비트 수 32개 채웠을 때 종료 버스트가 올 수 있음
-                            if (bit_cnt == 32 && cnt >= STOP_BURST_MIN) begin
-                                state <= S_STOP_BURST;
-                                cnt   <= 1;
-                            end else begin
-                                state <= S_IDLE;
-                            end
+                            state <= S_IDLE;
                         end
                     end
                 end

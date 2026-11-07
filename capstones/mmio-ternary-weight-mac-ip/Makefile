@@ -16,9 +16,8 @@ lint:
 
 sim:
 	iverilog -g2001 -Wall -Wno-timescale -o $(SIM_TOP) $(TB) $(RTL)
-	vvp $(SIM_TOP) | tee /dev/stderr | grep -E "^(PASS|FAIL)" ; \
-	    ret=$$?; \
-	    if grep -q "^FAIL" < <(vvp $(SIM_TOP) 2>/dev/null); then exit 1; else exit 0; fi
+	vvp $(SIM_TOP) | tee /dev/stderr | grep -E "^(PASS|FAIL)" || true; \
+	    if vvp $(SIM_TOP) 2>/dev/null | grep -q "^FAIL"; then exit 1; else exit 0; fi
 
 sim_simple:
 	iverilog -g2001 -Wall -Wno-timescale -o $(SIM_TOP) $(TB) $(RTL)
