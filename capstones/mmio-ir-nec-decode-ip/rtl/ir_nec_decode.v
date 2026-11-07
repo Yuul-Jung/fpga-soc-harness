@@ -63,8 +63,7 @@ module ir_nec_decode (
     localparam S_DATA_BURST  = 4'd3;  // 데이터 비트 버스트 측정 중
     localparam S_DATA_SPACE  = 4'd4;  // 데이터 비트 스페이스 측정 중
     localparam S_STOP_BURST  = 4'd5;  // 종료 버스트 측정 중
-    localparam S_REPEAT_SPC  = 4'd6;  // 반복 코드 스페이스 측정 중
-    localparam S_REPEAT_STOP = 4'd7;  // 반복 코드 종료 버스트
+    localparam S_REPEAT_STOP = 4'd6;  // 반복 코드 종료 버스트
 
     // IR 신호: 액티브 로우 반전
     wire burst;
@@ -72,16 +71,14 @@ module ir_nec_decode (
 
     // 에지 검출
     reg  ir_prev;
-    wire rise, fall;
+    wire rise;
     assign rise = ( burst && !ir_prev);  // 버스트 시작
-    assign fall = (!burst &&  ir_prev);  // 버스트 종료(스페이스 시작)
 
     // 상태 레지스터
     reg [3:0]           state;
     reg [CNT_W-1:0]     cnt;        // 현재 구간 클럭 수
     reg [31:0]          shift;      // 32비트 시프트 레지스터 (LSB first)
     reg [4:0]           bit_cnt;    // 수신 비트 수
-    reg [CNT_W-1:0]     burst_len;  // 직전 버스트 길이 보관
 
     // ---------------------------------------------------------------
     // 메인 FSM
@@ -92,7 +89,6 @@ module ir_nec_decode (
             cnt          <= 0;
             shift        <= 0;
             bit_cnt      <= 0;
-            burst_len    <= 0;
             ir_prev      <= 0;
             decoded_valid  <= 0;
             decoded_repeat <= 0;
@@ -126,9 +122,8 @@ module ir_nec_decode (
                     end else begin
                         // 버스트 종료(스페이스 시작)
                         if (cnt >= LD_BURST_MIN) begin
-                            burst_len <= cnt;
-                            state     <= S_LD_SPACE;
-                            cnt       <= 1;
+                            state <= S_LD_SPACE;
+                            cnt   <= 1;
                         end else begin
                             state <= S_IDLE;
                         end
@@ -168,9 +163,8 @@ module ir_nec_decode (
                     end else begin
                         // 버스트 종료
                         if (cnt >= DB_BURST_MIN && cnt <= DB_BURST_MAX) begin
-                            burst_len <= cnt;
-                            state     <= S_DATA_SPACE;
-                            cnt       <= 1;
+                            state <= S_DATA_SPACE;
+                            cnt   <= 1;
                         end else begin
                             // 비트 수 32개 채웠을 때 종료 버스트가 올 수 있음
                             if (bit_cnt == 32 && cnt >= STOP_BURST_MIN) begin
@@ -190,26 +184,31 @@ module ir_nec_decode (
                         if (cnt >= B1_SPC_MAX * 2)
                             state <= S_IDLE;
                     end else begin
-                        // 버스트 시작 → 비트 판정
+                        // 버스트 시작 → 비트 판정 및 상태 전이
                         if (cnt >= B1_SPC_MIN && cnt <= B1_SPC_MAX) begin
                             // 비트 1
                             shift   <= {1'b1, shift[31:1]};
                             bit_cnt <= bit_cnt + 1;
+                            if (bit_cnt == 31) begin
+                                state <= S_STOP_BURST;
+                                cnt   <= 1;
+                            end else begin
+                                state <= S_DATA_BURST;
+                                cnt   <= 1;
+                            end
                         end else if (cnt >= B0_SPC_MIN && cnt <= B0_SPC_MAX) begin
                             // 비트 0
                             shift   <= {1'b0, shift[31:1]};
                             bit_cnt <= bit_cnt + 1;
+                            if (bit_cnt == 31) begin
+                                state <= S_STOP_BURST;
+                                cnt   <= 1;
+                            end else begin
+                                state <= S_DATA_BURST;
+                                cnt   <= 1;
+                            end
                         end else begin
                             state <= S_IDLE;
-                        end
-
-                        if (bit_cnt == 31) begin
-                            // 마지막 비트 → 다음 버스트는 종료 버스트
-                            state <= S_STOP_BURST;
-                            cnt   <= 1;
-                        end else begin
-                            state <= S_DATA_BURST;
-                            cnt   <= 1;
                         end
                     end
                 end

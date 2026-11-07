@@ -131,7 +131,6 @@ always @(posedge ACLK or negedge ARESETn) begin
 
         case (fstate)
         F_IDLE: begin
-            pkt_done  <= 1'b0;
             rx_active <= 1'b0;
             if (rx_valid) begin
                 // 첫 바이트 = LEN
