@@ -1,0 +1,156 @@
+{
+  "slug": "mmio-ternary-weight-mac-ip",
+  "title": "삼진 가중치 압축 BRAM MAC AXI4-Lite IP",
+  "summary": "Ternary 가중치(−1/0/+1)를 2비트로 BRAM에 압축 저장하고, 비트마스크 AND+가산기로 DSP 없이 내적을 계산하는 AXI4-Lite 슬레이브 IP. MicroBlaze V NPU IP 가중치 메모리 블록으로 활용.",
+  "board": "Basys3",
+  "stage": "T4",
+  "goals": [
+    "2비트 삼진 인코딩(00=0, 01=+1, 10=−1)으로 가중치를 BRAM에 저장(압축률 ~1/4)",
+    "DSP48E1 없이 LUT 위주 비트마스크 MAC(AND+adder)으로 16요소 내적 계산",
+    "AXI4-Lite 슬레이브 레지스터(가중치 쓰기, 활성화 벡터 쓰기, START/DONE, RESULT) 제공",
+    "iverilog 시뮬레이션 PASS 자체 점검형 테스트벤치"
+  ],
+  "non_goals": [
+    "MicroBlaze V CPU 코어 포함 (마스터 포트만 노출)",
+    "부동소수점 또는 INT8 DSP MAC",
+    "BRAM 2D 주소 (1D 벡터만)",
+    "16요소 초과 벡터",
+    "보드 동작 확인 (S3)"
+  ],
+  "architecture": {
+    "clock": "100 MHz (clk), active-low rst_n",
+    "blocks": [
+      {
+        "id": "top",
+        "name": "soc_top",
+        "kind": "top",
+        "module": "soc_top",
+        "file": "rtl/soc_top.v",
+        "desc": "AXI4-Lite 마스터 포트 노출, axil_ternary_mac 인스턴스",
+        "short": "SoC Top",
+        "side": "top"
+      },
+      {
+        "id": "slave",
+        "name": "axil_ternary_mac",
+        "kind": "peripheral",
+        "module": "axil_ternary_mac",
+        "file": "rtl/axil_ternary_mac.v",
+        "desc": "AXI4-Lite 슬레이브. 가중치·활성화 레지스터 쓰기, START/DONE 제어, RESULT 읽기",
+        "short": "AXI4-L Slave",
+        "side": "right"
+      },
+      {
+        "id": "mac",
+        "name": "ternary_mac_core",
+        "kind": "functional",
+        "module": "ternary_mac_core",
+        "file": "rtl/ternary_mac_core.v",
+        "desc": "순차 MAC FSM: veclen 사이클 동안 2비트 가중치를 디코딩해 활성화와 가산/감산",
+        "short": "Ternary MAC",
+        "side": "right"
+      }
+    ],
+    "links": [
+      {"from": "top",   "to": "slave", "label": "AXI4-Lite"},
+      {"from": "slave", "to": "mac",   "label": "ctrl/data"}
+    ]
+  },
+  "bus_protocol": {
+    "type": "AXI4-Lite",
+    "data_width": 32,
+    "addr_width": 8,
+    "signals": [
+      "clk", "rst_n",
+      "m_awaddr[7:0]", "m_awvalid", "m_awready",
+      "m_wdata[31:0]", "m_wstrb[3:0]", "m_wvalid", "m_wready",
+      "m_bresp[1:0]", "m_bvalid", "m_bready",
+      "m_araddr[7:0]", "m_arvalid", "m_arready",
+      "m_rdata[31:0]", "m_rresp[1:0]", "m_rvalid", "m_rready"
+    ],
+    "note": "마스터 포트를 밖으로 노출. CPU가 없어도 테스트벤치가 직접 구동"
+  },
+  "integration": {
+    "bus": "AXI4-Lite",
+    "address_map": "mbv-frozen-v2",
+    "compat": "compatible",
+    "plan": "free_slots [16] = 0x4016_0000 에 배정 제안. 프로젝트 주소맵 동결 후 확정",
+    "frozen_mapping": {
+      "slave": "[16]"
+    }
+  },
+  "external_parts": [],
+  "schematic": {
+    "state": "not-written",
+    "note": "디지털 전용 IP. 외부 부품 없음"
+  },
+  "hierarchy": [
+    {
+      "module": "soc_top",
+      "file": "rtl/soc_top.v",
+      "children": [
+        {
+          "module": "axil_ternary_mac",
+          "file": "rtl/axil_ternary_mac.v",
+          "children": [
+            {
+              "module": "ternary_mac_core",
+              "file": "rtl/ternary_mac_core.v",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "memory_map": {
+    "base": "0x4016_0000",
+    "regions": [
+      {
+        "base": "0x4016_0000",
+        "size": "0x10000",
+        "block": "slave"
+      }
+    ],
+    "registers": [
+      {"off": "0x00", "name": "STATUS",   "access": "RO", "desc": "bit[0]=DONE, bit[1]=BUSY"},
+      {"off": "0x04", "name": "CTRL",     "access": "WO", "desc": "bit[0]=START(자동 클리어), bit[1]=CLR_DONE, bits[7:4]=VECLEN(0=1요소, 15=16요소)"},
+      {"off": "0x08", "name": "W_DATA",   "access": "WO", "desc": "가중치 32비트 패킹: 2비트×16요소. W_ADDR_REG 순서로 쓴다"},
+      {"off": "0x0C", "name": "W_ADDR",   "access": "WO", "desc": "가중치 블록 쓰기 주소(0=첫 16요소 뭉치, 현재 1개 뭉치만 사용)"},
+      {"off": "0x10", "name": "V_ADDR",   "access": "WO", "desc": "활성화 벡터 쓰기 주소(0~15)"},
+      {"off": "0x14", "name": "V_DATA",   "access": "WO", "desc": "활성화 바이트(부호 있는 8비트, LSB 정렬)"},
+      {"off": "0x18", "name": "RESULT_LO","access": "RO", "desc": "내적 결과 하위 24비트(부호 확장 32비트)"}
+    ]
+  },
+  "roadmap": [
+    {"stage": "T2", "state": "done",    "title": "UART MMIO 뼈대(mmio-uart-gpio-skeleton)", "refs": ["mmio-uart-gpio-skeleton"]},
+    {"stage": "T4", "state": "current", "title": "삼진 가중치 압축 BRAM MAC IP (this)", "refs": []},
+    {"stage": "T4", "state": "planned", "title": "1-MAC INT8 NPU AXI IP (I-137)", "refs": []}
+  ],
+  "references": [
+    {"name": "arxiv-2607-03652-eliteformer", "reason": "삼진 가중치(-1/0/+1) 비트마스크 MAC 아이디어 근거"},
+    {"name": "arxiv-2505-17662-tinyformer4ts", "reason": "소형 FPGA 트랜스포머 자원 추정 근거"},
+    {"name": "suoglu-axi-lite-slave", "reason": "AXI4-Lite 슬레이브 패턴 참조"}
+  ],
+  "sources": {
+    "rtl": ["rtl/soc_top.v", "rtl/axil_ternary_mac.v", "rtl/ternary_mac_core.v"],
+    "tb": ["tb/tb_ternary_mac.v"],
+    "constraints": ["constr/basys3.xdc"],
+    "build": ["Makefile"]
+  },
+  "howto": {
+    "sim": "iverilog -g2001 -Wall -Wno-timescale -o tb_ternary_mac tb/tb_ternary_mac.v rtl/*.v && vvp tb_ternary_mac",
+    "vivado": "Create project, add rtl/*.v, set top=soc_top, add constr/basys3.xdc, run synth"
+  },
+  "verification": {
+    "board": "not-verified",
+    "notes": "S0 작성 단계. CI에서 iverilog+vvp로 S1, yosys로 S2 목표"
+  },
+  "risks": [
+    "BRAM 추론: (* ram_style = \"block\" *) 힌트 없이는 Vivado가 FF로 추론할 수 있음 — synth 리포트 필요",
+    "부호 확장: 2보수 감산에서 24비트 오버플로 주의 (veclen=16, all-act=127 최대 누산 2032, 24비트 범위 내)",
+    "DSP 사용: Vivado가 가산기 체인을 DSP48E1로 흡수할 수 있음 — synth 리포트 확인 권장",
+    "S3 보드 확인은 사용자가 직접 수행"
+  ],
+  "idea_ref": "I-136"
+}
