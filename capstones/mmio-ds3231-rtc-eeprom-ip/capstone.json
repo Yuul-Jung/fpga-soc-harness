@@ -70,18 +70,54 @@
       }
     ],
     "links": [
-      {"from": "top", "to": "soc", "label": "IBUFG clk"},
-      {"from": "soc", "to": "i2c_ip", "label": "AXI4-Lite [2B] 0x402B_0000"},
-      {"from": "i2c_ip", "to": "ds3231", "label": "I2C SCL/SDA (Pmod JA)"},
-      {"from": "i2c_ip", "to": "eeprom", "label": "I2C SCL/SDA (공유)"}
+      {
+        "from": "top",
+        "to": "soc",
+        "label": "IBUFG clk"
+      },
+      {
+        "from": "soc",
+        "to": "i2c_ip",
+        "label": "AXI4-Lite [2B] 0x402B_0000"
+      },
+      {
+        "from": "i2c_ip",
+        "to": "ds3231",
+        "label": "I2C SCL/SDA (Pmod JA)"
+      },
+      {
+        "from": "i2c_ip",
+        "to": "eeprom",
+        "label": "I2C SCL/SDA (공유)"
+      }
     ]
   },
   "bus_protocol": {
     "name": "AXI4-Lite",
     "data_width": 32,
     "addr_width": 32,
-    "signals": ["AWVALID","AWREADY","AWADDR","WVALID","WREADY","WDATA","WSTRB","BVALID","BREADY","BRESP","ARVALID","ARREADY","ARADDR","RVALID","RREADY","RDATA","RRESP"],
-    "limits": ["단일 비프리 트랜잭션. 아웃스탠딩 불가. WSTRB는 4'b1111만 처리."]
+    "signals": [
+      "AWVALID",
+      "AWREADY",
+      "AWADDR",
+      "WVALID",
+      "WREADY",
+      "WDATA",
+      "WSTRB",
+      "BVALID",
+      "BREADY",
+      "BRESP",
+      "ARVALID",
+      "ARREADY",
+      "ARADDR",
+      "RVALID",
+      "RREADY",
+      "RDATA",
+      "RRESP"
+    ],
+    "limits": [
+      "단일 비프리 트랜잭션. 아웃스탠딩 불가. WSTRB는 4'b1111만 처리."
+    ]
   },
   "integration": {
     "bus": "AXI4-Lite",
@@ -143,37 +179,134 @@
     "base": "0x402B_0000",
     "size": "0x10000",
     "regions": [
-      {"base": "0x402B_0000", "size": "0x10000", "block": "i2c_ip", "desc": "I2C RTC/EEPROM IP"}
+      {
+        "base": "0x402B_0000",
+        "size": "0x10000",
+        "block": "i2c_ip",
+        "desc": "I2C RTC/EEPROM IP"
+      }
     ],
     "registers": [
-      {"off": "0x00", "name": "STATUS",    "access": "RO", "desc": "비트0=BUSY, 비트1=ACK_ERR, 비트2=DONE"},
-      {"off": "0x04", "name": "CMD",       "access": "WO", "desc": "비트1:0=명령(00=없음,01=RTC_READ,10=EE_READ,11=EE_WRITE)"},
-      {"off": "0x08", "name": "EE_ADDR",   "access": "RW", "desc": "EEPROM 주소[14:0]"},
-      {"off": "0x0C", "name": "EE_WDATA",  "access": "RW", "desc": "EEPROM 쓰기 데이터[7:0]"},
-      {"off": "0x10", "name": "EE_RDATA",  "access": "RO", "desc": "EEPROM 읽기 데이터[7:0]"},
-      {"off": "0x14", "name": "RTC_SEC",   "access": "RO", "desc": "DS3231 초(BCD)"},
-      {"off": "0x18", "name": "RTC_MIN",   "access": "RO", "desc": "DS3231 분(BCD)"},
-      {"off": "0x1C", "name": "RTC_HOUR",  "access": "RO", "desc": "DS3231 시(BCD, 24시간)"},
-      {"off": "0x20", "name": "RTC_DAY",   "access": "RO", "desc": "DS3231 요일[2:0]"},
-      {"off": "0x24", "name": "RTC_DATE",  "access": "RO", "desc": "DS3231 일(BCD)"},
-      {"off": "0x28", "name": "RTC_MON",   "access": "RO", "desc": "DS3231 월(BCD)"},
-      {"off": "0x2C", "name": "RTC_YEAR",  "access": "RO", "desc": "DS3231 연(BCD, 00-99)"}
+      {
+        "off": "0x00",
+        "name": "STATUS",
+        "access": "RO",
+        "desc": "비트0=BUSY, 비트1=ACK_ERR, 비트2=DONE"
+      },
+      {
+        "off": "0x04",
+        "name": "CMD",
+        "access": "WO",
+        "desc": "비트1:0=명령(00=없음,01=RTC_READ,10=EE_READ,11=EE_WRITE)"
+      },
+      {
+        "off": "0x08",
+        "name": "EE_ADDR",
+        "access": "RW",
+        "desc": "EEPROM 주소[14:0]"
+      },
+      {
+        "off": "0x0C",
+        "name": "EE_WDATA",
+        "access": "RW",
+        "desc": "EEPROM 쓰기 데이터[7:0]"
+      },
+      {
+        "off": "0x10",
+        "name": "EE_RDATA",
+        "access": "RO",
+        "desc": "EEPROM 읽기 데이터[7:0]"
+      },
+      {
+        "off": "0x14",
+        "name": "RTC_SEC",
+        "access": "RO",
+        "desc": "DS3231 초(BCD)"
+      },
+      {
+        "off": "0x18",
+        "name": "RTC_MIN",
+        "access": "RO",
+        "desc": "DS3231 분(BCD)"
+      },
+      {
+        "off": "0x1C",
+        "name": "RTC_HOUR",
+        "access": "RO",
+        "desc": "DS3231 시(BCD, 24시간)"
+      },
+      {
+        "off": "0x20",
+        "name": "RTC_DAY",
+        "access": "RO",
+        "desc": "DS3231 요일[2:0]"
+      },
+      {
+        "off": "0x24",
+        "name": "RTC_DATE",
+        "access": "RO",
+        "desc": "DS3231 일(BCD)"
+      },
+      {
+        "off": "0x28",
+        "name": "RTC_MON",
+        "access": "RO",
+        "desc": "DS3231 월(BCD)"
+      },
+      {
+        "off": "0x2C",
+        "name": "RTC_YEAR",
+        "access": "RO",
+        "desc": "DS3231 연(BCD, 00-99)"
+      }
     ]
   },
   "roadmap": [
-    {"stage": "T1", "state": "done",    "title": "MMIO UART+GPIO 스켈레톤", "refs": ["fanguoc2len-risc-v-computer"]},
-    {"stage": "T2", "state": "current", "title": "I2C RTC+EEPROM IP (이 패키지)", "refs": []},
-    {"stage": "T2", "state": "planned", "title": "I2C + SPI 복합 주변장치 허브", "refs": []}
+    {
+      "stage": "T1",
+      "state": "done",
+      "title": "MMIO UART+GPIO 스켈레톤",
+      "refs": [
+        "fanguoc2len-risc-v-computer"
+      ]
+    },
+    {
+      "stage": "T2",
+      "state": "current",
+      "title": "I2C RTC+EEPROM IP (이 패키지)",
+      "refs": []
+    },
+    {
+      "stage": "T2",
+      "state": "planned",
+      "title": "I2C + SPI 복합 주변장치 허브",
+      "refs": []
+    }
   ],
   "references": [
-    {"name": "suoglu-axi-lite-slave",  "reason": "AXI4-Lite 슬레이브 FSM 패턴 참고"},
-    {"name": "janga786-basys3-fpga-portfolio", "reason": "I2C 드라이버 구조 참고"}
+    {
+      "name": "suoglu-axi-lite-slave",
+      "reason": "AXI4-Lite 슬레이브 FSM 패턴 참고"
+    },
+    {
+      "name": "janga786-basys3-fpga-portfolio",
+      "reason": "I2C 드라이버 구조 참고"
+    }
   ],
   "sources": {
-    "rtl": ["rtl/axil_i2c_rtc_log.v", "rtl/basys3_top_ds3231.v"],
-    "tb":  ["tb/tb_i2c_rtc_log.v"],
-    "constraints": ["constr/basys3_ds3231.xdc"],
-    "build": ["Makefile"]
+    "rtl": [
+      "rtl/axil_i2c_rtc_log.v",
+      "rtl/basys3_top_ds3231.v"
+    ],
+    "tb": [
+      "tb/tb_i2c_rtc_log.v"
+    ],
+    "constraints": [
+      "constr/basys3_ds3231.xdc"
+    ],
+    "build": [
+      "Makefile"
+    ]
   },
   "howto": {
     "sim": "make sim  # iverilog tb/tb_i2c_rtc_log.v rtl/axil_i2c_rtc_log.v -o sim.out && vvp sim.out",
@@ -183,7 +316,7 @@
   },
   "verification": {
     "board": "not-tested",
-    "notes": "S0: 작성됨, 미검증. CI lint/sim/synth 결과는 CI 기록이 덮어씀."
+    "notes": "S1: lint pass (경고 1건) + sim PASS. CI run 42325347188 (commit 1c231b3, 2026-11-07). synth pass (stat 파싱 실패). 근거 재확인 없이 생성(§13.7 사용자 운영 방침). 전체 CI 실패는 무관한 mmio-uart-framing-ip 선행 오류."
   },
   "risks": [
     "SCL/SDA 풀업 없이 연결 시 I2C 버스 high 불가 → 클럭 스트레칭/ACK 오류",
