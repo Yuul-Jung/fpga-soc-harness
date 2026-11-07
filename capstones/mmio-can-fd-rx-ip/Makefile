@@ -28,9 +28,7 @@ lint: $(RTL_SRCS)
 
 ## ── 합성 (Yosys, 자원 추정) ───────────────────────────────────────────────
 synth: $(RTL_SRCS)
-	yosys -p 'read_verilog $(RTL_SRCS); \
-	          synth_xilinx -top basys3_top_can_fd; \
-	          stat'
+	yosys -p 'read_verilog $(RTL_SRCS); synth_xilinx -top basys3_top_can_fd; stat'
 
 ## ── 정리 ─────────────────────────────────────────────────────────────────
 clean:

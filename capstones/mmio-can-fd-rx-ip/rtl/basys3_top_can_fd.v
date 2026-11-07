@@ -11,23 +11,28 @@ module basys3_top_can_fd (
     input  wire        can_rx_pin,   // L2 (Pmod JA pin2, 트랜시버 RXD)
 
     // AXI4-Lite 마스터 포트 (CPU 연결 지점)
-    output wire [31:0] m_awaddr,
-    output wire        m_awvalid,
-    input  wire        m_awready,
-    output wire [31:0] m_wdata,
-    output wire [3:0]  m_wstrb,
-    output wire        m_wvalid,
-    input  wire        m_wready,
-    input  wire [1:0]  m_bresp,
-    input  wire        m_bvalid,
-    output wire        m_bready,
-    output wire [31:0] m_araddr,
-    output wire        m_arvalid,
-    input  wire        m_arready,
-    input  wire [31:0] m_rdata,
-    input  wire [1:0]  m_rresp,
-    input  wire        m_rvalid,
-    output wire        m_rready
+    // Write address channel
+    input  wire [31:0] m_awaddr,     // CPU → slave
+    input  wire        m_awvalid,
+    output wire        m_awready,    // slave → CPU
+    // Write data channel
+    input  wire [31:0] m_wdata,
+    input  wire [3:0]  m_wstrb,
+    input  wire        m_wvalid,
+    output wire        m_wready,
+    // Write response channel
+    output wire [1:0]  m_bresp,
+    output wire        m_bvalid,
+    input  wire        m_bready,
+    // Read address channel
+    input  wire [31:0] m_araddr,
+    input  wire        m_arvalid,
+    output wire        m_arready,
+    // Read data channel
+    output wire [31:0] m_rdata,
+    output wire [1:0]  m_rresp,
+    output wire        m_rvalid,
+    input  wire        m_rready
 );
 
     // ------------------------------------------------------------------
@@ -93,6 +98,6 @@ module basys3_top_can_fd (
     // ------------------------------------------------------------------
     // 미사용 상위 주소 비트 억제 (Verilator -Wall)
     // ------------------------------------------------------------------
-    wire _unused_top = &{1'b0, m_awaddr[31:6], m_araddr[31:6], m_bresp, m_rresp, 1'b0};
+    wire _unused_top = &{1'b0, m_awaddr[31:6], m_araddr[31:6], 1'b0};
 
 endmodule
