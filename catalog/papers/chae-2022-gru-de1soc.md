@@ -16,6 +16,7 @@ stats: {stars: 0, commits: 0, last_update: 2022-06-01}
 doc_language: ko
 verification: L2
 checked_at: 2026-11-07
+rechecked_at: 2026-11-07
 sources: [https://koreascience.kr/article/JAKO202218754064075.pub]
 ---
 

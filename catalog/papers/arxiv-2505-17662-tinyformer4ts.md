@@ -16,6 +16,7 @@ stats: {stars: 0, commits: 0, last_update: 2025-05}
 doc_language: en
 verification: L3
 checked_at: 2026-11-07
+rechecked_at: 2026-11-07
 source_rev: 
 sources: [https://arxiv.org/abs/2505.17662]
 ---

@@ -2100,7 +2100,8 @@
 - Basys3 적합성 근거: d_model=32, 1헤드, 4비트 → XC7S15 기준 LUT ~35% → Basys3(4배) 기준 ~8-9%. BRAM: 가중치 BRAM 2~3개 범위(d_model=32, 4비트). DSP: 삼진 가중치로 0 가능(arxiv-2607-03652 참고). 실측 없음. free_slots 1개 배정 제안.
 - 난이도: 4
 - 단계: T4
-- 상태: raw
+- 상태: ready
+- 심사: 2026-11-07 /verify 34차, raw→vetted 첫 심사(§14.2 표준). 근거 0(근거 카드 rechecked_at 없음) + 새로움 2(d_model≤32 단일 인코더 AXI4-Lite NPU IP 카드·패키지 없음) + 적합성 2(XC7S15 ~35% → Basys3 ~8-9%, BRAM 2~3블록 추정 명확) + 완결성 2(단일 인코더 FSM+AXI 래퍼+TB 범위 명확, iverilog CI 가능) = 6점 → vetted. 이후 차단조건재심사(PROVENANCE_REQUIRED 34차 연속 차단): 근거 카드 총 수 2(rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 8점 ≥ 7 → ready. 차단조건재심사: 2026-11-07, 점수 8.
 
 ---
 
@@ -2116,7 +2117,8 @@
 - Basys3 적합성 근거: d_model=32, 10 성분 비트폭 각 2비트(4/6/8비트 선택) = AXI 레지스터 10개. XC7S15의 BRAM 100% 포화는 d_model=64 기준 → d_model=32로 절반. Basys3 50 BRAM36으로 여유. 실측 없음.
 - 난이도: 4
 - 단계: T4
-- 상태: raw
+- 상태: vetted
+- 심사: 2026-11-07 /verify 34차, raw→vetted 첫 심사(§14.2 표준). 근거 0(arxiv-2410-03294 rechecked_at 없음) + 새로움 2(성분별 비트폭 AXI 레지스터 동적 설정 카드 없음) + 적합성 2(d_model=32, AXI 레지스터 10개, Basys3 BRAM 50블록 여유 추정 명확) + 완결성 2(AXI 레지스터 10개·비트폭 FSM 범위 명확) = 6점 → vetted. 보강: 근거 카드 rechecked_at 추가 필요. 차단조건재심사: 근거 카드 총 수 1 + 새로움 2 + 적합성 2 + 완결성 2 = 7점, ready 한도(2건) 도달로 이번 사이클 보류.
 
 ---
 
@@ -2132,7 +2134,8 @@
 - Basys3 적합성 근거: 2비트 가중치 × d_model=32 × 1층 = 약 2KB → BRAM 1개 미만. 비트마스크 AND+가산기는 LUT 위주, DSP 불필요. 90 DSP를 다른 용도(예: 사용자 가속기)에 여유 확보. 실측 없음.
 - 난이도: 3
 - 단계: T4
-- 상태: raw
+- 상태: ready
+- 심사: 2026-11-07 /verify 34차, raw→vetted 첫 심사(§14.2 표준). 근거 0(arxiv-2607-03652 rechecked_at 없음) + 새로움 2(삼진 가중치 비트마스크 MAC으로 DSP 0, BRAM 1/4 압축 카드 없음) + 적합성 2(2비트 인코딩, 2KB 미만, BRAM 1블록 미만, DSP 불필요 추정 명확) + 완결성 2(비트마스크 AND+가산기 모듈 범위 명확, iverilog CI 가능) = 6점 → vetted. 이후 차단조건재심사(PROVENANCE_REQUIRED 34차 연속 차단): 근거 카드 총 수 1 + 새로움 2 + 적합성 2 + 완결성 2 = 7점 ≥ 7 → ready. 차단조건재심사: 2026-11-07, 점수 7.
 
 ---
 

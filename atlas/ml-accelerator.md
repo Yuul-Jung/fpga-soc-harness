@@ -1,7 +1,7 @@
 # ML 추론 가속기: 고정소수점 연산·MAC 행렬·MLP·CNN·GRU/LSTM·어텐션 메커니즘
 
-갱신: 2026-11-07 (/verify 33차). 카드 34건 기반 (Q포맷 4건, MAC/행렬 4건, MLP 뉴런 5건, 활성화 함수 4건, CNN 엔진 3건, BN/LN 정규화 3건, RNN/LSTM 가속기 3건, GRU/LSTM 비교 3건, 논문 2건, 어텐션/Transformer 가속기 3건).
-고정소수점 Q포맷 산술, MAC 배열 가속기, MLP/CNN 추론 IP, BN/LN 정규화 하드웨어, RNN/LSTM 가속기, 어텐션 메커니즘 하드웨어의 Basys3 적용 가능성을 정리한다.
+갱신: 2026-11-07 (/verify 34차). 카드 37건 기반 (Q포맷 4건, MAC/행렬 4건, MLP 뉴런 5건, 활성화 함수 4건, CNN 엔진 3건, BN/LN 정규화 3건, RNN/LSTM 가속기 3건, GRU/LSTM 비교 3건, 논문 2건, 어텐션/Transformer 가속기 3건, 트랜스포머 슬림화 3건).
+고정소수점 Q포맷 산술, MAC 배열 가속기, MLP/CNN 추론 IP, BN/LN 정규화 하드웨어, RNN/LSTM 가속기, 어텐션 메커니즘 하드웨어, 트랜스포머 슬림화의 Basys3 적용 가능성을 정리한다.
 MicroBlaze V SoC의 `free_slots`에서 AXI4-Lite 가속기 IP로 연결하는 경로를 중심으로 분석한다.
 
 ---
@@ -256,6 +256,36 @@ kim-2025의 Q5.26 → Basys3용은 Q4.12(16비트 총폭)로 비트 폭을 줄�
 **아이디어 연결:**
 - I-152: 소형 단일 헤드 어텐션 AXI4-Lite IP — 로그-합-지수 Softmax + d_k=16 내적 (vetted, T4, 6점)
 - I-153: 구간 선형 exp 근사 FSM — Basys3 소형 Softmax LUT + 가산기만 사용 (vetted, T3, 6점)
+
+---
+
+## 9. 트랜스포머 슬림화 (신규 2026-11-07)
+
+| 항목 | arxiv-2410-03294-mixprecq-ts-fpga | arxiv-2505-17662-tinyformer4ts | arxiv-2607-03652-eliteformer |
+|---|---|---|---|
+| 카드 | [arxiv-2410-03294-mixprecq-ts-fpga](../catalog/papers/arxiv-2410-03294-mixprecq-ts-fpga.md) | [arxiv-2505-17662-tinyformer4ts](../catalog/papers/arxiv-2505-17662-tinyformer4ts.md) | [arxiv-2607-03652-eliteformer](../catalog/papers/arxiv-2607-03652-eliteformer.md) |
+| 보드 | Spartan-7 XC7S15 (ElasticNode V5) | Spartan-7 XC7S15 (ElasticNode V5) | Versal VCK5000 |
+| 등급 | L3 | L3 | L2 (초록·검색 요약) |
+| d_model | 64, 1헤드, 10개 성분 혼합 정밀도 | 8~40, 1헤드, 4~8비트 | LLM 규모 (10억+ 파라미터) |
+| 양자화 | 성분별 4/6/8비트 혼합 정밀도 (10 성분 독립 할당) | 4~8비트 (d_model별 단일 비트폭) | 삼진 가중치 (ternary, −1/0/+1) |
+| 소프트맥스 | 1헤드 MHA 내 포함 (구현 세부 미공개) | 1헤드 MHA 내 포함 (구현 세부 미공개) | 선형 어텐션 (소프트맥스 대체) |
+| 자원 (원문) | LUT 76~86%, BRAM 100%, DSP 80~100% (XC7S15) | LUT 35~96% (XC7S15, d_model=8/4bit~40/8bit) | 미공개 (Versal AI엔진 플랫폼) |
+| 클럭 | 100 MHz | 미보고 | 미보고 |
+| 소스 | 미공개 | pending release | 미공개 |
+| Basys3 적합성 | needs-port (d_model 축소 필요, BRAM 위험) | needs-port (d_model=8~24에서 약 LUT 8~24%) | no (Versal AI엔진 전용) |
+
+**규모 비교 및 Basys3 적합성 (내 판단):**
+세 카드 모두 Spartan-7 XC7S15(8K LUT)를 기준으로 한다. Basys3(XC7A35T, 20.8K LUT)는 XC7S15의 약 2.6배 LUT를 갖는다. arxiv-2410(d_model=64)은 BRAM 100% 포화가 치명적이며 d_model을 32 이하로 줄여야 Basys3에서 여유가 생긴다. arxiv-2505(d_model=8~40)는 d_model=16~24, 4비트에서 XC7S15 LUT ~35~50% → Basys3 ~13~19%로 여유 충분. arxiv-2607(EliteFormer, LLM)은 Versal AI엔진 전용으로 직접 이식 불가이지만 삼진 가중치 비트마스크 MAC 개념은 Basys3 DSP 소모 절감에 활용 가능.
+
+**Basys3 소형 이식 경로 (내 판단):**
+- **d_model=16~24, 4~8비트 단일 인코더**: arxiv-2505의 XC7S15 실측치에서 Basys3 LUT ~13~19%로 여유 충분. BRAM 가중치 2~3블록. AXI4-Lite 슬레이브로 감싸면 MicroBlaze V NPU IP 형태 가능. 이 아이디어가 I-134.
+- **성분별 AXI 혼합 정밀도 프로그래밍**: arxiv-2410의 10개 성분 독립 비트폭 설정을 AXI4-Lite 레지스터 10개로 소프트웨어 제어. d_model=32로 BRAM 포화 회피. 이 아이디어가 I-135.
+- **삼진 가중치 비트마스크 BRAM**: arxiv-2607의 삼진 가중치(2비트 인코딩)로 가중치 BRAM ~1/4 압축, DSP 불필요. d_model=32, 1층 = 약 2KB → BRAM 1블록 미만. 이 아이디어가 I-136.
+
+**아이디어 연결:**
+- I-134: Basys3 소형 트랜스포머 추론 가속기 AXI IP — d_model=16~32, 1헤드, 4~8비트 (ready, T4, 차단조건재심사 8점)
+- I-135: 혼합 정밀도 AXI 레지스터 인터페이스 — 성분별 4/6/8비트 SW 프로그래밍 (vetted, T4, 7점)
+- I-136: 삼진 가중치 압축 BRAM 모듈 — ternary 2비트 인코딩, DSP-free 비트마스크 MAC (ready, T4, 차단조건재심사 7점)
 
 ---
 

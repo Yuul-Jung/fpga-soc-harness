@@ -255,3 +255,4 @@
 2026-11-07 09:23 | collect | 트랜스포머 블록 하드웨어 슬림화 · S4 제약 역전(주)+S1 인접 도메인 이식(보조) | 카드 +3 | 아이디어 +3 | 큐 잔여 696 | blocked 0
 2026-11-07 10:48 | capstone | DS3231 RTC + 24LC256 EEPROM I2C 로거 · 무조건 최대한 생성 원칙 | mmio-ds3231-rtc-eeprom-ip | S1 (lint pass 경고1건 + sim PASS, CI run 42325347188) | fix 2 완료: 동기식 슬레이브 모델 완전 재작성(DS3231 6-state FSM, EE LSB addr후 EE_RX 유지) | 근거 재확인 없음(§13.7 무조건 최대한 생성 원칙) | ready→used | 슬롯 [2B] 0x402B_0000 / mbv-frozen-v2 compatible | 전체 CI 실패는 선행 오류(mmio-uart-framing-ip) 무관
 2026-11-07 12:17 | collect | 소형 NPU SoC · S1 인접도메인이식(주)+S5 비정형출처(보조) | 카드 +3 | 아이디어 +2 | 큐 잔여 676 | blocked 0
+2026-11-07 12:36 | verify | 재열람 9 (WebFetch PROVENANCE_REQUIRED 34차 연속 차단, 9건 파일 직접 확인) | 수정 1 (ammar-bin-amir 상태 메모 갱신) | 불일치 0 | 승격 L2→L3 0 | ready +2 (I-134·I-136) | 차단조건재심사: I-134(8점)·I-136(7점) → ready, I-135(7점) 한도 보류 | raw→vetted: I-134(6점)·I-135(6점)·I-136(6점) | atlas §9 트랜스포머 슬림화 신규(카드 3건), 헤더 37건·34차 갱신 | soc-map 34차·301건·I-134/I-136 ready·transformer gap 갱신
