@@ -185,10 +185,16 @@ always @(posedge aclk or negedge aresetn) begin
 
                 byte_cnt <= byte_cnt + 4'd1;
 
-                // Pre-load next TX byte MSB onto MISO
-                // (master samples on the NEXT rising SCK edge)
-                miso    <= tx_byte_for(byte_cnt + 4'd1, r_rdata)[7];
-                tx_load <= tx_byte_for(byte_cnt + 4'd1, r_rdata);
+                // Pre-load next TX byte MSB onto MISO and latch full byte.
+                // Function-call indexing ([7]) is not valid in Verilog-2001 iverilog;
+                // inline the selection with a case statement.
+                case (byte_cnt + 4'd1)
+                    4'd4: begin miso <= r_rdata[31]; tx_load <= r_rdata[31:24]; end
+                    4'd5: begin miso <= r_rdata[23]; tx_load <= r_rdata[23:16]; end
+                    4'd6: begin miso <= r_rdata[15]; tx_load <= r_rdata[15:8];  end
+                    4'd7: begin miso <= r_rdata[7];  tx_load <= r_rdata[7:0];   end
+                    default: begin miso <= 1'b0;     tx_load <= 8'h00;          end
+                endcase
             end
         end
     end
