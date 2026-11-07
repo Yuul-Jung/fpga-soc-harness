@@ -312,3 +312,5 @@
 | [rajmali-22-fpga-zebra-crossing-camera](amd/rajmali-22-fpga-zebra-crossing-camera.md) | L3 | T4 | EDGE-Artix-7 (needs-port) | 2026-11-07 |
 | [columbia-4840-sp24-lenet-classifier](papers/columbia-4840-sp24-lenet-classifier.md) | L3 | T3 | DE1-SoC (needs-port) | 2026-11-07 |
 | [emirertorer-bnn-mnist-nexys-a7](amd/emirertorer-bnn-mnist-nexys-a7.md) | L3 | T4 | Nexys-A7-100T (no) | 2026-11-07 |
+| [tb-rohan-int8-cnn-accelerator](amd/tb-rohan-int8-cnn-accelerator.md) | L3 | T4 | Artix-7 200T (no) | 2026-11-07 |
+| [shanker-teo-integer-intelligence-2026](papers/shanker-teo-integer-intelligence-2026.md) | L3 | T4 | Cmod A7 (needs-port) | 2026-11-07 |

@@ -150,3 +150,9 @@
 2026-11-07 | [B3] 엣지 AI 추론 파이프라인 | FPGA Lenet CNN accelerator DE1-SoC Cyclone V Avalon HPS camera fixed-point | 유효
 2026-11-07 | [B3] 엣지 AI 추론 파이프라인 | FPGA MLP object detection OV7670 Arty A7 Verilog fixed-point | 빈약
 2026-11-07 | [B3] 엣지 AI 추론 파이프라인 | FPGA Lenet BNN camera VGA pipeline failure case issue tracker post-mortem GitHub | 빈약
+2026-11-07 | [B3] 양자화 인식 훈련·하드웨어 배포 | INT8 quantization FPGA CNN accelerator AXI4-Lite systolic array Verilog GitHub | 유효
+2026-11-07 | [B3] 양자화 인식 훈련·하드웨어 배포 | post-training quantization INT8 FPGA Artix-7 Basys3 MAC unit scale factor register | 유효
+2026-11-07 | [B3] 양자화 인식 훈련·하드웨어 배포 | quantization aware training FPGA hardware deployment INT8 INT4 weights Verilog | 빈약
+2026-11-07 | [B3] 양자화 인식 훈련·하드웨어 배포 | 양자화 인식 훈련 FPGA INT8 하드웨어 배포 AXI 레지스터 Verilog | 빈약
+2026-11-07 | [B3] 양자화 인식 훈련·하드웨어 배포 | FPGA integer arithmetic neural network inference MDPI Electronics 2026 XC7A35T | 유효
+2026-11-07 | [B3] 양자화 인식 훈련·하드웨어 배포 | fixed-point quantization FPGA LeNet-5 Artix-7 Cmod co-simulation Python Verilog | 유효

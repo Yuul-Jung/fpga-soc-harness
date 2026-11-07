@@ -774,3 +774,13 @@
 - https://github.com/jncraton/fpga-cnn | 순수 Verilog CNN 가속기, MNIST, Artix/Basys 대상 — 미열람(L1) | FPGA CNN accelerator MNIST Verilog Artix Basys3
 - https://github.com/nicowillis/fpga-mnist | FPGA MNIST MLP Verilog, Basys3 타깃 — 미열람(L1) | FPGA MNIST MLP Verilog Basys3
 - https://github.com/AndresGarciaEscovar/fpga-leNet5 | LeNet-5 FPGA Verilog 구현, Artix-7 — 미열람(L1) | LeNet5 FPGA Verilog Artix-7
+- https://github.com/derosaseric/fpga-int8-inference | INT8 추론 가속기 FPGA — 미열람(L1), 양자화 주제 후보 | INT8 quantization FPGA CNN accelerator AXI4-Lite systolic array Verilog
+- https://github.com/Bhardwaj-16/NeuroMac | NeuroMac: FPGA 신경망 MAC 가속기 — 미열람(L1) | INT8 quantization FPGA CNN accelerator AXI4-Lite systolic array Verilog
+- https://github.com/shijin-10/fpga_CNN_accelerator | FPGA CNN 가속기(INT8 가능성) — blocked: GitHub rate limit, 재시도 필요 | post-training quantization INT8 FPGA Artix-7
+- https://arxiv.org/abs/2106.10767 | 양자화 인식 훈련 하드웨어 배포 조사(QAT survey arXiv) — 미열람(L1) | quantization aware training FPGA hardware deployment INT8 INT4
+- https://www.sciencedirect.com/science/article/pii/S0957417423029056 | PTQ FPGA SoC 추론 최적화 논문(ScienceDirect) — 미열람(L1) | post-training quantization FPGA Artix-7 Basys3 scale factor
+- https://arxiv.org/abs/2302.08529 | SIRA: 경량 INT8 추론 가속기 arXiv — 미열람(L1) | INT8 quantization FPGA hardware deployment AXI4-Lite
+- https://arxiv.org/abs/2309.07989 | BitLogic: 비트 직렬 INT8 FPGA 가속기 arXiv — 미열람(L1) | INT8 quantization FPGA AXI4-Lite weights
+- https://github.com/syedalicodes/fpga-quantized-inference | 양자화 추론 FPGA 저장소 — 미열람(L1) | INT8 quantization FPGA CNN accelerator AXI4-Lite
+- https://github.com/Columbia-University/4840-sp26-MNIST-Accelerator | Columbia 2026 MNIST INT8 가속기(추정) — 미열람(L1) | FPGA integer arithmetic LeNet-5 XC7A35T
+- https://github.com/akkshisaini11/DesignAndImplementation-of-Neural-Network-using-Fixed-Point-Arithmetic | 고정소수점 신경망 Artix-7 — 미열람(L1) | fixed-point quantization FPGA LeNet-5 Artix-7 Cmod

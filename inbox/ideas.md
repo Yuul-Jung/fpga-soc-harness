@@ -2227,3 +2227,23 @@
 - 상태: vetted
 - 심사: 2026-11-07 /verify 35차, raw→vetted 첫 심사(§14.2 표준). 근거 0(columbia-4840-sp24-lenet-classifier·adityapusalkar-fpga-neural-network·columbia-4840-sp26-lenet5-cnn-accelerator 모두 rechecked_at 없음) + 새로움 2(Basys3 순수 FSM+AXI 래핑+실패 교훈 반영 조합 미등록; Columbia 원본은 Cyclone V HPS+Avalon) + 적합성 2(BRAM 약 10개 추정, Basys3 50개 한도 내, LUT 미확인) + 완결성 2(LeNet 2conv+3fc+AXI4-Lite 슬레이브+TB 범위 명확, iverilog CI 가능) = 6점 → vetted. 보강: LUT 추정 yosys 검증, 중간 활성화 맵 버퍼 BRAM 소요량 추가 확인.
 - 차단조건재심사: 2026-11-07 /verify 35차, 점수 9. 근거 3(columbia-4840-sp24-lenet-classifier·adityapusalkar-fpga-neural-network·columbia-4840-sp26-lenet5-cnn-accelerator 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7, 그러나 사이클 슬롯 2건 한도소진(I-137·I-139 승격). 다음 사이클에서 ready 승격 가능. WebFetch PROVENANCE_REQUIRED 35차 연속 차단(§14.2 차단 조건 적용).
+
+## I-142 Basys3 INT8 AXI4-Lite 2×2 시스톨릭 배열 추론 가속기
+- 상태: raw
+- 요약: 내 판단: tb-rohan의 4×4 INT8 시스톨릭 어레이를 Basys3 BRAM 한계(50 BRAM36)에 맞춰 2×2로 축소하고, MicroBlaze V AXI4-Lite 슬레이브로 연결하는 T4 캡스톤. CTRL/STATUS/DMA 레지스터 패턴을 동결 맵 free_slots에 배정하고 MNIST 소형 MLP 추론을 검증.
+- 조합: [INT8 MAC, AXI4-Lite, BRAM 가중치, MicroBlaze V]
+- 근거: [tb-rohan-int8-cnn-accelerator (L3, AXI4-Lite 맵·PE 아키텍처), shanker-teo-integer-intelligence-2026 (L3, 스케일 팩터 레지스터·co-시뮬 방법론)]
+- 새로움의 근거: 카탈로그에 Basys3 INT8 AXI4-Lite 시스톨릭 배열 패키지 없음; 기존 BNN(I-139~141)은 비트 직렬이나 본 아이디어는 INT8 MAC.
+- Basys3 적합성의 근거: 2×2 배열 = 4 DSP48E1 + ~8 BRAM18; Basys3 90 DSP48E1·100 BRAM18 여유. 100 MHz 동작은 shanker-teo가 XC7A35T에서 확인.
+- 난이도: 3 / 단계: T4
+- 심사: (미심사, raw)
+
+## I-143 Python PTQ 보정 → Verilog 스케일 팩터 AXI 레지스터 자동 생성 브릿지
+- 상태: raw
+- 요약: 내 판단: PyTorch PTQ 보정 스크립트가 산출하는 스케일 팩터를 MicroBlaze V AXI4-Lite 레지스터 초기화 헤더(.h)로 자동 변환하는 T3 보조 도구. 하드웨어 가속기와 소프트웨어 드라이버 간 정밀도 보정 불일치 방지.
+- 조합: [Python PTQ, AXI4-Lite 레지스터, MicroBlaze V 드라이버, 스케일 팩터]
+- 근거: [shanker-teo-integer-intelligence-2026 (L3, Python co-시뮬 방법론), tb-rohan-int8-cnn-accelerator (L3, AXI4-Lite CTRL/STATUS 패턴)]
+- 새로움의 근거: 카탈로그에 PTQ 보정→하드웨어 레지스터 자동 생성 도구 없음; SW-HW 보정 브릿지는 캡스톤 패키지 체인 T3→T4 연결 고리.
+- Basys3 적합성의 근거: 소프트웨어 도구(Python 스크립트) 주체; FPGA 측은 AXI4-Lite 슬레이브 레지스터 블록으로 Basys3 자원 최소 사용.
+- 난이도: 2 / 단계: T3
+- 심사: (미심사, raw)
