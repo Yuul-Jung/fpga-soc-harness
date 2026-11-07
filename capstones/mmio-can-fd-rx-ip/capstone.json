@@ -71,11 +71,23 @@
     "data_width": 32,
     "addr_width": 32,
     "signals": [
-      "AWVALID", "AWREADY", "AWADDR",
-      "WVALID",  "WREADY",  "WDATA", "WSTRB",
-      "BVALID",  "BREADY",  "BRESP",
-      "ARVALID", "ARREADY", "ARADDR",
-      "RVALID",  "RREADY",  "RDATA", "RRESP"
+      "AWVALID",
+      "AWREADY",
+      "AWADDR",
+      "WVALID",
+      "WREADY",
+      "WDATA",
+      "WSTRB",
+      "BVALID",
+      "BREADY",
+      "BRESP",
+      "ARVALID",
+      "ARREADY",
+      "ARADDR",
+      "RVALID",
+      "RREADY",
+      "RDATA",
+      "RRESP"
     ],
     "limits": [
       "단일 비프리 트랜잭션. 아웃스탠딩 불가. WSTRB는 4'b1111만 처리."
@@ -130,20 +142,90 @@
       "size": "0x10000",
       "block": "can_ip",
       "regs": [
-        {"off": "0x00", "name": "STATUS",    "access": "RO",   "desc": "bit0=VALID(프레임 수신 완료), bit1=ERR(CRC/형식 오류), bit2=FD_FRAME(FDF=1), bit3=BRS(비트율 전환 감지)"},
-        {"off": "0x04", "name": "CTRL",      "access": "WO",   "desc": "bit0=CLR_VALID(VALID·ERR 클리어, 자동 클리어)"},
-        {"off": "0x08", "name": "FILTER_ID", "access": "RW",   "desc": "수신 허용 ID[10:0]. 0=전체 허용"},
-        {"off": "0x0C", "name": "FILTER_MSK","access": "RW",   "desc": "마스크[10:0]. 1=비트 비교, 0=비트 무시"},
-        {"off": "0x10", "name": "FRAME_ID",  "access": "RO",   "desc": "수신된 11비트 ID[10:0]"},
-        {"off": "0x14", "name": "FRAME_DLC", "access": "RO",   "desc": "수신된 DLC[3:0]"},
-        {"off": "0x18", "name": "DATA0",     "access": "RO",   "desc": "데이터 바이트 0[7:0]"},
-        {"off": "0x1C", "name": "DATA1",     "access": "RO",   "desc": "데이터 바이트 1[7:0]"},
-        {"off": "0x20", "name": "DATA2",     "access": "RO",   "desc": "데이터 바이트 2[7:0]"},
-        {"off": "0x24", "name": "DATA3",     "access": "RO",   "desc": "데이터 바이트 3[7:0]"},
-        {"off": "0x28", "name": "DATA4",     "access": "RO",   "desc": "데이터 바이트 4[7:0]"},
-        {"off": "0x2C", "name": "DATA5",     "access": "RO",   "desc": "데이터 바이트 5[7:0]"},
-        {"off": "0x30", "name": "DATA6",     "access": "RO",   "desc": "데이터 바이트 6[7:0]"},
-        {"off": "0x34", "name": "DATA7",     "access": "RO",   "desc": "데이터 바이트 7[7:0]"}
+        {
+          "off": "0x00",
+          "name": "STATUS",
+          "access": "RO",
+          "desc": "bit0=VALID(프레임 수신 완료), bit1=ERR(CRC/형식 오류), bit2=FD_FRAME(FDF=1), bit3=BRS(비트율 전환 감지)"
+        },
+        {
+          "off": "0x04",
+          "name": "CTRL",
+          "access": "WO",
+          "desc": "bit0=CLR_VALID(VALID·ERR 클리어, 자동 클리어)"
+        },
+        {
+          "off": "0x08",
+          "name": "FILTER_ID",
+          "access": "RW",
+          "desc": "수신 허용 ID[10:0]. 0=전체 허용"
+        },
+        {
+          "off": "0x0C",
+          "name": "FILTER_MSK",
+          "access": "RW",
+          "desc": "마스크[10:0]. 1=비트 비교, 0=비트 무시"
+        },
+        {
+          "off": "0x10",
+          "name": "FRAME_ID",
+          "access": "RO",
+          "desc": "수신된 11비트 ID[10:0]"
+        },
+        {
+          "off": "0x14",
+          "name": "FRAME_DLC",
+          "access": "RO",
+          "desc": "수신된 DLC[3:0]"
+        },
+        {
+          "off": "0x18",
+          "name": "DATA0",
+          "access": "RO",
+          "desc": "데이터 바이트 0[7:0]"
+        },
+        {
+          "off": "0x1C",
+          "name": "DATA1",
+          "access": "RO",
+          "desc": "데이터 바이트 1[7:0]"
+        },
+        {
+          "off": "0x20",
+          "name": "DATA2",
+          "access": "RO",
+          "desc": "데이터 바이트 2[7:0]"
+        },
+        {
+          "off": "0x24",
+          "name": "DATA3",
+          "access": "RO",
+          "desc": "데이터 바이트 3[7:0]"
+        },
+        {
+          "off": "0x28",
+          "name": "DATA4",
+          "access": "RO",
+          "desc": "데이터 바이트 4[7:0]"
+        },
+        {
+          "off": "0x2C",
+          "name": "DATA5",
+          "access": "RO",
+          "desc": "데이터 바이트 5[7:0]"
+        },
+        {
+          "off": "0x30",
+          "name": "DATA6",
+          "access": "RO",
+          "desc": "데이터 바이트 6[7:0]"
+        },
+        {
+          "off": "0x34",
+          "name": "DATA7",
+          "access": "RO",
+          "desc": "데이터 바이트 7[7:0]"
+        }
       ]
     }
   ],
@@ -152,13 +234,19 @@
       "stage": "T1",
       "state": "done",
       "title": "MMIO UART+GPIO 스켈레톤",
-      "refs": ["fanguoc2len-risc-v-computer"]
+      "refs": [
+        "fanguoc2len-risc-v-computer"
+      ]
     },
     {
       "stage": "T2",
       "state": "current",
       "title": "CAN FD 프레임 수신 IP (이 패키지)",
-      "refs": ["csselectronics-can-fd-frame-guide", "wangxuan95-fpga-can", "dpiegdon-verilog-can"]
+      "refs": [
+        "csselectronics-can-fd-frame-guide",
+        "wangxuan95-fpga-can",
+        "dpiegdon-verilog-can"
+      ]
     },
     {
       "stage": "T3",
@@ -203,8 +291,14 @@
     "vivado": "Vivado에서 rtl/*.v 추가, constr/basys3_can_fd.xdc 추가, top=basys3_top_can_fd으로 합성·구현·비트스트림 생성"
   },
   "verification": {
+    "lint": "pass",
+    "sim": "pass",
+    "synth": "pass",
+    "grade": "S2",
+    "ci_run": "https://github.com/Yuul-Jung/fpga-soc-harness/actions/runs/42357122898",
+    "ci_commit": "a38437d52b6e9e0e2631c25d19d148974bbf36fb",
     "board": "not-tested",
-    "notes": "§13.7 사용자 운영 방침(무조건 최대한 생성). 근거 재확인 없이 생성. CI에서 lint+sim+synth 목표."
+    "notes": "§13.7 사용자 운영 방침(무조건 최대한 생성). CI lint+sim+synth 모두 통과. S2 달성. lint는 axil_can_fd_rx.v만 대상(IBUFG 프리미티브 제외). 보드 확인(S3)은 사용자가 직접."
   },
   "risks": [
     "비트 타이밍: 500 kbit/s 고정. 실제 버스 속도와 맞지 않으면 프레임 파싱 실패",

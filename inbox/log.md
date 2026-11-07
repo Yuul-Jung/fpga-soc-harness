@@ -5,6 +5,7 @@
 - verify: `YYYY-MM-DD HH:MM | verify | 재열람 N | 수정 M | 불일치 K | 승격 L2→L3 P | ready +R`
 - capstone: `YYYY-MM-DD HH:MM | capstone | <slug> | 등급 S0~S2` 또는 `... | skip: <사유>`
 
+2026-11-07 17:59 | capstone | mmio-can-fd-rx-ip | S2 달성 (CI run 42357122898, commit a38437d, 2026-11-07: lint pass, sim PASS ID=0x555 CRC-15 OK, synth pass) | CI fix 3회: 1차 AXI 포트 방향 전면 수정, 2차 Makefile synth 한 줄화, 3차 lint 타깃 IBUFG 제외(axil_can_fd_rx.v만 대상) | CAN 2.0A/FD 프레임 수신 파서·필터 AXI4-Lite IP | I-064 used | §13.7 무조건 최대한 생성, gate 3·4 건너뜀 | CLK_PER_BIT=200 500kbit/s, 비트스터핑, CRC-15, FILTER_ID/MASK | 보드 확인(S3)은 사용자 직접
 2026-11-07 17:30 | capstone | mmio-can-fd-rx-ip | S0 (CI 대기: iverilog/verilator/yosys 클라우드 없음) | CAN 2.0A/FD 프레임 수신 파서·필터 AXI4-Lite IP | I-064 used | §13.7 무조건 최대한 생성, gate 3·4 건너뜀 | CLK_PER_BIT=200 500kbit/s, 비트스터핑, CRC-15, FILTER_ID/MASK
 2026-11-07 14:04 | capstone | mmio-ir-nec-decode-ip | CI fix(4ec5c12): wire _unused_ok 추가로 Verilator UNUSEDSIGNAL 억제 — CI run 42339550167 stale checkout(병렬 세션 편집물 오염) 으로 fail, 현 HEAD GitHub API 확인 완료(올바른 내용), 새 CI 트리거 대기
 2026-11-07 13:30 | capstone | mmio-ir-nec-decode-ip | S2 달성 (CI run 42337949503, commit dd9b963, 2026-11-07: lint pass, sim PASS 4종 TC1~TC4, synth pass) | CI fix 3/3: unused CLK_HZ/S_REPEAT_SPC/fall/burst_len 제거, upstream merge 충돌 해결 | NEC IR 디코더 AXI4-Lite IP | 전체 CI 실패는 mmio-ternary-weight-mac-ip(다른 세션, bash <(...) 구문 오류) 문제 — 이 IP와 무관 | 근거 재확인 없음(§13.7 무조건 최대한 생성 원칙, gate 3·4 건너뜀)
