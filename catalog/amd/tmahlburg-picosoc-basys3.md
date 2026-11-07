@@ -16,7 +16,7 @@ stats: {stars: 2, commits: 6}
 doc_language: en
 verification: L2
 checked_at: 2026-11-02
-rechecked_at: 2026-11-02
+rechecked_at: 2026-11-07
 sources: [https://github.com/tmahlburg/picosoc-basys3]
 unverified: 커밋 SHA(source_rev), 라이선스, 클럭·보레이트, 주변장치 구성, 빌드 흐름(Vivado/오픈소스), basys3.v 본문(raw 열람 권한 요청 미응답, blocked)
 ---

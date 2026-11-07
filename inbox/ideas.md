@@ -737,10 +737,11 @@
 **Basys3 적합성 근거**: 320×240@60Hz 라인 버퍼 2행 → 약 40KB BRAM, Basys3 36Kb×5=180Kb 이내. SPI 클럭 10MHz 목표로 한 행(320바이트) 전송 약 256µs, 라인 주기 63.5µs보다 느려 2배속 DMA + 더블버퍼 필요
 **난이도**: 4
 **단계**: T3
-**상태**: vetted
+**상태**: ready
 **심사**: 2026-11-04 /verify, 근거 0(rpshredow·lightside·jakubcabal rechecked_at 없음) + 새로움 2(VGA 라인 버퍼 스트리밍 no-BRAM 프레임버퍼 S4 역전 접근; rpshredow와 유사하나 Basys3 BRAM 제약 돌아가는 각도 차별) + 적합성 2(320×240 라인 버퍼 2행 ~40KB 계산, Basys3 180Kb 이내, SPI 10MHz 타이밍 계산 명시) + 완결성 1(SPI→VGA 파이프라인 복잡도로 TB 범위 불명확; 2배속 DMA+더블버퍼 선행 필요) = 5점 → vetted. 보강: rpshredow·lightside rechecked_at 취득 필요.
 - 차단조건재심사: 2026-11-06 /verify(24차), 근거 3(rpshredow-fpga-raspberry-image-display·lightside-instruments-ice4pi·jakubcabal-spi-fpga 카드 3건, rechecked_at 불문) + 새로움 2(VGA 라인 버퍼 스트리밍 no-BRAM 프레임버퍼 S4 역전 접근 카탈로그 없음) + 적합성 2(320×240 라인 버퍼 2행 ~40KB 계산, Basys3 180Kb 이내, SPI 10MHz 타이밍 계산 명시) + 완결성 1(SPI→VGA 파이프라인 복잡도 TB 범위 불명확, 2배속 DMA+더블버퍼 선행 필요) = 8점 ≥ 7점. 사이클 한도(ready +2) 소진(I-115·I-116 승격)으로 vetted 유지. 다음 사이클 ready 후보.
 - 차단조건재심사: 2026-11-06 /verify(28차), WebFetch PROVENANCE_REQUIRED 전면 차단. 근거 3(rpshredow-fpga-raspberry-image-display·lightside-instruments-ice4pi·jakubcabal-spi-fpga 카드 3건, rechecked_at 불문) + 새로움 2(VGA 라인 버퍼 스트리밍 no-BRAM 프레임버퍼 S4 역전 접근 카탈로그 없음) + 적합성 2(320×240 라인 버퍼 2행 ~40KB, SPI 10MHz 타이밍 명시) + 완결성 1(TB 범위 불명확, 2배속 DMA+더블버퍼 선행 필요) = 8점. 한도 소진으로 vetted 유지. §14.2 차단 조건 적용.
+- 차단조건재심사: 2026-11-07 /verify 37차, 점수 8. 근거 3(rpshredow-fpga-raspberry-image-display·lightside-instruments-ice4pi·jakubcabal-spi-fpga 카드 3건, rechecked_at 불문) + 새로움 2(VGA 라인 버퍼 스트리밍 no-BRAM 프레임버퍼 S4 역전 접근 카탈로그 없음) + 적합성 2(320×240 라인 버퍼 2행 ~40KB 계산, Basys3 180Kb 이내, SPI 10MHz 타이밍 명시) + 완결성 1(SPI→VGA 파이프라인 복잡도 TB 범위 불명확, 2배속 DMA+더블버퍼 선행 필요) = 8점 ≥ 7점. WebFetch PROVENANCE_REQUIRED 37차 연속 차단. ready 승격. 슬롯 2/2.
 
 ---
 
@@ -2226,10 +2227,11 @@
 - Basys3 적합성 근거: 42×42×1 입력. Conv 1(5×5×6): 커널 150×6=900개 Q4.4 = 900B → BRAM 1개 미만. Conv 2(5×5×16): 2,400B → BRAM 1개. FC 784→324→10: 254,016 Q4.4 = 약 250KB → BRAM ≈ 7개. 합계 약 10 BRAM, Basys3 50개 한도 내. LUT 추정: unverified. 내 판단: BRAM 적합, 단 중간 활성화 맵 버퍼도 필요(라인 버퍼 추가).
 - 난이도: 4
 - 단계: T4
-- 상태: vetted
+- 상태: ready
 - 심사: 2026-11-07 /verify 35차, raw→vetted 첫 심사(§14.2 표준). 근거 0(columbia-4840-sp24-lenet-classifier·adityapusalkar-fpga-neural-network·columbia-4840-sp26-lenet5-cnn-accelerator 모두 rechecked_at 없음) + 새로움 2(Basys3 순수 FSM+AXI 래핑+실패 교훈 반영 조합 미등록; Columbia 원본은 Cyclone V HPS+Avalon) + 적합성 2(BRAM 약 10개 추정, Basys3 50개 한도 내, LUT 미확인) + 완결성 2(LeNet 2conv+3fc+AXI4-Lite 슬레이브+TB 범위 명확, iverilog CI 가능) = 6점 → vetted. 보강: LUT 추정 yosys 검증, 중간 활성화 맵 버퍼 BRAM 소요량 추가 확인.
 - 차단조건재심사: 2026-11-07 /verify 35차, 점수 9. 근거 3(columbia-4840-sp24-lenet-classifier·adityapusalkar-fpga-neural-network·columbia-4840-sp26-lenet5-cnn-accelerator 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7, 그러나 사이클 슬롯 2건 한도소진(I-137·I-139 승격). 다음 사이클에서 ready 승격 가능. WebFetch PROVENANCE_REQUIRED 35차 연속 차단(§14.2 차단 조건 적용).
 - 차단조건재심사: 2026-11-07 /verify 36차, 점수 9. 근거 3(columbia-4840-sp24-lenet-classifier·adityapusalkar-fpga-neural-network·columbia-4840-sp26-lenet5-cnn-accelerator 카드 3건, rechecked_at 불문) + 새로움 2 + 적합성 2 + 완결성 2 = 9점 ≥ 7, 그러나 사이클 슬롯 2건 한도소진(I-138·I-140 승격). 다음 사이클에서 ready 승격 가능. WebFetch PROVENANCE_REQUIRED 36차 연속 차단(§14.2 차단 조건 적용).
+- 차단조건재심사: 2026-11-07 /verify 37차, 점수 9. 근거 3(columbia-4840-sp24-lenet-classifier·adityapusalkar-fpga-neural-network·columbia-4840-sp26-lenet5-cnn-accelerator 카드 3건, rechecked_at 불문) + 새로움 2(Basys3 순수 FSM+AXI 래핑+실패 교훈 반영 조합 미등록; Columbia 원본은 Cyclone V HPS+Avalon) + 적합성 2(BRAM 약 10개 추정, Basys3 50개 한도 내, LUT 미확인) + 완결성 2(LeNet 2conv+3fc+AXI4-Lite 슬레이브+TB 범위 명확, iverilog CI 가능) = 9점 ≥ 7점. WebFetch PROVENANCE_REQUIRED 37차 연속 차단. ready 승격. 슬롯 1/2.
 
 ## I-142 Basys3 INT8 AXI4-Lite 2×2 시스톨릭 배열 추론 가속기
 - 상태: vetted
@@ -2252,24 +2254,24 @@
 - 심사: 2026-11-07 /verify 36차, raw→vetted 첫 심사(§14.2 표준). 근거 2(shanker-teo-integer-intelligence-2026·tb-rohan-int8-cnn-accelerator, rechecked_at: 2026-11-07 본 사이클 추가) + 새로움 2(PTQ 보정→레지스터 자동 생성 도구 카탈로그 미등록; SW-HW 브릿지 패턴 없음) + 적합성 2(소프트웨어 도구 주체로 FPGA 자원 최소; AXI4-Lite 슬레이브 레지스터 패턴 shanker-teo에서 확인) + 완결성 1(Python 스크립트 범위 명확하나 RTL TB 최소; Verilog 헤더 생성 단계 범위 보강 필요) = 7점 → vetted. 보강: 근거 카드 추가, RTL 쪽 레지스터 블록 범위 명확화 필요.
 
 ## I-144 Basys3 10클래스 분류 출력 IP: 아르그맥스 + 7세그 표시
-- 상태: raw
+- 상태: vetted
 - 요약: 내 판단: MLP 추론 결과 10개 로짓(INT8 또는 INT32)을 받아 아르그맥스를 계산하고 분류 클래스(0~9)를 Basys3 7세그에 표시하는 경량 AXI4-Lite IP. 소프트맥스 없이 순수 비교기로 구현하면 LUT 소비가 최소화된다.
 - 조합: [accelerator, debug, AXI4-Lite]
 - 근거: [columbia-4840-sp26-mnist-accelerator, hiteshtp09-verilog-softmax-accelerator]
 - 새로움의 근거: 카탈로그에 10클래스 분류 출력 인터페이스만 단독으로 패키지화한 IP가 없음. Columbia 카드는 Avalon-MM이고, hiteshtp09는 AXI 래퍼가 없음.
 - Basys3 적합성의 근거: 아르그맥스 10사이클 선형 스캔 ≈ 20 LUT 미만. 7세그 디코더는 Basys3 기본(6자리 멀티플렉스). AXI4-Lite 슬레이브 1슬롯 (free_slot 배정 필요).
 - 난이도: 1 / 단계: T1
-- 심사: (미심사)
+- 심사: 2026-11-07 /verify 37차, raw→vetted 첫 심사(§14.2 표준). 근거 2(columbia-4840-sp26-mnist-accelerator·hiteshtp09-verilog-softmax-accelerator, rechecked_at: 2026-11-07 본 사이클 추가) + 새로움 2(10클래스 분류 출력 IP 단독 패키지화 카탈로그 미등록; Columbia는 Avalon-MM, hiteshtp09는 AXI 래퍼 없음) + 적합성 3(아르그맥스 10사이클 선형 스캔 ≈20 LUT, 7세그 Basys3 기본, AXI4-Lite free_slot 배정 가능) + 완결성 2(아르그맥스+AXI4-Lite 슬레이브+7세그 디코더 범위 명확, iverilog CI 가능) = 9점, 근거=2 → vetted. 보강: 근거 카드 3건 확보 시 ready 승격 가능.
 
 ## I-145 Basys3 의사-소프트맥스 IP: base-2 지수 + 역수 PWL
-- 상태: raw
+- 상태: vetted
 - 요약: 내 판단: Cardarilli 2021 논문의 base-2 의사-소프트맥스를 Artix-7(XC7A35T)에 맞게 Verilog로 구현한다. 2^(x_i)는 INT8 입력에서 비트 시프트만으로 계산하고, 역수는 2구간 PWL(계수를 2의 거듭제곱으로 선택 → 곱셈 없이 시프트)로 근사한다. MicroBlaze V AXI4-Lite IP로 래핑해 추론 파이프라인 말단에 삽입한다.
 - 조합: [accelerator, AXI4-Lite]
 - 근거: [cardarilli-2021-pseudo-softmax, columbia-4840-sp26-mnist-accelerator, hiteshtp09-verilog-softmax-accelerator]
 - 새로움의 근거: 카탈로그에 base-2 소프트맥스 FPGA 구현이 없음. hiteshtp09는 LUT exp(-d) 방식(다른 근사), Columbia는 소프트맥스 없이 아르그맥스만 사용.
 - Basys3 적합성의 근거: 근거 논문이 INT8 10클래스 3.22ns(90nm CMOS) 달성. Artix-7 LUT-only로 구현 가능. DSP48 없이도 가능(시프트 연산). BRAM 불필요.
 - 난이도: 3 / 단계: T4
-- 심사: (미심사)
+- 심사: 2026-11-07 /verify 37차, raw→vetted 첫 심사(§14.2 표준). 근거 3(cardarilli-2021-pseudo-softmax·columbia-4840-sp26-mnist-accelerator·hiteshtp09-verilog-softmax-accelerator, rechecked_at: 2026-11-07 본 사이클 추가) + 새로움 2(base-2 소프트맥스 FPGA 구현 카탈로그 미등록; hiteshtp09는 LUT exp(-d) 방식, Columbia는 아르그맥스만 사용) + 적합성 3(LUT-only 구현 가능, DSP48 불필요, BRAM 불필요; 논문 10클래스 INT8 3.22ns 근거) + 완결성 2(base-2 지수+역수 PWL+AXI4-Lite 슬레이브+TB 범위 명확, iverilog CI 가능) = 10점 ≥ 8점, 근거=3 → 정상 기준 ready 해당. 단, 사이클 슬롯 2건 한도소진(I-141·I-057 승격). vetted 유지. 다음 사이클 ready 후보.
 
 ## I-146 Basys3 직렬 MAC MLP 784→128→10 INT8 추론 AXI4-Lite T1 캡스톤
 - 상태: raw

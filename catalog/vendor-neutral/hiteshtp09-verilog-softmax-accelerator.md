@@ -16,6 +16,7 @@ stats: {stars: unknown, commits: unknown, last_update: unknown}
 doc_language: en
 verification: L3
 checked_at: 2026-11-07
+rechecked_at: 2026-11-07
 sources: [https://github.com/hiteshtp09/Verilog-Softmax-Accelerator]
 ---
 

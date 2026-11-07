@@ -1,6 +1,6 @@
 # ML 추론 가속기: 고정소수점 연산·MAC 행렬·MLP·CNN·GRU/LSTM·어텐션 메커니즘
 
-갱신: 2026-11-07 (/verify 34차). 카드 37건 기반 (Q포맷 4건, MAC/행렬 4건, MLP 뉴런 5건, 활성화 함수 4건, CNN 엔진 3건, BN/LN 정규화 3건, RNN/LSTM 가속기 3건, GRU/LSTM 비교 3건, 논문 2건, 어텐션/Transformer 가속기 3건, 트랜스포머 슬림화 3건).
+갱신: 2026-11-07 (/verify 37차). 카드 40건 기반 (Q포맷 4건, MAC/행렬 4건, MLP 뉴런 5건, 활성화 함수 4건, CNN 엔진 3건, BN/LN 정규화 3건, RNN/LSTM 가속기 3건, GRU/LSTM 비교 3건, 논문 2건, 어텐션/Transformer 가속기 3건, 트랜스포머 슬림화 3건, Softmax·출력 분류기 3건).
 고정소수점 Q포맷 산술, MAC 배열 가속기, MLP/CNN 추론 IP, BN/LN 정규화 하드웨어, RNN/LSTM 가속기, 어텐션 메커니즘 하드웨어, 트랜스포머 슬림화의 Basys3 적용 가능성을 정리한다.
 MicroBlaze V SoC의 `free_slots`에서 AXI4-Lite 가속기 IP로 연결하는 경로를 중심으로 분석한다.
 
@@ -295,3 +295,30 @@ kim-2025의 Q5.26 → Basys3용은 Q4.12(16비트 총폭)로 비트 폭을 줄�
 - **내 판단: D-ReLU와 Q4.4의 조합.** unlv-si-harris의 D-ReLU(부호 비트 체크 + 비트 시프트)를 libfpga Q4.4에 적용하면 전체 MLP IP의 면적을 24-41% 추가 절감할 수 있다. yosys 합성 비교(I-135)로 CI 수준에서 재현 가능하다.
 - **내 판단: MIT 라이선스 카드 우선 적용.** sivakumarchakarapalli(MIT, AXI-Lite, Basys3 직접), libfpga(MIT), abhi-raval(MIT)이 코드 반입 허용 범위. erwanregy(Apache-2.0)도 반입 가능. wangxuan95(GPL-3.0)은 소스 열람만 허용, 하네스 IP로 복사 불가.
 - **내 판단: CNN → UART 입출력 경로의 가치.** abhi-raval처럼 UART로 픽셀을 받아 추론 결과를 7세그에 표시하는 방식은 MicroBlaze 없이 순수 RTL에서 완결된다. MicroBlaze V 연동이 필요한 경우에는 AXI4-Lite 래퍼를 추가해 I-137 방식으로 이식한다.
+
+---
+
+## 10. Softmax · 출력 분류기 하드웨어
+
+갱신: 2026-11-07 (/verify 37차). 3건: FSM Softmax IP, 의사-소프트맥스 논문, MNIST 아르그맥스 사례.
+
+| 카드 | 보드 | 언어 | 핵심 | 한계 |
+|------|------|------|------|------|
+| [hiteshtp09-verilog-softmax-accelerator](../catalog/vendor-neutral/hiteshtp09-verilog-softmax-accelerator.md) | 미지정 | Verilog | FSM 5단계, LUT exp(-d) 근사, Q8.8, Yosys+iverilog 검증 | AXI 래퍼 없음, 보드 미지정, 라이선스 미확인 |
+| [cardarilli-2021-pseudo-softmax](../catalog/papers/cardarilli-2021-pseudo-softmax.md) | 없음(ASIC) | Verilog(ASIC 플로우) | base-2 의사-소프트맥스, 비트 시프트 지수, 2구간 PWL 역수, CC-BY 4.0 | RTL 미공개, Synopsys 90nm 타이밍만, Vivado 검증 없음 |
+| [columbia-4840-sp26-mnist-accelerator](../catalog/papers/columbia-4840-sp26-mnist-accelerator.md) | DE1-SoC | SystemVerilog | MLP 784→128→10 INT8, argmax 10사이클, 7세그 출력, Avalon-MM | Avalon-MM 전용, AXI 포팅 필요, 소프트맥스 없음(argmax만) |
+
+**패턴 분석 (내 판단):**
+- **소프트맥스 대안 선택**: 분류 정확도만 필요하면 argmax(columbia-sp26 방식, 약 20 LUT)가 최적. 클래스 확률 출력이 필요하면 hiteshtp09(LUT exp, Q8.8) 또는 cardarilli 방식(base-2 PWL, LUT-only). cardarilli는 RTL 미공개이므로 직접 구현 필요.
+- **Artix-7 LUT-only 구현 가능성**: cardarilli의 base-2 지수는 INT8에서 비트 시프트만으로 계산되므로 Artix-7 LUT 소비가 최소화된다. 역수 2구간 PWL도 곱셈 없이 시프트로 가능. DSP48E1 불필요.
+- **합산 트리와 파이프라인**: 10클래스 exp 합산은 이진 트리 4단계(= 4클럭 지연). 파이프라인 삽입 시 처리율 1 추론/클럭 가능.
+- **AXI4-Lite 통합 경로**: hiteshtp09 FSM에 AXI4-Lite 래퍼 추가 → ① N개 로짓 로드 레지스터 ② 추론 트리거 비트 ③ 완료 인터럽트 ④ 확률/클래스 레지스터 읽기. free_slot 1개 소비. I-144(argmax only), I-145(pseudo-softmax) 아이디어가 이 경로를 구체화한다.
+
+**Basys3 적합성 요약 (내 판단):**
+- argmax IP(I-144): ~20 LUT, 7세그 직결, free_slot 1개. T1~T2 수준 난이도.
+- 의사-소프트맥스 IP(I-145): LUT-only, BRAM 불필요, DSP 불필요. T4 수준. cardarilli 논문 원리로 직접 구현 필요.
+- hiteshtp09 FSM 베이스: LUT 46K cell(Yosys 추정, Vivado 미확인). XDC·클럭 래퍼 없음 → AXI4-Lite 래퍼 추가 필요.
+
+**아이디어 연결:**
+- I-144: Basys3 10클래스 분류 출력 IP — argmax + 7세그 AXI4-Lite (vetted, T1, 9점)
+- I-145: Basys3 의사-소프트맥스 IP — base-2 지수 + 역수 PWL (vetted, T4, 10점, 슬롯 소진으로 이번 사이클 ready 보류 → 다음 사이클 1순위)

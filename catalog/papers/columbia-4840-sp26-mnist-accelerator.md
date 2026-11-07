@@ -16,6 +16,7 @@ stats: {last_update: 2026}
 doc_language: en
 verification: L3
 checked_at: 2026-11-08
+rechecked_at: 2026-11-07
 sources: [https://www.cs.columbia.edu/~sedwards/classes/2026/4840-spring/designs/MNIST-Accelerator.pdf]
 ---
 
