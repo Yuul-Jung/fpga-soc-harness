@@ -277,4 +277,4 @@
 2026-11-08 00:34 | capstone | I-137 mmio-mlp-axil-ip (T4, AXI4-Lite MLP MNIST 추론 IP, slot [2F], §13.7 무조건 최대한 생성) | 패키지 +1 (784→128→10 INT8 순차 MAC FSM, BRAM 가중치 스트리밍, 8레지스터 AXI 슬레이브) | 검증 S0 | 근거 재확인 없음(§13.7 무조건 최대한 생성)
 - 2026-11-08 03:19 | collect | NPU 캡스톤 T2(CIFAR-10 CNN 가속기+VGA) · S4 제약역전(주)+S6 실패사례(보조) | 카드 +3 | 아이디어 +1 (I-149 raw) | 큐 잔여 large | blocked 0 | 갭: CIFAR-10+VGA 조합 사례 없음 확인
 2026-11-08 04:45 | verify | 재열람 5 | 수정 1 | 불일치 1 | 승격 L2→L3 0 | ready +2 | raw→vetted +4 | WebFetch 차단 38차(PROVENANCE_REQUIRED) — 내부 일관성 검증으로 대체; atlas/ml-accelerator.md CNN 엔진 섹션 카드 3건(jonathan-quan·basdabt·ziad-abaid) 추가
-2026-11-08 04:59 | capstone | I-061 AXI4-Lite 다운카운터 타이머 IRQ + FreeRTOS xSemaphoreGiveFromISR 통지 패턴 (§13.7 무조건 최대한 생성) | mmio-axil-irq-timer-ip | T2, slot [30] 0x4030_0000, INTC ch14 | 검증 S0 | 게이트 3·4 사용자 방침(2026-11-06)에 따라 생략. 근거 재확인 없이 생성됨.
+2026-11-08 04:59 | capstone | I-061 AXI4-Lite 다운카운터 타이머 IRQ + FreeRTOS xSemaphoreGiveFromISR 통지 패턴 (§13.7 무조건 최대한 생성) | mmio-axil-irq-timer-ip | T2, slot [30] 0x4030_0000, INTC ch14 | 검증 S2 (lint+sim+synth 통과, CI run 42408983970) | 게이트 3·4 사용자 방침(2026-11-06)에 따라 생략. 근거 재확인 없이 생성됨.
