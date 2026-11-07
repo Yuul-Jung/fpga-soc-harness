@@ -1,0 +1,133 @@
+{
+  "slug": "debounce-cmp-tb",
+  "title": "디바운스 3방식 비교 테스트벤치",
+  "summary": "카운터, FSM, 시프트레지스터 세 가지 디바운스 구현을 하나의 테스트벤치에서 동시 비교한다. 순수 시뮬레이션 패키지(T0-T1). 각 방식의 클럭 사이클 응답 시간과 글리치 제거 성능을 자동으로 검증한다.",
+  "board": "Basys3",
+  "stage": "T0-T1",
+  "goals": [
+    "카운터 기반 디바운스(debounce_counter): N 사이클 안정 후 출력 변경",
+    "4상태 FSM 디바운스(debounce_fsm): IDLE→WAIT→STABLE→UNSTABLE 전이",
+    "시프트레지스터 디바운스(debounce_sr): M비트 이동평균 판정",
+    "자기검사 테스트벤치로 세 방식의 글리치 제거 사이클 수 비교"
+  ],
+  "non_goals": [
+    "MMIO 레지스터 인터페이스 없음 — 순수 조합/순차 로직 비교",
+    "보드에서 실제 버튼 연결 없음(시뮬레이션 전용)",
+    "CPU 또는 버스 연결 없음"
+  ],
+  "architecture": {
+    "clock": "100MHz 시뮬레이션 클럭 (clk), 동기 리셋 (rst, High 활성). Basys3 W5 핀 기준.",
+    "blocks": [
+      {
+        "id": "dbc",
+        "name": "debounce_counter",
+        "kind": "rtl",
+        "module": "debounce_counter",
+        "file": "rtl/debounce_counter.v",
+        "desc": "카운터 기반 디바운스. STABLE_COUNT 파라미터 사이클 동안 입력이 일정해야 출력 변경",
+        "short": "counter debounce",
+        "side": "left"
+      },
+      {
+        "id": "dbf",
+        "name": "debounce_fsm",
+        "kind": "rtl",
+        "module": "debounce_fsm",
+        "file": "rtl/debounce_fsm.v",
+        "desc": "4상태 FSM 디바운스. IDLE→PRESS_WAIT→PRESSED→RELEASE_WAIT 전이",
+        "short": "FSM debounce",
+        "side": "left"
+      },
+      {
+        "id": "dbs",
+        "name": "debounce_sr",
+        "kind": "rtl",
+        "module": "debounce_sr",
+        "file": "rtl/debounce_sr.v",
+        "desc": "시프트레지스터 디바운스. SR_WIDTH비트 모두 같은 값일 때 출력 변경",
+        "short": "shift-reg debounce",
+        "side": "left"
+      }
+    ],
+    "links": [
+      {"from": "dbc", "to": "dbf", "label": "btn_in 공유 (테스트벤치가 동시 주입)"},
+      {"from": "dbf", "to": "dbs", "label": "btn_in 공유 (테스트벤치가 동시 주입)"}
+    ]
+  },
+  "bus_protocol": {
+    "type": "none",
+    "signals": [],
+    "note": "버스 없음. 모듈 간 직접 포트 연결만 사용 (시뮬레이션 전용)"
+  },
+  "integration": {
+    "bus": "none",
+    "address_map": "custom",
+    "compat": "incompatible",
+    "plan": "이 패키지는 버스/MMIO 없이 디바운스 IP 단위 비교가 목적이다. MMIO 연결이 필요한 T2 패키지(예: mmio-uart-gpio-skeleton)에서 debounce_counter 또는 debounce_sr을 GPIO 입력 경로에 삽입할 수 있다. 그때는 config/soc_address_map.json의 free_slots에서 GPIO 슬롯을 배정한다."
+  },
+  "external_parts": [],
+  "schematic": {
+    "state": "not-written",
+    "note": "디지털 계통도만 존재. 외부 부품 없으므로 전기 회로도 미작성."
+  },
+  "hierarchy": [
+    {
+      "module": "debounce_counter",
+      "file": "rtl/debounce_counter.v",
+      "children": []
+    },
+    {
+      "module": "debounce_fsm",
+      "file": "rtl/debounce_fsm.v",
+      "children": []
+    },
+    {
+      "module": "debounce_sr",
+      "file": "rtl/debounce_sr.v",
+      "children": []
+    }
+  ],
+  "memory_map": [],
+  "roadmap": [
+    {
+      "stage": "T0-T1",
+      "state": "current",
+      "title": "디바운스 3방식 비교 — 시뮬레이션 전용",
+      "refs": ["nandland-project4-debounce-switch", "byu-ecen220-lab08-debounce-basys3"]
+    },
+    {
+      "stage": "T2",
+      "state": "planned",
+      "title": "GPIO MMIO 슬레이브에 debounce_counter 통합 (mmio-uart-gpio-skeleton 확장)",
+      "refs": []
+    }
+  ],
+  "references": [
+    {"name": "nandland-project4-debounce-switch", "reason": "카운터 기반 디바운스 설계 패턴 참조"},
+    {"name": "byu-ecen220-lab08-debounce-basys3", "reason": "FSM 기반 디바운스 및 Basys3 적용 사례 참조"}
+  ],
+  "sources": {
+    "rtl": [
+      "rtl/debounce_counter.v",
+      "rtl/debounce_fsm.v",
+      "rtl/debounce_sr.v"
+    ],
+    "tb": ["tb/tb_debounce_cmp.v"],
+    "constraints": ["constr/basys3.xdc"],
+    "build": ["Makefile"]
+  },
+  "howto": {
+    "sim": "make sim — iverilog로 세 모듈 + 테스트벤치를 컴파일하고 vvp로 실행. 마지막 줄에 PASS 또는 FAIL 출력.",
+    "lint": "make lint — verilator --lint-only로 경고 점검.",
+    "synth": "make synth — yosys로 단순 합성(LUT/FF 추정). 보드 배치배선 없음."
+  },
+  "verification": {
+    "board": "not-verified",
+    "notes": "자동 생성 패키지(S0). CI에서 lint+sim+synth 통과 시 S2로 갱신됨. 보드 확인은 사람이 직접 한다(S3)."
+  },
+  "risks": [
+    "세 방식의 STABLE_COUNT/SR_WIDTH 파라미터가 다르면 사이클 비교 결과가 달라진다 — 테스트벤치에서 같은 값으로 고정함",
+    "iverilog 2005 모드에서 `generate` 내 `for` 반복 변수는 `genvar`로 선언해야 한다",
+    "테스트벤치의 타이밍 의존성: `#delay`는 나노초 단위이며 클럭 주기(10ns)와 맞춰야 한다"
+  ]
+}

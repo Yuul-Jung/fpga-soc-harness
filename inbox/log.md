@@ -5,6 +5,7 @@
 - verify: `YYYY-MM-DD HH:MM | verify | 재열람 N | 수정 M | 불일치 K | 승격 L2→L3 P | ready +R`
 - capstone: `YYYY-MM-DD HH:MM | capstone | <slug> | 등급 S0~S2` 또는 `... | skip: <사유>`
 
+2026-11-08 01:02 | capstone | debounce-cmp-tb | S0 (EDA 도구 없음, CI에서 lint·sim·synth 예정) | 디바운스 3방식 비교 TB (카운터·FSM·SR, T0-T1) | 아이디어 I-089 used (ready→used, 무조건 최대한 생성 원칙 §13.7 — 게이트 3·4 건너뜀) | 근거 재확인 없음 | 보드 확인(S3)은 사용자 직접
 2026-11-08 00:44 | verify | 37차 | 재열람 5 | 수정 5(rechecked_at 갱신) | 불일치 0 | 승격 L2→L3 0 | ready +2(I-141·I-057 차단조건재심사 37차, WebFetch PROVENANCE_REQUIRED 37차 연속) | raw→vetted +2(I-144 9점 근거=2, I-145 10점 근거=3 슬롯소진 다음사이클 1순위) | atlas ml-accelerator 갱신(§10 Softmax·출력분류기 신설, 카드 37→40, 3건 추가)
 2026-11-07 20:37 | verify | 재열람 5 | 수정 5(rechecked_at 갱신) | 불일치 0 | 승격 L2→L3 0 | ready +2(I-138·I-140 차단조건재심사 36차, WebFetch PROVENANCE_REQUIRED 36차 연속) | vetted +2(I-142 9점 근거=2, I-143 7점) | raw→vetted I-141 차단조건재심사 36차 슬롯 소진(다음 사이클) | atlas 미갱신(카드 변경 2건, 상한 3건 미달)
 2026-11-07 18:23 | capstone | mmio-i2c-slave-ns-ip | S2 달성 (CI run 42359551147, commit 5536caf9, 2026-11-07: lint·sim·synth 모두 통과) | I2C 슬레이브 무클럭스트레칭 AXI4-Lite IP, RPi BCM I2C 호환 | 슬롯 [2D] 0x402D_0000 | mbv-frozen-v2 compatible | 아이디어 I-056 used (ready, 무조건 최대한 생성 원칙 §13.7 — 게이트 3·4 건너뜀) | 소스 i2c_slave_ns.v + axil_i2c_slave_ns.v + basys3_top.v + tb_i2c_slave_ns.v + XDC + Makefile | 근거 재확인 없음 | 보드 확인(S3)은 사용자 직접

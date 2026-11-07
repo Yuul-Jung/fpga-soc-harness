@@ -1248,7 +1248,7 @@
 - 새로움의 근거: 카탈로그에 디바운스 3방식을 같은 테스트벤치로 비교하는 아이디어 없음. 기존 카드들은 각자 단일 방식을 다루며 비교 연구 조합 없음.
 - Basys3 적합성의 근거: 순수 Verilog 시뮬레이션으로 보드 없이 검증 가능(iverilog/verilator). RTL 약 200줄 이내. 비교 출력을 7세그에 연결하면 T1 보드 실험도 가능.
 - 내 판단: S4 제약 역전 사례 — FPGA는 세 모듈이 동일 클럭에서 병렬 동작하므로 비교 테스트벤치 작성이 MCU에서보다 훨씬 간단. 디바운스 방식 선택의 근거를 실측 사이클 수로 보여주는 교육 가치가 높음(내 판단). 하네스 CI의 iverilog에서 바로 실행 가능.
-- 난이도: 2 / 단계: T0-T1 / 상태: ready
+- 난이도: 2 / 단계: T0-T1 / 상태: used (패키지: debounce-cmp-tb, 2026-11-07, 무조건 최대한 생성 원칙 §13.7)
 - 심사: 2026-11-05 /verify(14차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(nandland-project4-debounce-switch·byu-ecen220-lab08-debounce-basys3 모두 rechecked_at 없음) + 새로움 2(디바운스 3방식을 같은 테스트벤치로 비교하는 아이디어 카탈로그 없음; 기존 카드들은 각자 단일 방식만 다룸) + 적합성 3(순수 Verilog 시뮬레이션으로 보드 없이 iverilog/verilator 검증 가능, RTL ~200줄 이내, 하네스 CI 직접 실행 가능) + 완결성 2(3방식 모듈 + 단일 테스트벤치 범위 명확, 10ms 채터→15ms 안정→1ms 추가 채터 패턴 명세, $display 사이클 수 비교 출력 TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득, SR래치 방식 RTL 상세 명세화.
 - 차단조건재심사: 2026-11-05, /verify(17차), 모든 WebFetch PROVENANCE_REQUIRED 차단(17차 연속). 근거 카드 총 2건(nandland-project4-debounce-switch, byu-ecen220-lab08-debounce-basys3, rechecked_at 불문) → 근거 2 + 새로움 2 + 적합성 3 + 완결성 2 = 9점 ≥ 7, 사이클 한도(2건) 소진 → vetted 유지.
 - 차단조건재심사: 2026-11-05 /verify(25차), 모든 WebFetch PROVENANCE_REQUIRED 차단(25차 연속). 근거 카드 총 2건(nandland-project4-debounce-switch, byu-ecen220-lab08-debounce-basys3, rechecked_at 불문) → 근거 2 + 새로움 2(디바운스 3방식을 같은 테스트벤치로 비교하는 아이디어 카탈로그 없음) + 적합성 3(순수 Verilog 시뮬레이션으로 보드 없이 iverilog/verilator 검증 가능, RTL ~200줄 이내, 하네스 CI 직접 실행 가능) + 완결성 2(3방식 모듈 + 단일 테스트벤치 범위 명확, $display 사이클 수 비교 출력 TB 작성 가능) = 9점 ≥ 7 → ready 승격. 25차 1번째. WebFetch PROVENANCE_REQUIRED 전면 차단으로 §14.2 차단 조건 적용.
