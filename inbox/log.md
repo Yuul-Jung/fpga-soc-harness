@@ -271,3 +271,4 @@
 2026-11-07 21:04 | capstone | RPi SPI 디버그 콘솔 (ready→I-055, 무조건최대한생성, 근거재확인·체인연결 건너뜀) | 패키지 +1 (mmio-spi-dbg-axil-bridge, AXI 마스터 전용 IP, 슬레이브 슬롯 없음) | 검증 S0 | blocked 0
 2026-11-07 21:17 | collect | 하드웨어 소프트맥스·아르그맥스 · S3 빈틈추적(주)+S6 실패사례(보조) | 카드 +3 | 아이디어 +2 | 큐 잔여 789 | blocked 1 (PMC PROVENANCE_REQUIRED)
 2026-11-07 21:51 | capstone | I-055 mmio-spi-dbg-axil-bridge CI fix 3/3 (frozen_mapping null→[]) | 검증 S0→S2 (lint+sim+synth 통과, CI run 42373669671) | 근거 재확인 없음(무조건 최대한 생성)
+2026-11-08 00:26 | collect | NPU 캡스톤 T1 · S5 비정형 출처(주)+S3 빈틈 추적(보조) | 카드 +3 | 아이디어 +3 | 큐 잔여 10 | blocked 3

@@ -2269,3 +2269,33 @@
 - Basys3 적합성의 근거: 근거 논문이 INT8 10클래스 3.22ns(90nm CMOS) 달성. Artix-7 LUT-only로 구현 가능. DSP48 없이도 가능(시프트 연산). BRAM 불필요.
 - 난이도: 3 / 단계: T4
 - 심사: (미심사)
+
+## I-146 Basys3 직렬 MAC MLP 784→128→10 INT8 추론 AXI4-Lite T1 캡스톤
+- 상태: raw
+- 요약: 내 판단: hussain-2025-har-mlp-artix7 카드의 Q8.8 직렬 MAC FSM 패턴을 784→128→10 MLP로 확장한다. 가중치는 BRAM에 저장(784×128×1 + 128×10×1 = 약 101KB → BRAM18 약 6개), 활성화 함수는 ReLU, 출력은 아르그맥스 10클래스. MicroBlaze V AXI4-Lite 슬레이브로 래핑해 T1 캡스톤 패키지로 만든다. MNIST ≥90% 정확도 목표.
+- 조합: [accelerator, AXI4-Lite, BRAM]
+- 근거: [hussain-2025-har-mlp-artix7, columbia-4840-sp26-mnist-accelerator]
+- 새로움의 근거: hussain-2025는 7→6→5(소규모), columbia-4840은 Nios II 기반. Artix-7 35T에서 784→128→10을 순수 Verilog 직렬 MAC + AXI4-Lite 슬레이브로 구현한 사례가 카탈로그에 없음.
+- Basys3 적합성의 근거: hussain-2025 카드에서 같은 Artix-7 35T 칩에서 LUT 2.5%, DSP 2.22%만 사용 확인. BRAM18 6개(50개 한도 내). 클럭 50MHz, WNS 여유.
+- 난이도: 3 / 단계: T1
+- 심사: (미심사)
+
+## I-147 Basys3 W1A2 초저정밀 MNIST MLP (FINN 없이 순수 Verilog)
+- 상태: raw
+- 요약: 내 판단: tasci-2025-fpga-qnn 카드의 W1A2 양자화 개념(가중치 1비트, 활성화 2비트)을 FINN 없이 순수 Verilog로 구현한다. 784→128→10 MLP에서 가중치를 LUT-distributed로 저장(784×128비트 = 12.3KB → BRAM 거의 불필요), 활성화는 임계치 2개 비교(ReLU-step). MicroBlaze V AXI4-Lite 래퍼로 연결. 목표 정확도 ≥90%는 W1A2에서 달성 가능성 있음(Tasci 논문 W1A2 MLP ~90% 보고).
+- 조합: [accelerator, AXI4-Lite]
+- 근거: [tasci-2025-fpga-qnn, emirertorer-bnn-mnist-nexys-a7]
+- 새로움의 근거: FINN 없이 순수 Verilog W1A2 MLP Basys3 구현이 카탈로그에 없음. emirertorer는 W1A1 BNN(Nexys A7), tasci는 FINN+PYNQ 기반으로 접근 방식이 다름.
+- Basys3 적합성의 근거: W1A2에서 가중치 784×128 = 100,352비트 ≈ 12.3KB → LUT 분산 RAM 또는 BRAM 1개 미만. 활성화 2비트 → 임계치 비교 FSM. DSP 불필요(XNOR/popcount 연산).
+- 난이도: 4 / 단계: T1
+- 심사: (미심사)
+
+## I-148 Artix-7 35T MLP 직렬-병렬 MAC 처리 소자 비교 (1×/8×/16× PE)
+- 상태: raw
+- 요약: 내 판단: 같은 784→128→10 MLP에서 MAC 처리 소자 수(1개 직렬, 8개, 16개 병렬)를 바꿔 지연·자원·전력 트레이드오프를 측정·비교한다. hussain-2025 카드(LUT 2.5%)와 shreyasilver22 카드(은닉층 16뉴런) 패턴을 함께 참조. yosys 추정 자원과 iverilog 시뮬레이션 타이밍으로 비교표를 만든다.
+- 조합: [accelerator, AXI4-Lite]
+- 근거: [hussain-2025-har-mlp-artix7, shreyasilver22-neural-accelerator]
+- 새로움의 근거: 카탈로그에 동일 MLP 아키텍처를 처리 소자 수 변화로 비교한 사례 없음. 단일 Artix-7 35T에서 처리 소자 수 대비 LUT/DSP/레이턴시 비교표가 없음.
+- Basys3 적합성의 근거: hussain-2025는 Artix-7 35T에서 LUT 2.5%만 사용(여유 97.5%). 16× PE도 LUT 40% 미만 추정. BRAM은 가중치 101KB로 6개(한도 50개 내).
+- 난이도: 3 / 단계: T2
+- 심사: (미심사)

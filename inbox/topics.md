@@ -155,7 +155,7 @@
 - [x] [B3] 하드웨어 소프트맥스·아르그맥스: 지수 근사(Mitchell), 분류 출력 인터페이스, 10클래스 분류 데모 — 2026-11-07 21:17 collect 완료(S3 빈틈추적(주)+S6 실패사례(보조)): hiteshtp09-verilog-softmax-accelerator(L3), cardarilli-2021-pseudo-softmax(L3), columbia-4840-sp26-mnist-accelerator(L3) 카드 3건 생성
 
 ### 캡스톤급 NPU 과제
-- [ ] [B3] NPU 캡스톤 T1: Basys3 MLP 가속기 — MNIST 추론 (784→128→10, 고정소수점, 정확도 ≥90%)
+- [x] [B3] NPU 캡스톤 T1: Basys3 MLP 가속기 — MNIST 추론 (784→128→10, 고정소수점, 정확도 ≥90%)
 - [ ] [B3] NPU 캡스톤 T2: Basys3 CNN 가속기 — CIFAR-10 소형 모델 컨볼루션층 1~2개, 특징 맵 VGA 표시
 - [ ] [B3] NPU 캡스톤 T3: Basys3 어텐션 블록 — 감성 분류 1헤드 트랜스포머, 직렬 토큰 입력(UART), 결과 출력
 - [ ] [B3] NPU 캡스톤 T4: 엣지 AI 통합 — OV7670 카메라 → 소형 CNN → 실시간 제스처/물체 인식 → LED 표시

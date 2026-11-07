@@ -168,3 +168,11 @@
 2026-11-07 | [B3] 하드웨어 소프트맥스·아르그맥스 | hiteshtp09 Verilog Softmax Accelerator GitHub FSM LUT exponential fixed-point approximation | 빈약
 2026-11-07 | [B3] 하드웨어 소프트맥스·아르그맥스 | FPGA hardware argmax circuit design Verilog combinational sequential 10 output classification neural network | 유효
 2026-11-07 | [B3] 하드웨어 소프트맥스·아르그맥스 | FPGA 소프트맥스 아르그맥스 하드웨어 구현 Verilog 고정소수점 분류 출력 한국어 | 빈약
+2026-11-08 | [B3] NPU 캡스톤 T1 | FPGA MNIST inference accelerator 784 128 10 MLP Verilog fixed-point Artix-7 implementation 2024 | 유효
+2026-11-08 | [B3] NPU 캡스톤 T1 | FPGA 뉴럴네트워크 추론 가속기 MNIST 고정소수점 MLP Verilog 논문 2024 한국 | 유효
+2026-11-08 | [B3] NPU 캡스톤 T1 | Hackaday FPGA neural network MNIST inference accelerator Basys3 Artix hardware | 유효
+2026-11-08 | [B3] NPU 캡스톤 T1 | arXiv FPGA MLP inference fixed-point quantization MNIST 784 128 Basys3 2023 2024 | 유효
+2026-11-08 | [B3] NPU 캡스톤 T1 | site:github.com FPGA MLP MNIST 784 128 10 Verilog "fully connected" fixed-point inference accelerator 2024 2025 | 유효
+2026-11-08 | [B3] NPU 캡스톤 T1 | FPGA MLP inference accelerator MNIST Basys3 Nexys A7 Verilog matrix multiply BRAM pipelined 2024 university course project | 유효
+2026-11-08 | [B3] NPU 캡스톤 T1 | FPGA MLP MNIST 784 128 10 fully connected ReLU fixed point Q8.8 Verilog AXI inference accelerator GitHub 2024 | 유효
+2026-11-08 | [B3] NPU 캡스톤 T1 | FPGA 고정소수점 MLP 추론 Verilog "784" "128" "10" github 2024 2025 논문 사례 | 빈약
