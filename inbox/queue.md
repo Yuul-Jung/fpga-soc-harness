@@ -755,3 +755,7 @@
 - https://arxiv.org/abs/2404.14073 | LWformer: 경량 트랜스포머 FPGA 추론(arXiv 2024) — 미열람(L1), 헤드 수·FFN 축소 최적화 사례 | lightweight transformer FPGA hardware inference resource efficient
 - https://arxiv.org/abs/2210.05659 | FQ-ViT: 비전 트랜스포머 완전 양자화(arXiv 2022) — 미열람(L1), LayerNorm·Softmax 양자화 기법 참고 | vision transformer full quantization fixed-point FPGA
 - https://arxiv.org/abs/2305.07558 | TransFCA: 트랜스포머 FCA 단위 FPGA 가속기(arXiv 2023) — 미열람(L1), 어텐션 연산 단위 분해 기법 | transformer FPGA accelerator attention computation unit 2023
+- https://github.com/Leonui/tiny-npu | tiny-npu: AXI4-Lite NPU 소형 구현, 가중치 BRAM + MAC 어레이 (L2, 카드 leonui-tiny-npu 작성) | FPGA NPU AXI4-Lite neural network weight load inference Verilog
+- https://www.cs.columbia.edu/~sedwards/classes/2026/4840-spring/designs/LeNet-5-CNN-Accelerator.pdf | Columbia CSEE 4840 2026 Spring LeNet-5 CNN 가속기 보고서 (L2, 카드 columbia-4840-sp26-lenet5-cnn-accelerator 작성) | LeNet-5 CNN accelerator FPGA SystemVerilog
+- https://arxiv.org/html/2508.16095v1 | Bare-Metal RISC-V + NVDLA SoC 딥러닝 추론 (arXiv 2508.16095, L2, 카드 arxiv-2508-16095-nvdla-riscv-soc 작성) | RISC-V NVDLA SoC inference FPGA AXI
+- https://github.com/NetKit-Labs/npukit | npukit: 네트워크 처리 가속기 킷, NPU AXI Verilog (L1, 미열람) | NPU AXI Verilog neural network accelerator GitHub

@@ -303,3 +303,6 @@
 | [wang-2020-mha-fpga-accelerator](papers/wang-2020-mha-fpga-accelerator.md) | L3 | T4 | xcvu13p (Basys3 needs-port) | 2026-11-07 |
 | [richielee-2025-tiled-matmul-attention-kv260](papers/richielee-2025-tiled-matmul-attention-kv260.md) | L3 | T4 | KV260 (Basys3 needs-port) | 2026-11-07 |
 | [ftrans-2020-transformer-fpga-piecewise-softmax](papers/ftrans-2020-transformer-fpga-piecewise-softmax.md) | L3 | T4 | VCU118 (Basys3 no) | 2026-11-07 |
+| [leonui-tiny-npu](amd/leonui-tiny-npu.md) | L2 | T2 | 미지정 (needs-port) | 2026-11-07 |
+| [columbia-4840-sp26-lenet5-cnn-accelerator](papers/columbia-4840-sp26-lenet5-cnn-accelerator.md) | L2 | T4 | 미지정 (needs-port) | 2026-11-07 |
+| [arxiv-2508-16095-nvdla-riscv-soc](papers/arxiv-2508-16095-nvdla-riscv-soc.md) | L2 | T5 | 미지정 (no) | 2026-11-07 |

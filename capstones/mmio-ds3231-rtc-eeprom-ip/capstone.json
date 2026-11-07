@@ -175,92 +175,28 @@
       ]
     }
   ],
-  "memory_map": {
-    "base": "0x402B_0000",
-    "size": "0x10000",
-    "regions": [
-      {
-        "base": "0x402B_0000",
-        "size": "0x10000",
-        "block": "i2c_ip",
-        "desc": "I2C RTC/EEPROM IP"
-      }
-    ],
-    "registers": [
-      {
-        "off": "0x00",
-        "name": "STATUS",
-        "access": "RO",
-        "desc": "비트0=BUSY, 비트1=ACK_ERR, 비트2=DONE"
-      },
-      {
-        "off": "0x04",
-        "name": "CMD",
-        "access": "WO",
-        "desc": "비트1:0=명령(00=없음,01=RTC_READ,10=EE_READ,11=EE_WRITE)"
-      },
-      {
-        "off": "0x08",
-        "name": "EE_ADDR",
-        "access": "RW",
-        "desc": "EEPROM 주소[14:0]"
-      },
-      {
-        "off": "0x0C",
-        "name": "EE_WDATA",
-        "access": "RW",
-        "desc": "EEPROM 쓰기 데이터[7:0]"
-      },
-      {
-        "off": "0x10",
-        "name": "EE_RDATA",
-        "access": "RO",
-        "desc": "EEPROM 읽기 데이터[7:0]"
-      },
-      {
-        "off": "0x14",
-        "name": "RTC_SEC",
-        "access": "RO",
-        "desc": "DS3231 초(BCD)"
-      },
-      {
-        "off": "0x18",
-        "name": "RTC_MIN",
-        "access": "RO",
-        "desc": "DS3231 분(BCD)"
-      },
-      {
-        "off": "0x1C",
-        "name": "RTC_HOUR",
-        "access": "RO",
-        "desc": "DS3231 시(BCD, 24시간)"
-      },
-      {
-        "off": "0x20",
-        "name": "RTC_DAY",
-        "access": "RO",
-        "desc": "DS3231 요일[2:0]"
-      },
-      {
-        "off": "0x24",
-        "name": "RTC_DATE",
-        "access": "RO",
-        "desc": "DS3231 일(BCD)"
-      },
-      {
-        "off": "0x28",
-        "name": "RTC_MON",
-        "access": "RO",
-        "desc": "DS3231 월(BCD)"
-      },
-      {
-        "off": "0x2C",
-        "name": "RTC_YEAR",
-        "access": "RO",
-        "desc": "DS3231 연(BCD, 00-99)"
-      }
-    ]
-  },
+  "memory_map": [
+    {
+      "region": "i2c_rtc_eeprom",
+      "base": "0x402B_0000",
+      "size": "0x10000",
+      "block": "i2c_ip",
+      "regs": [
+        {"off": "0x00", "name": "STATUS",   "access": "RO", "desc": "비트0=BUSY, 비트1=ACK_ERR, 비트2=DONE"},
+        {"off": "0x04", "name": "CMD",       "access": "WO", "desc": "비트1:0=명령(00=없음,01=RTC_READ,10=EE_READ,11=EE_WRITE)"},
+        {"off": "0x08", "name": "EE_ADDR",   "access": "RW", "desc": "EEPROM 주소[14:0]"},
+        {"off": "0x0C", "name": "EE_WDATA",  "access": "RW", "desc": "EEPROM 쓰기 데이터[7:0]"},
+        {"off": "0x10", "name": "EE_RDATA",  "access": "RO", "desc": "EEPROM 읽기 데이터[7:0]"},
+        {"off": "0x14", "name": "RTC_SEC",   "access": "RO", "desc": "DS3231 초(BCD)"},
+        {"off": "0x18", "name": "RTC_MIN",   "access": "RO", "desc": "DS3231 분(BCD)"},
+        {"off": "0x1C", "name": "RTC_HOUR",  "access": "RO", "desc": "DS3231 시(BCD, 24시간)"},
+        {"off": "0x20", "name": "RTC_DAY",   "access": "RO", "desc": "DS3231 요일[2:0]"},
+        {"off": "0x24", "name": "RTC_DATE",  "access": "RO", "desc": "DS3231 일(BCD)"},
+        {"off": "0x28", "name": "RTC_MON",   "access": "RO", "desc": "DS3231 월(BCD)"},
+        {"off": "0x2C", "name": "RTC_YEAR",  "access": "RO", "desc": "DS3231 연(BCD, 00-99)"}
+      ]
+    }
+  ],
   "roadmap": [
     {
       "stage": "T1",

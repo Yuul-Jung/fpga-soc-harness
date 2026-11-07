@@ -393,7 +393,8 @@
 - 차단조건재심사: 2026-11-04 /verify, 모든 WebFetch PROVENANCE_REQUIRED 차단. 근거 카드 총 3건(angelojacobo-fpga-i2c-implementation·digikey-forum-mcp79410-pmod-rtcc-vhdl·mines-eeng383-lecture25-24lc256-i2c, rechecked_at 불문) → 차단 근거 3 + 새로움 2(RTC+EEPROM 한 IP 없음) + 적합성 2(Pmod 1개·풀업·BRAM 불필요) + 완결성 2(DS3231+24LC256 모델 명확) = 9점 ≥ 7, 사이클 상한 2건 도달로 vetted 유지. 다음 사이클에서 ready 승격 가능.
 
 ## I-034 IR 리모컨 조종 IP: NEC 디코더(반복 코드 포함) + 명령→모터·서보 매핑 레지스터, 합성 IR 프레임 테스트벤치
-- 상태: ready
+- 상태: used
+- 패키지: mmio-ir-nec-decode-ip
 - 요약: 내 판단: IR 수신 모듈 출력을 NEC FSM으로 해독해 주소·명령·유효·반복 플래그를 AXI4-Lite 레지스터와 인터럽트로 노출한다. 펌웨어가 명령 코드를 모터 방향·속도, 서보 각도로 매핑한다. 테스트벤치는 정상 프레임, 반전 오류, 반복 프레임, 잘림을 합성해 PASS/FAIL로 점검.
 - 조합: [IR 수신(NEC), AXI4-Lite 레지스터, 인터럽트, DC 모터/서보 PWM]
 - 근거: [opencores-nec-ir-decoder, bcit-elex7660-infrared-communication, marph91-icestick-remote]
