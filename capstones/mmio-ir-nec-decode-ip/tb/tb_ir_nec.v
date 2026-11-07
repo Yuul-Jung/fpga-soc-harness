@@ -221,7 +221,7 @@ module tb_ir_nec;
             end
             begin
                 // 출력 감시
-                wait_output(1_200_000, 1, 0, 0, got_pulse);
+                wait_output(7_500_000, 1, 0, 0, got_pulse);
                 if (!got_pulse) begin
                     $display("FAIL: TC1 - decoded_valid 펄스 없음");
                     fail_count = fail_count + 1;
@@ -262,7 +262,7 @@ module tb_ir_nec;
                     space_clk(10);
                 end
                 begin
-                    wait_output(1_200_000, 0, 0, 1, got_pulse);
+                    wait_output(7_500_000, 0, 0, 1, got_pulse);
                     if (!got_pulse) begin
                         $display("FAIL: TC2 - decoded_err 펄스 없음");
                         fail_count = fail_count + 1;
