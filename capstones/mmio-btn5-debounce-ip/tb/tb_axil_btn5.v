@@ -75,25 +75,31 @@ axil_btn5 #(
 integer fail = 0;
 reg [31:0] rd_val;
 
-// AXI 쓰기 태스크
+// AXI 쓰기 태스크 — awready/wready 는 같은 사이클에 나타나므로 동시 체크
 task axil_write;
     input [7:0]  addr;
     input [31:0] data;
+    reg aw_ok, w_ok;
     begin
+        aw_ok = 0; w_ok = 0;
         @(posedge clk); #1;
         awvalid = 1; awaddr = addr;
         wvalid  = 1; wdata  = data;
         @(posedge clk);
-        while (!awready) @(posedge clk);
-        #1; awvalid = 0;
-        while (!wready)  @(posedge clk);
-        #1; wvalid  = 0;
-        while (!bvalid)  @(posedge clk);
+        if (awready) aw_ok = 1;
+        if (wready)  w_ok  = 1;
+        while (!aw_ok || !w_ok) begin
+            @(posedge clk);
+            if (awready && !aw_ok) aw_ok = 1;
+            if (wready  && !w_ok)  w_ok  = 1;
+        end
+        #1; awvalid = 0; wvalid = 0;
+        while (!bvalid) @(posedge clk);
         @(posedge clk); #1;
     end
 endtask
 
-// AXI 읽기 태스크
+// AXI 읽기 태스크 — rdata/rvalid는 arready와 동일 클럭에 유효(별도 rvalid 대기 불필요)
 task axil_read;
     input  [7:0]  addr;
     output [31:0] data;
@@ -102,9 +108,8 @@ task axil_read;
         arvalid = 1; araddr = addr;
         @(posedge clk);
         while (!arready) @(posedge clk);
+        data = rdata;    // rdata는 arready와 동일 사이클에 유효
         #1; arvalid = 0;
-        while (!rvalid)  @(posedge clk);
-        data = rdata;
         @(posedge clk); #1;
     end
 endtask

@@ -177,15 +177,6 @@ wire [4:0] lp_edge = lp_flag & ~lp_flag_prev;  // 긴 누름 도달 에지
 // 이벤트: press_edge OR release_edge OR lp_edge, 마스크 AND
 wire [4:0] event_any = press_edge | release_edge | lp_edge;
 
-always @(posedge clk) begin
-    if (rst) begin
-        reg_irq_status <= 5'b0;
-    end else begin
-        // 이벤트 발생 시 set (마스크와 무관하게 플래그는 세움, IRQ_EN은 irq 출력에만 영향)
-        reg_irq_status <= reg_irq_status | event_any;
-    end
-end
-
 assign irq = reg_irq_global_en & |(reg_irq_status & reg_irq_en);
 
 // ─── AXI4-Lite 슬레이브 ─────────────────────────────────────────
@@ -206,7 +197,11 @@ always @(posedge clk) begin
         wr_addr        <= 8'h00;
         wr_addr_ok     <= 1'b0;
         wr_data_ok     <= 1'b0;
+        reg_irq_status <= 5'b0;
     end else begin
+        // IRQ 이벤트 누적 (AXI 쓰기가 같은 사이클에 덮어쓸 수 있음 — 단일 드라이버)
+        reg_irq_status <= reg_irq_status | event_any;
+
         // 주소 핸드셰이크
         s_axil_awready <= 1'b0;
         if (s_axil_awvalid && !wr_addr_ok) begin
@@ -237,8 +232,8 @@ always @(posedge clk) begin
                     if (s_axil_wstrb[0]) begin
                         reg_irq_global_en <= s_axil_wdata[0];
                         if (s_axil_wdata[1]) begin
-                            // irq_clr_all: 모든 IRQ_STATUS 클리어
-                            reg_irq_status <= 5'b0;
+                            // irq_clr_all: 모든 IRQ_STATUS 클리어 (동시 발생 이벤트는 보존)
+                            reg_irq_status <= event_any;
                         end
                     end
                 end
@@ -258,9 +253,9 @@ always @(posedge clk) begin
                     if (s_axil_wstrb[0]) reg_irq_en <= s_axil_wdata[4:0];
                 end
                 ADDR_IRQ_STATUS: begin
-                    // W1C: 1을 쓰면 해당 bit 클리어
+                    // W1C: 1을 쓰면 해당 bit 클리어 (동시 이벤트는 유지)
                     if (s_axil_wstrb[0])
-                        reg_irq_status <= reg_irq_status & ~s_axil_wdata[4:0];
+                        reg_irq_status <= (reg_irq_status | event_any) & ~s_axil_wdata[4:0];
                 end
                 default: ; // 읽기 전용 또는 미구현 주소
             endcase
