@@ -1284,7 +1284,7 @@
 - 새로움의 근거: 카탈로그에 5버튼 all-in-one AXI4-Lite IP 아이디어 없음. 기존 카드들은 개별 버튼 디바운스만 다루며 MicroBlaze V 가변 임계값 조합 없음.
 - Basys3 적합성의 근거: Basys3 5개 버튼 직접 지원. 디바운스 카운터(20비트 × 5) + 긴 누름 카운터(27비트 × 5) = ~235 FF, XC7A35T에 여유. AXI4-Lite 슬레이브 추가 LUT ~100개 추정(내 판단). free_slots 한 칸 배정 가능.
 - 내 판단: S4 제약 역전 + S2 조합 — FPGA 병렬 카운터 5개를 동시에 독립 증가시키는 구조는 MCU로 불가. MicroBlaze V 인터럽트 패턴 연습과 AXI4-Lite 슬레이브 IP 설계 연습을 동시에 커버하는 T2 대표 과제.
-- 난이도: 2 / 단계: T2 / 상태: ready
+- 난이도: 2 / 단계: T2 / 상태: used (패키지: mmio-btn5-debounce-ip, 2026-11-08, 무조건 최대한 생성 원칙 §13.7)
 - 심사: 2026-11-05 /verify(14차), 첫 raw→vetted 심사(차단조건재심사 불적용. §14.2). 근거 0(byu-ecen220-lab08-debounce-basys3·doyk0215-2d-labyrinth-on-fpga·nandland-project4-debounce-switch 모두 rechecked_at 없음) + 새로움 2(5버튼 all-in-one AXI4-Lite IP + MicroBlaze V 가변 임계값 조합 카탈로그 없음; 기존 카드들은 개별 버튼 디바운스만 다룸) + 적합성 3(Basys3 5개 버튼 직접 지원, 디바운스 카운터 20비트×5+긴누름 카운터 27비트×5=~235 FF XC7A35T 여유, free_slots 한 칸 배정 가능) + 완결성 2(DEBOUNCE_MS·LONGPRESS_MS·STATUS·IRQ 레지스터 구조 제안, 범위 명확, RTL+TB 작성 가능) = 7점 → vetted. 보강: 근거 카드 rechecked_at 취득.
 - 차단조건재심사: 2026-11-05, /verify(17차), 모든 WebFetch PROVENANCE_REQUIRED 차단(17차 연속). 근거 카드 총 3건(byu-ecen220-lab08-debounce-basys3, doyk0215-2d-labyrinth-on-fpga, nandland-project4-debounce-switch, rechecked_at 불문) → 근거 3 + 새로움 2 + 적합성 3 + 완결성 2 = 10점 ≥ 7, 사이클 1번째 → ready 승격.
 
