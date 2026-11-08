@@ -15,8 +15,8 @@
 - Basys3 적합성 근거: seq_len=16, k=4, d_model=16 INT8 → QKV 행렬 각 16×16 = 256 B × 3 = 768 B → BRAM 1블록 미만. 1헤드 Linformer 어텐션 FSM은 O(nk) = O(64) 연산 → LUT 400줄 Verilog 목표 달성 가능(내 추정, 미검증). UART FSM은 `nitk-ieee-expo-alexa-junior-kws` 패턴 재사용.
 - 난이도: 3
 - 단계: T3
-- 상태: raw
-- 심사: 미실시 (2026-11-08 collect 등록)
+- 상태: vetted
+- 심사: 2026-11-08 verify | 근거=0(rechecked_at 카드 0/3), 새로움=2(카탈로그 NLP 분류 첫 사례), 적합성=2(BRAM 1블록 미만·미검증), 완결성=2(UART+어텐션 FSM+LED 범위 명확) | 총점 6/10 → vetted. 근거 카드 3건 모두 rechecked_at 없음; ready 승격은 재확인 완료 후 가능.
 
 형식:
 ```
