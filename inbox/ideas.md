@@ -3,6 +3,51 @@
 상태: `raw` → `vetted` → `ready` → `used` 또는 `dropped`. 지우지 않고 상태와 사유만 바꾼다. (HARNESS.md §12.8, §14.2)
 아이디어는 사실이 아니라 판단이다. 각 항목은 "내 판단:"으로 시작한다.
 
+## I-157 Basys3 OV7670 → B-스플라인 2× VGA 업스케일: 카메라 320×240 → 640×480 라인버퍼 스트리밍 (T4, S4 제약 역전)
+
+내 판단: OV7670 320×240 카메라 영상을 BRAM 전체 프레임 버퍼 없이 3개 라인버퍼(320픽셀×24비트=7.5KB=BRAM 1개)에서 B-스플라인 2×2 보간을 수행해 640×480 VGA로 출력하는 T4 스트리밍 파이프라인. sjb565의 B-스플라인 4× HDMI 업스케일러(PSNR 25.63 dB)를 Basys3 VGA·BRAM 제약에 맞게 2×로 줄인 이식 사례(S4: BRAM 제약을 장점으로 쓰는 라인버퍼 스트리밍 구조).
+
+- id: I-157
+- 조합: [camera-ov7670, video-vga, BRAM]
+- 근거 카드: [[sjb565-fpgesture-controlled-video-enhancement]], [[kurokishi592-ee2026]]
+- 근거 URL: https://fpga.mit.edu/videos/2023/team37/report.pdf
+- 새로움 근거: 카탈로그에 OV7670→B-스플라인 보간→VGA Basys3 구현 없음. sjb565는 HDMI 4×(Spartan-7), kwondo99(카탈로그)는 단순 픽셀 복제. PSNR 25.63 dB 수준의 B-스플라인 보간을 Basys3 VGA 제약에서 실현한 사례 없음(내 판단).
+- Basys3 적합성의 근거: 2×(4× 아님) 업스케일 → 라인버퍼 3개 × 320픽셀 × 24비트 = 7.5KB → BRAM18 1개 미만. VGA 640×480 25MHz Basys3 기본 지원. sjb565의 B-스플라인 계수 FSM 패턴(LUT 21%, DSP 2개) 참조. 2×는 이웃 4픽셀 B-스플라인이므로 4×(이웃 16픽셀)보다 훨씬 단순(내 판단).
+- 난이도: 3
+- 단계: T4
+- 상태: raw
+- 심사: 미실시 (2026-11-08 collect 등록, S4+S1 전략)
+
+## I-156 Basys3 OV7670 → 블롭 카운트 5-제스처 명령 디코더 → AXI4-Lite MicroBlaze V 연결 (T4, S1 인접 도메인 이식)
+
+내 판단: OV7670 카메라 영상에서 색상 임계치+다운샘플(5×5)로 블롭을 추출하고, 블롭 수(1~5)와 무게중심 위치로 5가지 제스처 명령을 인코딩해 MicroBlaze V의 AXI4-Lite 슬레이브로 전달하는 T4 단일 Basys3 보드 캡스톤. sjb565의 2-FPGA SPI 구성을 1-보드 내부 버스로 압축하고, kurokishi592의 Basys3 OV7670 패턴을 FSM 명령 디코더와 결합한 S1 이식 사례.
+
+- id: I-156
+- 조합: [camera-ov7670, AXI4-Lite, debug-led, debug-7seg]
+- 근거 카드: [[sjb565-fpgesture-controlled-video-enhancement]], [[kurokishi592-ee2026]]
+- 근거 URL: https://fpga.mit.edu/videos/2023/team37/report.pdf
+- 새로움 근거: 카탈로그에 블롭 카운트 기반 5-제스처 AXI4-Lite 슬레이브 IP가 없음. sjb565는 2-FPGA+SPI 구성(단일 보드 아님), kurokishi592는 블롭 탐지 후 서보 추적(제스처 인식 아님). 블롭 카운팅 FSM을 AXI4-Lite 슬레이브로 감싼 조합은 카탈로그 첫 사례(내 판단).
+- Basys3 적합성의 근거: kurokishi592 카드에서 Basys3 OV7670 직접 연결(Pmod) 확인(L2). 5×5 다운샘플은 310×240→62×48 → BRAM 소량. 블롭 FSM(WAITING→COUNTING→DIVIDING)은 sjb565 패턴(LUT 21%, 74.25 MHz)보다 단순(SPI 제거, 단일 보드). AXI4-Lite 슬레이브 1슬롯(free_slot 배정 필요).
+- 난이도: 3
+- 단계: T4
+- 상태: raw
+- 심사: 미실시 (2026-11-08 collect 등록, S1+S6 전략)
+
+## I-155 Basys3 2단 제스처 인식 파이프라인: OV7670 블롭 ROI 추출 → 소형 Q8.8 CNN 가속기 → LED 출력 (T4, S2 조합 탐색)
+
+내 판단: OV7670 카메라에서 색상 임계치로 손 블롭을 탐지하고 32×32 ROI를 추출한 뒤, kurokishi592의 블롭 탐지 FSM 패턴과 columbia-cnn의 Q8.8 고정소수점 MAC 가속기를 결합해 수어 숫자(0~9) 10클래스 분류를 Basys3에서 실시간으로 수행하는 2단 파이프라인. CNN 가중치를 Basys3 BRAM에 맞게 최소화(conv1 4채널, conv2 4채널, FC 10)한 것이 핵심(S2 조합: 카메라 + 가속기 + 블롭 ROI).
+
+- id: I-155
+- 조합: [camera-ov7670, accelerator, AXI4-Lite, debug-led, debug-7seg]
+- 근거 카드: [[kurokishi592-ee2026]], [[columbia-4840-sp25-gesture-cnn]]
+- 근거 URL: https://www1.cs.columbia.edu/~sedwards/classes/2025/4840-spring/reports/Gesture-report.pdf, https://kennethwongcunwi.pages.dev/projects/object-tracker-fpga
+- 새로움 근거: 카탈로그에 OV7670 라이브 카메라 + CNN 가속기 조합 Basys3 사례 없음. columbia-cnn은 카메라 없이 오프라인 JPEG 처리; kurokishi592는 CNN 없이 색상 임계치만 사용. 2단 파이프라인(블롭 ROI 추출 → Q8.8 CNN)은 카탈로그에 없는 조합(내 판단).
+- Basys3 적합성의 근거: 최소 모델(conv1 4ch, conv2 4ch, FC 10) 가중치 ≈ (3×3×3×4) + (3×3×4×4) + (4×4×4×10) ≈ 108+144+640=892 파라미터 × 2바이트(Q8.8) ≈ 1.74KB → BRAM 1개 미만. 32×32×3 ROI 버퍼 ≈ 3KB. Columbia의 Q8.8 MAC 슬라이딩 윈도 패턴(DSP 24%)은 Artix-7 DSP48로 이식 가능. kurokishi592 OV7670 Pmod 연결 패턴 Basys3 확인(L2). BRAM 총합 ≪ 225Kbits 한도(내 추정, 미검증).
+- 난이도: 4
+- 단계: T4
+- 상태: raw
+- 심사: 미실시 (2026-11-08 collect 등록, S2+S1 전략)
+
 ## I-154 Basys3 1헤드 감성 분류 트랜스포머 — UART 토큰 직렬 입력, Linformer O(nk) 어텐션, LED/UART 판정 출력 (T3, S1 인접 도메인 이식)
 
 내 판단: 호스트 PC가 SST-2 감성 문장을 INT8 임베딩 토큰으로 변환 후 UART(115200 baud)로 Basys3에 순차 전송하고, FPGA 1헤드 Linformer 어텐션(seq_len=16, k=4, d_model=16)이 고정소수점 추론을 수행해 긍정/부정 판정을 LED 1개와 UART 응답으로 출력하는 T3 캡스톤.

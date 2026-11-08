@@ -5,6 +5,7 @@
 - verify: `YYYY-MM-DD HH:MM | verify | 재열람 N | 수정 M | 불일치 K | 승격 L2→L3 P | ready +R`
 - capstone: `YYYY-MM-DD HH:MM | capstone | <slug> | 등급 S0~S2` 또는 `... | skip: <사유>`
 
+2026-11-08 09:22 | collect | [B3] NPU T4 OV7670 제스처 CNN · S1 인접 도메인 이식(주)+S6 실패 사례(보조) | 카드 +3(kurokishi592-ee2026 L2 Basys3 블롭 추적, sjb565-fpgesture-controlled-video-enhancement L3 MIT 블롭 명령, columbia-4840-sp25-gesture-cnn L3 Cyclone-V CNN 가속기) | 아이디어 +3(I-155 2단 제스처 파이프라인 raw, I-156 블롭 카운트 AXI4-Lite raw, I-157 B-스플라인 VGA 업스케일 raw) | 큐 잔여 +2 | blocked 2(EtienneIMT/Gesture_FPGA 저장소 세션 범위 외, GitHub PROVENANCE_REQUIRED 39차+ 연속) | 근거 재확인 없음(차단 조건 사이클 연속)
 2026-11-08 06:20 | collect | [B3] NPU T3 어텐션 감성 분류 · S1 인접 도메인 이식(주)+S2 조합 탐색(보조) | 카드 +3(nitk-ieee-expo-alexa-junior-kws L3, arxiv-2411-18148-runtime-adaptive-transformer L3, martinuke0-tinybert-sentiment-mcu L3) | 아이디어 +1(I-154 raw) | 큐 잔여 +5 | blocked 2(github.com/Liquid-radium PROVENANCE_REQUIRED, uwspace.uwaterloo.ca Anubis 봇 체크) | 근거 재확인 없음(차단 조건 사이클 연속)
 2026-11-08 01:08 | capstone | debounce-cmp-tb | S2 달성 (CI run 42389312313, commit bc0ef3b, 2026-11-08: lint·sim·synth 모두 통과) | 디바운스 3방식 비교 TB (카운터·FSM·SR, T0-T1) | 아이디어 I-089 used (ready→used, 무조건 최대한 생성 원칙 §13.7 — 게이트 3·4 건너뜀) | 근거 재확인 없음 | 보드 확인(S3)은 사용자 직접
 2026-11-08 00:44 | verify | 37차 | 재열람 5 | 수정 5(rechecked_at 갱신) | 불일치 0 | 승격 L2→L3 0 | ready +2(I-141·I-057 차단조건재심사 37차, WebFetch PROVENANCE_REQUIRED 37차 연속) | raw→vetted +2(I-144 9점 근거=2, I-145 10점 근거=3 슬롯소진 다음사이클 1순위) | atlas ml-accelerator 갱신(§10 Softmax·출력분류기 신설, 카드 37→40, 3건 추가)

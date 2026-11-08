@@ -194,3 +194,12 @@
 2026-11-08 | [B3] NPU T3 어텐션 감성 | site:github.com FPGA transformer NLP attention hardware Verilog UART tokenizer sentiment | 유효
 2026-11-08 | [B3] NPU T3 어텐션 감성 | site:github.com FPGA attention mechanism transformer "sentiment" OR "text classification" Verilog RTL small FPGA 2023 2024 2025 | 유효
 2026-11-08 | [B3] NPU T3 어텐션 감성 | FPGA 소형 트랜스포머 NLP 추론 Basys3 Artix-7 고정소수점 단일 헤드 어텐션 구현 2024 2025 | 유효
+2026-11-08 | [B3] NPU T4 OV7670+제스처 | site:github.com FPGA OV7670 CNN gesture recognition Verilog real-time neural network 2024 2025 | 유효
+2026-11-08 | [B3] NPU T4 OV7670+제스처 | site:github.com Basys3 Artix-7 camera object detection neural network image classification FPGA | 유효
+2026-11-08 | [B3] NPU T4 OV7670+제스처 | site:github.com OV7670 FPGA gesture recognition hand gesture detection Verilog SystemVerilog | 유효
+2026-11-08 | [B3] NPU T4 OV7670+제스처 | FPGA OV7670 gesture recognition hand detection real-time LED display Basys3 Nexys GitHub | 유효
+2026-11-08 | [B3] NPU T4 OV7670+제스처 | EtienneIMT Gesture_FPGA GitHub FPGA gesture OV7670 Basys3 Nexys Verilog | 유효
+2026-11-08 | [B3] NPU T4 OV7670+제스처 | site:github.com OV7670 camera FPGA CNN object detection image classification neural network Verilog | 유효
+2026-11-08 | [B3] NPU T4 OV7670+제스처 | FPGA OV7670 カメラ CNN ジェスチャー認識 リアルタイム Verilog GitHub Basys Nexys Artix | 유효
+2026-11-08 | [B3] NPU T4 OV7670+제스처 | site:github.com FPGA camera gesture object recognition CNN real-time Artix-7 Spartan-7 Verilog SystemVerilog 2024 2025 | 유효
+2026-11-08 | [B3] NPU T4 OV7670+제스처 | FPGA OV7670 gesture recognition hand detection 实时 Verilog Basys3 Nexys GitHub 2024 2025 | 유효

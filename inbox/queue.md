@@ -812,3 +812,7 @@
 - https://github.com/DGiridhar2085/neural-network-hardware-accelerator-fpga | Artix-7 Verilog 3×3 conv MAC 프리미티브(3in,8out, 8비트 고정소수점, 라이선스 없음) — 열람 L3, 카드 미작성(보드·데이터셋 미명시) | Artix-7 CNN convolution accelerator MAC Verilog fixed-point
 - https://github.com/grant4001/MNIST_Classification_FPGA | DE2-115(Cyclone IV) SystemVerilog 7-layer MNIST CNN + VGA 카메라 뷰(GPL-3.0) — 열람 L3, Basys3 no, 카드 보류 | FPGA MNIST CNN VGA camera SystemVerilog Intel classification
 - https://github.com/abmoh4219/cifar10-simple-cnn | Python 2-layer CIFAR-10 소형 CNN(훈련·평가·추론 파이프라인) — 미열람(L1), 하드웨어 아님, 가중치 추출 참고용 | CIFAR-10 simple CNN 2 conv layers Python training
+- https://github.com/sjb565/Fpgesture-controlled-video-enhancement | MIT Spartan-7 2보드 OV7670 블롭 제스처+B-스플라인 비디오 업스케일, L3(보고서 열람) — 카드 작성완료 | FPGA OV7670 gesture blob detection video enhancement Spartan-7
+- https://github.com/Kurokishi592/EE2026 | Basys3 OV7670 RGB 임계치+UFDS 블롭 추적+VGA+팬틸트 서보, L2(포트폴리오 페이지) — 카드 작성완료 | Basys3 OV7670 object tracker blob detection servo VGA
+- https://github.com/dihernandez/6.111 | MIT Nexys OV7670 LED 글러브 FSM 제스처 격투 게임, L3(보고서 열람) — 카드 미작성(큐 대기) | FPGA OV7670 gesture game VGA 7seg FSM
+- https://github.com/dihernandez/6.111 | MIT Nexys 4 DDR OV7670 LED 글러브 ASL 수어 번역, L3(보고서 열람) — 카드 미작성(큐 대기) | Nexys4 OV7670 ASL sign language translator VGA 7seg FSM
