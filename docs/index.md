@@ -45,17 +45,17 @@
 ## 02. 기술 분야별 자료
 
 <div class="hub-grid">
-<a class="hub-card" href="catalog/amd/index.html"><strong>AMD / Xilinx</strong><span>Basys3 · FPGA · MicroBlaze · AXI · 가속기</span></a>
-<a class="hub-card" href="catalog/intel/index.html"><strong>Intel FPGA</strong><span>FPGA 기반 주변장치·신호처리·설계 사례</span></a>
-<a class="hub-card" href="catalog/lattice/index.html"><strong>Lattice FPGA</strong><span>소형 FPGA · 오픈소스 설계 사례</span></a>
-<a class="hub-card" href="catalog/vendor-neutral/index.html"><strong>범용 RTL</strong><span>보드 독립형 Verilog · IP · 설계 기법</span></a>
-<a class="hub-card" href="catalog/papers/index.html"><strong>논문·연구</strong><span>FPGA · SoC · NPU · 최신 기술 사례</span></a>
-<a class="hub-card" href="catalog/embedded/index.html"><strong>임베디드 공통</strong><span>MCU · 센서 · 통신 · 제어 시스템</span></a>
-<a class="hub-card" href="catalog/arduino/index.html"><strong>Arduino</strong><span>범용 센서·액추에이터 응용</span></a>
-<a class="hub-card" href="catalog/stm32/index.html"><strong>STM32</strong><span>타이머 · UART · ADC · 인터럽트</span></a>
-<a class="hub-card" href="catalog/esp32/index.html"><strong>ESP32</strong><span>무선 통신 · IoT · 임베디드 제어</span></a>
-<a class="hub-card" href="catalog/rpi/index.html"><strong>Raspberry Pi</strong><span>Linux · GPIO · 엣지 호스트</span></a>
-<a class="hub-card" href="catalog/electronics/index.html"><strong>전자회로</strong><span>회로 · 부품 · 인터페이스 · 전기적 제약</span></a>
+<a class="hub-card" href="https://github.com/Yuul-Jung/fpga-soc-harness/tree/main/catalog/amd"><strong>AMD / Xilinx</strong><span>Basys3 · FPGA · MicroBlaze · AXI · 가속기</span></a>
+<a class="hub-card" href="https://github.com/Yuul-Jung/fpga-soc-harness/tree/main/catalog/intel"><strong>Intel FPGA</strong><span>FPGA 기반 주변장치·신호처리·설계 사례</span></a>
+<a class="hub-card" href="https://github.com/Yuul-Jung/fpga-soc-harness/tree/main/catalog/lattice"><strong>Lattice FPGA</strong><span>소형 FPGA · 오픈소스 설계 사례</span></a>
+<a class="hub-card" href="https://github.com/Yuul-Jung/fpga-soc-harness/tree/main/catalog/vendor-neutral"><strong>범용 RTL</strong><span>보드 독립형 Verilog · IP · 설계 기법</span></a>
+<a class="hub-card" href="https://github.com/Yuul-Jung/fpga-soc-harness/tree/main/catalog/papers"><strong>논문·연구</strong><span>FPGA · SoC · NPU · 최신 기술 사례</span></a>
+<a class="hub-card" href="https://github.com/Yuul-Jung/fpga-soc-harness/tree/main/catalog/embedded"><strong>임베디드 공통</strong><span>MCU · 센서 · 통신 · 제어 시스템</span></a>
+<a class="hub-card" href="https://github.com/Yuul-Jung/fpga-soc-harness/tree/main/catalog/arduino"><strong>Arduino</strong><span>범용 센서·액추에이터 응용</span></a>
+<a class="hub-card" href="https://github.com/Yuul-Jung/fpga-soc-harness/tree/main/catalog/stm32"><strong>STM32</strong><span>타이머 · UART · ADC · 인터럽트</span></a>
+<a class="hub-card" href="https://github.com/Yuul-Jung/fpga-soc-harness/tree/main/catalog/esp32"><strong>ESP32</strong><span>무선 통신 · IoT · 임베디드 제어</span></a>
+<a class="hub-card" href="https://github.com/Yuul-Jung/fpga-soc-harness/tree/main/catalog/rpi"><strong>Raspberry Pi</strong><span>Linux · GPIO · 엣지 호스트</span></a>
+<a class="hub-card" href="https://github.com/Yuul-Jung/fpga-soc-harness/tree/main/catalog/electronics"><strong>전자회로</strong><span>회로 · 부품 · 인터페이스 · 전기적 제약</span></a>
 </div>
 
 [카탈로그 전체 색인](catalog/index.html)
